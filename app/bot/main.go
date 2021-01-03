@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	v1 "hvxahv/api/util/v1"
@@ -14,12 +15,18 @@ type server struct {
 	v1.BotNoticeServer
 }
 
-const (
-	port = ":9000"
-)
 // 实现 Telegram Bot 的服务接口，供外部调用。
 func main()  {
-	lis, err := net.Listen("tcp", port)
+
+	viper.SetConfigFile("./configs/config.yaml")
+	err := viper.ReadInConfig()
+	if err != nil {
+		panic(fmt.Errorf("Fatal error config file: %s \n", err))
+	}
+
+	port := viper.GetString("port.bot")
+
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", port))
 	if err != nil {
 		fmt.Printf("Failed to Listen: %v", err)
 		return

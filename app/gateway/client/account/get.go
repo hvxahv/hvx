@@ -11,9 +11,9 @@ import (
 
 // GetAccountsHandler 获取用户的个人资料
 func GetAccountsClient(author string)  {
-
-	// 链接到 Accounts 服务端
-	conn, err := grpc.Dial(viper.GetString("port.accounts"), grpc.WithInsecure())
+	// 连接到 Accounts 服务端
+	addr := fmt.Sprintf("localhost:%s", viper.GetString("port.accounts"))
+	conn, err := grpc.Dial(addr, grpc.WithInsecure())
 	if err != nil {
 		fmt.Printf("Faild to connect to Accounts app: %v", err)
 	}

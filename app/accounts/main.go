@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	pb "hvxahv/api/kernel/v1"
@@ -11,13 +12,17 @@ import (
 	"net"
 )
 
-const (
-	port = ":8000"
-)
-
 func main()  {
 	app.InitDB()
-	lis, err := net.Listen("tcp", port)
+
+	viper.SetConfigFile("./configs/config.yaml")
+	err := viper.ReadInConfig()
+	if err != nil {
+		panic(fmt.Errorf("Fatal error config file: %s \n", err))
+	}
+
+	port := viper.GetString("port.accounts")
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", port))
 	if err != nil {
 		fmt.Printf("Accounts gRPC Services Failed to Listen: %v", err)
 		return

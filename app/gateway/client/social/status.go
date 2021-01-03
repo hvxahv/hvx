@@ -1,27 +1,30 @@
+/*
+这个文件中包含 添加 删除 修改 状态的 Handler
+连接到 Status Services 并发送前端接收的数据
+*/
+
 package social
 
 import (
-	"github.com/gin-gonic/gin"
+	"fmt"
 	"github.com/spf13/viper"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	pb "hvxahv/api/kernel/v1"
-	"hvxahv/pkg/auth"
 	"log"
 )
 
 // CreateStatusHandler 创建状态 handler
-func CreateArticleHandler(c *gin.Context) {
-	author := auth.GetUserName(c)
-	conn, err := grpc.Dial(viper.GetString("port.article"), grpc.WithInsecure())
+func CreateStatusClient(author string) {
+	conn, err := grpc.Dial(viper.GetString("port.status"), grpc.WithInsecure())
 	if err != nil {
 		log.Printf("Faild to connect to Status app: %v", err)
 	}
 	defer conn.Close()
-	cli := pb.NewArticlesClient(conn)
-	r, err := cli.NewArticle(context.Background(), &pb.ArticleData{
+	cli := pb.NewStatusClient(conn)
+	r, err := cli.NewStatus(context.Background(), &pb.StatusData{
 		Author: author,
-		Article: "这是我的第一条 文章",
+		Status: "这是我的第一条 Status",
 	})
 	if err != nil {
 		log.Printf("新建状态错误，发送消息给 Status 服务端失败: %v", err)
@@ -30,18 +33,18 @@ func CreateArticleHandler(c *gin.Context) {
 }
 
 // UpdateStatusListHandler 更新状态 Handler
-func UpdateArticleHandler(c *gin.Context) {
-	author := auth.GetUserName(c)
-	conn, err := grpc.Dial(viper.GetString("port.article"), grpc.WithInsecure())
+func UpdateStatusClient(author string) {
+	addr := fmt.Sprintf("localhost:%s", viper.GetString("port.status"))
+	conn, err := grpc.Dial(addr, grpc.WithInsecure())
 	if err != nil {
 		log.Printf("Faild to connect to Status app: %v", err)
 	}
 	defer conn.Close()
-	cli := pb.NewArticlesClient(conn)
-	r, err := cli.UpdateArticle(context.Background(), &pb.ArticleData{
+	cli := pb.NewStatusClient(conn)
+	r, err := cli.UpdateStatus(context.Background(), &pb.StatusData{
 		Id: "123123",
 		Author: author,
-		Article: "这是我的第一条 Status 的修改内容（开始更新状态）",
+		Status: "这是我的第一条 Status 的修改内容（开始更新状态）",
 	})
 	if err != nil {
 		log.Printf("更新状态错误，发送消息给 Status 服务端失败: %v", err)
@@ -50,19 +53,19 @@ func UpdateArticleHandler(c *gin.Context) {
 }
 
 // DeleteStatusHandler 删除状态 Handler 通过 ID
-func DeleteArticleHandler(c *gin.Context) {
-	conn, err := grpc.Dial(viper.GetString("port.article"), grpc.WithInsecure())
+func DeleteStatusClient(id string) {
+	addr := fmt.Sprintf("localhost:%s", viper.GetString("port.status"))
+	conn, err := grpc.Dial(addr, grpc.WithInsecure())
 	if err != nil {
 		log.Printf("Faild to connect to Status app: %v", err)
 	}
 	defer conn.Close()
-	cli := pb.NewArticlesClient(conn)
-	r, err := cli.DeleteArticle(context.Background(), &pb.DeleteArticleByID{
-		Id: "123123444455622",
+	cli := pb.NewStatusClient(conn)
+	r, err := cli.DeleteStatus(context.Background(), &pb.DeleteStatusByID{
+		Id: id,
 	})
 	if err != nil {
 		log.Printf("删除状态错误，发送消息给 Status 服务端失败: %v", err)
 	}
 	log.Println("删除状态返回的数据", r.Reply)
 }
-

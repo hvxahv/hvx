@@ -19,6 +19,8 @@ const _ = grpc.SupportPackageIsVersion7
 type AccountsClient interface {
 	NewAccount(ctx context.Context, in *AccountData, opts ...grpc.CallOption) (*NewAccountReply, error)
 	GetAccount(ctx context.Context, in *AccountName, opts ...grpc.CallOption) (*AccountData, error)
+	DeleteAccount(ctx context.Context, in *AccountName, opts ...grpc.CallOption) (*DeleteAccountReply, error)
+	SettingAccount(ctx context.Context, in *AccountData, opts ...grpc.CallOption) (*SettingAccountReply, error)
 }
 
 type accountsClient struct {
@@ -47,12 +49,32 @@ func (c *accountsClient) GetAccount(ctx context.Context, in *AccountName, opts .
 	return out, nil
 }
 
+func (c *accountsClient) DeleteAccount(ctx context.Context, in *AccountName, opts ...grpc.CallOption) (*DeleteAccountReply, error) {
+	out := new(DeleteAccountReply)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1.proto.Accounts/DeleteAccount", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *accountsClient) SettingAccount(ctx context.Context, in *AccountData, opts ...grpc.CallOption) (*SettingAccountReply, error) {
+	out := new(SettingAccountReply)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1.proto.Accounts/SettingAccount", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AccountsServer is the server API for Accounts service.
 // All implementations must embed UnimplementedAccountsServer
 // for forward compatibility
 type AccountsServer interface {
 	NewAccount(context.Context, *AccountData) (*NewAccountReply, error)
 	GetAccount(context.Context, *AccountName) (*AccountData, error)
+	DeleteAccount(context.Context, *AccountName) (*DeleteAccountReply, error)
+	SettingAccount(context.Context, *AccountData) (*SettingAccountReply, error)
 	mustEmbedUnimplementedAccountsServer()
 }
 
@@ -65,6 +87,12 @@ func (UnimplementedAccountsServer) NewAccount(context.Context, *AccountData) (*N
 }
 func (UnimplementedAccountsServer) GetAccount(context.Context, *AccountName) (*AccountData, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAccount not implemented")
+}
+func (UnimplementedAccountsServer) DeleteAccount(context.Context, *AccountName) (*DeleteAccountReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteAccount not implemented")
+}
+func (UnimplementedAccountsServer) SettingAccount(context.Context, *AccountData) (*SettingAccountReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SettingAccount not implemented")
 }
 func (UnimplementedAccountsServer) mustEmbedUnimplementedAccountsServer() {}
 
@@ -115,6 +143,42 @@ func _Accounts_GetAccount_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Accounts_DeleteAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AccountName)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountsServer).DeleteAccount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/hvxahv.v1.proto.Accounts/DeleteAccount",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountsServer).DeleteAccount(ctx, req.(*AccountName))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Accounts_SettingAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AccountData)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountsServer).SettingAccount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/hvxahv.v1.proto.Accounts/SettingAccount",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountsServer).SettingAccount(ctx, req.(*AccountData))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Accounts_ServiceDesc is the grpc.ServiceDesc for Accounts service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -130,7 +194,15 @@ var Accounts_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "GetAccount",
 			Handler:    _Accounts_GetAccount_Handler,
 		},
+		{
+			MethodName: "DeleteAccount",
+			Handler:    _Accounts_DeleteAccount_Handler,
+		},
+		{
+			MethodName: "SettingAccount",
+			Handler:    _Accounts_SettingAccount_Handler,
+		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "api/kernel/v1/account.proto",
+	Metadata: "api/kernel/v1/accounts.proto",
 }

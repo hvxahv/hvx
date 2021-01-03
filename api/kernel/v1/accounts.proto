@@ -7,18 +7,21 @@ option go_package = ".;pb";
 service Accounts {
   rpc NewAccount (AccountData) returns (NewAccountReply) {}
   rpc GetAccount (AccountName) returns (AccountData) {}
+  rpc DeleteAccount (AccountName) returns (DeleteAccountReply) {}
+  rpc SettingAccount (AccountData) returns (SettingAccountReply) {}
 }
 
 message AccountData {
-  string username = 1;
-  string password = 2;
-  string avatar   = 3;
-  string bio      = 4;
-  string name     = 5;
-  string email    = 6;
-  string phone    = 7;
-  string telegram = 8;
-  string social   = 9;
+  string username  = 1;
+  string password  = 2;
+  string avatar    = 3;
+  string bio       = 4;
+  string name      = 5;
+  string email     = 6;
+  string phone     = 7;
+  string telegram  = 8;
+  string social    = 9;
+  int32  Private   = 10;
 }
 
 message NewAccountReply {
@@ -27,4 +30,12 @@ message NewAccountReply {
 
 message AccountName {
   string username = 1;
+}
+
+message DeleteAccountReply {
+  string reply = 1;
+}
+
+message SettingAccountReply {
+  string reply = 1;
 }

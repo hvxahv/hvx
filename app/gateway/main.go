@@ -11,22 +11,21 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
-	"hvxahv/app/gateway/pkg/social"
-	"hvxahv/app/gateway/pkg/tools"
-	"hvxahv/pkg/auth"
+	"hvxahv/app/gateway/handler"
+	"hvxahv/app/gateway/pkg"
 	"hvxahv/pkg/bot"
-	"hvxahv/pkg/http"
+	"hvxahv/pkg/middleware"
 )
 
 func main()  {
 	viper.SetConfigFile("./configs/config.yaml")
 	err := viper.ReadInConfig()
-	if err != nil { // 处理读取配置文件的错误
+	if err != nil {
 		panic(fmt.Errorf("Fatal error config file: %s \n", err))
 	}
 
 	r := gin.Default()
-	r.Use(http.CORS())
+	r.Use(middleware.CORS())
 
 	r.GET("ping", func(context *gin.Context) {
 		context.JSON(200, gin.H{
@@ -35,27 +34,27 @@ func main()  {
 	})
 
 	/* 账号登录和注册 */
-	r.POST("/account/new", NewAccountsHandler)
-	r.POST("/account/login", tools.AuthHandler)
+	r.POST("/account/new", handler.NewAccountsHandler)
+	r.POST("/account/login", pkg.VerificationHandler)
 
 	// 通过 Token 才能访问的功能
 	v1 := r.Group("/api/v1")
-	v1.Use(auth.JWTAuth)
+	v1.Use(middleware.JWTAuth)
 	{
 		/* Accounts Services */
-		v1.GET("/account/i", GetAccountsHandler)
-		//v1.POST("/account.bac/delete", account.bac.DeleteAccountHandler)
-		//v1.POST("/account.bac/settings", account.bac.AccountSettingHandler)
+		v1.GET("/account/i", handler.GetAccountsHandler)
+		v1.POST("/account.bac/delete", handler.DeleteAccountHandler)
+		v1.POST("/account.bac/settings", handler.AccountSettingHandler)
 
 		/*  Article Services */
-		v1.POST("/article/new", social.CreateArticleHandler)
-		v1.POST("/article/update", social.UpdateArticleHandler)
-		v1.POST("/article/delete", social.DeleteArticleHandler)
+		v1.POST("/article/new", handler.CreateArticleHandler)
+		v1.POST("/article/update", handler.UpdateArticleHandler)
+		v1.POST("/article/delete", handler.DeleteArticleHandler)
 
 		/* Status Services */
-		v1.POST("/status/new", social.CreateStatusHandler)
-		v1.POST("/status/update", social.UpdateStatusListHandler)
-		v1.POST("/status/delete", social.DeleteStatusHandler)
+		v1.POST("/status/new", handler.CreateStatusHandler)
+		v1.POST("/status/update", handler.UpdateStatusHandler)
+		v1.POST("/status/delete", handler.DeleteStatusHandler)
 	}
 
 	go bot.ServicesRunningNotice("ingress gateway", "7000")

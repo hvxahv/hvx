@@ -1,4 +1,7 @@
-package tools
+/*
+	Ingress Gateway 用户验证实现
+*/
+package pkg
 
 import (
 	"fmt"
@@ -10,7 +13,7 @@ import (
 	"log"
 )
 
-func AuthHandler(c *gin.Context) {
+func VerificationHandler(c *gin.Context) {
 	u := c.PostForm("username")
 	p := c.PostForm("password")
 

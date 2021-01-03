@@ -10,8 +10,8 @@ const (
 	token  = "1428818014:AAEv4ZRvRR0wi4Rmu336vYO_UAtshOIjFxA"
 	chatid = 441776537
 )
-// SendNewUserNotice 将通知发送给 Telegram 管理者
-func SendNewUserNotice(name string) error {
+// SendNotice 将通知发送给 Telegram 管理者
+func SendNotice(str string) error {
 	bot, err := tgbotapi.NewBotAPI(token)
 	if err != nil {
 		log.Panic(err)
@@ -22,7 +22,7 @@ func SendNewUserNotice(name string) error {
 	u := tgbotapi.NewUpdate(0)
 	u.Timeout = 60
 
-	text := fmt.Sprintf("Notice... %s", name)
+	text := fmt.Sprintf("New Notice: %s", str)
 	msg := tgbotapi.NewMessage(chatid, text)
 	bot.Send(msg)
 

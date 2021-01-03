@@ -15,3 +15,4 @@ func InitDB() {
 	}
 	db2 = db
 }
+

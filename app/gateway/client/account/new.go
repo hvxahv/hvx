@@ -1,6 +1,7 @@
 package account
 
 import (
+	"fmt"
 	"github.com/spf13/viper"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
@@ -9,8 +10,8 @@ import (
 )
 
 func NewAccountClient(u, p string) (*pb.NewAccountReply, error) {
-	conn, err := grpc.Dial(viper.GetString("port.accounts"), grpc.WithInsecure())
-
+	addr := fmt.Sprintf("localhost:%s", viper.GetString("port.accounts"))
+	conn, err := grpc.Dial(addr, grpc.WithInsecure())
 	if err != nil {
 		log.Printf("Faild to connect to Accounts app: %v", err)
 	}

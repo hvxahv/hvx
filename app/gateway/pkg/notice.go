@@ -1,4 +1,4 @@
-package tools
+package pkg
 
 import (
 	"fmt"
@@ -9,9 +9,10 @@ import (
 	"log"
 )
 
-// 通知给 Telegram Admin
+// 通知给 Telegram Admin Services
 func SendTGNotice(m string) {
-	conn, err := grpc.Dial(viper.GetString("port.bot"), grpc.WithInsecure())
+	addr := fmt.Sprintf("localhost:%s", viper.GetString("port.bot"))
+	conn, err := grpc.Dial(addr, grpc.WithInsecure())
 	if err != nil {
 		fmt.Printf("链接到 ，，Faild to connect to Bot Services app: %v", err)
 	}

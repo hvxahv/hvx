@@ -13,6 +13,7 @@ type Accounts struct {
 	Phone		int`gorm:"phone"`
 	Telegram	string`gorm:"telegram"`
 	Social      string`gorm:"social"`
+	private     int`gorm:"private"`
 }
 
 func NewAccounts(un, p string) *Accounts {

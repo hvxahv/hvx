@@ -1,8 +1,8 @@
-package main
+package handler
 
 import (
 	"github.com/gin-gonic/gin"
-	"hvxahv/app/gateway/pkg/account"
+	"hvxahv/app/gateway/client/account"
 	"hvxahv/pkg/auth"
 	"log"
 )
@@ -20,9 +20,17 @@ func NewAccountsHandler(c *gin.Context) {
 	}
 }
 
-
+// GetAccountsHandler ...
 func GetAccountsHandler(c *gin.Context) {
 	author := auth.GetUserName(c)
 	account.GetAccountsClient(author)
+}
+
+func DeleteAccountHandler(c *gin.Context) {
+
+}
+
+func AccountSettingHandler(c *gin.Context)  {
+
 }
 
