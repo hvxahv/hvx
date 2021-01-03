@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package hvxahv.v1.proto;
+option go_package = ".;pb";
+
+// Status Services ...
+service Status {
+  rpc NewStatus (StatusData) returns (NewStatusReply) {}
+  rpc UpdateStatus (StatusData) returns (UpdateStatusReply) {}
+  rpc DeleteStatus (DeleteStatusByID) returns (DeleteStatusReply) {}
+}
+
+message StatusData {
+  string id        = 1;
+  string author    = 2;
+  string status    = 3;
+  string imageUrl  = 4;
+  bool   private   = 5;
+  string address   = 6;
+  bool   isComment = 7;
+  string like      = 8;
+}
+
+message NewStatusReply {
+  string reply = 1;
+}
+
+message UpdateStatusReply {
+  string reply = 1;
+}
+
+message DeleteStatusByID {
+  string id = 1;
+}
+
+message DeleteStatusReply {
+  string reply = 1;
+}

@@ -1,0 +1,64 @@
+---
+version: "3.3"
+
+services:
+  redis:
+    image: redis
+    container_name: redis
+    restart: always
+    volumes:
+      - "./redis/data:/data"
+      - "./redis/redis.conf:/etc/redis/redis.conf"
+    command: redis-server /etc/redis/redis.conf
+    ports:
+      - 6379:6379
+
+  nats:
+    image: nats
+    container_name: nats
+    restart: always
+    command: "-m 8222"
+    ports:
+      - 4222:4222
+      - 8222:8222
+
+  mariadb:
+    image: mariadb
+    container_name: mariadb
+    restart: always
+    volumes:
+      - "./mariadb/data:/var/lib/mysql"
+    environment:
+      MYSQL_ROOT_PASSWORD: 123123
+    ports:
+      - 3306:3306
+
+  mongodb:
+    image: mongo
+    container_name: mongo
+    restart: always
+    volumes:
+      - "./mongo/:/data/database"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: 123123
+    ports:
+      - 27017:27017
+
+#  prometheus:
+#    image: prom/prometheus
+#    container_name: prometheus
+#    restart: always
+#    volumes:
+#      - "./prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml"
+#    ports:
+#      - 9090:9090
+#
+#  grafana:
+#    image: grafana/grafana
+#    container_name: grafana
+#    restart: always
+#    ports:
+#      - 3300:3000
+#    links:
+#      - prometheus

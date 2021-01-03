@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package hvxahv.v1.proto;
+option go_package = ".;pb";
+
+service BotNotice {
+  rpc notice (BotNoticeSend) returns (BotNoticeReply) {}
+}
+
+message BotNoticeSend {
+  string message = 1;
+}
+
+message BotNoticeReply {
+  string reply = 1;
+}

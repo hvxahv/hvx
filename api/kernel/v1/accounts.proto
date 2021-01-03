@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package hvxahv.v1.proto;
+option go_package = ".;pb";
+
+// Accounts Services ...
+service Accounts {
+  rpc NewAccount (AccountData) returns (NewAccountReply) {}
+  rpc GetAccount (AccountName) returns (AccountData) {}
+}
+
+message AccountData {
+  string username = 1;
+  string password = 2;
+  string avatar   = 3;
+  string bio      = 4;
+  string name     = 5;
+  string email    = 6;
+  string phone    = 7;
+  string telegram = 8;
+  string social   = 9;
+}
+
+message NewAccountReply {
+  int32 reply = 1;
+}
+
+message AccountName {
+  string username = 1;
+}

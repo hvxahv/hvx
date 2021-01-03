@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package hvxahv.v1.proto;
+option go_package = ".;pb";
+
+// Articles Services ...
+service Articles {
+  rpc NewArticle (ArticleData) returns (NewArticleReply) {}
+  rpc UpdateArticle (ArticleData) returns (UpdateArticleReply) {}
+  rpc DeleteArticle (DeleteArticleByID) returns (DeleteArticleReply) {}
+}
+
+message ArticleData {
+  string id        = 1;
+  string author    = 2;
+  string article   = 3;
+  string cover     = 4;
+  bool   private   = 5;
+  bool   isComment = 7;
+  string like      = 8;
+}
+
+message NewArticleReply {
+  string reply = 1;
+}
+
+message UpdateArticleReply {
+  string reply = 1;
+}
+
+message DeleteArticleByID {
+  string id = 1;
+}
+
+message DeleteArticleReply {
+  string reply = 1;
+}

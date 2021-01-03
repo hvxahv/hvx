@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package hvxahv.v1.proto;
+option go_package = ".;pb";
+
+message PubSubMessage {
+  string message = 1;
+}
+
+service PubsubService {
+  rpc Publish (PubSubMessage) returns (PubSubMessage);
+  rpc Subscribe (PubSubMessage) returns (stream PubSubMessage);
+}
