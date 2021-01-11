@@ -19,3 +19,5 @@ vendor/
 configs/config.yaml
 
 ./build/linux/
+
+./build/windows/
