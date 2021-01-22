@@ -19,6 +19,7 @@ func AccountsHandlerResponse(r *pb.NewAccountReply, c *gin.Context) {
 			"state": "200",
 			"message": "注册成功",
 		})
+		// 注册成功后，将注册信息发送给 BOT
 		go bot.NewAccountNotice("新增加了一个用户")
 	case r.Reply == 500:
 		c.JSON(500, gin.H{

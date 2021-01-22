@@ -6,6 +6,7 @@ import (
 	pb "hvxahv/api/kernel/v1"
 )
 
+// NewAccount 创建账户的方法
 func NewAccount(in *pb.AccountData) int {
 	u := in.Username
 	p := in.Password
@@ -17,7 +18,7 @@ func NewAccount(in *pb.AccountData) int {
 
 	a := *NewAccounts(u, string(hash))
 	db2.AutoMigrate(Accounts{})
-	// If No User is Create Accounts
+	// 账户名为唯一，如果没有这个账户名就创建账户，如果有就返回该账户已经存在
 	if db2.Debug().Table("accounts").Where("username = ?", u).First(&a).RecordNotFound() {
 		db2.Debug().Table("accounts").Create(&a)
 		db2.LogMode(true)

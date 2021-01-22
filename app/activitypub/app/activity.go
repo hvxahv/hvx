@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-func AcceptHandler(c *gin.Context) {
+func NewActivity(c *gin.Context) {
 	url := "https://mas.to/inbox"
 	method := "POST"
 
@@ -80,3 +80,4 @@ func AcceptHandler(c *gin.Context) {
 	log.Printf("successful post: %s %d", url, res.StatusCode)
 	log.Println(req)
 }
+

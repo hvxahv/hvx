@@ -2,7 +2,7 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
-	"hvxahv/app/gateway/client/social"
+	"hvxahv/app/ingress/client/social"
 	"hvxahv/pkg/auth"
 )
 

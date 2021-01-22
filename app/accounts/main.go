@@ -1,3 +1,6 @@
+/**
+	Accounts 作为整个程序的账户管理的微服务
+ */
 package main
 
 import (
@@ -21,14 +24,15 @@ func main()  {
 		panic(fmt.Errorf("Fatal error config file: %s \n", err))
 	}
 
-	port := viper.GetString("port.accounts")
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", port))
+	p := viper.GetString("port.accounts")
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", p))
 	if err != nil {
 		fmt.Printf("Accounts gRPC Services Failed to Listen: %v", err)
 		return
 	} else {
-		log.Println("Accounts gRPC Services is running", port)
-		go bot.ServicesRunningNotice("account", port)
+		// 在控制台中打印服务启动 log 通知 并 Bot ，Account 服务已经开启
+		log.Println("Accounts gRPC Services is running....", p)
+		go bot.ServicesRunningNotice("account", p)
 	}
 	s := grpc.NewServer()
 	pb.RegisterAccountsServer(s, &server{})
@@ -36,6 +40,5 @@ func main()  {
 
 	if err := s.Serve(lis); err != nil {
 		fmt.Printf("Accounts gRPC Services failed to start: %v", err)
-		return
 	}
 }

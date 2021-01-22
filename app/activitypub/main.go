@@ -21,7 +21,7 @@ AwIDAQAB
 -----END PUBLIC KEY-----`
 		con := []string{"https://www.w3.org/ns/activitystreams", "https://w3id.org/security/v1"}
 		publicKey := map[string]string{
-			"id": "https://a58e36568ae3.ngrok.io/actor#main-key",
+			"id": fmt.Sprintf("https://%s/actor#main-key", address),
 			"owner": fmt.Sprintf("https://%s/actor", address),
 			"publicKeyPem": pem,
 		}
@@ -32,7 +32,10 @@ AwIDAQAB
 			"type": "Person",
 			"preferredUsername": "hvturingga",
 			"inbox": fmt.Sprintf("https://%s/actor/inbox", address),
+			"outbox": fmt.Sprintf("https://%s/actor/outbox", address),
 			"publicKey": publicKey,
+			"followers": []string{"https://mas.to/users/hvturingga"},
+			"following": []string{"https://mas.to/users/hvturingga","https://mstdn.social/users/hvturingga"},
 		})
 	})
 
@@ -69,15 +72,18 @@ AwIDAQAB
 	// 发送一条 HELLO 消息
 	r.POST("/hello", app.HandleHello2)
 	r.POST("/like", app.LikeHandler)
+	r.POST("/unlike", app.LikeHandler)
 	r.POST("/start", app.NewOutbox)
 	r.POST("/follow", app.Follow)
 	r.POST("/undo", app.Undo)
+	// 创建一条消息
 	r.POST("/create", app.CreateHandler)
 	// 接受同意消息
-	r.POST("accept", app.AcceptHandler)
+	r.POST("/accept", app.AcceptHandler)
 	// 获取收到的信息
 
 	r.POST("/actor/inbox", app.Inbox)
+	r.POST("/actor/outbox", app.Inbox)
 	r.POST("/status", app.Status)
 	r.Run(":8088")
 }

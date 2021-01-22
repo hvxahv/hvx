@@ -10,7 +10,7 @@ import (
 )
 
 // GetAccountsHandler 获取用户的个人资料
-func GetAccountsClient(author string)  {
+func GetAccountsClient(author string) (*pb.AccountData, error) {
 	// 连接到 Accounts 服务端
 	addr := fmt.Sprintf("localhost:%s", viper.GetString("port.accounts"))
 	conn, err := grpc.Dial(addr, grpc.WithInsecure())
@@ -29,5 +29,6 @@ func GetAccountsClient(author string)  {
 	if err != nil {
 		log.Printf("发送消息给 Accounts 服务端失败: %v", err)
 	}
-	log.Println(r)
+	return r, err
+
 }

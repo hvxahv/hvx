@@ -13,7 +13,9 @@ type Accounts struct {
 	Phone		int`gorm:"phone"`
 	Telegram	string`gorm:"telegram"`
 	Social      string`gorm:"social"`
-	private     int`gorm:"private"`
+	Private     int`gorm:"private"`
+	PrivateKey  string`gorm:"private_key"`
+	PublicKey	string`gorm:"public_key"`
 }
 
 func NewAccounts(un, p string) *Accounts {

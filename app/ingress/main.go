@@ -1,5 +1,5 @@
 /*
-整个程序的入口网关，提供外部访问程序的唯一入口
+整个程序的入口，提供外部访问程序的唯一入口
 内部服务只能通过此服务才能进行调用
 提供：
 1. HTTP REST API 接口服务
@@ -11,8 +11,8 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
-	"hvxahv/app/gateway/handler"
-	"hvxahv/app/gateway/pkg"
+	"hvxahv/app/ingress/handler"
+	"hvxahv/app/ingress/pkg"
 	"hvxahv/pkg/bot"
 	"hvxahv/pkg/middleware"
 )
@@ -57,7 +57,7 @@ func main()  {
 		v1.POST("/status/delete", handler.DeleteStatusHandler)
 	}
 
-	go bot.ServicesRunningNotice("ingress gateway", "7000")
-	r.Run(":7000")
+	go bot.ServicesRunningNotice("ingress ingress", "7000")
+	_ = r.Run(":7000")
 }
 

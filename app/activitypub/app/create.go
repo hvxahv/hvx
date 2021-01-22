@@ -15,30 +15,35 @@ import (
 )
 
 func CreateHandler(c *gin.Context) {
-	url := "https://mstdn.social/inbox"
+	url := "https://mas.to/inbox"
 	method := "POST"
 
+
 	idr := strconv.Itoa(rand.Int())
-	obj := map[string]string {
+
+	date := time.Now().UTC().Format(http.TimeFormat)
+	obj := gin.H {
+		"id": fmt.Sprintf("https://%s/%s", address, idr),
 		"type": "Note",
-		"name": "一个简单的 NOTE 测试",
-		"content": "简单的测试内容",
-		"to": "https://www.w3.org/ns/activitystreams#Public",
-		"cc": "follower",
+		"published": date,
+		"attributedTo": fmt.Sprintf("https://%s/actor", address),
+		"content": "这是一条测试数据",
+		"to": []string{"https://www.w3.org/ns/activitystreams#Public"},
 	}
 
 	p := gin.H{
 		"@context": "https://www.w3.org/ns/activitystreams",
-		"id": "https://a58e36568ae3.ngrok.io/create-" + idr,
+		"id": fmt.Sprintf("https://%s/create-%s", address, idr),
 		"type": "Create",
 		"actor": fmt.Sprintf("https://%s/actor", address),
+		"to": []string{"https://www.w3.org/ns/activitystreams#Public"},
+		"cc": []string{"https://mas.to/users/hvturingga"},
 		"object": obj,
 	}
 	byterData, err := json.Marshal(p)
 	if err != nil {
 		log.Println(err)
 	}
-
 
 	payload := bytes.NewBuffer(byterData)
 	client := &http.Client {
@@ -51,12 +56,11 @@ func CreateHandler(c *gin.Context) {
 	}
 
 
-	date := time.Now().UTC().Format(http.TimeFormat)
-
-	req.Header.Add("Host", "mstdn.social")
+	req.Header.Add("Host", "mas.to")
 	req.Header.Add("Date", date)
 
 	//req.Header.Add("Signature", header)
+
 	block := httpsig.PrivateKey{
 		Key: GetKey(),
 	}

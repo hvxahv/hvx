@@ -12,7 +12,7 @@ type server struct {
 
 }
 
-// AccountData 将接收到的用户数据存储到数据库
+// NewAccount 创建账户 将接收到的用户数据存储到数据库
 func (s *server) NewAccount(ctx context.Context, in *pb.AccountData) (*pb.NewAccountReply, error) {
 	r := app.NewAccount(in)
 	log.Println(in)
@@ -21,11 +21,12 @@ func (s *server) NewAccount(ctx context.Context, in *pb.AccountData) (*pb.NewAcc
 	return &pb.NewAccountReply{Reply: i}, nil
 }
 
+// GetAccount 获取账户资料
 func (s *server) GetAccount(ctx context.Context, in *pb.AccountName) (*pb.AccountData, error) {
 	r := app.GetAccountData(in.Username)
 
 	ad := &pb.AccountData{
-		Username: r.Username + "这是给你返回的用户名",
+		Username: r.Username,
 	}
 	return ad, nil
 }

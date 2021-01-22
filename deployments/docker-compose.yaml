@@ -29,7 +29,7 @@ services:
     volumes:
       - "./mariadb/data:/var/lib/mysql"
     environment:
-      MYSQL_ROOT_PASSWORD: 123123
+      MYSQL_ROOT_PASSWORD: hvxahv123
     ports:
       - 3306:3306
 
@@ -38,27 +38,19 @@ services:
     container_name: mongo
     restart: always
     volumes:
-      - "./mongo/:/data/database"
+      - "./mongo/:/data/db"
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: 123123
+      MONGO_INITDB_ROOT_PASSWORD: hvxahv123
     ports:
       - 27017:27017
 
-#  prometheus:
-#    image: prom/prometheus
-#    container_name: prometheus
-#    restart: always
-#    volumes:
-#      - "./prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml"
-#    ports:
-#      - 9090:9090
-#
-#  grafana:
-#    image: grafana/grafana
-#    container_name: grafana
-#    restart: always
-#    ports:
-#      - 3300:3000
-#    links:
-#      - prometheus
+  postgres:
+    image: postgres
+    container_name: pg
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: hvxahv123
+      POSTGRES_DB: kuma
+    ports:
+      - 5432:5432
