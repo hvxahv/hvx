@@ -7,8 +7,12 @@ import (
 	"github.com/spf13/viper"
 )
 
+var (
+	MariaDB *gorm.DB
+)
+
 // InitDB ... Initialize the database
-func NewDB() (*gorm.DB, error) {
+func InitMariaDB() error {
 	viper.SetConfigFile("./configs/config.yaml")
 	err := viper.ReadInConfig()
 	if err != nil {
@@ -33,6 +37,11 @@ func NewDB() (*gorm.DB, error) {
 	db.SingularTable(true)
 	db.DB().SetMaxOpenConns(100)
 	db.DB().SetMaxIdleConns(20)
+	MariaDB = db
 
-	return db, nil
+	return err
+}
+
+func GetMaria() *gorm.DB {
+	return MariaDB
 }

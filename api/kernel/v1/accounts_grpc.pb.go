@@ -21,6 +21,7 @@ type AccountsClient interface {
 	GetAccount(ctx context.Context, in *AccountName, opts ...grpc.CallOption) (*AccountData, error)
 	DeleteAccount(ctx context.Context, in *AccountName, opts ...grpc.CallOption) (*DeleteAccountReply, error)
 	SettingAccount(ctx context.Context, in *AccountData, opts ...grpc.CallOption) (*SettingAccountReply, error)
+	GetActor(ctx context.Context, in *AccountName, opts ...grpc.CallOption) (*AccountData, error)
 }
 
 type accountsClient struct {
@@ -67,6 +68,15 @@ func (c *accountsClient) SettingAccount(ctx context.Context, in *AccountData, op
 	return out, nil
 }
 
+func (c *accountsClient) GetActor(ctx context.Context, in *AccountName, opts ...grpc.CallOption) (*AccountData, error) {
+	out := new(AccountData)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1.proto.Accounts/GetActor", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AccountsServer is the server API for Accounts service.
 // All implementations must embed UnimplementedAccountsServer
 // for forward compatibility
@@ -75,6 +85,7 @@ type AccountsServer interface {
 	GetAccount(context.Context, *AccountName) (*AccountData, error)
 	DeleteAccount(context.Context, *AccountName) (*DeleteAccountReply, error)
 	SettingAccount(context.Context, *AccountData) (*SettingAccountReply, error)
+	GetActor(context.Context, *AccountName) (*AccountData, error)
 	mustEmbedUnimplementedAccountsServer()
 }
 
@@ -93,6 +104,9 @@ func (UnimplementedAccountsServer) DeleteAccount(context.Context, *AccountName) 
 }
 func (UnimplementedAccountsServer) SettingAccount(context.Context, *AccountData) (*SettingAccountReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SettingAccount not implemented")
+}
+func (UnimplementedAccountsServer) GetActor(context.Context, *AccountName) (*AccountData, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetActor not implemented")
 }
 func (UnimplementedAccountsServer) mustEmbedUnimplementedAccountsServer() {}
 
@@ -179,6 +193,24 @@ func _Accounts_SettingAccount_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Accounts_GetActor_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AccountName)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountsServer).GetActor(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/hvxahv.v1.proto.Accounts/GetActor",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountsServer).GetActor(ctx, req.(*AccountName))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Accounts_ServiceDesc is the grpc.ServiceDesc for Accounts service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -201,6 +233,10 @@ var Accounts_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SettingAccount",
 			Handler:    _Accounts_SettingAccount_Handler,
+		},
+		{
+			MethodName: "GetActor",
+			Handler:    _Accounts_GetActor_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

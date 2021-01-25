@@ -10,6 +10,11 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+var (
+	MongoDB *mongo.Database
+	MongoDBERR error
+)
+
 // InitDB 初始化 MongoDB
 func InitMongoDB() (*mongo.Database, error) {
 	url := viper.GetString("mongo.address")
@@ -32,5 +37,11 @@ func InitMongoDB() (*mongo.Database, error) {
 
 	fmt.Println("Connected to MongoDB!")
 	collection := cli.Database(name)
+	MongoDB = collection
+	MongoDBERR = err
 	return collection, err
+}
+
+func GetMongo() (*mongo.Database, error) {
+	return MongoDB, MongoDBERR
 }

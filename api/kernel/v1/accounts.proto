@@ -9,6 +9,7 @@ service Accounts {
   rpc GetAccount (AccountName) returns (AccountData) {}
   rpc DeleteAccount (AccountName) returns (DeleteAccountReply) {}
   rpc SettingAccount (AccountData) returns (SettingAccountReply) {}
+  rpc GetActor (AccountName) returns (AccountData) {}
 }
 
 message AccountData {
@@ -22,6 +23,7 @@ message AccountData {
   string telegram  = 8;
   string social    = 9;
   int32  Private   = 10;
+  string PublicKey = 11;
 }
 
 message NewAccountReply {

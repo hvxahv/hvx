@@ -1,20 +1,18 @@
+/**
+	实现 Accounts GRPC 服务的方法
+ */
 package main
 
 import (
 	"golang.org/x/net/context"
 	pb "hvxahv/api/kernel/v1"
-	"hvxahv/app/accounts/app"
+	"hvxahv/app/accounts/services"
 	"log"
 )
 
-type server struct {
-	pb.AccountsServer
-
-}
-
 // NewAccount 创建账户 将接收到的用户数据存储到数据库
 func (s *server) NewAccount(ctx context.Context, in *pb.AccountData) (*pb.NewAccountReply, error) {
-	r := app.NewAccount(in)
+	r := services.NewAccount(in)
 	log.Println(in)
 	i := int32(r)
 
@@ -23,10 +21,23 @@ func (s *server) NewAccount(ctx context.Context, in *pb.AccountData) (*pb.NewAcc
 
 // GetAccount 获取账户资料
 func (s *server) GetAccount(ctx context.Context, in *pb.AccountName) (*pb.AccountData, error) {
-	r := app.GetAccountData(in.Username)
+	r := services.GetAccountData(in.Username)
+
+	ad := &pb.AccountData{
+		Name: r.Name,
+		Username: r.Username,
+		Password: r.Password,
+	}
+	return ad, nil
+}
+
+// GetActor 获取 Activitypub 的 Actor 信息
+func (s *server) GetActor(ctx context.Context, in *pb.AccountName) (*pb.AccountData, error) {
+	r := services.GetActorData(in.Username)
 
 	ad := &pb.AccountData{
 		Username: r.Username,
+		PublicKey: r.PublicKey,
 	}
 	return ad, nil
 }
