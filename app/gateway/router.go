@@ -19,6 +19,7 @@ func IngressRouter() *gin.Engine {
 	/* 账号登录和注册 */
 	r.POST("/account/new", handler.NewAccountsHandler)
 	r.POST("/account/login", handler.VerificationHandler)
+
 	// Activitypub 功能 获取 Actor 路由
 	r.GET("/.well-known/webfinger", handler.GetWebFingerHandler)
 	r.GET("/u/:user", handler.GetActorHandler)

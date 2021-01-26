@@ -9,6 +9,7 @@ import (
 	"log"
 )
 
+// NewAccountClient 新建用户方法, 访问 accounts 微服务的客户端
 func NewAccountClient(u, p string) (*pb.NewAccountReply, error) {
 	addr := fmt.Sprintf("localhost:%s", viper.GetString("port.accounts"))
 	conn, err := grpc.Dial(addr, grpc.WithInsecure())

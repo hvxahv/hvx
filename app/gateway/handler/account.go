@@ -16,8 +16,7 @@ func NewAccountsHandler(c *gin.Context) {
 	if err != nil {
 		log.Println(err)
 	} else {
-		// 将返回的状态码进行处理并返回给前端
-		account.AccountsHandlerResponse(c, r)
+		account.NewAccountsResponse(c, r)
 	}
 }
 

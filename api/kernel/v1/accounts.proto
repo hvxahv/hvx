@@ -10,6 +10,7 @@ service Accounts {
   rpc DeleteAccount (AccountName) returns (DeleteAccountReply) {}
   rpc SettingAccount (AccountData) returns (SettingAccountReply) {}
   rpc GetActor (AccountName) returns (AccountData) {}
+  rpc VerifyAccount (AccountName) returns (AccountData) {}
 }
 
 message AccountData {

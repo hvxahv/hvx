@@ -6,29 +6,22 @@ import (
 	"github.com/spf13/viper"
 	pb "hvxahv/api/kernel/v1"
 	"hvxahv/pkg/bot"
+	"hvxahv/pkg/response"
 	"hvxahv/pkg/structs"
 )
 
-// AccountsHandlerResponse 处理 Handler 返回的状态
-func AccountsHandlerResponse(c *gin.Context, r *pb.NewAccountReply) {
+// NewAccountsResponse 创建用户的返回值处理, 它接收 Accounts 的服务返回的状态码
+// 将返回的状态码进行处理并将相应返回
+func NewAccountsResponse(c *gin.Context, r *pb.NewAccountReply) {
 	switch {
-	case r.Reply == 202:
-		c.JSON(202, gin.H{
-			"state": "202",
-			"message": "用户已存在",
-		})
 	case r.Reply == 200:
-		c.JSON(200, gin.H{
-			"state": "200",
-			"message": "注册成功",
-		})
+		response.SimpleResponse(c, "200", "注册成功")
 		// 注册成功后，将注册信息发送给 BOT
 		go bot.NewAccountNotice("新增加了一个用户")
+	case r.Reply == 202:
+		response.SimpleResponse(c, "202", "用户已存在")
 	case r.Reply == 500:
-		c.JSON(500, gin.H{
-			"state": "500",
-			"message": "注册失败",
-		})
+		response.SimpleResponse(c, "500", "注册失败")
 	default:
 
 	}

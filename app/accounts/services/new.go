@@ -20,7 +20,6 @@ func NewAccount(in *pb.AccountData) int {
 	if err != nil {
 		fmt.Println("加密密码失败", err)
 	}
-
 	private, public, err := GenRasKey()
 	if err != nil {
 		log.Println(err)

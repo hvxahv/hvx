@@ -17,6 +17,12 @@ var (
 
 // InitDB 初始化 MongoDB
 func InitMongoDB() (*mongo.Database, error) {
+	viper.SetConfigFile("./configs/config.yaml")
+	err := viper.ReadInConfig()
+	if err != nil {
+		panic(fmt.Errorf("Fatal error config file: %s \n", err))
+	}
+
 	url := viper.GetString("mongo.address")
 	username := viper.GetString("mongo.username")
 	password := viper.GetString("mongo.password")
@@ -35,7 +41,7 @@ func InitMongoDB() (*mongo.Database, error) {
 		log.Fatal(err)
 	}
 
-	fmt.Println("Connected to MongoDB!")
+	log.Println("Connected to MongoDB!")
 	collection := cli.Database(name)
 	MongoDB = collection
 	MongoDBERR = err

@@ -41,3 +41,15 @@ func (s *server) GetActor(ctx context.Context, in *pb.AccountName) (*pb.AccountD
 	}
 	return ad, nil
 }
+
+// VerifyAccount 用于登陆时用于验证账户的服务
+func (s *server) VerifyAccount(ctx context.Context, in *pb.AccountName) (*pb.AccountData, error) {
+	r := services.VerifyAccounts(in.Username)
+
+	ad := &pb.AccountData{
+		Name: r.Name,
+		Username: r.Username,
+		Password: r.Password,
+	}
+	return ad, nil
+}

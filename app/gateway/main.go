@@ -4,6 +4,7 @@
 提供：
 1. HTTP REST API 接口服务
 2. 鉴权
+3. 访问微服务的 GRPC 客户端
 */
 package main
 
@@ -16,6 +17,7 @@ import (
 )
 
 func main()  {
+
 	if err := database.InitMariaDB(); err != nil {
 		log.Println(err)
 	}
@@ -27,6 +29,6 @@ func main()  {
 
 	r := IngressRouter()
 	go bot.ServicesRunningNotice("gateway gateway", "7000")
-	_ = r.Run(":7000")
+	_ = r.Run(fmt.Sprintf(":%s", viper.GetString("port.gateway")))
 }
 

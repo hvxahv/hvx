@@ -15,13 +15,17 @@ import (
 type server struct {
 	pb.AccountsServer
 }
-
+/**
+// Accounts 功能的 GRPC 微服务的服务端实现
+*/
 func main() {
-	// 初始化数据库
+	// 初始化 Redis 和 MariaDB
+	database.InitRedis()
 	if err := database.InitMariaDB(); err != nil {
 		log.Println("数据库初始化失败：", err)
 	}
-	// 加载配置文件
+
+	// 加载程序配置文件
 	viper.SetConfigFile("./configs/config.yaml")
 	err := viper.ReadInConfig()
 	if err != nil {
@@ -29,7 +33,6 @@ func main() {
 	}
 	p := viper.GetString("port.accounts")
 
-	// Accounts 功能的 GRPC 服务端实现，启动与
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", p))
 	if err != nil {
 		fmt.Printf("Accounts gRPC Services Failed to Listen: %v", err)

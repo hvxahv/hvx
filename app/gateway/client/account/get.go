@@ -34,7 +34,7 @@ func GetAccountsClient(name string) (*pb.AccountData, error) {
 
 }
 
-// GetAccountsHandler 获取用户的个人资料
+// GetActorClient Activitypub 协议的 Actor
 func GetActorClient(name string) (*pb.AccountData, error) {
 	// 连接到 Accounts 服务端，并返回用户的个人数据
 	addr := fmt.Sprintf("localhost:%s", viper.GetString("port.accounts"))
@@ -58,7 +58,7 @@ func GetActorClient(name string) (*pb.AccountData, error) {
 
 }
 
-// GetWebFinger 获取 Actor
+// GetWebFinger 获取  Activitypub 协议的 GetWebFinger
 func GetWebFingerClient(name string) (*pb.AccountData, error) {
 	// 将 url 传过来的数据进行过滤，得到真正的用户名
 	if strings.HasPrefix(name, "acct:") {
@@ -76,4 +76,28 @@ func GetWebFingerClient(name string) (*pb.AccountData, error) {
 		return r, err
 	}
 	return nil, nil
+}
+
+// VerifyAccountsClient 获取用户的个人资料
+func VerifyAccountsClient(name string) (*pb.AccountData, error) {
+	// 连接到 Accounts 服务端，并返回用户的个人数据
+	addr := fmt.Sprintf("localhost:%s", viper.GetString("port.accounts"))
+	conn, err := grpc.Dial(addr, grpc.WithInsecure())
+	if err != nil {
+		fmt.Printf("Faild to connect to Accounts services.bac: %v", err)
+	}
+	defer conn.Close()
+
+	client := pb.NewAccountsClient(conn)
+	if err != nil {
+		log.Println(err)
+	}
+	r, err := client.VerifyAccount(context.Background(), &pb.AccountName{
+		Username: name,
+	})
+	if err != nil {
+		log.Printf("查询不到 %v, %s", name, err)
+	}
+	return r, err
+
 }
