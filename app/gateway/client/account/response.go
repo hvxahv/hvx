@@ -8,8 +8,6 @@ import (
 	"hvxahv/pkg/bot"
 	"hvxahv/pkg/response"
 	"hvxahv/pkg/structs"
-	"net/http"
-	"time"
 )
 
 // NewAccountsResponse 创建用户的返回值处理, 它接收 Accounts 的服务返回的状态码
@@ -85,65 +83,51 @@ func WebFingerResponse(c *gin.Context, r *pb.AccountData) {
 	c.JSON(200, finger)
 }
 
-type orei struct {
-	Visibility string `json:"visibility"`
-	CreatedAt string `json:"created_at"`
-	Type string `json:"type"`
-	Published string `json:"published"`
-	Name string `json:"name"`
-	Content string `json:"content"`
+
+type Create struct {
+	Type   string `json:"type"`
+	Actor  string `json:"actor"`
+	Object []*Object
+}
+type Object struct {
+	Type         string `json:"type"`
+	AttributedTo string `json:"attributedTo,omitempty"`
+	InReplyTo    string `json:"inReplyTo"`
+	Content      string `json:"content,omitempty"`
+	To           string `json:"to,omitempty"`
+	ID           string `json:"id,omitempty"`
+	Name         string `json:"name,omitempty"`
 }
 func OutboxResponse(c *gin.Context) {
 
-	a := &orei{
-		Visibility: "public",
+	obj := &Object{
 		Type: "Note",
-		CreatedAt: "2021-01-27T15:37:15.468Z",
-		Content: fmt.Sprintf("<p>Hello world</p>"),
+		AttributedTo: "https://dc3a16810ea3.ngrok.io/u/hvturingga",
+		InReplyTo: "https://dc3a16810ea3.ngrok.io/u/hvturingga/outbox/7ca154ff",
+		Content: "<p>Hello world</p>",
+		To:  "https://www.w3.org/ns/activitystreams#Public",
 	}
-
-	bss := &orei {
+	obj2 := &Object{
 		Type: "Note",
-		CreatedAt: "2021-01-27T15:37:15.468Z",
-		Content: fmt.Sprintf("<p>Hello world 22222</p>"),
+		AttributedTo: "https://littr.git/api/accounts/anonymous",
+		InReplyTo: "https://dc3a16810ea3.ngrok.io/u/hvturingga/outbox/7ca154ff",
+		Content: "<p>Hello wdsadsadasdavdsvdwsdvcdorld</p>",
+		To:  "https://www.w3.org/ns/activitystreams#Public",
 	}
+	xxx := []*Object{obj, obj2}
 
-	b := &orei {
-		Type: "Note",
-		CreatedAt: "2021-01-27T15:37:15.468Z",
-		Content: fmt.Sprintf("<p>Hello world 22222</p>"),
-	}
-
-	cs := &orei {
-		Type: "Note",
-		CreatedAt: "2021-01-27T15:37:15.468Z",
-		Content: fmt.Sprintf("<p>Hellosdasdasdadadada world 22222</p>"),
-	}
-
-	res := []*orei{a, b, cs, bss}
-	fmt.Println(time.Now().UTC().Format(http.TimeFormat))
 	c.JSON(200, gin.H{
-
 		"@context": "https://www.w3.org/ns/activitystreams",
 		"summary": "Sally's notes",
 		"type": "OrderedCollection",
 		"totalItems": 4,
-		"orderedItems": res,
-
+		"orderedItems": xxx,
 	})
 }
 
-func FollowersResponse(c *gin.Context) {
-	a := &orei {
-		Type: "Person",
-		Name: "Sally",
-	}
-	b := &orei {
-		Type: "Person",
-		Name: "John",
-	}
 
-	res := []*orei{a, b}
+func FollowersResponse(c *gin.Context) {
+
 
 	c.JSON(200, gin.H{
 
@@ -151,7 +135,7 @@ func FollowersResponse(c *gin.Context) {
 		"summary": "Sally followed John",
 		"type": "OrderedCollection",
 		"totalItems": 2,
-		"orderedItems": res,
+		"orderedItems": "",
 
 	})
 

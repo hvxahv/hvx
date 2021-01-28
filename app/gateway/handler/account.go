@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"hvxahv/app/gateway/client/account"
 	"hvxahv/pkg/utils"
@@ -72,8 +71,6 @@ func GetActorOutbox(c *gin.Context) {
 	name := c.Param("user")
 	log.Println(name, "用户请求了数据")
 
-	data, _ := ioutil.ReadAll(c.Request.Body)
-	fmt.Printf("ctx.Request.body: %v", string(data))
 	account.OutboxResponse(c)
 }
 
