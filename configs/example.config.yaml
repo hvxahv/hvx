@@ -1,11 +1,27 @@
+---
+activitypub: ""
+
 port:
-  accounts:
-  status:
-  article:
-  bot:
+  accounts: ""
+  status: ""
+  articles: ""
+  bot: ""
+  gateway: ""
 
 mariadb:
-  hostname:
+  hostname: ""
+  prot: ""
+  username: ""
+  password: ""
+  dbname: ""
+
+mongo:
+  address: ""
+  username: ""
+  password: ""
+  name: ""
 
 
-
+redis:
+  address: ""
+  password: ""

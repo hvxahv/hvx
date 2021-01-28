@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
+	"hvxahv/app/gateway/client/account"
 	"hvxahv/app/gateway/handler"
 	"hvxahv/pkg/middleware"
 )
@@ -20,9 +21,14 @@ func IngressRouter() *gin.Engine {
 	r.POST("/account/new", handler.NewAccountsHandler)
 	r.POST("/account/login", handler.VerificationHandler)
 
-	// Activitypub 功能 获取 Actor 路由
+	// Activitypub 功能
 	r.GET("/.well-known/webfinger", handler.GetWebFingerHandler)
 	r.GET("/u/:user", handler.GetActorHandler)
+	r.GET("/u/:user/outbox", handler.GetActorOutbox)
+	r.POST("/u/:user/inbox", handler.GetActorInbox)
+
+	r.GET("/u/:user/following", account.FollowersResponse)
+	r.GET("/u/:user/followers", account.FollowersResponse)
 
 	// 通过 Token 才能访问的功能
 	v1 := r.Group("/api/v1")

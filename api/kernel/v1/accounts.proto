@@ -14,17 +14,18 @@ service Accounts {
 }
 
 message AccountData {
-  string username  = 1;
-  string password  = 2;
-  string avatar    = 3;
-  string bio       = 4;
-  string name      = 5;
-  string email     = 6;
-  string phone     = 7;
-  string telegram  = 8;
-  string social    = 9;
-  int32  Private   = 10;
-  string PublicKey = 11;
+  string id        = 1;
+  string username  = 2;
+  string password  = 3;
+  string avatar    = 4;
+  string bio       = 5;
+  string name      = 6;
+  string email     = 7;
+  string phone     = 8;
+  string telegram  = 9;
+  string social    = 10;
+  int32  Private   = 11;
+  string PublicKey = 12;
 }
 
 message NewAccountReply {

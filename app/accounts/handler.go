@@ -8,6 +8,7 @@ import (
 	pb "hvxahv/api/kernel/v1"
 	"hvxahv/app/accounts/services"
 	"log"
+	"strconv"
 )
 
 // NewAccount 创建账户 将接收到的用户数据存储到数据库
@@ -36,7 +37,9 @@ func (s *server) GetActor(ctx context.Context, in *pb.AccountName) (*pb.AccountD
 	r := services.GetActorData(in.Username)
 
 	ad := &pb.AccountData{
+		Id: strconv.Itoa(int(r.ID)),
 		Username: r.Username,
+		Name: r.Name,
 		PublicKey: r.PublicKey,
 	}
 	return ad, nil
