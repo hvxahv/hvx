@@ -5,6 +5,7 @@ import (
 	"log"
 )
 
+// GetUserName 通过 loginUser 这个 key 获取到 context 登录用户的用户名
 func GetUserName(c *gin.Context) string {
 	name, ok := c.Get("loginUser")
 	if !ok {

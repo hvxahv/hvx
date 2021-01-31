@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"hvxahv/app/gateway/client/account"
+	"hvxahv/api/client/account"
 	"hvxahv/app/gateway/handler"
 	"hvxahv/pkg/middleware"
 )
@@ -40,14 +40,11 @@ func IngressRouter() *gin.Engine {
 		v1.POST("/account/settings", handler.AccountSettingHandler)
 
 		/*  Article Services */
+		v1.POST("/article", handler.GetArticlesHandler)
 		v1.POST("/article/new", handler.CreateArticleHandler)
 		v1.POST("/article/update", handler.UpdateArticleHandler)
 		v1.POST("/article/delete", handler.DeleteArticleHandler)
 
-		/* Status Services */
-		v1.POST("/status/new", handler.CreateStatusHandler)
-		v1.POST("/status/update", handler.UpdateStatusHandler)
-		v1.POST("/status/delete", handler.DeleteStatusHandler)
 	}
 	return r
 }

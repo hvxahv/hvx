@@ -4,7 +4,6 @@
 提供：
 1. HTTP REST API 接口服务
 2. 鉴权
-3. 访问微服务的 GRPC 客户端
 */
 package main
 

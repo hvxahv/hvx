@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
-	"hvxahv/app/gateway/client/account"
+	"hvxahv/api/client/account"
 	"hvxahv/pkg/response"
 	"hvxahv/pkg/structs"
 	"hvxahv/pkg/utils"

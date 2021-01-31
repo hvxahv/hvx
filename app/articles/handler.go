@@ -3,16 +3,17 @@ package main
 import (
 	"golang.org/x/net/context"
 	pb "hvxahv/api/kernel/v1"
+	"hvxahv/app/articles/services"
 	"log"
 )
 
 type server struct {
 	pb.ArticlesServer
 }
-// NewStatus 新建一篇状态
+// NewArticle 新建一篇文章
 func (s *server) NewArticle(ctx context.Context, in *pb.ArticleData) (*pb.NewArticleReply, error) {
-	log.Println("得到的新文章数据",in)
-	return &pb.NewArticleReply{Reply: "创建文章成功"}, nil
+	r := services.CreateArticleHandler(in.Author, in.Article)
+	return &pb.NewArticleReply{Reply: r}, nil
 }
 
 // UpdateStatus 修改状态

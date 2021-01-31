@@ -47,17 +47,17 @@ func ActorResponse(c *gin.Context, r *pb.AccountData) {
 	}
 
 	c.JSON(200, gin.H{
-		"@context": con,
-		"type": "Person",
-		"id": fmt.Sprintf("https://%s/u/%s", address, name),
-		"following": formatLink("following", name),
-		"followers": formatLink("followers", name),
+		"@context":          con,
+		"type":              "Person",
+		"id":                fmt.Sprintf("https://%s/u/%s", address, name),
+		"following":         formatLink("following", name),
+		"followers":         formatLink("followers", name),
 		"preferredUsername": r.Username,
-		"name": r.Name,
-		"inbox": formatLink("inbox", name),
-		"outbox": formatLink("outbox", name),
-		"publicKey": publicKey,
-		"icon": "https://i.mydramalist.com/EpDnpc.jpg",
+		"name":              r.Name,
+		"inbox":             formatLink("inbox", name),
+		"outbox":            formatLink("outbox", name),
+		"publicKey":         publicKey,
+		"icon":              "https://i.mydramalist.com/EpDnpc.jpg",
 	})
 }
 func formatLink(route, name string) string {

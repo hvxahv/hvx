@@ -6,28 +6,36 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	pb "hvxahv/api/kernel/v1"
-	"hvxahv/app/articles/app"
 	"hvxahv/pkg/bot"
+	"hvxahv/pkg/database"
 	"log"
 	"net"
 )
-
+/**
+	Articles 服务的服务端实现
+	获取配置文件并初始化数据库
+ */
 func main()  {
-	app.InitDB()
-
+	// 初始化数据库
+	if err := database.InitMariaDB(); err != nil {
+		log.Println("数据库初始化失败：", err)
+	}
+	// 获取配置文件
 	viper.SetConfigFile("./configs/config.yaml")
 	err := viper.ReadInConfig()
 	if err != nil {
 		panic(fmt.Errorf("Fatal error config file: %s \n", err))
 	}
-
 	port := viper.GetString("port.articles")
+
+	// 开始启动微服务
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", port))
 	if err != nil {
 		fmt.Printf("Article gRPC Services Failed to Listen: %v", err)
 		return
 	} else {
 		log.Println("Article gRPC Services is running", port)
+		// 通知 Bot 服务已经开启
 		go bot.ServicesRunningNotice("article", port)
 	}
 	s := grpc.NewServer()

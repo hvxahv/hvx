@@ -6,26 +6,30 @@ import (
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	pb "hvxahv/api/kernel/v1"
+	"hvxahv/pkg/structs"
 	"log"
 )
 
-// CreateStatusHandler 创建状态 handler
-func CreateArticleClient(author string) {
+// CreateArticleClient 创建文章的客户端，连接到 Accounts 服务端
+// 提交请求数据并获取服务端返回的结果数据 r.Reply
+func CreateArticleClient(data *structs.Articles) (string, error) {
 	addr := fmt.Sprintf("localhost:%s", viper.GetString("port.articles"))
 	conn, err := grpc.Dial(addr, grpc.WithInsecure())
 	if err != nil {
-		log.Printf("Faild to connect to Status services.bac: %v", err)
+		log.Printf("连接到 Article 服务失败: %v", err)
 	}
 	defer conn.Close()
 	cli := pb.NewArticlesClient(conn)
-	r, err := cli.NewArticle(context.Background(), &pb.ArticleData{
-		Author: author,
-		Article: "这是我的第一条 文章",
-	})
+
+	d := &pb.ArticleData{
+		Author: data.Author,
+		Article: data.Article,
+	}
+	r, err := cli.NewArticle(context.Background(), d)
 	if err != nil {
 		log.Printf("新建状态错误，发送消息给 Status 服务端失败: %v", err)
 	}
-	log.Println("创建状态返回的数据", r.Reply)
+	return r.Reply, err
 }
 
 // UpdateStatusListHandler 更新状态 Handler

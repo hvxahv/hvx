@@ -14,10 +14,10 @@ message ArticleData {
   string id        = 1;
   string author    = 2;
   string article   = 3;
-  string cover     = 4;
-  bool   private   = 5;
+  string images    = 4;
+  bool   status    = 5;
+  bool   private   = 6;
   bool   isComment = 7;
-  string like      = 8;
 }
 
 message NewArticleReply {
