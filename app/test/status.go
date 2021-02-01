@@ -1,4 +1,4 @@
-package app_bac
+package test
 
 import (
 	"bytes"
@@ -34,20 +34,20 @@ type StatusObj struct {
 		Type             string      `json:"type"`
 		Summary          interface{} `json:"summary"`
 		InReplyTo        interface{} `json:"inReplyTo"`
-		Published        time.Time   `json:"published"`
-		URL              string      `json:"url"`
-		AttributedTo     string      `json:"attributedTo"`
-		To               []string    `json:"to"`
-		Cc               []string    `json:"cc"`
-		Sensitive        bool        `json:"sensitive"`
-		AtomURI          string      `json:"atomUri"`
-		InReplyToAtomURI interface{} `json:"inReplyToAtomUri"`
-		Conversation     string      `json:"conversation"`
-		Content          string      `json:"content"`
-		ContentMap       ContentMap  `json:"contentMap"`
-		Attachment []interface{} `json:"attachment"`
-		Tag        []interface{} `json:"tag"`
-		Replies     Replies `json:"replies"`
+		Published        time.Time     `json:"published"`
+		URL              string        `json:"url"`
+		AttributedTo     string        `json:"attributedTo"`
+		To               []string      `json:"to"`
+		Cc               []string      `json:"cc"`
+		Sensitive        bool          `json:"sensitive"`
+		AtomURI          string        `json:"atomUri"`
+		InReplyToAtomURI interface{}   `json:"inReplyToAtomUri"`
+		Conversation     string        `json:"conversation"`
+		Content          string        `json:"content"`
+		ContentMap       ContentMap    `json:"contentMap"`
+		Attachment       []interface{} `json:"attachment"`
+		Tag              []interface{} `json:"tag"`
+		Replies          Replies       `json:"replies"`
 }
 
 func Status(c *gin.Context) {
@@ -58,14 +58,14 @@ func Status(c *gin.Context) {
 
 
 	obj := StatusObj{
-		ID: fmt.Sprintf("https://%s/users/hvturingga/statuses/111/activity", address),
-		Type: "Create",
-		Summary: fmt.Sprintf("https://%s/users/hvturingga", address),
-		Published: time.Now(),
-		To: []string{"https://www.w3.org/ns/activitystreams#Public"},
-		Cc: []string{fmt.Sprintf("https://%s/users/hvturingga/followers", address)},
-		Sensitive: false,
-		Content: "<p>这是一条测试消息</p>",
+		ID:         fmt.Sprintf("https://%s/users/hvturingga/statuses/111/activity", address),
+		Type:       "Create",
+		Summary:    fmt.Sprintf("https://%s/users/hvturingga", address),
+		Published:  time.Now(),
+		To:         []string{"https://www.w3.org/ns/activitystreams#Public"},
+		Cc:         []string{fmt.Sprintf("https://%s/users/hvturingga/followers", address)},
+		Sensitive:  false,
+		Content:    "<p>这是一条测试消息</p>",
 		ContentMap: ContentMap{Zh: "<p>我发送了一条测试消息</p>"},
 		Replies: Replies{
 			ID: fmt.Sprintf("https://%s/users/hvturingga/statuses/111/replies", address),

@@ -1,4 +1,4 @@
-package app_bac
+package test
 
 import (
 	"bytes"
@@ -14,20 +14,26 @@ import (
 	"time"
 )
 
-func LikeReq(da string, pk []byte) {
-
+func AcceptHandler(c *gin.Context) {
+	idid := c.PostForm("id")
 	url := "https://mas.to/inbox"
 	method := "POST"
 
 	idr := strconv.Itoa(rand.Int())
 
+
+	obj := map[string]string {
+		"id": fmt.Sprintf("https://mas.to/%s", idid),
+		"type": "Follow",
+		"actor": "https://mas.to/users/hvturingga",
+		"object": "https://ba7b8a81471d.ngrok.io/u/hvturingga",
+	}
 	p := gin.H{
 		"@context": "https://www.w3.org/ns/activitystreams",
-
-		"id": "https://4e54ea0be52f.ngrok.io/create-" + idr,
-		"type": "Like",
-		"actor": "https://4e54ea0be52f.ngrok.io/actor",
-		"object": "https://mas.to/@hvturingga/105515218721573733",
+		"id": fmt.Sprintf("https://%s/%s", address, idr),
+		"type": "Accept",
+		"actor": "https://ba7b8a81471d.ngrok.io/u/hvturingga",
+		"object": obj,
 	}
 	byterData, err := json.Marshal(p)
 	if err != nil {
@@ -52,10 +58,11 @@ func LikeReq(da string, pk []byte) {
 	req.Header.Add("Date", date)
 
 	//req.Header.Add("Signature", header)
+
 	block := httpsig.PrivateKey{
-		Key: pk,
+		Key: GetKey(),
 	}
-	httpsig.SignRequest("https://4e54ea0be52f.ngrok.io/actor", block, req, byterData)
+	httpsig.SignRequest("https://ba7b8a81471d.ngrok.io/u/hvturingga", block, req, byterData)
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
 	req = req.WithContext(ctx)
@@ -72,5 +79,5 @@ func LikeReq(da string, pk []byte) {
 		fmt.Errorf("http post status: %d", res.StatusCode)
 	}
 	log.Printf("successful post: %s %d", url, res.StatusCode)
-	log.Print(res)
+	log.Println(req)
 }

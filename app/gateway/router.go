@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"hvxahv/api/client/account"
 	"hvxahv/app/gateway/handler"
+	"hvxahv/app/test"
 	"hvxahv/pkg/middleware"
 )
 
@@ -25,7 +26,9 @@ func IngressRouter() *gin.Engine {
 	r.GET("/.well-known/webfinger", handler.GetWebFingerHandler)
 	r.GET("/u/:user", handler.GetActorHandler)
 	r.GET("/u/:user/outbox", handler.GetActorOutbox)
-	r.POST("/u/:user/inbox", handler.GetActorInbox)
+	r.POST("/u/:user/inbox", handler.InboxHandler)
+	// 用于 测试的
+	r.POST("/accept", test.AcceptHandler)
 
 	r.GET("/u/:user/following", account.FollowersResponse)
 	r.GET("/u/:user/followers", account.FollowersResponse)
@@ -38,6 +41,9 @@ func IngressRouter() *gin.Engine {
 		v1.GET("/account/i", handler.GetAccountsHandler)
 		v1.POST("/account/delete", handler.DeleteAccountHandler)
 		v1.POST("/account/settings", handler.AccountSettingHandler)
+
+		// 获取用户的收件箱
+		v1.GET("/inbox", handler.GetInboxHandler)
 
 		/*  Article Services */
 		v1.POST("/article", handler.GetArticlesHandler)

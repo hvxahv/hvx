@@ -1,4 +1,4 @@
-package app_bac
+package test
 
 import (
 	"bytes"
@@ -14,31 +14,36 @@ import (
 	"time"
 )
 
-func AcceptHandler(c *gin.Context) {
+func CreateHandler(c *gin.Context) {
 	url := "https://mas.to/inbox"
 	method := "POST"
 
+
 	idr := strconv.Itoa(rand.Int())
 
-
-	obj := map[string]string {
-		"id": "https://mas.to/76c94894-fa77-42be-ab8d-e35779c9cb63",
-		"type": "Follow",
-		"actor": "https://mas.to/users/hvturingga",
-		"object": "https://47d8ab2e4028.ngrok.io/actor",
+	date := time.Now().UTC().Format(http.TimeFormat)
+	obj := gin.H {
+		"id": fmt.Sprintf("https://%s/%s", address, idr),
+		"type": "Note",
+		"published": date,
+		"attributedTo": fmt.Sprintf("https://%s/actor", address),
+		"content": "这是一条测试数据",
+		"to": []string{"https://www.w3.org/ns/activitystreams#Public"},
 	}
+
 	p := gin.H{
 		"@context": "https://www.w3.org/ns/activitystreams",
-		"id": fmt.Sprintf("https://%s/%s", address, idr),
-		"type": "Accept",
+		"id": fmt.Sprintf("https://%s/create-%s", address, idr),
+		"type": "Create",
 		"actor": fmt.Sprintf("https://%s/actor", address),
+		"to": []string{"https://www.w3.org/ns/activitystreams#Public"},
+		"cc": []string{"https://mas.to/users/hvturingga"},
 		"object": obj,
 	}
 	byterData, err := json.Marshal(p)
 	if err != nil {
 		log.Println(err)
 	}
-
 
 	payload := bytes.NewBuffer(byterData)
 	client := &http.Client {
@@ -50,8 +55,6 @@ func AcceptHandler(c *gin.Context) {
 		fmt.Println(err)
 	}
 
-
-	date := time.Now().UTC().Format(http.TimeFormat)
 
 	req.Header.Add("Host", "mas.to")
 	req.Header.Add("Date", date)

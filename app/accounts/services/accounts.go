@@ -8,7 +8,7 @@ import (
 	"log"
 )
 
-// GetAccountData 获取账户数据，将数据返回给调用者
+// GetAccountData 获取账户数据，将数据返回给调用者, 在用户登录之后调用的方法
 func GetAccountData(u string) *structs.Accounts {
 	a := new(structs.Accounts)
 
@@ -22,9 +22,9 @@ func GetAccountData(u string) *structs.Accounts {
 func GetActorData(u string) *structs.Accounts {
 	a := new(structs.Accounts)
 
-	db := database.GetMaria()
 	rdb := database.GetRDB()
-	// 判断查询的 key 是否存在,如果不存在, 进行 SQL 查询并将数据持久化到 redis
+	db := database.GetMaria()
+	// 判断查询的 key 是否存在,如果不存在, 将在数据库中查询并将数据持久化到 redis
 	isKey, err := redis.Bool(rdb.Do("EXISTS", u))
 	if err != nil {
 		log.Println("检查 keys 时出错:", err)

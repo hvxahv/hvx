@@ -16,7 +16,7 @@ func CreateArticleHandler(author, con string) string {
 
 	s := a.NewArticle()
 	db := database.GetMaria()
-	//db.AutoMigrate(*s)
+	db.AutoMigrate(*s)
 	if err := db.Debug().Table("articles").Create(&s).Error; err != nil {
 		errors.New("Failed to write new article to database... ")
 		return "error"

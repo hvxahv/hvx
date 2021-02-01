@@ -34,7 +34,7 @@ func NewAccount(in *pb.AccountData) int {
 
 	db := database.GetMaria()
 	// 自动创建数据库 table
-	//db.AutoMigrate(Accounts{})
+	db.AutoMigrate(&structs.Accounts{})
 	// 账户名为唯一，如果没有这个账户名就创建账户，如果有就返回该账户已经存在
 	if db.Debug().Table("accounts").Where("username = ?", u).First(&a).RecordNotFound() {
 		db.Debug().Table("accounts").Create(&a)
