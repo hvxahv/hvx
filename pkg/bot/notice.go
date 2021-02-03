@@ -3,7 +3,7 @@ package bot
 import (
 	"fmt"
 	"golang.org/x/net/context"
-	"hvxahv/pkg/database"
+	"hvxahv/pkg/db"
 	"log"
 	"time"
 )
@@ -14,7 +14,7 @@ func NewAccountNotice(str string)  {
 		log.Println(err)
 	}
 	// 将新增用户消息持久化到 mongo
-	db, err := database.InitMongoDB()
+	db, err := db.InitMongoDB()
 	if err != nil {
 		log.Println("Use InitDB error: ", err)
 	}
@@ -40,7 +40,7 @@ func ServicesRunningNotice(srvname string, port string) {
 	}
 
 	// 将服务启动的消息持久化到 mongo
-	db, err := database.InitMongoDB()
+	db, err := db.InitMongoDB()
 	if err != nil {
 		log.Println("Use InitDB error: ", err)
 	}

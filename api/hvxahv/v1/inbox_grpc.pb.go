@@ -18,7 +18,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type InboxClient interface {
 	NewInbox(ctx context.Context, in *InboxData, opts ...grpc.CallOption) (*NewInboxReply, error)
-	GetInbox(ctx context.Context, in *Name, opts ...grpc.CallOption) (*InboxData, error)
+	GetInbox(ctx context.Context, in *Name, opts ...grpc.CallOption) (*GetInboxReply, error)
 }
 
 type inboxClient struct {
@@ -38,8 +38,8 @@ func (c *inboxClient) NewInbox(ctx context.Context, in *InboxData, opts ...grpc.
 	return out, nil
 }
 
-func (c *inboxClient) GetInbox(ctx context.Context, in *Name, opts ...grpc.CallOption) (*InboxData, error) {
-	out := new(InboxData)
+func (c *inboxClient) GetInbox(ctx context.Context, in *Name, opts ...grpc.CallOption) (*GetInboxReply, error) {
+	out := new(GetInboxReply)
 	err := c.cc.Invoke(ctx, "/hvxahv.v1.proto.Inbox/GetInbox", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -52,7 +52,7 @@ func (c *inboxClient) GetInbox(ctx context.Context, in *Name, opts ...grpc.CallO
 // for forward compatibility
 type InboxServer interface {
 	NewInbox(context.Context, *InboxData) (*NewInboxReply, error)
-	GetInbox(context.Context, *Name) (*InboxData, error)
+	GetInbox(context.Context, *Name) (*GetInboxReply, error)
 	mustEmbedUnimplementedInboxServer()
 }
 
@@ -63,7 +63,7 @@ type UnimplementedInboxServer struct {
 func (UnimplementedInboxServer) NewInbox(context.Context, *InboxData) (*NewInboxReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method NewInbox not implemented")
 }
-func (UnimplementedInboxServer) GetInbox(context.Context, *Name) (*InboxData, error) {
+func (UnimplementedInboxServer) GetInbox(context.Context, *Name) (*GetInboxReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetInbox not implemented")
 }
 func (UnimplementedInboxServer) mustEmbedUnimplementedInboxServer() {}
@@ -132,5 +132,5 @@ var Inbox_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "api/kernel/v1/inbox.proto",
+	Metadata: "api/hvxahv/v1/inbox.proto",
 }

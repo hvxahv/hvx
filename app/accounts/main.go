@@ -5,9 +5,9 @@ import (
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
-	pb "hvxahv/api/kernel/v1"
+	pb "hvxahv/api/hvxahv/v1"
 	"hvxahv/pkg/bot"
-	"hvxahv/pkg/database"
+	"hvxahv/pkg/db"
 	"log"
 	"net"
 )
@@ -20,8 +20,8 @@ type server struct {
 */
 func main() {
 	// 初始化 Redis 和 MariaDB
-	database.InitRedis()
-	if err := database.InitMariaDB(); err != nil {
+	db.InitRedis()
+	if err := db.InitMariaDB(); err != nil {
 		log.Println("数据库初始化失败：", err)
 	}
 

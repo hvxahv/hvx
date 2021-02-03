@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
-	pb "hvxahv/api/kernel/v1"
+	pb "hvxahv/api/hvxahv/v1"
 	"hvxahv/pkg/bot"
 	"hvxahv/pkg/response"
-	"hvxahv/pkg/structs"
+	"hvxahv/pkg/models"
 )
 
 // NewAccountsResponse 创建用户的返回值处理, 它接收 Accounts 的服务返回的状态码
@@ -69,14 +69,14 @@ func WebFingerResponse(c *gin.Context, r *pb.AccountData) {
 	address := viper.GetString("activitypub")
 	name := r.Username
 
-	links := []structs.WebFingerLinks{
+	links := []models.WebFingerLinks{
 		{
 			Rel: "self",
 			Type: "application/activity+json",
 			Href: fmt.Sprintf("https://%s/u/%s", address, name),
 		},
 	}
-	finger := &structs.WebFinger{
+	finger := &models.WebFinger{
 		Subject: fmt.Sprintf("acct:%s@%s", name, address),
 		Links: links,
 	}

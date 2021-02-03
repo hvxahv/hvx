@@ -2,11 +2,11 @@ package services
 
 import (
 	"fmt"
-	"hvxahv/pkg/structs"
+	"hvxahv/pkg/models"
 
 	"golang.org/x/crypto/bcrypt"
-	pb "hvxahv/api/kernel/v1"
-	"hvxahv/pkg/database"
+	pb "hvxahv/api/hvxahv/v1"
+	"hvxahv/pkg/db"
 	"hvxahv/pkg/utils"
 	"log"
 )
@@ -25,16 +25,16 @@ func NewAccount(in *pb.AccountData) int {
 		log.Println(err)
 	}
 
-	a := &structs.Accounts{
+	a := &models.Accounts{
 		Username: u,
 		Password: string(hash),
 		PrivateKey: private,
 		PublicKey: public,
 	}
 
-	db := database.GetMaria()
+	db := db.GetMaria()
 	// 自动创建数据库 table
-	db.AutoMigrate(&structs.Accounts{})
+	db.AutoMigrate(&models.Accounts{})
 	// 账户名为唯一，如果没有这个账户名就创建账户，如果有就返回该账户已经存在
 	if db.Debug().Table("accounts").Where("username = ?", u).First(&a).RecordNotFound() {
 		db.Debug().Table("accounts").Create(&a)

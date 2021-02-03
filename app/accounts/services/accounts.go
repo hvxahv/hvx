@@ -3,27 +3,28 @@ package services
 import (
 	"encoding/json"
 	"github.com/gomodule/redigo/redis"
-	"hvxahv/pkg/database"
-	"hvxahv/pkg/structs"
+	pb "hvxahv/api/hvxahv/v1"
+	"hvxahv/pkg/db"
+	"hvxahv/pkg/models"
 	"log"
 )
 
 // GetAccountData 获取账户数据，将数据返回给调用者, 在用户登录之后调用的方法
-func GetAccountData(u string) *structs.Accounts {
-	a := new(structs.Accounts)
+func GetAccountData(u string) *models.Accounts {
+	a := new(models.Accounts)
 
-	db := database.GetMaria()
+	db := db.GetMaria()
 
 	db.Debug().Table("accounts").Where("username = ?", u).First(&a)
 	return a
 }
 
 // GetActorData 获取 Actor ,
-func GetActorData(u string) *structs.Accounts {
-	a := new(structs.Accounts)
+func GetActorData(u string) *pb.AccountData{
+	a := new(pb.AccountData)
 
-	rdb := database.GetRDB()
-	db := database.GetMaria()
+	rdb := db.GetRDB()
+	db := db.GetMaria()
 	// 判断查询的 key 是否存在,如果不存在, 将在数据库中查询并将数据持久化到 redis
 	isKey, err := redis.Bool(rdb.Do("EXISTS", u))
 	if err != nil {
@@ -41,9 +42,9 @@ func GetActorData(u string) *structs.Accounts {
 
 // 用于验证用户登录的方法, 增加了判断用户是否在数据库中存在的查询
 // VerifyAccount
-func VerifyAccounts(u string) *structs.Accounts {
-	a := new(structs.Accounts)
-	db := database.GetMaria()
+func VerifyAccounts(u string) *models.Accounts {
+	a := new(models.Accounts)
+	db := db.GetMaria()
 
 	if db.Debug().Table("accounts").Where("username = ?", u).First(&a).RecordNotFound() {
 		db.Debug().Table("accounts").Where("username = ?", u).First(&a)
@@ -54,8 +55,8 @@ func VerifyAccounts(u string) *structs.Accounts {
 }
 
 // accountCache 使用缓存数据库避免数据库的重复查询
-func accountCache(method string, a *structs.Accounts, k string) *structs.Accounts {
-	rdb := database.GetRDB()
+func accountCache(method string, a *pb.AccountData, k string) *pb.AccountData {
+	rdb := db.GetRDB()
 	switch method {
 	case "SET":
 		v, _ := json.Marshal(a)

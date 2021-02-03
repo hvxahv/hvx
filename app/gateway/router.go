@@ -44,6 +44,7 @@ func IngressRouter() *gin.Engine {
 
 		// 获取用户的收件箱
 		v1.GET("/inbox", handler.GetInboxHandler)
+		v1.POST("/followers/accept", handler.FollowersAcceptHandler)
 
 		/*  Article Services */
 		v1.POST("/article", handler.GetArticlesHandler)

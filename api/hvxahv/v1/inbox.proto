@@ -6,7 +6,7 @@ option go_package = ".;pb";
 // Accounts Services ...
 service Inbox {
   rpc NewInbox (InboxData) returns (NewInboxReply) {}
-  rpc GetInbox (Name) returns (InboxData) {}
+  rpc GetInbox (Name) returns (GetInboxReply) {}
 }
 
 message InboxData {
@@ -22,4 +22,8 @@ message NewInboxReply {
 
 message Name {
   string name = 1;
+}
+
+message GetInboxReply {
+  repeated InboxData inbox = 1;
 }

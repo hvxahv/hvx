@@ -5,13 +5,13 @@ import (
 	"github.com/spf13/viper"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
-	pb "hvxahv/api/kernel/v1"
-	"hvxahv/pkg/structs"
+	pb "hvxahv/api/hvxahv/v1"
+	"hvxahv/pkg/models"
 	"log"
 )
 
 // Inbox 功能的 gRPC 客户端, 它用来调用 inbox 的服务
-func InboxClient(data *structs.Inbox) (string, error) {
+func InboxClient(data *models.Inbox) (string, error) {
 	addr := fmt.Sprintf("localhost:%s", viper.GetString("port.inbox"))
 	conn, err := grpc.Dial(addr, grpc.WithInsecure())
 	if err != nil {
@@ -32,7 +32,7 @@ func InboxClient(data *structs.Inbox) (string, error) {
 	return r.Reply, err
 }
 
-func GetInboxClient(name string) (*pb.InboxData, error) {
+func GetInboxClient(name string) (*pb.GetInboxReply, error) {
 	addr := fmt.Sprintf("localhost:%s", viper.GetString("port.inbox"))
 	conn, err := grpc.Dial(addr, grpc.WithInsecure())
 	if err != nil {

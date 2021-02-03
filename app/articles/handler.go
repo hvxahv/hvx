@@ -2,7 +2,7 @@ package main
 
 import (
 	"golang.org/x/net/context"
-	pb "hvxahv/api/kernel/v1"
+	pb "hvxahv/api/hvxahv/v1"
 	"hvxahv/app/articles/services"
 	"log"
 )

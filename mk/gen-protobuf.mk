@@ -3,4 +3,4 @@ protocGoGRPCOut := --go-grpc_out=. --go-grpc_opt=paths=source_relative
 
 gen proto:
 	$(protocGoOut) $(protocGoGRPCOut) ./api/util/v1/*.proto
-	$(protocGoOut) $(protocGoGRPCOut) ./api/kernel/v1/*.proto
+	$(protocGoOut) $(protocGoGRPCOut) ./api/hvxahv/v1/*.proto

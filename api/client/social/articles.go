@@ -5,14 +5,14 @@ import (
 	"github.com/spf13/viper"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
-	pb "hvxahv/api/kernel/v1"
-	"hvxahv/pkg/structs"
+	pb "hvxahv/api/hvxahv/v1"
+	"hvxahv/pkg/models"
 	"log"
 )
 
 // CreateArticleClient 创建文章的客户端，连接到 Accounts 服务端
 // 提交请求数据并获取服务端返回的结果数据 r.Reply
-func CreateArticleClient(data *structs.Articles) (string, error) {
+func CreateArticleClient(data *models.Articles) (string, error) {
 	addr := fmt.Sprintf("localhost:%s", viper.GetString("port.articles"))
 	conn, err := grpc.Dial(addr, grpc.WithInsecure())
 	if err != nil {

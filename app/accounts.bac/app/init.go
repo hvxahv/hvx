@@ -2,14 +2,14 @@ package app
 //
 //import (
 //	"github.com/jinzhu/gorm"
-//	"hvxahv/pkg/database"
+//	"hvxahv/pkg/db"
 //	"log"
 //)
 //
 //var db2 *gorm.DB
 //
 //func InitDB() {
-//	err := database.NewDB()
+//	err := db.NewDB()
 //	if err != nil {
 //		log.Println("Database Connect Error", err)
 //	}

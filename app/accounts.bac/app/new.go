@@ -3,7 +3,7 @@ package app
 //import (
 //	"fmt"
 //	"golang.org/x/crypto/bcrypt"
-//	pb "hvxahv/api/kernel/v1"
+//	pb "hvxahv/api/hvxahv/v1"
 //)
 //
 //// NewAccount 创建账户的方法

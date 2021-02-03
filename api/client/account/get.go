@@ -5,7 +5,7 @@ import (
 	"github.com/spf13/viper"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
-	pb "hvxahv/api/kernel/v1"
+	pb "hvxahv/api/hvxahv/v1"
 	"log"
 	"strings"
 )

@@ -11,13 +11,13 @@ import (
 	"fmt"
 	"github.com/spf13/viper"
 	"hvxahv/pkg/bot"
-	"hvxahv/pkg/database"
+	"hvxahv/pkg/db"
 	"log"
 )
 
 func main()  {
 
-	if err := database.InitMariaDB(); err != nil {
+	if err := db.InitMariaDB(); err != nil {
 		log.Println(err)
 	}
 	viper.SetConfigFile("./configs/config.yaml")

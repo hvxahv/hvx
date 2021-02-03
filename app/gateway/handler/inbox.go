@@ -3,7 +3,7 @@ package handler
 import (
 	"github.com/gin-gonic/gin"
 	"hvxahv/api/client/social"
-	"hvxahv/pkg/structs"
+	"hvxahv/pkg/models"
 	"hvxahv/pkg/utils"
 	"log"
 )
@@ -12,7 +12,7 @@ import (
 func InboxHandler(c *gin.Context) {
 	name := c.Param("user")
 	e, reqId, actor := GetEvent(c)
-	data := &structs.Inbox{
+	data := &models.Inbox{
 		Name: name,
 		RequestId: reqId,
 		EventType:  e,
@@ -64,4 +64,5 @@ func GetInboxHandler(c *gin.Context) {
 		log.Println(err)
 	}
 	log.Println("--------------------> 用户 GET INBOX 客户端返回的消息:", r)
+	c.JSON(200, r)
 }

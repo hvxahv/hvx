@@ -25,7 +25,8 @@ message AccountData {
   string telegram  = 9;
   string social    = 10;
   int32  Private   = 11;
-  string PublicKey = 12;
+  string PrivateKey = 12;
+  string PublicKey = 13;
 }
 
 message NewAccountReply {

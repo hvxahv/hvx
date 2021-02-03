@@ -1,4 +1,4 @@
-package database
+package db
 
 import (
 	"fmt"
@@ -11,7 +11,7 @@ var (
 	MariaDB *gorm.DB
 )
 
-// InitDB ... Initialize the database
+// InitDB ... Initialize the db
 func InitMariaDB() error {
 	viper.SetConfigFile("./configs/config.yaml")
 	err := viper.ReadInConfig()

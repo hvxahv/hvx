@@ -2,8 +2,8 @@ package services
 
 import (
 	"errors"
-	"hvxahv/pkg/database"
-	"hvxahv/pkg/structs"
+	"hvxahv/pkg/db"
+	"hvxahv/pkg/models"
 )
 
 // CreateArticleHandler Articles 微服务服务端创建文章的 Handler
@@ -15,10 +15,10 @@ func CreateArticleHandler(author, con string) string {
 	}
 
 	s := a.NewArticle()
-	db := database.GetMaria()
+	db := db.GetMaria()
 	db.AutoMigrate(*s)
 	if err := db.Debug().Table("articles").Create(&s).Error; err != nil {
-		errors.New("Failed to write new article to database... ")
+		errors.New("Failed to write new article to db... ")
 		return "error"
 	} else {
 		return "ok"

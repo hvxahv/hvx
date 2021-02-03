@@ -168,5 +168,5 @@ var Articles_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "api/kernel/v1/article.proto",
+	Metadata: "api/hvxahv/v1/article.proto",
 }

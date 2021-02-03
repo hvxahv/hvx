@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.25.0-devel
 // 	protoc        v3.14.0
-// source: api/kernel/v1/accounts.proto
+// source: api/hvxahv/v1/accounts.proto
 
 package pb
 
@@ -25,24 +25,25 @@ type AccountData struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Id        string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Username  string `protobuf:"bytes,2,opt,name=username,proto3" json:"username,omitempty"`
-	Password  string `protobuf:"bytes,3,opt,name=password,proto3" json:"password,omitempty"`
-	Avatar    string `protobuf:"bytes,4,opt,name=avatar,proto3" json:"avatar,omitempty"`
-	Bio       string `protobuf:"bytes,5,opt,name=bio,proto3" json:"bio,omitempty"`
-	Name      string `protobuf:"bytes,6,opt,name=name,proto3" json:"name,omitempty"`
-	Email     string `protobuf:"bytes,7,opt,name=email,proto3" json:"email,omitempty"`
-	Phone     string `protobuf:"bytes,8,opt,name=phone,proto3" json:"phone,omitempty"`
-	Telegram  string `protobuf:"bytes,9,opt,name=telegram,proto3" json:"telegram,omitempty"`
-	Social    string `protobuf:"bytes,10,opt,name=social,proto3" json:"social,omitempty"`
-	Private   int32  `protobuf:"varint,11,opt,name=Private,proto3" json:"Private,omitempty"`
-	PublicKey string `protobuf:"bytes,12,opt,name=PublicKey,proto3" json:"PublicKey,omitempty"`
+	Id         string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Username   string `protobuf:"bytes,2,opt,name=username,proto3" json:"username,omitempty"`
+	Password   string `protobuf:"bytes,3,opt,name=password,proto3" json:"password,omitempty"`
+	Avatar     string `protobuf:"bytes,4,opt,name=avatar,proto3" json:"avatar,omitempty"`
+	Bio        string `protobuf:"bytes,5,opt,name=bio,proto3" json:"bio,omitempty"`
+	Name       string `protobuf:"bytes,6,opt,name=name,proto3" json:"name,omitempty"`
+	Email      string `protobuf:"bytes,7,opt,name=email,proto3" json:"email,omitempty"`
+	Phone      string `protobuf:"bytes,8,opt,name=phone,proto3" json:"phone,omitempty"`
+	Telegram   string `protobuf:"bytes,9,opt,name=telegram,proto3" json:"telegram,omitempty"`
+	Social     string `protobuf:"bytes,10,opt,name=social,proto3" json:"social,omitempty"`
+	Private    int32  `protobuf:"varint,11,opt,name=Private,proto3" json:"Private,omitempty"`
+	PrivateKey string `protobuf:"bytes,12,opt,name=PrivateKey,proto3" json:"PrivateKey,omitempty"`
+	PublicKey  string `protobuf:"bytes,13,opt,name=PublicKey,proto3" json:"PublicKey,omitempty"`
 }
 
 func (x *AccountData) Reset() {
 	*x = AccountData{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_api_kernel_v1_accounts_proto_msgTypes[0]
+		mi := &file_api_hvxahv_v1_accounts_proto_msgTypes[0]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -55,7 +56,7 @@ func (x *AccountData) String() string {
 func (*AccountData) ProtoMessage() {}
 
 func (x *AccountData) ProtoReflect() protoreflect.Message {
-	mi := &file_api_kernel_v1_accounts_proto_msgTypes[0]
+	mi := &file_api_hvxahv_v1_accounts_proto_msgTypes[0]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -68,7 +69,7 @@ func (x *AccountData) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AccountData.ProtoReflect.Descriptor instead.
 func (*AccountData) Descriptor() ([]byte, []int) {
-	return file_api_kernel_v1_accounts_proto_rawDescGZIP(), []int{0}
+	return file_api_hvxahv_v1_accounts_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *AccountData) GetId() string {
@@ -148,6 +149,13 @@ func (x *AccountData) GetPrivate() int32 {
 	return 0
 }
 
+func (x *AccountData) GetPrivateKey() string {
+	if x != nil {
+		return x.PrivateKey
+	}
+	return ""
+}
+
 func (x *AccountData) GetPublicKey() string {
 	if x != nil {
 		return x.PublicKey
@@ -166,7 +174,7 @@ type NewAccountReply struct {
 func (x *NewAccountReply) Reset() {
 	*x = NewAccountReply{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_api_kernel_v1_accounts_proto_msgTypes[1]
+		mi := &file_api_hvxahv_v1_accounts_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -179,7 +187,7 @@ func (x *NewAccountReply) String() string {
 func (*NewAccountReply) ProtoMessage() {}
 
 func (x *NewAccountReply) ProtoReflect() protoreflect.Message {
-	mi := &file_api_kernel_v1_accounts_proto_msgTypes[1]
+	mi := &file_api_hvxahv_v1_accounts_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -192,7 +200,7 @@ func (x *NewAccountReply) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NewAccountReply.ProtoReflect.Descriptor instead.
 func (*NewAccountReply) Descriptor() ([]byte, []int) {
-	return file_api_kernel_v1_accounts_proto_rawDescGZIP(), []int{1}
+	return file_api_hvxahv_v1_accounts_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *NewAccountReply) GetReply() int32 {
@@ -213,7 +221,7 @@ type AccountName struct {
 func (x *AccountName) Reset() {
 	*x = AccountName{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_api_kernel_v1_accounts_proto_msgTypes[2]
+		mi := &file_api_hvxahv_v1_accounts_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -226,7 +234,7 @@ func (x *AccountName) String() string {
 func (*AccountName) ProtoMessage() {}
 
 func (x *AccountName) ProtoReflect() protoreflect.Message {
-	mi := &file_api_kernel_v1_accounts_proto_msgTypes[2]
+	mi := &file_api_hvxahv_v1_accounts_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -239,7 +247,7 @@ func (x *AccountName) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AccountName.ProtoReflect.Descriptor instead.
 func (*AccountName) Descriptor() ([]byte, []int) {
-	return file_api_kernel_v1_accounts_proto_rawDescGZIP(), []int{2}
+	return file_api_hvxahv_v1_accounts_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *AccountName) GetUsername() string {
@@ -260,7 +268,7 @@ type DeleteAccountReply struct {
 func (x *DeleteAccountReply) Reset() {
 	*x = DeleteAccountReply{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_api_kernel_v1_accounts_proto_msgTypes[3]
+		mi := &file_api_hvxahv_v1_accounts_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -273,7 +281,7 @@ func (x *DeleteAccountReply) String() string {
 func (*DeleteAccountReply) ProtoMessage() {}
 
 func (x *DeleteAccountReply) ProtoReflect() protoreflect.Message {
-	mi := &file_api_kernel_v1_accounts_proto_msgTypes[3]
+	mi := &file_api_hvxahv_v1_accounts_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -286,7 +294,7 @@ func (x *DeleteAccountReply) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteAccountReply.ProtoReflect.Descriptor instead.
 func (*DeleteAccountReply) Descriptor() ([]byte, []int) {
-	return file_api_kernel_v1_accounts_proto_rawDescGZIP(), []int{3}
+	return file_api_hvxahv_v1_accounts_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *DeleteAccountReply) GetReply() string {
@@ -307,7 +315,7 @@ type SettingAccountReply struct {
 func (x *SettingAccountReply) Reset() {
 	*x = SettingAccountReply{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_api_kernel_v1_accounts_proto_msgTypes[4]
+		mi := &file_api_hvxahv_v1_accounts_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -320,7 +328,7 @@ func (x *SettingAccountReply) String() string {
 func (*SettingAccountReply) ProtoMessage() {}
 
 func (x *SettingAccountReply) ProtoReflect() protoreflect.Message {
-	mi := &file_api_kernel_v1_accounts_proto_msgTypes[4]
+	mi := &file_api_hvxahv_v1_accounts_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -333,7 +341,7 @@ func (x *SettingAccountReply) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SettingAccountReply.ProtoReflect.Descriptor instead.
 func (*SettingAccountReply) Descriptor() ([]byte, []int) {
-	return file_api_kernel_v1_accounts_proto_rawDescGZIP(), []int{4}
+	return file_api_hvxahv_v1_accounts_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *SettingAccountReply) GetReply() string {
@@ -343,13 +351,13 @@ func (x *SettingAccountReply) GetReply() string {
 	return ""
 }
 
-var File_api_kernel_v1_accounts_proto protoreflect.FileDescriptor
+var File_api_hvxahv_v1_accounts_proto protoreflect.FileDescriptor
 
-var file_api_kernel_v1_accounts_proto_rawDesc = []byte{
-	0x0a, 0x1c, 0x61, 0x70, 0x69, 0x2f, 0x6b, 0x65, 0x72, 0x6e, 0x65, 0x6c, 0x2f, 0x76, 0x31, 0x2f,
+var file_api_hvxahv_v1_accounts_proto_rawDesc = []byte{
+	0x0a, 0x1c, 0x61, 0x70, 0x69, 0x2f, 0x68, 0x76, 0x78, 0x61, 0x68, 0x76, 0x2f, 0x76, 0x31, 0x2f,
 	0x61, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x0f,
 	0x68, 0x76, 0x78, 0x61, 0x68, 0x76, 0x2e, 0x76, 0x31, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22,
-	0xab, 0x02, 0x0a, 0x0b, 0x41, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x44, 0x61, 0x74, 0x61, 0x12,
+	0xcb, 0x02, 0x0a, 0x0b, 0x41, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x44, 0x61, 0x74, 0x61, 0x12,
 	0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x12,
 	0x1a, 0x0a, 0x08, 0x75, 0x73, 0x65, 0x72, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28,
 	0x09, 0x52, 0x08, 0x75, 0x73, 0x65, 0x72, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x1a, 0x0a, 0x08, 0x70,
@@ -366,7 +374,9 @@ var file_api_kernel_v1_accounts_proto_rawDesc = []byte{
 	0x06, 0x73, 0x6f, 0x63, 0x69, 0x61, 0x6c, 0x18, 0x0a, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x73,
 	0x6f, 0x63, 0x69, 0x61, 0x6c, 0x12, 0x18, 0x0a, 0x07, 0x50, 0x72, 0x69, 0x76, 0x61, 0x74, 0x65,
 	0x18, 0x0b, 0x20, 0x01, 0x28, 0x05, 0x52, 0x07, 0x50, 0x72, 0x69, 0x76, 0x61, 0x74, 0x65, 0x12,
-	0x1c, 0x0a, 0x09, 0x50, 0x75, 0x62, 0x6c, 0x69, 0x63, 0x4b, 0x65, 0x79, 0x18, 0x0c, 0x20, 0x01,
+	0x1e, 0x0a, 0x0a, 0x50, 0x72, 0x69, 0x76, 0x61, 0x74, 0x65, 0x4b, 0x65, 0x79, 0x18, 0x0c, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x0a, 0x50, 0x72, 0x69, 0x76, 0x61, 0x74, 0x65, 0x4b, 0x65, 0x79, 0x12,
+	0x1c, 0x0a, 0x09, 0x50, 0x75, 0x62, 0x6c, 0x69, 0x63, 0x4b, 0x65, 0x79, 0x18, 0x0d, 0x20, 0x01,
 	0x28, 0x09, 0x52, 0x09, 0x50, 0x75, 0x62, 0x6c, 0x69, 0x63, 0x4b, 0x65, 0x79, 0x22, 0x27, 0x0a,
 	0x0f, 0x4e, 0x65, 0x77, 0x41, 0x63, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x52, 0x65, 0x70, 0x6c, 0x79,
 	0x12, 0x14, 0x0a, 0x05, 0x72, 0x65, 0x70, 0x6c, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52,
@@ -414,26 +424,26 @@ var file_api_kernel_v1_accounts_proto_rawDesc = []byte{
 }
 
 var (
-	file_api_kernel_v1_accounts_proto_rawDescOnce sync.Once
-	file_api_kernel_v1_accounts_proto_rawDescData = file_api_kernel_v1_accounts_proto_rawDesc
+	file_api_hvxahv_v1_accounts_proto_rawDescOnce sync.Once
+	file_api_hvxahv_v1_accounts_proto_rawDescData = file_api_hvxahv_v1_accounts_proto_rawDesc
 )
 
-func file_api_kernel_v1_accounts_proto_rawDescGZIP() []byte {
-	file_api_kernel_v1_accounts_proto_rawDescOnce.Do(func() {
-		file_api_kernel_v1_accounts_proto_rawDescData = protoimpl.X.CompressGZIP(file_api_kernel_v1_accounts_proto_rawDescData)
+func file_api_hvxahv_v1_accounts_proto_rawDescGZIP() []byte {
+	file_api_hvxahv_v1_accounts_proto_rawDescOnce.Do(func() {
+		file_api_hvxahv_v1_accounts_proto_rawDescData = protoimpl.X.CompressGZIP(file_api_hvxahv_v1_accounts_proto_rawDescData)
 	})
-	return file_api_kernel_v1_accounts_proto_rawDescData
+	return file_api_hvxahv_v1_accounts_proto_rawDescData
 }
 
-var file_api_kernel_v1_accounts_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
-var file_api_kernel_v1_accounts_proto_goTypes = []interface{}{
+var file_api_hvxahv_v1_accounts_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_api_hvxahv_v1_accounts_proto_goTypes = []interface{}{
 	(*AccountData)(nil),         // 0: hvxahv.v1.proto.AccountData
 	(*NewAccountReply)(nil),     // 1: hvxahv.v1.proto.NewAccountReply
 	(*AccountName)(nil),         // 2: hvxahv.v1.proto.AccountName
 	(*DeleteAccountReply)(nil),  // 3: hvxahv.v1.proto.DeleteAccountReply
 	(*SettingAccountReply)(nil), // 4: hvxahv.v1.proto.SettingAccountReply
 }
-var file_api_kernel_v1_accounts_proto_depIdxs = []int32{
+var file_api_hvxahv_v1_accounts_proto_depIdxs = []int32{
 	0, // 0: hvxahv.v1.proto.Accounts.NewAccount:input_type -> hvxahv.v1.proto.AccountData
 	2, // 1: hvxahv.v1.proto.Accounts.GetAccount:input_type -> hvxahv.v1.proto.AccountName
 	2, // 2: hvxahv.v1.proto.Accounts.DeleteAccount:input_type -> hvxahv.v1.proto.AccountName
@@ -453,13 +463,13 @@ var file_api_kernel_v1_accounts_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for field type_name
 }
 
-func init() { file_api_kernel_v1_accounts_proto_init() }
-func file_api_kernel_v1_accounts_proto_init() {
-	if File_api_kernel_v1_accounts_proto != nil {
+func init() { file_api_hvxahv_v1_accounts_proto_init() }
+func file_api_hvxahv_v1_accounts_proto_init() {
+	if File_api_hvxahv_v1_accounts_proto != nil {
 		return
 	}
 	if !protoimpl.UnsafeEnabled {
-		file_api_kernel_v1_accounts_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
+		file_api_hvxahv_v1_accounts_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*AccountData); i {
 			case 0:
 				return &v.state
@@ -471,7 +481,7 @@ func file_api_kernel_v1_accounts_proto_init() {
 				return nil
 			}
 		}
-		file_api_kernel_v1_accounts_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
+		file_api_hvxahv_v1_accounts_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*NewAccountReply); i {
 			case 0:
 				return &v.state
@@ -483,7 +493,7 @@ func file_api_kernel_v1_accounts_proto_init() {
 				return nil
 			}
 		}
-		file_api_kernel_v1_accounts_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
+		file_api_hvxahv_v1_accounts_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*AccountName); i {
 			case 0:
 				return &v.state
@@ -495,7 +505,7 @@ func file_api_kernel_v1_accounts_proto_init() {
 				return nil
 			}
 		}
-		file_api_kernel_v1_accounts_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+		file_api_hvxahv_v1_accounts_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*DeleteAccountReply); i {
 			case 0:
 				return &v.state
@@ -507,7 +517,7 @@ func file_api_kernel_v1_accounts_proto_init() {
 				return nil
 			}
 		}
-		file_api_kernel_v1_accounts_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
+		file_api_hvxahv_v1_accounts_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*SettingAccountReply); i {
 			case 0:
 				return &v.state
@@ -524,18 +534,18 @@ func file_api_kernel_v1_accounts_proto_init() {
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: file_api_kernel_v1_accounts_proto_rawDesc,
+			RawDescriptor: file_api_hvxahv_v1_accounts_proto_rawDesc,
 			NumEnums:      0,
 			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_api_kernel_v1_accounts_proto_goTypes,
-		DependencyIndexes: file_api_kernel_v1_accounts_proto_depIdxs,
-		MessageInfos:      file_api_kernel_v1_accounts_proto_msgTypes,
+		GoTypes:           file_api_hvxahv_v1_accounts_proto_goTypes,
+		DependencyIndexes: file_api_hvxahv_v1_accounts_proto_depIdxs,
+		MessageInfos:      file_api_hvxahv_v1_accounts_proto_msgTypes,
 	}.Build()
-	File_api_kernel_v1_accounts_proto = out.File
-	file_api_kernel_v1_accounts_proto_rawDesc = nil
-	file_api_kernel_v1_accounts_proto_goTypes = nil
-	file_api_kernel_v1_accounts_proto_depIdxs = nil
+	File_api_hvxahv_v1_accounts_proto = out.File
+	file_api_hvxahv_v1_accounts_proto_rawDesc = nil
+	file_api_hvxahv_v1_accounts_proto_goTypes = nil
+	file_api_hvxahv_v1_accounts_proto_depIdxs = nil
 }

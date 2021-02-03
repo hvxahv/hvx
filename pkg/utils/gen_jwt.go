@@ -3,7 +3,7 @@ package utils
 import (
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
-	"hvxahv/pkg/structs"
+	"hvxahv/pkg/models"
 	"time"
 )
 
@@ -16,7 +16,7 @@ type Claims struct {
 }
 
 // GenerateToken ...
-func GenerateToken(u structs.Accounts) (string, error) {
+func GenerateToken(u models.Accounts) (string, error) {
 	expireTime := time.Now().Add(30 * 24 * time.Hour)
 	claims := &Claims{
 		ID:  u.ID,

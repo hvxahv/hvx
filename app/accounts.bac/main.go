@@ -8,7 +8,7 @@ package main
 //	"github.com/spf13/viper"
 //	"google.golang.org/grpc"
 //	"google.golang.org/grpc/reflection"
-//	pb "hvxahv/api/kernel/v1"
+//	pb "hvxahv/api/hvxahv/v1"
 //	"hvxahv/services/accounts.bac/services"
 //	"hvxahv/pkg/bot"
 //	"log"

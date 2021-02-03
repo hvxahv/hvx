@@ -9,7 +9,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"hvxahv/api/client/account"
 	"hvxahv/pkg/response"
-	"hvxahv/pkg/structs"
+	"hvxahv/pkg/models"
 	"hvxahv/pkg/utils"
 	"log"
 )
@@ -19,7 +19,7 @@ func VerificationHandler(c *gin.Context) {
 	u := c.PostForm("username")
 	p := c.PostForm("password")
 
-	a := structs.Accounts{ Username: u, Password: p }
+	a := models.Accounts{ Username: u, Password: p }
 
 	// 调用验证客户端获取返回的账户信息
 	r, err := account.VerifyAccountsClient(u)

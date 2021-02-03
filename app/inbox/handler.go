@@ -2,7 +2,7 @@ package main
 
 import (
 	"golang.org/x/net/context"
-	pb "hvxahv/api/kernel/v1"
+	pb "hvxahv/api/hvxahv/v1"
 	"hvxahv/app/inbox/services"
 	"log"
 )
@@ -20,10 +20,10 @@ func (s *server) NewInbox(ctx context.Context, in *pb.InboxData) (*pb.NewInboxRe
 
 
 // NewInbox 将接收到的收件箱的新消息保存并通知用户
-func (s *server) GetInbox(ctx context.Context, in *pb.Name) (*pb.InboxData, error) {
+func (s *server) GetInbox(ctx context.Context, in *pb.Name) (*pb.GetInboxReply, error) {
 	r := services.GetInboxData(in)
 
 	log.Println("获得的 INBOX 数据, ", r)
-	return &pb.InboxData{}, nil
+	return &pb.GetInboxReply{Inbox: r}, nil
 }
 

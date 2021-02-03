@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"hvxahv/api/client/social"
 	"hvxahv/pkg/response"
-	"hvxahv/pkg/structs"
+	"hvxahv/pkg/models"
 	"hvxahv/pkg/utils"
 	"log"
 )
@@ -15,7 +15,7 @@ func CreateArticleHandler(c *gin.Context) {
 	author := utils.GetUserName(c)
 	article := c.PostForm("article")
 
-	data := &structs.Articles{
+	data := &models.Articles{
 		Article: article,
 		Author: author,
 	}
@@ -47,7 +47,7 @@ func GetArticlesHandler(c *gin.Context) {
 	if status == "1" {
 		isA = true
 	}
-	data := &structs.Articles{
+	data := &models.Articles{
 		Author:author,
 		Status: isA,
 	}

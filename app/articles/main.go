@@ -5,9 +5,9 @@ import (
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
-	pb "hvxahv/api/kernel/v1"
+	pb "hvxahv/api/hvxahv/v1"
 	"hvxahv/pkg/bot"
-	"hvxahv/pkg/database"
+	"hvxahv/pkg/db"
 	"log"
 	"net"
 )
@@ -17,7 +17,7 @@ import (
  */
 func main()  {
 	// 初始化数据库
-	if err := database.InitMariaDB(); err != nil {
+	if err := db.InitMariaDB(); err != nil {
 		log.Println("数据库初始化失败：", err)
 	}
 	// 获取配置文件
