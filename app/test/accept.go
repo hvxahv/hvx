@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/net/context"
-	httpsig "hvxahv/pkg/activitypub"
+	httpsig "hvxahv/pkg/activity"
 	"log"
 	"math/rand"
 	"net/http"

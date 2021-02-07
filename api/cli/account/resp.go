@@ -37,7 +37,7 @@ func AccountsResponse(c *gin.Context, r *pb.AccountData) {
 // ActorResponse 它是 Activitypub 协议的 Actor 的 JSON-LD 标准数据返回
 func ActorResponse(c *gin.Context, r *pb.AccountData) {
 	name := r.Username
-	address := viper.GetString("activitypub")
+	address := viper.GetString("activity")
 
 	con := []string{"https://www.w3.org/ns/activitystreams", "https://w3id.org/security/v1"}
 	publicKey := map[string]string{
@@ -61,12 +61,12 @@ func ActorResponse(c *gin.Context, r *pb.AccountData) {
 	})
 }
 func formatLink(route, name string) string {
-	address := viper.GetString("activitypub")
+	address := viper.GetString("activity")
 	return fmt.Sprintf("https://%s/u/%s/%s", address, name, route)
 }
 // WebFingerResponse 它是 Activitypub 协议的 webfinger 的 JSON-LD 标准数据返回
 func WebFingerResponse(c *gin.Context, r *pb.AccountData) {
-	address := viper.GetString("activitypub")
+	address := viper.GetString("activity")
 	name := r.Username
 
 	links := []models.WebFingerLinks{

@@ -5,6 +5,7 @@ import (
 	"github.com/spf13/viper"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
+	"hvxahv/api/cli"
 	pb "hvxahv/api/hvxahv/v1"
 	"log"
 	"strings"
@@ -36,18 +37,14 @@ func GetAccountsClient(name string) (*pb.AccountData, error) {
 
 // GetActorClient Activitypub 协议的 Actor
 func GetActorClient(name string) (*pb.AccountData, error) {
-	// 连接到 Accounts 服务端，并返回用户的个人数据
-	addr := fmt.Sprintf("localhost:%s", viper.GetString("port.accounts"))
-	conn, err := grpc.Dial(addr, grpc.WithInsecure())
+	p := viper.GetString("port.accounts")
+	conn, err := cli.Conn(p, "Accounts")
 	if err != nil {
-		fmt.Printf("Faild to connect to Accounts : %v", err)
+		log.Println(err)
 	}
 	defer conn.Close()
 
 	client := pb.NewAccountsClient(conn)
-	if err != nil {
-		log.Println(err)
-	}
 	r, err := client.GetActor(context.Background(), &pb.AccountName{
 		Username: name,
 	})
@@ -80,18 +77,13 @@ func GetWebFingerClient(name string) (*pb.AccountData, error) {
 
 // VerifyAccountsClient 获取用户的个人资料
 func VerifyAccountsClient(name string) (*pb.AccountData, error) {
-	// 连接到 Accounts 服务端，并返回用户的个人数据
-	addr := fmt.Sprintf("localhost:%s", viper.GetString("port.accounts"))
-	conn, err := grpc.Dial(addr, grpc.WithInsecure())
-	if err != nil {
-		fmt.Printf("Faild to connect to Accounts services.bac: %v", err)
-	}
-	defer conn.Close()
-
-	client := pb.NewAccountsClient(conn)
+	p := viper.GetString("port.accounts")
+	conn, err := cli.Conn(p, "Accounts")
 	if err != nil {
 		log.Println(err)
 	}
+
+	client := pb.NewAccountsClient(conn)
 	r, err := client.VerifyAccount(context.Background(), &pb.AccountName{
 		Username: name,
 	})

@@ -13,7 +13,7 @@ import (
 // is compatible with the grpc package it is being compiled against.
 const _ = grpc.SupportPackageIsVersion7
 
-// InboxClient is the client API for Inbox service.
+// InboxClient is the cli API for Inbox service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type InboxClient interface {

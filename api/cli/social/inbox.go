@@ -1,10 +1,9 @@
 package social
 
 import (
-	"fmt"
 	"github.com/spf13/viper"
 	"golang.org/x/net/context"
-	"google.golang.org/grpc"
+	"hvxahv/api/cli"
 	pb "hvxahv/api/hvxahv/v1"
 	"hvxahv/pkg/models"
 	"log"
@@ -12,12 +11,13 @@ import (
 
 // Inbox 功能的 gRPC 客户端, 它用来调用 inbox 的服务
 func InboxClient(data *models.Inbox) (string, error) {
-	addr := fmt.Sprintf("localhost:%s", viper.GetString("port.inbox"))
-	conn, err := grpc.Dial(addr, grpc.WithInsecure())
+	p := viper.GetString("port.inbox")
+	conn, err := cli.Conn(p, "Inbox")
 	if err != nil {
-		log.Printf("连接到 Inbox 服务失败: %v", err)
+		log.Println(err)
 	}
 	defer conn.Close()
+
 	cli := pb.NewInboxClient(conn)
 	d := &pb.InboxData{
 		Actor: data.Actor,
@@ -33,12 +33,11 @@ func InboxClient(data *models.Inbox) (string, error) {
 }
 
 func GetInboxClient(name string) (*pb.GetInboxReply, error) {
-	addr := fmt.Sprintf("localhost:%s", viper.GetString("port.inbox"))
-	conn, err := grpc.Dial(addr, grpc.WithInsecure())
+	p := viper.GetString("port.inbox")
+	conn, err := cli.Conn(p, "Inbox")
 	if err != nil {
-		log.Printf("连接到 Inbox 服务失败: %v", err)
+		log.Println(err)
 	}
-	defer conn.Close()
 	cli := pb.NewInboxClient(conn)
 
 	r, err := cli.GetInbox(context.Background(), &pb.Name{Name: name})
