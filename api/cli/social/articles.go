@@ -1,10 +1,9 @@
 package social
 
 import (
-	"fmt"
 	"github.com/spf13/viper"
 	"golang.org/x/net/context"
-	"google.golang.org/grpc"
+	"hvxahv/api/cli"
 	pb "hvxahv/api/hvxahv/v1"
 	"hvxahv/pkg/models"
 	"log"
@@ -13,12 +12,13 @@ import (
 // CreateArticleClient 创建文章的客户端，连接到 Accounts 服务端
 // 提交请求数据并获取服务端返回的结果数据 r.Reply
 func CreateArticleClient(data *models.Articles) (string, error) {
-	addr := fmt.Sprintf("localhost:%s", viper.GetString("port.articles"))
-	conn, err := grpc.Dial(addr, grpc.WithInsecure())
+	p := viper.GetString("port.articles")
+	conn, err := cli.Conn(p, "Article")
 	if err != nil {
-		log.Printf("连接到 Article 服务失败: %v", err)
+		log.Println(err)
 	}
 	defer conn.Close()
+
 	cli := pb.NewArticlesClient(conn)
 
 	d := &pb.ArticleData{
@@ -34,12 +34,13 @@ func CreateArticleClient(data *models.Articles) (string, error) {
 
 // UpdateStatusListHandler 更新状态 Handler
 func UpdateArticleClient(author string) {
-	addr := fmt.Sprintf("localhost:%s", viper.GetString("port.articles"))
-	conn, err := grpc.Dial(addr, grpc.WithInsecure())
+	p := viper.GetString("port.articles")
+	conn, err := cli.Conn(p, "Article")
 	if err != nil {
-		log.Printf("Faild to connect to Status services.bac: %v", err)
+		log.Println(err)
 	}
 	defer conn.Close()
+
 	cli := pb.NewArticlesClient(conn)
 	r, err := cli.UpdateArticle(context.Background(), &pb.ArticleData{
 		Id: "123123",
@@ -54,12 +55,13 @@ func UpdateArticleClient(author string) {
 
 // DeleteStatusHandler 删除状态 Handler 通过 ID
 func DeleteArticleClient(id string) {
-	addr := fmt.Sprintf("localhost:%s", viper.GetString("port.articles"))
-	conn, err := grpc.Dial(addr, grpc.WithInsecure())
+	p := viper.GetString("port.articles")
+	conn, err := cli.Conn(p, "Article")
 	if err != nil {
-		log.Printf("Faild to connect to Status services.bac: %v", err)
+		log.Println(err)
 	}
 	defer conn.Close()
+
 	cli := pb.NewArticlesClient(conn)
 	r, err := cli.DeleteArticle(context.Background(), &pb.DeleteArticleByID{
 		Id: id,

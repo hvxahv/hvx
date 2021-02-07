@@ -18,9 +18,9 @@ package main
 //	}
 //	defer conn.Close()
 //
-//	client := v1.NewPubsubServiceClient(conn)
+//	cli := v1.NewPubsubServiceClient(conn)
 //
-//	str, err := client.Publish(context.Background(), &v1.PubSubMessage{Message: message})
+//	str, err := cli.Publish(context.Background(), &v1.PubSubMessage{Message: message})
 //
 //	if err != nil {
 //		log.Fatal(err)

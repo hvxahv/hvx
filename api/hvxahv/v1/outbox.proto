@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package hvxahv.v1.proto;
+option go_package = ".;pb";
+
+// Outbox Services ...
+service Outbox {
+  rpc Accept (AcceptData) returns (AcceptReply) {}
+}
+
+message AcceptData {
+  string Actor      = 1;
+  string Name       = 2;
+  string RequestId  = 3;
+}
+
+message AcceptReply {
+  string reply = 1;
+}

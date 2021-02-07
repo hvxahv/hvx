@@ -1,4 +1,4 @@
-package httpsig
+package activity
 
 import (
 	"bytes"

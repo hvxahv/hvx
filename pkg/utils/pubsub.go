@@ -9,7 +9,7 @@ var wgPool = sync.Pool{New: func() interface{} { return new(sync.WaitGroup) }}
 
 // NewPublisher creates a new pub/sub publisher to broadcast messages.
 // The duration is used as the send timeout as to not block the publisher publishing
-// messages to other clients if one client is slow or unresponsive.
+// messages to other clients if one cli is slow or unresponsive.
 // The buffer is used when creating new channels for subscribers.
 func NewPublisher(publishTimeout time.Duration, buffer int) *Publisher {
 	return &Publisher{
