@@ -13,11 +13,12 @@ import (
 // is compatible with the grpc package it is being compiled against.
 const _ = grpc.SupportPackageIsVersion7
 
-// OutboxClient is the cli API for Outbox service.
+// OutboxClient is the client API for Outbox service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type OutboxClient interface {
-	Accept(ctx context.Context, in *AcceptData, opts ...grpc.CallOption) (*AcceptReply, error)
+	Accept(ctx context.Context, in *AcceptData, opts ...grpc.CallOption) (*ReplyCode, error)
+	Follow(ctx context.Context, in *FollowData, opts ...grpc.CallOption) (*ReplyCode, error)
 }
 
 type outboxClient struct {
@@ -28,9 +29,18 @@ func NewOutboxClient(cc grpc.ClientConnInterface) OutboxClient {
 	return &outboxClient{cc}
 }
 
-func (c *outboxClient) Accept(ctx context.Context, in *AcceptData, opts ...grpc.CallOption) (*AcceptReply, error) {
-	out := new(AcceptReply)
+func (c *outboxClient) Accept(ctx context.Context, in *AcceptData, opts ...grpc.CallOption) (*ReplyCode, error) {
+	out := new(ReplyCode)
 	err := c.cc.Invoke(ctx, "/hvxahv.v1.proto.Outbox/Accept", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *outboxClient) Follow(ctx context.Context, in *FollowData, opts ...grpc.CallOption) (*ReplyCode, error) {
+	out := new(ReplyCode)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1.proto.Outbox/Follow", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +51,8 @@ func (c *outboxClient) Accept(ctx context.Context, in *AcceptData, opts ...grpc.
 // All implementations must embed UnimplementedOutboxServer
 // for forward compatibility
 type OutboxServer interface {
-	Accept(context.Context, *AcceptData) (*AcceptReply, error)
+	Accept(context.Context, *AcceptData) (*ReplyCode, error)
+	Follow(context.Context, *FollowData) (*ReplyCode, error)
 	mustEmbedUnimplementedOutboxServer()
 }
 
@@ -49,8 +60,11 @@ type OutboxServer interface {
 type UnimplementedOutboxServer struct {
 }
 
-func (UnimplementedOutboxServer) Accept(context.Context, *AcceptData) (*AcceptReply, error) {
+func (UnimplementedOutboxServer) Accept(context.Context, *AcceptData) (*ReplyCode, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Accept not implemented")
+}
+func (UnimplementedOutboxServer) Follow(context.Context, *FollowData) (*ReplyCode, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Follow not implemented")
 }
 func (UnimplementedOutboxServer) mustEmbedUnimplementedOutboxServer() {}
 
@@ -83,6 +97,24 @@ func _Outbox_Accept_Handler(srv interface{}, ctx context.Context, dec func(inter
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Outbox_Follow_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FollowData)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OutboxServer).Follow(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/hvxahv.v1.proto.Outbox/Follow",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OutboxServer).Follow(ctx, req.(*FollowData))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Outbox_ServiceDesc is the grpc.ServiceDesc for Outbox service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -93,6 +125,10 @@ var Outbox_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Accept",
 			Handler:    _Outbox_Accept_Handler,
+		},
+		{
+			MethodName: "Follow",
+			Handler:    _Outbox_Follow_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

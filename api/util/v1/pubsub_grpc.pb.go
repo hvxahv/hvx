@@ -13,7 +13,7 @@ import (
 // is compatible with the grpc package it is being compiled against.
 const _ = grpc.SupportPackageIsVersion7
 
-// PubsubServiceClient is the cli API for PubsubService service.
+// PubsubServiceClient is the client API for PubsubService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type PubsubServiceClient interface {

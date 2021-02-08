@@ -2,7 +2,7 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
-	"hvxahv/api/cli/social"
+	"hvxahv/api/client/social"
 	"hvxahv/pkg/response"
 	"hvxahv/pkg/models"
 	"hvxahv/pkg/utils"

@@ -19,18 +19,18 @@ type server struct {
 // Accounts 功能的 GRPC 微服务的服务端实现
 */
 func main() {
-	// 初始化 Redis 和 MariaDB
-	db.InitRedis()
-	if err := db.InitMariaDB(); err != nil {
-		log.Println("数据库初始化失败：", err)
-	}
 
-	// 加载程序配置文件
 	viper.SetConfigFile("./configs/config.yaml")
 	err := viper.ReadInConfig()
 	if err != nil {
 		panic(fmt.Errorf("Fatal error config file: %s \n", err))
 	}
+
+	db.InitRedis()
+	if err := db.InitMariaDB(); err != nil {
+		log.Println("数据库初始化失败：", err)
+	}
+
 	p := viper.GetString("port.accounts")
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", p))

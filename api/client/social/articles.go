@@ -3,7 +3,7 @@ package social
 import (
 	"github.com/spf13/viper"
 	"golang.org/x/net/context"
-	"hvxahv/api/cli"
+	"hvxahv/api/client"
 	pb "hvxahv/api/hvxahv/v1"
 	"hvxahv/pkg/models"
 	"log"
@@ -13,7 +13,7 @@ import (
 // 提交请求数据并获取服务端返回的结果数据 r.Reply
 func CreateArticleClient(data *models.Articles) (string, error) {
 	p := viper.GetString("port.articles")
-	conn, err := cli.Conn(p, "Article")
+	conn, err := client.Conn(p, "Article")
 	if err != nil {
 		log.Println(err)
 	}
@@ -35,7 +35,7 @@ func CreateArticleClient(data *models.Articles) (string, error) {
 // UpdateStatusListHandler 更新状态 Handler
 func UpdateArticleClient(author string) {
 	p := viper.GetString("port.articles")
-	conn, err := cli.Conn(p, "Article")
+	conn, err := client.Conn(p, "Article")
 	if err != nil {
 		log.Println(err)
 	}
@@ -56,7 +56,7 @@ func UpdateArticleClient(author string) {
 // DeleteStatusHandler 删除状态 Handler 通过 ID
 func DeleteArticleClient(id string) {
 	p := viper.GetString("port.articles")
-	conn, err := cli.Conn(p, "Article")
+	conn, err := client.Conn(p, "Article")
 	if err != nil {
 		log.Println(err)
 	}

@@ -1,5 +1,9 @@
 package models
 
+// Accept ...
+// Actor 远程用户
+// Name 当前登录用户名
+// RequestId 请求 ID
 type Accept struct {
 	Actor    	string
 	Name		string

@@ -9,9 +9,15 @@ import (
 )
 
 // Accept 同意接收到的请求
-func (s *server) Accept(ctx context.Context, in *pb.AcceptData) (*pb.AcceptReply, error) {
+func (s *server) Accept(ctx context.Context, in *pb.AcceptData) (*pb.ReplyCode, error) {
 	d := models.NewAccept(in.Actor, in.Name, in.RequestId)
-	services.AcceptHandler(d)
+	r := services.AcceptHandler(d)
 	log.Println("---- Accept 服务端接收到的消息 --> ", in.Actor, in.Name, in.RequestId)
-	return &pb.AcceptReply{Reply: "ok!"}, nil
+	return &pb.ReplyCode{Reply: int32(r)}, nil
 }
+// Follow 请求关注
+func (s *server) Follow(ctx context.Context, in *pb.FollowData) (*pb.ReplyCode, error) {
+	r := services.FollowHandler(in.Actor, in.Name)
+	return &pb.ReplyCode{Reply: int32(r)}, nil
+}
+

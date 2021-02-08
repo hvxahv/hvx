@@ -16,14 +16,14 @@ import (
 )
 
 func main()  {
-
-	if err := db.InitMariaDB(); err != nil {
-		log.Println(err)
-	}
 	viper.SetConfigFile("./configs/config.yaml")
 	err := viper.ReadInConfig()
 	if err != nil {
 		panic(fmt.Errorf("Fatal error config file: %s \n", err))
+	}
+
+	if err := db.InitMariaDB(); err != nil {
+		log.Println(err)
 	}
 
 	r := IngressRouter()

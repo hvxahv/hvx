@@ -5,7 +5,7 @@ import (
 	"github.com/spf13/viper"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
-	"hvxahv/api/cli"
+	"hvxahv/api/client"
 	pb "hvxahv/api/hvxahv/v1"
 	"log"
 	"strings"
@@ -38,7 +38,7 @@ func GetAccountsClient(name string) (*pb.AccountData, error) {
 // GetActorClient Activitypub 协议的 Actor
 func GetActorClient(name string) (*pb.AccountData, error) {
 	p := viper.GetString("port.accounts")
-	conn, err := cli.Conn(p, "Accounts")
+	conn, err := client.Conn(p, "Accounts")
 	if err != nil {
 		log.Println(err)
 	}
@@ -69,16 +69,15 @@ func GetWebFingerClient(name string) (*pb.AccountData, error) {
 	r, err := GetActorClient(name)
 	if err != nil {
 		log.Println(err)
-	} else {
-		return r, err
+		return nil, err
 	}
-	return nil, nil
+	return r, err
 }
 
 // VerifyAccountsClient 获取用户的个人资料
 func VerifyAccountsClient(name string) (*pb.AccountData, error) {
 	p := viper.GetString("port.accounts")
-	conn, err := cli.Conn(p, "Accounts")
+	conn, err := client.Conn(p, "Accounts")
 	if err != nil {
 		log.Println(err)
 	}
