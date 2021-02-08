@@ -2,7 +2,7 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
-	"hvxahv/api/cli/social"
+	"hvxahv/api/client/social"
 	"hvxahv/pkg/models"
 	"hvxahv/pkg/utils"
 	"log"
@@ -22,6 +22,7 @@ func InboxHandler(c *gin.Context) {
 	if err != nil {
 		log.Println(err)
 	}
+	// TODO 将客户端返回的消息同通知给用户
 	log.Println("--------------------> INBOX 客户端返回的消息:", r)
 
 	//data, _ := ioutil.ReadAll(c.Request.Body)
@@ -39,24 +40,31 @@ func GetEvent(c *gin.Context) (string, string, string) {
 	if !ok {
 		log.Println("获取 INBOX 事件 ID 断言失败得到的 id 不是字符串")
 	}
-	log.Println("进行断言之后得到的ID :",id)
 	actor, ok := f["actor"].(string)
 	if !ok {
 		log.Println("获取 INBOX 事件 Actor 断言失败得到的 id 不是字符串")
 	}
 
-	log.Println("接收到的请求类型：", f["type"], "得到的事件 ID：", id, "用户：", f["actor"])
+	// 通过事件 ID 可以查看 Activitypub 的元数据
+	log.Println("-------------------------------------")
+	log.Println("接收到的请求类型：", f["type"])
+	log.Println( "得到的活动事件 ID：",  id)
+	log.Println("获取活动用户：", f["actor"])
+	log.Println("-------------------------------------")
+
 	switch f["type"] {
 	case "Follow":
 		return "follow", id, actor
 	case "Undo":
 		return "undo", id, actor
+	case "Create":
+		return "Create", id, actor
 	default:
 		return "", "", ""
 	}
 }
 
-// GetInboxHandler
+// GetInboxHandler 获取用户的收件箱内容
 func GetInboxHandler(c *gin.Context) {
 	name := utils.GetUserName(c)
 	r, err := social.GetInboxClient(name)

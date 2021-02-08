@@ -5,15 +5,26 @@ option go_package = ".;pb";
 
 // Outbox Services ...
 service Outbox {
-  rpc Accept (AcceptData) returns (AcceptReply) {}
+  rpc Accept (AcceptData) returns (ReplyCode) {}
+  rpc Follow (FollowData) returns (ReplyCode) {}
 }
 
+// AcceptData 同意关注请求的数据
 message AcceptData {
   string Actor      = 1;
   string Name       = 2;
   string RequestId  = 3;
 }
 
-message AcceptReply {
-  string reply = 1;
+// ReplyCode 返回 HTTP 请求得到的状态码
+message ReplyCode {
+  int32 reply = 1;
+}
+
+// FollowData 关注数据
+// Name 当前的用户
+// Actor 对方的地址
+message FollowData {
+  string Name     = 1;
+  string Actor    = 2;
 }

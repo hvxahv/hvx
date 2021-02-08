@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"golang.org/x/net/context"
-	"hvxahv/api/cli/account"
+	"hvxahv/api/client/account"
 	"hvxahv/pkg/models"
 	"log"
 	"net/http"
@@ -12,25 +12,24 @@ import (
 	"time"
 )
 
-// TODO ........
 // SendActivity 发送活动
-func SendActivity(data *models.SendActivity) {
+func SendActivity(data *models.SendActivity) int {
 	payload := bytes.NewBuffer(data.Data)
-	cli := &http.Client {
-	}
-	fmt.Println(payload)
-	req, err := http.NewRequest(data.Method, data.UserAddress, payload)
+	cli := &http.Client {}
 
+	req, err := http.NewRequest(data.Method, data.EndInbox, payload)
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	date := time.Now().UTC().Format(http.TimeFormat)
-	// 解析 Url 获取 hostname
+	// 解析 host
 	h, err := url.Parse(data.EndActor)
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	date := time.Now().UTC().Format(http.TimeFormat)
+	// h.Hostname 类似 disism.com
 	req.Header.Add("Host", h.Hostname())
 	req.Header.Add("Date", date)
 
@@ -42,7 +41,7 @@ func SendActivity(data *models.SendActivity) {
 	block := PrivateKey{
 		Key: []byte(r.PrivateKey),
 	}
-	SignRequest(data.EndActor, block, req, data.Data)
+	SignRequest(data.UserAddress, block, req, data.Data)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
@@ -52,13 +51,7 @@ func SendActivity(data *models.SendActivity) {
 		fmt.Println(err)
 	}
 	res.Body.Close()
-	switch res.StatusCode {
-	case 200:
-	case 201:
-	case 202:
-	default:
-		fmt.Errorf("http post status: %d", res.StatusCode)
-	}
-	log.Printf("successful post: %s %d", data.EndInbox, res.StatusCode)
+
+	return res.StatusCode
 }
 

@@ -12,10 +12,12 @@ import (
 	"strconv"
 )
 // AcceptHandler ...
-func AcceptHandler(in *models.Accept) {
+func AcceptHandler(in *models.Accept) int {
+	domain := viper.GetString("activitypub")
+
 	idr := strconv.Itoa(rand.Int())
-	uad := fmt.Sprintf("https://%s/u/%s", viper.GetString("activity"), in.Name)
-	randId := fmt.Sprintf("https://%s/%s", viper.GetString("activity"), idr)
+	uad := fmt.Sprintf("https://%s/u/%s", domain, in.Name)
+	randId := fmt.Sprintf("https://%s/%s", domain, idr)
 
 	obj := map[string]string {
 		"id": in.RequestId,
@@ -30,14 +32,17 @@ func AcceptHandler(in *models.Accept) {
 		"actor": uad,
 		"object": obj,
 	}
+
 	data, err := json.Marshal(p)
 	if err != nil {
 		log.Println(err)
 	}
 
-	ei := fmt.Sprintf("%s/inbox", in.Actor)
+	eib := fmt.Sprintf("%s/inbox", in.Actor)
 	method := "POST"
-	sa := *models.NewSendActivity(data, ei, method, in.Name, uad, in.Actor)
-	activity.SendActivity(&sa)
+
+	sa := *models.NewSendActivity(data, eib, method, in.Name, uad, in.Actor)
+	r := activity.SendActivity(&sa)
+	return r
 
 }
