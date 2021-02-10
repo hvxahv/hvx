@@ -49,10 +49,10 @@ func IngressRouter() *gin.Engine {
 		v1.POST("/follower/accept", handler.FollowerAcceptHandler)
 
 		/*  Article Services */
-		v1.POST("/article", handler.GetArticlesHandler)
-		v1.POST("/article/new", handler.CreateArticleHandler)
-		v1.POST("/article/update", handler.UpdateArticleHandler)
-		v1.POST("/article/delete", handler.DeleteArticleHandler)
+		//v1.POST("/article", handler.GetArticlesHandler)
+		v1.POST("/article/new", handler.NewArticleHandler)
+		//v1.POST("/article/update", handler.UpdateArticleHandler)
+		//v1.POST("/article/delete", handler.DeleteArticleHandler)
 
 	}
 	return r

@@ -13,9 +13,9 @@ service Articles {
 message ArticleData {
   string id        = 1;
   string author    = 2;
-  string article   = 3;
+  string content   = 3;
   string images    = 4;
-  bool   status    = 5;
+  string type      = 5;
   bool   private   = 6;
   bool   isComment = 7;
 }

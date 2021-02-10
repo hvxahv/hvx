@@ -19,13 +19,15 @@ func ReceiveInbox(in *pb.InboxData) string {
 	}
 	k := fmt.Sprintf("%s-inbox", in.Name)
 
+
 	// 存储到 Redis 缓存
 	rdb := db.GetRDB()
 	v, _ := json.Marshal(&i)
 	if _, err := rdb.Do("SETNX", k, v); err != nil {
-		log.Printf("Actor 持久化到数据库失败: %s", err)
+		log.Printf("Actor 持久化到缓存失败: %s", err)
 	}
-	// 在协程中将数据保存到 MariaDB 数据库
+	// 在协程中将数据保存到 MariaDB 或者 MongoDB 数据库
+
 	go func() {
 		db := db.GetMaria()
 		db.AutoMigrate(&models.Inbox{})
