@@ -1,15 +1,19 @@
 # Hvxahv Prot List.
 
-## Ingress Gateway
-- http: 7000
+port:
 
-## Kernel
-- Accounts: gRPC: 8000 
-- Status: gRPC: 8005
-- Article: gRPC: 8010
+accounts: "8088"
 
-## Util
-- Bot Service: gRPC: 9000
+status: "8005"
 
+articles: "8010"
+
+bot: "9000"
+
+gateway: "7000"
+
+inbox: "7050"
+
+outbox: "7080"
 
 

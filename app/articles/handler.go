@@ -12,7 +12,7 @@ type server struct {
 }
 // NewArticle 新建一篇文章
 func (s *server) NewArticle(ctx context.Context, in *pb.ArticleData) (*pb.NewArticleReply, error) {
-	r := services.CreateArticleHandler(in.Author, in.Article)
+	r := services.CreateArticleHandler(in)
 	return &pb.NewArticleReply{Reply: r}, nil
 }
 
