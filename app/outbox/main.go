@@ -15,6 +15,7 @@ import (
 type server struct {
 	pb.OutboxServer
 }
+
 func main()  {
 	if err := db.InitMariaDB(); err != nil {
 		log.Println("数据库初始化失败：", err)

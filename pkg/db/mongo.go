@@ -15,7 +15,7 @@ var (
 	MongoDBERR error
 )
 
-// InitDB 初始化 MongoDB
+// InitMongoDB 初始化 MongoDB
 func InitMongoDB() (*mongo.Database, error) {
 	viper.SetConfigFile("./configs/config.yaml")
 	err := viper.ReadInConfig()
