@@ -26,6 +26,8 @@ func main()  {
 		log.Println(err)
 	}
 
+	db.InitRedis()
+
 	r := IngressRouter()
 	go bot.ServicesRunningNotice("gateway gateway", "7000")
 	_ = r.Run(fmt.Sprintf(":%s", viper.GetString("port.gateway")))

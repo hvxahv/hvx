@@ -11,10 +11,7 @@ import (
 // GetInboxData ...
 func GetInboxData(in *pb.Name) []*pb.InboxData {
 	// 从 MongoDB 取出
-	db, err := db2.GetMongo()
-	if err != nil {
-		log.Println(err)
-	}
+	db := db2.GetMongo()
 	f := bson.M{"name": in.Name}
 
 	co := db.Collection("inbox")

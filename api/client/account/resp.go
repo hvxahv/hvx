@@ -3,11 +3,13 @@ package account
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/gomodule/redigo/redis"
 	"github.com/spf13/viper"
 	pb "hvxahv/api/hvxahv/v1"
 	"hvxahv/pkg/bot"
-	"hvxahv/pkg/response"
+	"hvxahv/pkg/db"
 	"hvxahv/pkg/models"
+	"hvxahv/pkg/response"
 	"log"
 )
 
@@ -129,16 +131,19 @@ func OutboxResponse(c *gin.Context) {
 
 
 func FollowersResponse(c *gin.Context) {
-
+	name := c.Param("user")
+	rdb := db.GetRDB()
+	res, err := redis.Int(rdb.Do("GET", fmt.Sprintf("%s-following", name)))
+	if err != nil {
+		log.Println("Redis 获取 Actor 数据失败:", err)
+	}
 
 	c.JSON(200, gin.H{
-
 		"@context": "https://www.w3.org/ns/activitystreams",
 		"summary": "Sally followed John",
 		"type": "OrderedCollection",
-		"totalItems": 2,
+		"totalItems": res,
 		"orderedItems": "",
-
 	})
 
 }

@@ -35,6 +35,9 @@ func GetEvent(c *gin.Context) (string, string, string) {
 		return "undo", id, actor
 	case "Create":
 		return "Create", id, actor
+	case "Accept":
+		return "Accept", id, actor
+
 	default:
 		return "", "", ""
 	}

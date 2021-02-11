@@ -9,7 +9,10 @@ import (
 	"log"
 )
 
-// InboxHandler 用于处理接收到收件箱的数据并调用 Inbox 客户端，接收客户端返回的数据
+/**
+InboxHandler 这是一个公共的收件箱
+用于处理接收到收件箱的数据并调用 Inbox 客户端，接收客户端返回的数据
+ */
 func InboxHandler(c *gin.Context) {
 	name := c.Param("user")
 	e, reqId, actor := activity.GetEvent(c)
@@ -39,4 +42,8 @@ func GetInboxHandler(c *gin.Context) {
 	}
 	log.Println("--------------------> 用户 GET INBOX 客户端返回的消息:", r)
 	c.JSON(200, r)
+}
+
+func saveFollowing() {
+
 }
