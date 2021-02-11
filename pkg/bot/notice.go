@@ -14,10 +14,7 @@ func NewAccountNotice(str string)  {
 		log.Println(err)
 	}
 	// 将新增用户消息持久化到 mongo
-	db, err := db2.InitMongoDB()
-	if err != nil {
-		log.Println("Use InitDB error: ", err)
-	}
+	db := db2.GetMongo()
 	coll := db.Collection("new_account")
 
 	a := new(AccountNotice)

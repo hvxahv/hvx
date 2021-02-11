@@ -21,7 +21,9 @@ type server struct {
 }
 
 func main() {
-	// 初始化 MariaDB 和 Redis 并加载配置文件
+	if err := db.InitMongoDB(); err != nil {
+		log.Println(err)
+	}
 	db.InitRedis()
 	if err := db.InitMariaDB(); err != nil {
 		log.Println("数据库初始化失败：", err)

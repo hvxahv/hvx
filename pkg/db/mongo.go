@@ -12,11 +12,10 @@ import (
 
 var (
 	MongoDB *mongo.Database
-	MongoDBERR error
 )
 
 // InitMongoDB 初始化 MongoDB
-func InitMongoDB() (*mongo.Database, error) {
+func InitMongoDB() error {
 	viper.SetConfigFile("./configs/config.yaml")
 	err := viper.ReadInConfig()
 	if err != nil {
@@ -44,10 +43,9 @@ func InitMongoDB() (*mongo.Database, error) {
 	log.Println("Connected to MongoDB!")
 	collection := cli.Database(name)
 	MongoDB = collection
-	MongoDBERR = err
-	return collection, err
+	return err
 }
 
-func GetMongo() (*mongo.Database, error) {
-	return MongoDB, MongoDBERR
+func GetMongo() *mongo.Database {
+	return MongoDB
 }

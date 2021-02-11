@@ -17,9 +17,13 @@ type server struct {
 }
 
 func main()  {
+	if err := db.InitMongoDB(); err != nil {
+		log.Println(err)
+	}
 	if err := db.InitMariaDB(); err != nil {
 		log.Println("数据库初始化失败：", err)
 	}
+	db.InitRedis()
 
 	viper.SetConfigFile("./configs/config.yaml")
 	err := viper.ReadInConfig()

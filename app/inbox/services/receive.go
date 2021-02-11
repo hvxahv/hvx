@@ -3,6 +3,7 @@ package services
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gomodule/redigo/redis"
 	"golang.org/x/net/context"
 	pb "hvxahv/api/hvxahv/v1"
 	"hvxahv/pkg/db"
@@ -31,11 +32,13 @@ func ReceiveInbox(in *pb.InboxData) string {
 		log.Printf("Inbox 持久化到缓存失败: %s", err)
 	}
 
+	// 如果是 Accept 的请求类型就把数据保存到 following
+	log.Println(in.EventType)
+
+	// 将收到的数据写道 inbox 的收件箱中
 	go func() {
-		db, err := db.GetMongo()
-		if err != nil {
-			log.Println(err)
-		}
+		db := db.GetMongo()
+
 		co := db.Collection("inbox")
 		inbox := models.NewInboxStructs(i)
 		ir, err := co.InsertOne(context.TODO(), &inbox)
@@ -43,8 +46,39 @@ func ReceiveInbox(in *pb.InboxData) string {
 			log.Println("insert data in inbox error: ", err)
 		}
 
-		log.Println("Inserted a single document: ", ir.InsertedID)
+		log.Println("Inserted to inbox: ", ir.InsertedID)
 
 	}()
+
+	if in.EventType == "Accept" {
+		go followingSave(in.Name, in.Actor)
+
+		go func() {
+			rdb := db.GetRDB()
+			v, err := redis.Int64(rdb.Do("INCR", fmt.Sprintf("%s-following", in.Name)))
+			if err != nil {
+				log.Println("INCR failed:", err)
+			}
+			log.Println("value:", v)
+		}()
+	}
+
 	return "ok"
+}
+
+func followingSave(name, actor string) {
+	db := db.GetMongo()
+	co := db.Collection("following")
+	a := new(models.Follow)
+	a.Name = name
+	a.Actor = actor
+	a.Date = time.Now().UTC().Format(http.TimeFormat)
+
+	insertResult, err := co.InsertOne(context.TODO(), a)
+	if err != nil {
+		log.Println("insert follower error: ", err)
+	}
+
+	log.Println("Inserted following: ", insertResult.InsertedID)
+
 }
