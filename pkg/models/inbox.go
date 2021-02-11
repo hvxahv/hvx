@@ -8,6 +8,7 @@ type Inbox struct {
 	RequestId	string`gorm:"request_id"`
 	EventType   string`gorm:"event_type"`
 	Actor		string`gorm:"actor"`
+	Date   		string`gorm:"date"`
 }
 
 func NewInboxStructs(i *Inbox) *Inbox {
@@ -16,6 +17,13 @@ func NewInboxStructs(i *Inbox) *Inbox {
 		RequestId: i.RequestId,
 		EventType: i.EventType,
 		Name: i.Name,
+		Date: i.Date,
 	}
 	return r
+}
+
+type Follow struct {
+	Name string `json:"name"`
+	Actor string `json:"actor"`
+	Date  string `json:"date"`
 }

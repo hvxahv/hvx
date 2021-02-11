@@ -3,7 +3,7 @@ package bot
 import (
 	"fmt"
 	"golang.org/x/net/context"
-	"hvxahv/pkg/db"
+	db2 "hvxahv/pkg/db"
 	"log"
 	"time"
 )
@@ -14,7 +14,7 @@ func NewAccountNotice(str string)  {
 		log.Println(err)
 	}
 	// 将新增用户消息持久化到 mongo
-	db, err := db.InitMongoDB()
+	db, err := db2.InitMongoDB()
 	if err != nil {
 		log.Println("Use InitDB error: ", err)
 	}
@@ -39,23 +39,23 @@ func ServicesRunningNotice(srvname string, port string) {
 		log.Println(err)
 	}
 
-	// 将服务启动的消息持久化到 mongo
-	db, err := db.InitMongoDB()
-	if err != nil {
-		log.Println("Use InitDB error: ", err)
-	}
-	coll := db.Collection("service_startup_log")
-
-	a := new(ServicesRunNotice)
-	a.Name = str
-	a.Port = port
-	a.Data = time.Now()
-
-	insertResult, err := coll.InsertOne(context.TODO(), a)
-	if err != nil {
-		log.Println("insert data error: ", err)
-	}
-
-	log.Println("Inserted a single document: ", insertResult.InsertedID)
+	//// 将服务启动的消息持久化到 mongo
+	//db, err := mongo.InitMongoDB()
+	//if err != nil {
+	//	log.Println("Use InitDB error: ", err)
+	//}
+	//coll := db.Collection("service_startup_log")
+	//
+	//a := new(ServicesRunNotice)
+	//a.Name = str
+	//a.Port = port
+	//a.Data = time.Now()
+	//
+	//insertResult, err := coll.InsertOne(context.TODO(), a)
+	//if err != nil {
+	//	log.Println("insert data error: ", err)
+	//}
+	//
+	//log.Println("Inserted a single document: ", insertResult.InsertedID)
 
 }

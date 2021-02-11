@@ -15,8 +15,9 @@ import (
 type server struct {
 	pb.AccountsServer
 }
+
 /**
-// Accounts 功能的 GRPC 微服务的服务端实现
+ Accounts 功能的 GRPC 微服务的服务端实现
 */
 func main() {
 
