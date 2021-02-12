@@ -25,6 +25,9 @@ func main()  {
 	if err := db.InitMariaDB(); err != nil {
 		log.Println(err)
 	}
+	if err := db.InitMongoDB(); err != nil {
+		log.Println(err)
+	}
 
 	db.InitRedis()
 

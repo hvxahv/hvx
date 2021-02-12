@@ -1,9 +1,14 @@
 package handler
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
+	"go.mongodb.org/mongo-driver/bson"
+	"golang.org/x/net/context"
 	"hvxahv/api/client/social"
 	pb "hvxahv/api/hvxahv/v1"
+	"hvxahv/pkg/db"
 	"hvxahv/pkg/utils"
 	"log"
 )
@@ -46,6 +51,32 @@ func NewArticleHandler(c *gin.Context) {
 
 
 }
+// GetPublicArticle ...
+func GetPublicArticle(c *gin.Context) {
+	name := c.Param("user")
+	id := c.Param("id")
+	log.Printf("通过 ID %s 查找 %s 发布的文章", id, name)
+
+	if err := db.InitMongoDB(); err != nil {
+		log.Println(err)
+	}
+	ff := fmt.Sprintf("https://%s/u/%s/%s", viper.GetString("activitypub"), name, id)
+
+	// 从 MongoDB 取出
+	db := db.GetMongo()
+	f := bson.M{"actor": ff}
+
+	co := db.Collection("articles")
+	findA, err := co.Find(context.TODO(), f, nil)
+	if err != nil {
+		log.Println(err)
+	}
+
+	_ = findA.Close(context.TODO())
+
+	log.Println(&findA)
+}
+
 
 // CreateArticleHandler 创建文章的 Handler，接收 http 数据请求
 // 将数据处理后发送给 accounts 微服务的客户端并获得客户端返回的接收：string 类型的 r

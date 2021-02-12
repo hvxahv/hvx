@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"hvxahv/api/client/account"
 	"hvxahv/app/gateway/handler"
+	"hvxahv/app/gateway/handler/follow"
 	"hvxahv/app/test"
 	"hvxahv/pkg/middleware"
 )
@@ -27,11 +28,15 @@ func IngressRouter() *gin.Engine {
 	r.GET("/u/:user", handler.GetActorHandler)
 	r.GET("/u/:user/outbox", handler.GetActorOutbox)
 	r.POST("/u/:user/inbox", handler.InboxHandler)
+
+	r.GET("/u/:user/article/:id", handler.GetPublicArticle)
 	// 用于 测试的
 	r.POST("/accept", test.AcceptHandler)
 
-	r.GET("/u/:user/following", account.FollowersResponse)
+	r.GET("/u/:user/following", account.FollowingResponse)
 	r.GET("/u/:user/followers", account.FollowersResponse)
+
+
 
 	// 通过 Token 才能访问的功能
 	v1 := r.Group("/api/v1")
@@ -47,6 +52,8 @@ func IngressRouter() *gin.Engine {
 		// Follow
 		v1.POST("/follow", handler.FollowHandler)
 		v1.POST("/follower/accept", handler.FollowerAcceptHandler)
+		v1.GET("/follower", follow.GetFollowerHandler)
+		v1.GET("/following", follow.GetFollowingHandler)
 
 		/*  Article Services */
 		//v1.POST("/article", handler.GetArticlesHandler)

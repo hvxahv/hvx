@@ -5,6 +5,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gomodule/redigo/redis"
 	"github.com/spf13/viper"
+	"go.mongodb.org/mongo-driver/bson"
+	"golang.org/x/net/context"
 	pb "hvxahv/api/hvxahv/v1"
 	"hvxahv/pkg/bot"
 	"hvxahv/pkg/db"
@@ -102,38 +104,55 @@ type Object struct {
 	ID           string `json:"id,omitempty"`
 	Name         string `json:"name,omitempty"`
 }
-func OutboxResponse(c *gin.Context) {
 
-	obj := &Object{
-		Type: "Note",
-		AttributedTo: "https://dc3a16810ea3.ngrok.io/u/hvturingga",
-		InReplyTo: "https://dc3a16810ea3.ngrok.io/u/hvturingga/outbox/7ca154ff",
-		Content: "<p>Hello world</p>",
-		To:  "https://www.w3.org/ns/activitystreams#Public",
+func getArticleByName(name string) []*map[string]interface{} {
+	log.Println(name)
+	if err := db.InitMongoDB(); err != nil {
+		log.Println(err)
 	}
-	obj2 := &Object{
-		Type: "Note",
-		AttributedTo: "https://littr.git/api/accounts/anonymous",
-		InReplyTo: "https://dc3a16810ea3.ngrok.io/u/hvturingga/outbox/7ca154ff",
-		Content: "<p>Hello wdsadsadasdavdsvdwsdvcdorld</p>",
-		To:  "https://www.w3.org/ns/activitystreams#Public",
+	// 从 MongoDB 取出
+	db := db.GetMongo()
+	f := bson.M{"actor": name}
+
+	co := db.Collection("articles")
+	var i []*map[string]interface{}
+	findA, err := co.Find(context.TODO(), f, nil)
+	if err != nil {
+		log.Println(err)
 	}
-	xxx := []*Object{obj, obj2}
+	for findA.Next(context.TODO()) {
+		var el map[string]interface{}
+		if err := findA.Decode(&el); err != nil {
+			log.Println(err)
+		}
+		i = append(i, &el)
+	}
+	if err := findA.Err(); err != nil {
+		log.Println(err)
+	}
+	_ = findA.Close(context.TODO())
+
+
+	return i
+}
+func OutboxResponse(c *gin.Context, name string) {
+	address := fmt.Sprintf("https://%s/u/%s", viper.GetString("activitypub"), name)
+	r := getArticleByName(address)
 
 	c.JSON(200, gin.H{
 		"@context": "https://www.w3.org/ns/activitystreams",
-		"summary": "Sally's notes",
+		"id": address,
 		"type": "OrderedCollection",
-		"totalItems": 4,
-		"orderedItems": xxx,
+		"totalItems": len(r),
+		"orderedItems": r,
 	})
 }
 
-
+// FollowersResponse ...
 func FollowersResponse(c *gin.Context) {
 	name := c.Param("user")
 	rdb := db.GetRDB()
-	res, err := redis.Int(rdb.Do("GET", fmt.Sprintf("%s-following", name)))
+	res, err := redis.Int(rdb.Do("GET", fmt.Sprintf("%s-follower", name)))
 	if err != nil {
 		log.Println("Redis 获取 Actor 数据失败:", err)
 	}
@@ -148,6 +167,21 @@ func FollowersResponse(c *gin.Context) {
 
 }
 
+// FollowingResponse ...
 func FollowingResponse(c *gin.Context) {
+	name := c.Param("user")
+	rdb := db.GetRDB()
+	res, err := redis.Int(rdb.Do("GET", fmt.Sprintf("%s-following", name)))
+	if err != nil {
+		log.Println("Redis 获取 Actor 数据失败:", err)
+	}
 
+
+	c.JSON(200, gin.H{
+		"@context": "https://www.w3.org/ns/activitystreams",
+		"summary": "Sally followed John",
+		"type": "OrderedCollection",
+		"totalItems": res,
+		"orderedItems": "",
+	})
 }

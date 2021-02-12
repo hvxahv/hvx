@@ -1,39 +1,18 @@
 package services
-//
-//import (
-//	"errors"
-//	"github.com/gin-gonic/gin"
-//	"log"
-//)
-//
-//// ShowStatusListHandler ...
-//func ShowArticleListHandler(c *gin.Context) {
-//	name, ok := c.Get("loginUser")
-//	if !ok {
-//		log.Println("获取用户名失败")
-//	}
-//	author, ok := name.(string)
-//	if !ok {
-//		log.Println("用户名转换成字符串失败")
-//	}
-//
-//	r, err := ShowArticleLis(author)
-//	if err != nil {
-//		log.Println("Query Status Errors", err)
-//	}
-//	c.JSON(200, gin.H{
-//		"state": "200",
-//		"status": r,
-//	})
-//}
-//
-//// ShowStatusLis ...
-//func ShowArticleLis(author string) (*[]Article, error) {
-//	var s *[]Article
-//	if db2.Debug().Table("status").Where("author = ?", author).Find(&s).RecordNotFound() {
-//		return nil, errors.New("未找到个人中心的文章")
-//	}
-//	return s, nil
-//
-//
-//}
+
+import (
+	pb "hvxahv/api/hvxahv/v1"
+	"hvxahv/pkg/db"
+)
+
+// ShowStatusLis ...
+func GetArticleHandler(in *pb.GetArticleData) ([]*pb.ArticleData, string) {
+	db := db.GetMaria()
+	var a []*pb.ArticleData
+	if db.Debug().Table("articles").Where("author = ?", in.Name).Find(&a).RecordNotFound() {
+		return nil, "没有通过用户名获取到文章"
+	}
+	return a, "ok"
+
+
+}
