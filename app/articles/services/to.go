@@ -28,7 +28,7 @@ func SendActivity(in *pb.ArticleData) {
 
 	activityId := fmt.Sprintf("https://%s/u/%s/%s", addr, in.Author, idr)
 
-	to := []string{"https://mas.to/users/hvturingga", "https://mstdn.social/users/hvturingga"}
+	to := activity.GetFollow(in.Author,"follower")
 	cc := []string{"https://www.w3.org/ns/activitystreams#Public", "https://mstdn.social/users/hvturingga"}
 
 	obj := gin.H{
