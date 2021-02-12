@@ -18,6 +18,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ArticlesClient interface {
 	NewArticle(ctx context.Context, in *ArticleData, opts ...grpc.CallOption) (*NewArticleReply, error)
+	GetArticles(ctx context.Context, in *GetArticleData, opts ...grpc.CallOption) (*GetArticleReply, error)
 	UpdateArticle(ctx context.Context, in *ArticleData, opts ...grpc.CallOption) (*UpdateArticleReply, error)
 	DeleteArticle(ctx context.Context, in *DeleteArticleByID, opts ...grpc.CallOption) (*DeleteArticleReply, error)
 }
@@ -33,6 +34,15 @@ func NewArticlesClient(cc grpc.ClientConnInterface) ArticlesClient {
 func (c *articlesClient) NewArticle(ctx context.Context, in *ArticleData, opts ...grpc.CallOption) (*NewArticleReply, error) {
 	out := new(NewArticleReply)
 	err := c.cc.Invoke(ctx, "/hvxahv.v1.proto.Articles/NewArticle", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *articlesClient) GetArticles(ctx context.Context, in *GetArticleData, opts ...grpc.CallOption) (*GetArticleReply, error) {
+	out := new(GetArticleReply)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1.proto.Articles/GetArticles", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -62,6 +72,7 @@ func (c *articlesClient) DeleteArticle(ctx context.Context, in *DeleteArticleByI
 // for forward compatibility
 type ArticlesServer interface {
 	NewArticle(context.Context, *ArticleData) (*NewArticleReply, error)
+	GetArticles(context.Context, *GetArticleData) (*GetArticleReply, error)
 	UpdateArticle(context.Context, *ArticleData) (*UpdateArticleReply, error)
 	DeleteArticle(context.Context, *DeleteArticleByID) (*DeleteArticleReply, error)
 	mustEmbedUnimplementedArticlesServer()
@@ -73,6 +84,9 @@ type UnimplementedArticlesServer struct {
 
 func (UnimplementedArticlesServer) NewArticle(context.Context, *ArticleData) (*NewArticleReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method NewArticle not implemented")
+}
+func (UnimplementedArticlesServer) GetArticles(context.Context, *GetArticleData) (*GetArticleReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetArticles not implemented")
 }
 func (UnimplementedArticlesServer) UpdateArticle(context.Context, *ArticleData) (*UpdateArticleReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateArticle not implemented")
@@ -107,6 +121,24 @@ func _Articles_NewArticle_Handler(srv interface{}, ctx context.Context, dec func
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ArticlesServer).NewArticle(ctx, req.(*ArticleData))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Articles_GetArticles_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetArticleData)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ArticlesServer).GetArticles(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/hvxahv.v1.proto.Articles/GetArticles",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ArticlesServer).GetArticles(ctx, req.(*GetArticleData))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -157,6 +189,10 @@ var Articles_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "NewArticle",
 			Handler:    _Articles_NewArticle_Handler,
+		},
+		{
+			MethodName: "GetArticles",
+			Handler:    _Articles_GetArticles_Handler,
 		},
 		{
 			MethodName: "UpdateArticle",

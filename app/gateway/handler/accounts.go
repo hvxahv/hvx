@@ -70,6 +70,7 @@ func GetActorOutbox(c *gin.Context) {
 	name := c.Param("user")
 	log.Println(name, "用户请求了数据")
 
-	account.OutboxResponse(c)
+
+	account.OutboxResponse(c, name)
 }
 

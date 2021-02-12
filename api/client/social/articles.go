@@ -27,6 +27,26 @@ func CreateArticleClient(data *pb.ArticleData) (string, error) {
 	}
 	return r.Reply, err
 }
+
+// GetArticlesClient 通过用户名获取数据
+func GetArticlesClient(data *pb.GetArticleData) ([]*pb.ArticleData, error) {
+	p := viper.GetString("port.articles")
+	conn, err := client.Conn(p, "Article")
+	if err != nil {
+		log.Println(err)
+	}
+	defer conn.Close()
+
+
+	cli := pb.NewArticlesClient(conn)
+
+
+	r, err := cli.GetArticles(context.Background(), data)
+	if err != nil {
+		log.Printf("GetArticles 客户端方法失败，无法获取文章: %v", err)
+	}
+	return r.Articles, err
+}
 //
 //// UpdateStatusListHandler 更新状态 Handler
 //func UpdateArticleClient(author string) {

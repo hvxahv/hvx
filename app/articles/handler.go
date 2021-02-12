@@ -16,6 +16,14 @@ func (s *server) NewArticle(ctx context.Context, in *pb.ArticleData) (*pb.NewArt
 	return &pb.NewArticleReply{Reply: r}, nil
 }
 
+// NewArticle 通过用户名获取文章
+func (s *server) GetArticles(ctx context.Context, in *pb.GetArticleData) (*pb.GetArticleReply, error) {
+	r, err := services.GetArticleHandler(in)
+	log.Println(err)
+	return &pb.GetArticleReply{Articles: r}, nil
+}
+
+
 // UpdateStatus 修改状态
 func (s *server) UpdateArticle(ctx context.Context, in *pb.ArticleData) (*pb.UpdateArticleReply, error) {
 	log.Println("拿到的更新文章的 ID", in.Id)
