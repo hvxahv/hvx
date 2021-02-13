@@ -1,4 +1,4 @@
-package handler
+package activity
 
 import (
 	"github.com/gin-gonic/gin"

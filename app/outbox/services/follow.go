@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
-	"hvxahv/pkg/activity"
+	"hvxahv/pkg/activitypub"
 	"hvxahv/pkg/models"
 	"math/rand"
 	"net/url"
@@ -42,7 +42,7 @@ func FollowHandler(actor string, name string) int {
 	method := "POST"
 
 	sa := *models.NewSendActivity(data, eib, method, name, uad, actor)
-	r := activity.SendActivity(&sa)
+	r := activitypub.SendActivity(&sa)
 
 	return r
 }

@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"hvxahv/api/client/account"
 	"hvxahv/app/gateway/handler"
+	"hvxahv/app/gateway/handler/activity"
 	"hvxahv/app/gateway/handler/follow"
 	"hvxahv/app/test"
 	"hvxahv/pkg/middleware"
@@ -27,9 +28,9 @@ func IngressRouter() *gin.Engine {
 	r.GET("/.well-known/webfinger", handler.GetWebFingerHandler)
 	r.GET("/u/:user", handler.GetActorHandler)
 	r.GET("/u/:user/outbox", handler.GetActorOutbox)
-	r.POST("/u/:user/inbox", handler.InboxHandler)
+	r.POST("/u/:user/inbox", activity.InboxHandler)
 
-	r.GET("/u/:user/article/:id", handler.GetPublicArticle)
+	r.GET("/u/:user/article/:id", activity.GetPublicArticleHandler)
 	// 用于 测试的
 	r.POST("/accept", test.AcceptHandler)
 
@@ -46,20 +47,20 @@ func IngressRouter() *gin.Engine {
 		v1.GET("/account/i", handler.GetAccountsHandler)
 		v1.POST("/account/delete", handler.DeleteAccountHandler)
 		v1.POST("/account/settings", handler.AccountSettingHandler)
-
-		v1.GET("/inbox", handler.GetInboxHandler)
+		// 已经登录用户获取 INBOX 信息
+		v1.GET("/inbox", activity.GetInboxHandler)
 
 		// Follow
-		v1.POST("/follow", handler.FollowHandler)
-		v1.POST("/follower/accept", handler.FollowerAcceptHandler)
+		v1.POST("/follow", activity.FollowHandler)
+		v1.POST("/follower/accept", activity.FollowerAcceptHandler)
 		v1.GET("/follower", follow.GetFollowerHandler)
 		v1.GET("/following", follow.GetFollowingHandler)
 
 		/*  Article Services */
-		//v1.POST("/article", handler.GetArticlesHandler)
-		v1.POST("/article/new", handler.NewArticleHandler)
-		//v1.POST("/article/update", handler.UpdateArticleHandler)
-		//v1.POST("/article/delete", handler.DeleteArticleHandler)
+		v1.GET("/articles", activity.GetArticles)
+		v1.POST("/article/new", activity.NewArticleHandler)
+		//v1.POST("/activity/update", handler.UpdateArticleHandler)
+		//v1.POST("/activity/delete", handler.DeleteArticleHandler)
 
 	}
 	return r
