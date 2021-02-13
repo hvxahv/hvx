@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/net/context"
-	httpsig "hvxahv/pkg/activity"
+	httpsig "hvxahv/pkg/activitypub"
 	"log"
 	"math/rand"
 	"net/http"
@@ -58,7 +58,7 @@ func Status(c *gin.Context) {
 
 
 	obj := StatusObj{
-		ID:         fmt.Sprintf("https://%s/users/hvturingga/statuses/111/activity", address),
+		ID:         fmt.Sprintf("https://%s/users/hvturingga/statuses/111/activitypub", address),
 		Type:       "Create",
 		Summary:    fmt.Sprintf("https://%s/users/hvturingga", address),
 		Published:  time.Now(),

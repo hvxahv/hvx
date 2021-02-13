@@ -39,7 +39,7 @@ func main()  {
 	} else {
 		log.Println("Article gRPC Services is running", port)
 		// 通知 Bot 服务已经开启
-		go bot.ServicesRunningNotice("article", port)
+		go bot.ServicesRunningNotice("activity", port)
 	}
 	s := grpc.NewServer()
 	pb.RegisterArticlesServer(s, &server{})

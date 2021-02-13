@@ -1,9 +1,9 @@
-package handler
+package activity
 
 import (
 	"github.com/gin-gonic/gin"
 	"hvxahv/api/client/social"
-	"hvxahv/pkg/activity"
+	"hvxahv/pkg/activitypub"
 	"hvxahv/pkg/models"
 	"hvxahv/pkg/utils"
 	"log"
@@ -15,7 +15,7 @@ InboxHandler 这是一个公共的收件箱
  */
 func InboxHandler(c *gin.Context) {
 	name := c.Param("user")
-	e, reqId, actor := activity.GetEvent(c)
+	e, reqId, actor := activitypub.GetEvent(c)
 	data := &models.Inbox{
 		Name: name,
 		RequestId: reqId,

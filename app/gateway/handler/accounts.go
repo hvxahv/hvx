@@ -34,7 +34,7 @@ func GetAccountsHandler(c *gin.Context) {
 }
 
 // GetActorHandler ... 通过其他实例的请求 Actor 来获取账户信息
-// 不同于 Accounts ，因为它是给服务器使用的接口，详情请查阅 activity actor 获取相关信息
+// 不同于 Accounts ，因为它是给服务器使用的接口，详情请查阅 activitypub actor 获取相关信息
 func GetActorHandler(c *gin.Context) {
 	name := c.Param("user")
 	r, err := account.GetActorClient(name)

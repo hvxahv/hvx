@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	httpsig "hvxahv/pkg/activity"
+	httpsig "hvxahv/pkg/activitypub"
 	"log"
 	"math/rand"
 	"net/http"

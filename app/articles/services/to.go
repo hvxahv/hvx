@@ -7,7 +7,7 @@ import (
 	"github.com/spf13/viper"
 	"golang.org/x/net/context"
 	pb "hvxahv/api/hvxahv/v1"
-	"hvxahv/pkg/activity"
+	"hvxahv/pkg/activitypub"
 	db2 "hvxahv/pkg/db"
 	"hvxahv/pkg/models"
 	"log"
@@ -28,8 +28,8 @@ func SendActivity(in *pb.ArticleData) {
 
 	activityId := fmt.Sprintf("https://%s/u/%s/%s", addr, in.Author, idr)
 
-	to := activity.GetFollow(in.Author,"follower")
-	cc := []string{"https://www.w3.org/ns/activitystreams#Public", "https://mstdn.social/users/hvturingga"}
+	to := activitypub.GetFollow(in.Author,"follower")
+	cc := []string{"https://www.w3.org/ns/activitystreams#Public"}
 
 	obj := gin.H{
 		"id": articleId,
@@ -74,7 +74,7 @@ func SendActivity(in *pb.ArticleData) {
 		method := "POST"
 
 		sa := *models.NewSendActivity(data, eib, method, in.Author, authorUrl, i)
-		r := activity.SendActivity(&sa)
+		r := activitypub.SendActivity(&sa)
 		log.Println("-------------发送创建事件到远程服务器--------------->", r)
 	}
 

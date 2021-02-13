@@ -1,4 +1,4 @@
-package activity
+package activitypub
 
 import (
 	"github.com/gin-gonic/gin"

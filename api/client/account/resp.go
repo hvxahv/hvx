@@ -5,9 +5,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gomodule/redigo/redis"
 	"github.com/spf13/viper"
-	"go.mongodb.org/mongo-driver/bson"
-	"golang.org/x/net/context"
 	pb "hvxahv/api/hvxahv/v1"
+	"hvxahv/pkg/activitypub/activity"
 	"hvxahv/pkg/bot"
 	"hvxahv/pkg/db"
 	"hvxahv/pkg/models"
@@ -77,7 +76,7 @@ func WebFingerResponse(c *gin.Context, r *pb.AccountData) {
 	links := []models.WebFingerLinks{
 		{
 			Rel: "self",
-			Type: "application/activity+json",
+			Type: "application/activitypub+json",
 			Href: fmt.Sprintf("https://%s/u/%s", address, name),
 		},
 	}
@@ -105,39 +104,10 @@ type Object struct {
 	Name         string `json:"name,omitempty"`
 }
 
-func getArticleByName(name string) []*map[string]interface{} {
-	log.Println(name)
-	if err := db.InitMongoDB(); err != nil {
-		log.Println(err)
-	}
-	// 从 MongoDB 取出
-	db := db.GetMongo()
-	f := bson.M{"actor": name}
 
-	co := db.Collection("articles")
-	var i []*map[string]interface{}
-	findA, err := co.Find(context.TODO(), f, nil)
-	if err != nil {
-		log.Println(err)
-	}
-	for findA.Next(context.TODO()) {
-		var el map[string]interface{}
-		if err := findA.Decode(&el); err != nil {
-			log.Println(err)
-		}
-		i = append(i, &el)
-	}
-	if err := findA.Err(); err != nil {
-		log.Println(err)
-	}
-	_ = findA.Close(context.TODO())
-
-
-	return i
-}
 func OutboxResponse(c *gin.Context, name string) {
 	address := fmt.Sprintf("https://%s/u/%s", viper.GetString("activitypub"), name)
-	r := getArticleByName(address)
+	r := activity.GetArticleByName(address)
 
 	c.JSON(200, gin.H{
 		"@context": "https://www.w3.org/ns/activitystreams",

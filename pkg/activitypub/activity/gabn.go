@@ -7,36 +7,30 @@ import (
 	"log"
 )
 
-type Follow struct {
-	ID    string `json:"_id"`
-	Actor string `json:"actor"`
-	Date  string `json:"date"`
-	Name  string `json:"name"`
-}
-
-// GetFollow 获取关注的方法，返回一个数组
-func GetFollow(name, collection string) []string {
+// GetArticleByName ...
+func GetArticleByName(name string) []*map[string]interface{} {
+	// 从 MongoDB 取出
 	db := db.GetMongo()
-	f := bson.M{"name": name}
-	log.Println(name)
-	co := db.Collection(collection)
-	var i []string
+	f := bson.M{"actor": name}
+
+	co := db.Collection("articles")
+	var i []*map[string]interface{}
 	findA, err := co.Find(context.TODO(), f, nil)
 	if err != nil {
 		log.Println(err)
 	}
 	for findA.Next(context.TODO()) {
-		var el Follow
+		var el map[string]interface{}
 		if err := findA.Decode(&el); err != nil {
 			log.Println(err)
 		}
-		i = append(i, el.Actor)
+		i = append(i, &el)
 	}
 	if err := findA.Err(); err != nil {
 		log.Println(err)
 	}
 	_ = findA.Close(context.TODO())
 
-
 	return i
 }
+

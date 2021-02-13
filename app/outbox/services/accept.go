@@ -7,7 +7,7 @@ import (
 	"github.com/gomodule/redigo/redis"
 	"github.com/spf13/viper"
 	"golang.org/x/net/context"
-	"hvxahv/pkg/activity"
+	"hvxahv/pkg/activitypub"
 	db2 "hvxahv/pkg/db"
 	"hvxahv/pkg/models"
 	"log"
@@ -48,7 +48,7 @@ func AcceptHandler(in *models.Accept) int {
 	method := "POST"
 
 	sa := *models.NewSendActivity(data, eib, method, in.Name, uad, in.Actor)
-	r := activity.SendActivity(&sa)
+	r := activitypub.SendActivity(&sa)
 
 	// 将关注者写到数据库并将关注数 +1
 	db := db2.GetMongo()
