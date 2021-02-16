@@ -6,7 +6,7 @@ import (
 	"hvxahv/app/gateway/handler/activity"
 	"hvxahv/app/gateway/handler/follow"
 	"hvxahv/app/test"
-	"hvxahv/pkg/api-client/accounts"
+	"hvxahv/pkg/client/accounts"
 	"hvxahv/pkg/middleware"
 )
 

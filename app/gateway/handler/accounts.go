@@ -2,7 +2,7 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
-	"hvxahv/pkg/api-client/accounts"
+	"hvxahv/pkg/client/accounts"
 	"hvxahv/pkg/utils"
 	"log"
 )

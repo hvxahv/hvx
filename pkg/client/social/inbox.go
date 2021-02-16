@@ -4,7 +4,7 @@ import (
 	"github.com/spf13/viper"
 	"golang.org/x/net/context"
 	pb "hvxahv/api/hvxahv/v1alpha1"
-	"hvxahv/pkg/api-client"
+	"hvxahv/pkg/client"
 	"hvxahv/pkg/models"
 	"log"
 )
@@ -12,7 +12,7 @@ import (
 // Inbox 功能的 gRPC 客户端, 它用来调用 inbox 的服务
 func InboxClient(data *models.Inbox) (string, error) {
 	p := viper.GetString("port.inbox")
-	conn, err := api_client.Conn(p, "Inbox")
+	conn, err := client.Conn(p, "Inbox")
 	if err != nil {
 		log.Println(err)
 	}
@@ -34,7 +34,7 @@ func InboxClient(data *models.Inbox) (string, error) {
 
 func GetInboxClient(name string) (*pb.GetInboxReply, error) {
 	p := viper.GetString("port.inbox")
-	conn, err := api_client.Conn(p, "Inbox")
+	conn, err := client.Conn(p, "Inbox")
 	if err != nil {
 		log.Println(err)
 	}

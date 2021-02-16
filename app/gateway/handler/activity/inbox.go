@@ -3,7 +3,7 @@ package activity
 import (
 	"github.com/gin-gonic/gin"
 	"hvxahv/pkg/activitypub"
-	social2 "hvxahv/pkg/api-client/social"
+	social2 "hvxahv/pkg/client/social"
 	"hvxahv/pkg/models"
 	"hvxahv/pkg/utils"
 	"log"

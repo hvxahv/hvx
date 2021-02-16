@@ -6,7 +6,7 @@ import (
 	"github.com/spf13/viper"
 	pb "hvxahv/api/hvxahv/v1alpha1"
 	"hvxahv/pkg/activitypub/activity"
-	social2 "hvxahv/pkg/api-client/social"
+	social2 "hvxahv/pkg/client/social"
 	"hvxahv/pkg/utils"
 	"log"
 )

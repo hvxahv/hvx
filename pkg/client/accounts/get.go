@@ -6,7 +6,7 @@ import (
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	pb "hvxahv/api/hvxahv/v1alpha1"
-	"hvxahv/pkg/api-client"
+	"hvxahv/pkg/client"
 	"log"
 	"strings"
 )
@@ -38,7 +38,7 @@ func GetAccountsClient(name string) (*pb.AccountData, error) {
 // GetActorClient Activitypub 协议的 Actor
 func GetActorClient(name string) (*pb.AccountData, error) {
 	p := viper.GetString("port.accounts")
-	conn, err := api_client.Conn(p, "Accounts")
+	conn, err := client.Conn(p, "Accounts")
 	if err != nil {
 		log.Println(err)
 	}
@@ -77,7 +77,7 @@ func GetWebFingerClient(name string) (*pb.AccountData, error) {
 // VerifyAccountsClient 获取用户的个人资料
 func VerifyAccountsClient(name string) (*pb.AccountData, error) {
 	p := viper.GetString("port.accounts")
-	conn, err := api_client.Conn(p, "Accounts")
+	conn, err := client.Conn(p, "Accounts")
 	if err != nil {
 		log.Println(err)
 	}
