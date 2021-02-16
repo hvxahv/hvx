@@ -2,7 +2,7 @@ package main
 
 import (
 	"golang.org/x/net/context"
-	pb "hvxahv/api/hvxahv/v1"
+	pb "hvxahv/api/hvxahv/v1alpha1"
 	"hvxahv/app/inbox/services"
 	"log"
 )

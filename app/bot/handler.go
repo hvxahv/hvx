@@ -2,7 +2,7 @@ package main
 
 import (
 	"golang.org/x/net/context"
-	v1 "hvxahv/api/util/v1"
+	v1 "hvxahv/api/util/v1alpha1"
 	"hvxahv/pkg/bot"
 )
 

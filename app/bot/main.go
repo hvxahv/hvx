@@ -5,7 +5,7 @@ import (
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
-	v1 "hvxahv/api/util/v1"
+	v1 "hvxahv/api/util/v1alpha1"
 	"hvxahv/pkg/bot"
 	"log"
 	"net"

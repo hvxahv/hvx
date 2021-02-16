@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
-	"hvxahv/api/client/social"
-	pb "hvxahv/api/hvxahv/v1"
+	pb "hvxahv/api/hvxahv/v1alpha1"
 	"hvxahv/pkg/activitypub/activity"
+	social2 "hvxahv/pkg/client/social"
 	"hvxahv/pkg/utils"
 	"log"
 )
@@ -35,7 +35,7 @@ func NewArticleHandler(c *gin.Context) {
 		log.Println(t)
 		log.Println("-----------------")
 
-		r, err := social.CreateArticleClient(data)
+		r, err := social2.CreateArticleClient(data)
 		if err != nil {
 			log.Println(err)
 		}

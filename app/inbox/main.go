@@ -9,7 +9,7 @@ import (
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
-	pb "hvxahv/api/hvxahv/v1"
+	pb "hvxahv/api/hvxahv/v1alpha1"
 	"hvxahv/pkg/bot"
 	"hvxahv/pkg/db"
 	"log"

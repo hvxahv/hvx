@@ -7,9 +7,9 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
-	"hvxahv/api/client/account"
-	"hvxahv/pkg/response"
+	"hvxahv/pkg/client/accounts"
 	"hvxahv/pkg/models"
+	"hvxahv/pkg/response"
 	"hvxahv/pkg/utils"
 	"log"
 )
@@ -22,7 +22,7 @@ func VerificationHandler(c *gin.Context) {
 	a := models.Accounts{ Username: u, Password: p }
 
 	// 调用验证客户端获取返回的账户信息
-	r, err := account.VerifyAccountsClient(u)
+	r, err := accounts.VerifyAccountsClient(u)
 	if err != nil {
 		log.Println("进行账户登录验证时出现错误: ", err)
 	}

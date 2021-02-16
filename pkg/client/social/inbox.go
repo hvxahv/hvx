@@ -3,8 +3,8 @@ package social
 import (
 	"github.com/spf13/viper"
 	"golang.org/x/net/context"
-	"hvxahv/api/client"
-	pb "hvxahv/api/hvxahv/v1"
+	pb "hvxahv/api/hvxahv/v1alpha1"
+	"hvxahv/pkg/client"
 	"hvxahv/pkg/models"
 	"log"
 )

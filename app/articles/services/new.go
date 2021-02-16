@@ -1,7 +1,7 @@
 package services
 
 import (
-	pb "hvxahv/api/hvxahv/v1"
+	pb "hvxahv/api/hvxahv/v1alpha1"
 )
 
 // CreateArticleHandler Articles 微服务服务端创建文章的 Handler

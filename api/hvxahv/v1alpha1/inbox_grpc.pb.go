@@ -31,7 +31,7 @@ func NewInboxClient(cc grpc.ClientConnInterface) InboxClient {
 
 func (c *inboxClient) NewInbox(ctx context.Context, in *InboxData, opts ...grpc.CallOption) (*NewInboxReply, error) {
 	out := new(NewInboxReply)
-	err := c.cc.Invoke(ctx, "/hvxahv.v1.proto.Inbox/NewInbox", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Inbox/NewInbox", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -40,7 +40,7 @@ func (c *inboxClient) NewInbox(ctx context.Context, in *InboxData, opts ...grpc.
 
 func (c *inboxClient) GetInbox(ctx context.Context, in *Name, opts ...grpc.CallOption) (*GetInboxReply, error) {
 	out := new(GetInboxReply)
-	err := c.cc.Invoke(ctx, "/hvxahv.v1.proto.Inbox/GetInbox", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Inbox/GetInbox", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -89,7 +89,7 @@ func _Inbox_NewInbox_Handler(srv interface{}, ctx context.Context, dec func(inte
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/hvxahv.v1.proto.Inbox/NewInbox",
+		FullMethod: "/hvxahv.v1alpha1.proto.Inbox/NewInbox",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(InboxServer).NewInbox(ctx, req.(*InboxData))
@@ -107,7 +107,7 @@ func _Inbox_GetInbox_Handler(srv interface{}, ctx context.Context, dec func(inte
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/hvxahv.v1.proto.Inbox/GetInbox",
+		FullMethod: "/hvxahv.v1alpha1.proto.Inbox/GetInbox",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(InboxServer).GetInbox(ctx, req.(*Name))
@@ -119,7 +119,7 @@ func _Inbox_GetInbox_Handler(srv interface{}, ctx context.Context, dec func(inte
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Inbox_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "hvxahv.v1.proto.Inbox",
+	ServiceName: "hvxahv.v1alpha1.proto.Inbox",
 	HandlerType: (*InboxServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -132,5 +132,5 @@ var Inbox_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "api/hvxahv/v1/inbox.proto",
+	Metadata: "api/hvxahv/v1alpha1/inbox.proto",
 }

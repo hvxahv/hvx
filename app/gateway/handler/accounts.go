@@ -2,7 +2,7 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
-	"hvxahv/api/client/account"
+	"hvxahv/pkg/client/accounts"
 	"hvxahv/pkg/utils"
 	"log"
 )
@@ -12,11 +12,11 @@ func NewAccountsHandler(c *gin.Context) {
 	u := c.PostForm("username")
 	p := c.PostForm("password")
 	// 将得到的数据交给客户端访问服务
-	r, err := account.NewAccountClient(u, p)
+	r, err := accounts.NewAccountClient(u, p)
 	if err != nil {
 		log.Println(err)
 	} else {
-		account.NewAccountsResponse(c, r)
+		accounts.NewAccountsResponse(c, r)
 	}
 }
 
@@ -25,11 +25,11 @@ func NewAccountsHandler(c *gin.Context) {
 // 不同于 Actor ，因为它是给用户使用的接口
 func GetAccountsHandler(c *gin.Context) {
 	author := utils.GetUserName(c)
-	r, err := account.GetAccountsClient(author)
+	r, err := accounts.GetAccountsClient(author)
 	if err != nil {
 		log.Println(err)
 	} else {
-		account.AccountsResponse(c, r)
+		accounts.AccountsResponse(c, r)
 	}
 }
 
@@ -37,11 +37,11 @@ func GetAccountsHandler(c *gin.Context) {
 // 不同于 Accounts ，因为它是给服务器使用的接口，详情请查阅 activitypub actor 获取相关信息
 func GetActorHandler(c *gin.Context) {
 	name := c.Param("user")
-	r, err := account.GetActorClient(name)
+	r, err := accounts.GetActorClient(name)
 	if err != nil {
 		log.Println(err)
 	} else {
-		account.ActorResponse(c, r)
+		accounts.ActorResponse(c, r)
 	}
 }
 // GetWebFingerHandler
@@ -50,11 +50,11 @@ func GetActorHandler(c *gin.Context) {
 func GetWebFingerHandler(c *gin.Context) {
 	name := c.Query("resource")
 
-	r, err := account.GetWebFingerClient(name)
+	r, err := accounts.GetWebFingerClient(name)
 	if err != nil {
 		log.Println(err)
 	}
-	account.WebFingerResponse(c, r)
+	accounts.WebFingerResponse(c, r)
 }
 
 func DeleteAccountHandler(c *gin.Context) {
@@ -71,6 +71,6 @@ func GetActorOutbox(c *gin.Context) {
 	log.Println(name, "用户请求了数据")
 
 
-	account.OutboxResponse(c, name)
+	accounts.OutboxResponse(c, name)
 }
 

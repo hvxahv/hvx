@@ -30,7 +30,7 @@ func NewNoticeClient(cc grpc.ClientConnInterface) NoticeClient {
 
 func (c *noticeClient) NewNotice(ctx context.Context, in *NoticeData, opts ...grpc.CallOption) (*NewNoticeReply, error) {
 	out := new(NewNoticeReply)
-	err := c.cc.Invoke(ctx, "/hvxahv.v1.proto.Notice/NewNotice", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Notice/NewNotice", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -75,7 +75,7 @@ func _Notice_NewNotice_Handler(srv interface{}, ctx context.Context, dec func(in
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/hvxahv.v1.proto.Notice/NewNotice",
+		FullMethod: "/hvxahv.v1alpha1.proto.Notice/NewNotice",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(NoticeServer).NewNotice(ctx, req.(*NoticeData))
@@ -87,7 +87,7 @@ func _Notice_NewNotice_Handler(srv interface{}, ctx context.Context, dec func(in
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Notice_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "hvxahv.v1.proto.Notice",
+	ServiceName: "hvxahv.v1alpha1.proto.Notice",
 	HandlerType: (*NoticeServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -96,5 +96,5 @@ var Notice_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "api/hvxahv/v1/notice.proto",
+	Metadata: "api/hvxahv/v1alpha1/notice.proto",
 }

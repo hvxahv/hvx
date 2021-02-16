@@ -1,12 +1,12 @@
-package account
+package accounts
 
 import (
 	"fmt"
 	"github.com/spf13/viper"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
-	"hvxahv/api/client"
-	pb "hvxahv/api/hvxahv/v1"
+	pb "hvxahv/api/hvxahv/v1alpha1"
+	"hvxahv/pkg/client"
 	"log"
 	"strings"
 )

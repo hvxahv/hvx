@@ -33,7 +33,7 @@ func NewArticlesClient(cc grpc.ClientConnInterface) ArticlesClient {
 
 func (c *articlesClient) NewArticle(ctx context.Context, in *ArticleData, opts ...grpc.CallOption) (*NewArticleReply, error) {
 	out := new(NewArticleReply)
-	err := c.cc.Invoke(ctx, "/hvxahv.v1.proto.Articles/NewArticle", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Articles/NewArticle", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -42,7 +42,7 @@ func (c *articlesClient) NewArticle(ctx context.Context, in *ArticleData, opts .
 
 func (c *articlesClient) GetArticles(ctx context.Context, in *GetArticleData, opts ...grpc.CallOption) (*GetArticleReply, error) {
 	out := new(GetArticleReply)
-	err := c.cc.Invoke(ctx, "/hvxahv.v1.proto.Articles/GetArticles", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Articles/GetArticles", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +51,7 @@ func (c *articlesClient) GetArticles(ctx context.Context, in *GetArticleData, op
 
 func (c *articlesClient) UpdateArticle(ctx context.Context, in *ArticleData, opts ...grpc.CallOption) (*UpdateArticleReply, error) {
 	out := new(UpdateArticleReply)
-	err := c.cc.Invoke(ctx, "/hvxahv.v1.proto.Articles/UpdateArticle", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Articles/UpdateArticle", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -60,7 +60,7 @@ func (c *articlesClient) UpdateArticle(ctx context.Context, in *ArticleData, opt
 
 func (c *articlesClient) DeleteArticle(ctx context.Context, in *DeleteArticleByID, opts ...grpc.CallOption) (*DeleteArticleReply, error) {
 	out := new(DeleteArticleReply)
-	err := c.cc.Invoke(ctx, "/hvxahv.v1.proto.Articles/DeleteArticle", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Articles/DeleteArticle", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -117,7 +117,7 @@ func _Articles_NewArticle_Handler(srv interface{}, ctx context.Context, dec func
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/hvxahv.v1.proto.Articles/NewArticle",
+		FullMethod: "/hvxahv.v1alpha1.proto.Articles/NewArticle",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ArticlesServer).NewArticle(ctx, req.(*ArticleData))
@@ -135,7 +135,7 @@ func _Articles_GetArticles_Handler(srv interface{}, ctx context.Context, dec fun
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/hvxahv.v1.proto.Articles/GetArticles",
+		FullMethod: "/hvxahv.v1alpha1.proto.Articles/GetArticles",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ArticlesServer).GetArticles(ctx, req.(*GetArticleData))
@@ -153,7 +153,7 @@ func _Articles_UpdateArticle_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/hvxahv.v1.proto.Articles/UpdateArticle",
+		FullMethod: "/hvxahv.v1alpha1.proto.Articles/UpdateArticle",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ArticlesServer).UpdateArticle(ctx, req.(*ArticleData))
@@ -171,7 +171,7 @@ func _Articles_DeleteArticle_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/hvxahv.v1.proto.Articles/DeleteArticle",
+		FullMethod: "/hvxahv.v1alpha1.proto.Articles/DeleteArticle",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ArticlesServer).DeleteArticle(ctx, req.(*DeleteArticleByID))
@@ -183,7 +183,7 @@ func _Articles_DeleteArticle_Handler(srv interface{}, ctx context.Context, dec f
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Articles_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "hvxahv.v1.proto.Articles",
+	ServiceName: "hvxahv.v1alpha1.proto.Articles",
 	HandlerType: (*ArticlesServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -204,5 +204,5 @@ var Articles_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "api/hvxahv/v1/articles.proto",
+	Metadata: "api/hvxahv/v1alpha1/articles.proto",
 }

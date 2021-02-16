@@ -31,7 +31,7 @@ func NewPubsubServiceClient(cc grpc.ClientConnInterface) PubsubServiceClient {
 
 func (c *pubsubServiceClient) Publish(ctx context.Context, in *PubSubMessage, opts ...grpc.CallOption) (*PubSubMessage, error) {
 	out := new(PubSubMessage)
-	err := c.cc.Invoke(ctx, "/hvxahv.v1.proto.PubsubService/Publish", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.PubsubService/Publish", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -39,7 +39,7 @@ func (c *pubsubServiceClient) Publish(ctx context.Context, in *PubSubMessage, op
 }
 
 func (c *pubsubServiceClient) Subscribe(ctx context.Context, in *PubSubMessage, opts ...grpc.CallOption) (PubsubService_SubscribeClient, error) {
-	stream, err := c.cc.NewStream(ctx, &PubsubService_ServiceDesc.Streams[0], "/hvxahv.v1.proto.PubsubService/Subscribe", opts...)
+	stream, err := c.cc.NewStream(ctx, &PubsubService_ServiceDesc.Streams[0], "/hvxahv.v1alpha1.proto.PubsubService/Subscribe", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -112,7 +112,7 @@ func _PubsubService_Publish_Handler(srv interface{}, ctx context.Context, dec fu
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/hvxahv.v1.proto.PubsubService/Publish",
+		FullMethod: "/hvxahv.v1alpha1.proto.PubsubService/Publish",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(PubsubServiceServer).Publish(ctx, req.(*PubSubMessage))
@@ -145,7 +145,7 @@ func (x *pubsubServiceSubscribeServer) Send(m *PubSubMessage) error {
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var PubsubService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "hvxahv.v1.proto.PubsubService",
+	ServiceName: "hvxahv.v1alpha1.proto.PubsubService",
 	HandlerType: (*PubsubServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -160,5 +160,5 @@ var PubsubService_ServiceDesc = grpc.ServiceDesc{
 			ServerStreams: true,
 		},
 	},
-	Metadata: "api/util/v1/pubsub.proto",
+	Metadata: "api/util/v1alpha1/pubsub.proto",
 }
