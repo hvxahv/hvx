@@ -3,8 +3,8 @@ package social
 import (
 	"github.com/spf13/viper"
 	"golang.org/x/net/context"
-	"hvxahv/api/client"
-	pb "hvxahv/api/hvxahv/v1"
+	pb "hvxahv/api/hvxahv/v1alpha1"
+	"hvxahv/pkg/api-client"
 	"hvxahv/pkg/models"
 	"log"
 )
@@ -12,7 +12,7 @@ import (
 // OutboxAcceptClient ... 发件箱同意请求客户端
 func OutboxAcceptClient(data *models.Accept) (*pb.ReplyCode, error) {
 	p := viper.GetString("port.outbox")
-	conn, err := client.Conn(p, "outbox")
+	conn, err := api_client.Conn(p, "outbox")
 	if err != nil {
 		log.Println(err)
 	}
@@ -37,7 +37,7 @@ func OutboxAcceptClient(data *models.Accept) (*pb.ReplyCode, error) {
 // OutboxFollowClient ... 发送请求关注的客户端, 它接收两个参数 name 当前的用户名, actor 请求关注的人的 URL
 func OutboxFollowClient(name, actor string) (*pb.ReplyCode, error) {
 	p := viper.GetString("port.outbox")
-	conn, err := client.Conn(p, "outbox")
+	conn, err := api_client.Conn(p, "outbox")
 	if err != nil {
 		log.Println(err)
 	}

@@ -1,11 +1,11 @@
-package account
+package accounts
 
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gomodule/redigo/redis"
 	"github.com/spf13/viper"
-	pb "hvxahv/api/hvxahv/v1"
+	pb "hvxahv/api/hvxahv/v1alpha1"
 	"hvxahv/pkg/activitypub/activity"
 	"hvxahv/pkg/bot"
 	"hvxahv/pkg/db"
@@ -43,7 +43,7 @@ func ActorResponse(c *gin.Context, r *pb.AccountData) {
 	name := r.Username
 	address := viper.GetString("activitypub")
 
-	con := []string{"https://www.w3.org/ns/activitystreams", "https://w3id.org/security/v1"}
+	con := []string{"https://www.w3.org/ns/activitystreams", "https://w3id.org/security/v1alpha1"}
 	publicKey := map[string]string{
 		"id": r.Id,
 		"owner": fmt.Sprintf("https://%s/actor/%s", address, name),

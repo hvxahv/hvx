@@ -1,17 +1,17 @@
-package account
+package accounts
 
 import (
 	"github.com/spf13/viper"
 	"golang.org/x/net/context"
-	"hvxahv/api/client"
-	pb "hvxahv/api/hvxahv/v1"
+	pb "hvxahv/api/hvxahv/v1alpha1"
+	"hvxahv/pkg/api-client"
 	"log"
 )
 
 // NewAccountClient 新建用户方法, 访问 accounts 微服务的客户端
 func NewAccountClient(u, p string) (*pb.NewAccountReply, error) {
 	port := viper.GetString("port.accounts")
-	conn, err := client.Conn(port, "Accounts")
+	conn, err := api_client.Conn(port, "Accounts")
 	if err != nil {
 		log.Println(err)
 	}

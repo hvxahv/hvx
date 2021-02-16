@@ -1,4 +1,4 @@
-package client
+package api_client
 
 import (
 	"fmt"

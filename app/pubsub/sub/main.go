@@ -3,7 +3,7 @@ package main
 //import (
 //	"golang.org/x/net/context"
 //	"google.golang.org/grpc"
-//	"hvxahv/api/util/v1"
+//	"hvxahv/api/util/v1alpha1"
 //	"io"
 //	"log"
 //)
@@ -16,9 +16,9 @@ package main
 //	}
 //	defer conn.Close()
 //
-//	c := v1.NewPubsubServiceClient(conn)
+//	c := v1alpha1.NewPubsubServiceClient(conn)
 //
-//	stream, err := c.Subscribe(context.Background(), &v1.PubSubMessage{Message: "nmsl"})
+//	stream, err := c.Subscribe(context.Background(), &v1alpha1.PubSubMessage{Message: "nmsl"})
 //	if err != nil {
 //		log.Fatal(err)
 //	}

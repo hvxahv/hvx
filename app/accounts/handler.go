@@ -5,10 +5,12 @@ package main
 
 import (
 	"golang.org/x/net/context"
-	pb "hvxahv/api/hvxahv/v1"
+	pb "hvxahv/api/hvxahv/v1alpha1"
 	"hvxahv/app/accounts/services"
 	"log"
 )
+
+
 
 // NewAccount 创建账户 将接收到的用户数据存储到数据库
 func (s *server) NewAccount(ctx context.Context, in *pb.AccountData) (*pb.NewAccountReply, error) {

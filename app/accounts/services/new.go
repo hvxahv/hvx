@@ -5,7 +5,7 @@ import (
 	"hvxahv/pkg/models"
 
 	"golang.org/x/crypto/bcrypt"
-	pb "hvxahv/api/hvxahv/v1"
+	pb "hvxahv/api/hvxahv/v1alpha1"
 	"hvxahv/pkg/db"
 	"hvxahv/pkg/utils"
 	"log"

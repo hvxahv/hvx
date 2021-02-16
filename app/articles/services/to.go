@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 	"golang.org/x/net/context"
-	pb "hvxahv/api/hvxahv/v1"
+	pb "hvxahv/api/hvxahv/v1alpha1"
 	"hvxahv/pkg/activitypub"
 	db2 "hvxahv/pkg/db"
 	"hvxahv/pkg/models"

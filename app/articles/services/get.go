@@ -1,7 +1,7 @@
 package services
 
 import (
-	pb "hvxahv/api/hvxahv/v1"
+	pb "hvxahv/api/hvxahv/v1alpha1"
 	"hvxahv/pkg/db"
 )
 

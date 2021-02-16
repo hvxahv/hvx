@@ -31,7 +31,7 @@ func NewOutboxClient(cc grpc.ClientConnInterface) OutboxClient {
 
 func (c *outboxClient) Accept(ctx context.Context, in *AcceptData, opts ...grpc.CallOption) (*ReplyCode, error) {
 	out := new(ReplyCode)
-	err := c.cc.Invoke(ctx, "/hvxahv.v1.proto.Outbox/Accept", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Outbox/Accept", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -40,7 +40,7 @@ func (c *outboxClient) Accept(ctx context.Context, in *AcceptData, opts ...grpc.
 
 func (c *outboxClient) Follow(ctx context.Context, in *FollowData, opts ...grpc.CallOption) (*ReplyCode, error) {
 	out := new(ReplyCode)
-	err := c.cc.Invoke(ctx, "/hvxahv.v1.proto.Outbox/Follow", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Outbox/Follow", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -89,7 +89,7 @@ func _Outbox_Accept_Handler(srv interface{}, ctx context.Context, dec func(inter
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/hvxahv.v1.proto.Outbox/Accept",
+		FullMethod: "/hvxahv.v1alpha1.proto.Outbox/Accept",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(OutboxServer).Accept(ctx, req.(*AcceptData))
@@ -107,7 +107,7 @@ func _Outbox_Follow_Handler(srv interface{}, ctx context.Context, dec func(inter
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/hvxahv.v1.proto.Outbox/Follow",
+		FullMethod: "/hvxahv.v1alpha1.proto.Outbox/Follow",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(OutboxServer).Follow(ctx, req.(*FollowData))
@@ -119,7 +119,7 @@ func _Outbox_Follow_Handler(srv interface{}, ctx context.Context, dec func(inter
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Outbox_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "hvxahv.v1.proto.Outbox",
+	ServiceName: "hvxahv.v1alpha1.proto.Outbox",
 	HandlerType: (*OutboxServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -132,5 +132,5 @@ var Outbox_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "api/hvxahv/v1/outbox.proto",
+	Metadata: "api/hvxahv/v1alpha1/outbox.proto",
 }

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/gomodule/redigo/redis"
 	"golang.org/x/net/context"
-	pb "hvxahv/api/hvxahv/v1"
+	pb "hvxahv/api/hvxahv/v1alpha1"
 	"hvxahv/pkg/db"
 	"hvxahv/pkg/models"
 	"log"

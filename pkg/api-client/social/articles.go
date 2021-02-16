@@ -3,8 +3,8 @@ package social
 import (
 	"github.com/spf13/viper"
 	"golang.org/x/net/context"
-	"hvxahv/api/client"
-	pb "hvxahv/api/hvxahv/v1"
+	pb "hvxahv/api/hvxahv/v1alpha1"
+	"hvxahv/pkg/api-client"
 	"log"
 )
 
@@ -12,7 +12,7 @@ import (
 // 提交请求数据并获取服务端返回的结果数据 r.Reply
 func CreateArticleClient(data *pb.ArticleData) (string, error) {
 	p := viper.GetString("port.articles")
-	conn, err := client.Conn(p, "Article")
+	conn, err := api_client.Conn(p, "Article")
 	if err != nil {
 		log.Println(err)
 	}
@@ -31,7 +31,7 @@ func CreateArticleClient(data *pb.ArticleData) (string, error) {
 // GetArticlesClient 通过用户名获取数据
 func GetArticlesClient(data *pb.GetArticleData) ([]*pb.ArticleData, error) {
 	p := viper.GetString("port.articles")
-	conn, err := client.Conn(p, "Article")
+	conn, err := api_client.Conn(p, "Article")
 	if err != nil {
 		log.Println(err)
 	}

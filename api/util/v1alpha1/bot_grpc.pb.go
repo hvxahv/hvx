@@ -30,7 +30,7 @@ func NewBotNoticeClient(cc grpc.ClientConnInterface) BotNoticeClient {
 
 func (c *botNoticeClient) Notice(ctx context.Context, in *BotNoticeSend, opts ...grpc.CallOption) (*BotNoticeReply, error) {
 	out := new(BotNoticeReply)
-	err := c.cc.Invoke(ctx, "/hvxahv.v1.proto.BotNotice/notice", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.BotNotice/notice", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -75,7 +75,7 @@ func _BotNotice_Notice_Handler(srv interface{}, ctx context.Context, dec func(in
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/hvxahv.v1.proto.BotNotice/notice",
+		FullMethod: "/hvxahv.v1alpha1.proto.BotNotice/notice",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(BotNoticeServer).Notice(ctx, req.(*BotNoticeSend))
@@ -87,7 +87,7 @@ func _BotNotice_Notice_Handler(srv interface{}, ctx context.Context, dec func(in
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var BotNotice_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "hvxahv.v1.proto.BotNotice",
+	ServiceName: "hvxahv.v1alpha1.proto.BotNotice",
 	HandlerType: (*BotNoticeServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -96,5 +96,5 @@ var BotNotice_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "api/util/v1/bot.proto",
+	Metadata: "api/util/v1alpha1/bot.proto",
 }

@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"golang.org/x/net/context"
-	"hvxahv/api/client/account"
+	"hvxahv/pkg/api-client/accounts"
 	"hvxahv/pkg/models"
 	"log"
 	"net/http"
@@ -33,7 +33,7 @@ func SendActivity(data *models.SendActivity) int {
 	req.Header.Add("Host", h.Hostname())
 	req.Header.Add("Date", date)
 
-	r, err := account.GetActorClient(data.Name)
+	r, err := accounts.GetActorClient(data.Name)
 	if err != nil {
 		log.Println(err)
 	}

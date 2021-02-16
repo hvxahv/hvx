@@ -5,7 +5,7 @@ package main
 //	"github.com/gin-gonic/gin"
 //	"golang.org/x/net/context"
 //	"google.golang.org/grpc"
-//	"hvxahv/api/util/v1"
+//	"hvxahv/api/util/v1alpha1"
 //	"log"
 //)
 //
@@ -18,9 +18,9 @@ package main
 //	}
 //	defer conn.Close()
 //
-//	client := v1.NewPubsubServiceClient(conn)
+//	client := v1alpha1.NewPubsubServiceClient(conn)
 //
-//	str, err := client.Publish(context.Background(), &v1.PubSubMessage{Message: message})
+//	str, err := client.Publish(context.Background(), &v1alpha1.PubSubMessage{Message: message})
 //
 //	if err != nil {
 //		log.Fatal(err)

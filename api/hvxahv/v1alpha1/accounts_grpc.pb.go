@@ -35,7 +35,7 @@ func NewAccountsClient(cc grpc.ClientConnInterface) AccountsClient {
 
 func (c *accountsClient) NewAccount(ctx context.Context, in *AccountData, opts ...grpc.CallOption) (*NewAccountReply, error) {
 	out := new(NewAccountReply)
-	err := c.cc.Invoke(ctx, "/hvxahv.v1.proto.Accounts/NewAccount", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Accounts/NewAccount", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +44,7 @@ func (c *accountsClient) NewAccount(ctx context.Context, in *AccountData, opts .
 
 func (c *accountsClient) GetAccount(ctx context.Context, in *AccountName, opts ...grpc.CallOption) (*AccountData, error) {
 	out := new(AccountData)
-	err := c.cc.Invoke(ctx, "/hvxahv.v1.proto.Accounts/GetAccount", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Accounts/GetAccount", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -53,7 +53,7 @@ func (c *accountsClient) GetAccount(ctx context.Context, in *AccountName, opts .
 
 func (c *accountsClient) DeleteAccount(ctx context.Context, in *AccountName, opts ...grpc.CallOption) (*DeleteAccountReply, error) {
 	out := new(DeleteAccountReply)
-	err := c.cc.Invoke(ctx, "/hvxahv.v1.proto.Accounts/DeleteAccount", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Accounts/DeleteAccount", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +62,7 @@ func (c *accountsClient) DeleteAccount(ctx context.Context, in *AccountName, opt
 
 func (c *accountsClient) SettingAccount(ctx context.Context, in *AccountData, opts ...grpc.CallOption) (*SettingAccountReply, error) {
 	out := new(SettingAccountReply)
-	err := c.cc.Invoke(ctx, "/hvxahv.v1.proto.Accounts/SettingAccount", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Accounts/SettingAccount", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -71,7 +71,7 @@ func (c *accountsClient) SettingAccount(ctx context.Context, in *AccountData, op
 
 func (c *accountsClient) GetActor(ctx context.Context, in *AccountName, opts ...grpc.CallOption) (*AccountData, error) {
 	out := new(AccountData)
-	err := c.cc.Invoke(ctx, "/hvxahv.v1.proto.Accounts/GetActor", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Accounts/GetActor", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -80,7 +80,7 @@ func (c *accountsClient) GetActor(ctx context.Context, in *AccountName, opts ...
 
 func (c *accountsClient) VerifyAccount(ctx context.Context, in *AccountName, opts ...grpc.CallOption) (*AccountData, error) {
 	out := new(AccountData)
-	err := c.cc.Invoke(ctx, "/hvxahv.v1.proto.Accounts/VerifyAccount", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Accounts/VerifyAccount", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -145,7 +145,7 @@ func _Accounts_NewAccount_Handler(srv interface{}, ctx context.Context, dec func
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/hvxahv.v1.proto.Accounts/NewAccount",
+		FullMethod: "/hvxahv.v1alpha1.proto.Accounts/NewAccount",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AccountsServer).NewAccount(ctx, req.(*AccountData))
@@ -163,7 +163,7 @@ func _Accounts_GetAccount_Handler(srv interface{}, ctx context.Context, dec func
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/hvxahv.v1.proto.Accounts/GetAccount",
+		FullMethod: "/hvxahv.v1alpha1.proto.Accounts/GetAccount",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AccountsServer).GetAccount(ctx, req.(*AccountName))
@@ -181,7 +181,7 @@ func _Accounts_DeleteAccount_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/hvxahv.v1.proto.Accounts/DeleteAccount",
+		FullMethod: "/hvxahv.v1alpha1.proto.Accounts/DeleteAccount",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AccountsServer).DeleteAccount(ctx, req.(*AccountName))
@@ -199,7 +199,7 @@ func _Accounts_SettingAccount_Handler(srv interface{}, ctx context.Context, dec 
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/hvxahv.v1.proto.Accounts/SettingAccount",
+		FullMethod: "/hvxahv.v1alpha1.proto.Accounts/SettingAccount",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AccountsServer).SettingAccount(ctx, req.(*AccountData))
@@ -217,7 +217,7 @@ func _Accounts_GetActor_Handler(srv interface{}, ctx context.Context, dec func(i
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/hvxahv.v1.proto.Accounts/GetActor",
+		FullMethod: "/hvxahv.v1alpha1.proto.Accounts/GetActor",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AccountsServer).GetActor(ctx, req.(*AccountName))
@@ -235,7 +235,7 @@ func _Accounts_VerifyAccount_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/hvxahv.v1.proto.Accounts/VerifyAccount",
+		FullMethod: "/hvxahv.v1alpha1.proto.Accounts/VerifyAccount",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AccountsServer).VerifyAccount(ctx, req.(*AccountName))
@@ -247,7 +247,7 @@ func _Accounts_VerifyAccount_Handler(srv interface{}, ctx context.Context, dec f
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Accounts_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "hvxahv.v1.proto.Accounts",
+	ServiceName: "hvxahv.v1alpha1.proto.Accounts",
 	HandlerType: (*AccountsServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -276,5 +276,5 @@ var Accounts_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "api/hvxahv/v1/accounts.proto",
+	Metadata: "api/hvxahv/v1alpha1/accounts.proto",
 }
