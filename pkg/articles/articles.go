@@ -1,4 +1,4 @@
-package models
+package inbox
 
 import "github.com/jinzhu/gorm"
 

@@ -58,7 +58,7 @@ func GetActorClient(name string) (*pb.AccountData, error) {
 // GetWebFinger 获取  Activitypub 协议的 GetWebFinger
 func GetWebFingerClient(name string) (*pb.AccountData, error) {
 	// 将 url 传过来的数据进行过滤，得到真正的用户名
-	if strings.HasPrefix(name, "acct:") {
+	if strings.HasPrefix(name, "accounts:") {
 		name = name[5:]
 	}
 	ali := strings.IndexByte(name, '@')

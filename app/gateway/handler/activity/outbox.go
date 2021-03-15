@@ -3,7 +3,7 @@ package activity
 import (
 	"github.com/gin-gonic/gin"
 	social2 "hvxahv/pkg/client/social"
-	"hvxahv/pkg/models"
+	"hvxahv/pkg/outbox"
 	"hvxahv/pkg/response"
 	"hvxahv/pkg/utils"
 	"log"
@@ -15,7 +15,7 @@ func FollowerAcceptHandler(c *gin.Context) {
 	actor := c.PostForm("actor")
 	id := c.PostForm("id")
 
-	data := models.NewAccept(actor, name, id)
+	data := inbox.NewAccept(actor, name, id)
 	r, err := social2.OutboxAcceptClient(data)
 	if err != nil {
 		log.Println(err)

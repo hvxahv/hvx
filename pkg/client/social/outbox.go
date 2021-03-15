@@ -5,12 +5,12 @@ import (
 	"golang.org/x/net/context"
 	pb "hvxahv/api/hvxahv/v1alpha1"
 	"hvxahv/pkg/client"
-	"hvxahv/pkg/models"
+	"hvxahv/pkg/outbox"
 	"log"
 )
 
 // OutboxAcceptClient ... 发件箱同意请求客户端
-func OutboxAcceptClient(data *models.Accept) (*pb.ReplyCode, error) {
+func OutboxAcceptClient(data *inbox.Accept) (*pb.ReplyCode, error) {
 	p := viper.GetString("port.outbox")
 	conn, err := client.Conn(p, "outbox")
 	if err != nil {

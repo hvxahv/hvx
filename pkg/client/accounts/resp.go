@@ -6,10 +6,10 @@ import (
 	"github.com/gomodule/redigo/redis"
 	"github.com/spf13/viper"
 	pb "hvxahv/api/hvxahv/v1alpha1"
+	"hvxahv/pkg/accounts"
 	"hvxahv/pkg/activitypub/activity"
 	"hvxahv/pkg/bot"
 	"hvxahv/pkg/db"
-	"hvxahv/pkg/models"
 	"hvxahv/pkg/response"
 	"log"
 )
@@ -73,15 +73,15 @@ func WebFingerResponse(c *gin.Context, r *pb.AccountData) {
 	address := viper.GetString("activitypub")
 	name := r.Username
 
-	links := []models.WebFingerLinks{
+	links := []accounts.WebFingerLinks{
 		{
 			Rel: "self",
 			Type: "application/activitypub+json",
 			Href: fmt.Sprintf("https://%s/u/%s", address, name),
 		},
 	}
-	finger := &models.WebFinger{
-		Subject: fmt.Sprintf("acct:%s@%s", name, address),
+	finger := &accounts.WebFinger{
+		Subject: fmt.Sprintf("accounts:%s@%s", name, address),
 		Links: links,
 	}
 	log.Println(finger)

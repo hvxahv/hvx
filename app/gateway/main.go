@@ -10,6 +10,7 @@ package main
 import (
 	"fmt"
 	"github.com/spf13/viper"
+	"hvxahv/app/gateway/https"
 	"hvxahv/pkg/bot"
 	"hvxahv/pkg/db"
 	"log"
@@ -31,7 +32,7 @@ func main()  {
 
 	db.InitRedis()
 
-	r := IngressRouter()
+	r := https.IngressRouter()
 	go bot.ServicesRunningNotice("gateway gateway", "7000")
 	_ = r.Run(fmt.Sprintf(":%s", viper.GetString("port.gateway")))
 }

@@ -78,7 +78,7 @@ func Req(da string, pk []byte) {
 	case 201:
 	case 202:
 	default:
-		fmt.Errorf("http post status: %d", res.StatusCode)
+		fmt.Errorf("https post status: %d", res.StatusCode)
 	}
 	log.Printf("successful post: %s %d", url, res.StatusCode)
 	log.Println("请求出现错误",req)
@@ -95,7 +95,7 @@ func Req2(da string, pk []byte) {
 	//obj := map[string]string {
 	//	"id": "https://activitypub.disism.com/"+ idr,
 	//	"type": "Note",
-	//	"published": time.Now().UTC().Format(http.TimeFormat),
+	//	"published": time.Now().UTC().Format(https.TimeFormat),
 	//	"attributedTo": "https://activitypub.disism.com/actor",
 	//	"inReplyTo": "https://mastodon.social/@hvturingga/104812740119120055",
 	//	//"content": da,
@@ -150,7 +150,7 @@ func Req2(da string, pk []byte) {
 	case 201:
 	case 202:
 	default:
-		fmt.Errorf("http post status: %d", res.StatusCode)
+		fmt.Errorf("https post status: %d", res.StatusCode)
 	}
 	log.Printf("successful post: %s %d", url, res.StatusCode)
 }

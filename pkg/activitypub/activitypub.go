@@ -1,7 +1,7 @@
-package models
+package activitypub
 
 // SendActivity ... 发送活动的结构体
-type SendActivity struct {
+type Activity struct {
 	Data []byte
 	EndInbox string
 	Method string
@@ -18,8 +18,8 @@ type SendActivity struct {
 	UserAddress 当前用户的 Activity 地址
 	EndActor 终点用户的 Actor 地址； 对方
 */
-func NewSendActivity(data []byte, endInbox, method, name, userAddress, endActor string) *SendActivity {
-	nsa := &SendActivity{
+func NewSendActivity(data []byte, endInbox, method, name, userAddress, endActor string) *Activity {
+	nsa := &Activity{
 		Data:     data,
 		EndInbox: endInbox,
 		Method:   method,

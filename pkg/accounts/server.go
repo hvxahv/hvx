@@ -1,4 +1,4 @@
-package acct
+package accounts
 
 
 type ServerConfig struct {

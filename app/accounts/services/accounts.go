@@ -4,14 +4,14 @@ import (
 	"encoding/json"
 	"github.com/gomodule/redigo/redis"
 	pb "hvxahv/api/hvxahv/v1alpha1"
+	"hvxahv/pkg/accounts"
 	"hvxahv/pkg/db"
-	"hvxahv/pkg/models"
 	"log"
 )
 
 // GetAccountData 获取账户数据，将数据返回给调用者, 在用户登录之后调用的方法
-func GetAccountData(u string) *models.Accounts {
-	a := new(models.Accounts)
+func GetAccountData(u string) *accounts.Accounts {
+	a := new(accounts.Accounts)
 
 	db := db.GetMaria()
 
@@ -42,8 +42,8 @@ func GetActorData(u string) *pb.AccountData{
 
 // 用于验证用户登录的方法, 增加了判断用户是否在数据库中存在的查询
 // VerifyAccount
-func VerifyAccounts(u string) *models.Accounts {
-	a := new(models.Accounts)
+func VerifyAccounts(u string) *accounts.Accounts {
+	a := new(accounts.Accounts)
 	db := db.GetMaria()
 
 	if db.Debug().Table("accounts").Where("username = ?", u).First(&a).RecordNotFound() {

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"golang.org/x/net/context"
 	"hvxahv/pkg/client/accounts"
-	"hvxahv/pkg/models"
 	"log"
 	"net/http"
 	"net/url"
@@ -13,7 +12,7 @@ import (
 )
 
 // SendActivity 发送活动
-func SendActivity(data *models.SendActivity) int {
+func SendActivity(data *Activity) int {
 	payload := bytes.NewBuffer(data.Data)
 	cli := &http.Client {}
 

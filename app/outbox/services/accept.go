@@ -9,7 +9,8 @@ import (
 	"golang.org/x/net/context"
 	"hvxahv/pkg/activitypub"
 	db2 "hvxahv/pkg/db"
-	"hvxahv/pkg/models"
+	"hvxahv/pkg/inbox"
+	inbox2 "hvxahv/pkg/outbox"
 	"log"
 	"math/rand"
 	"net/http"
@@ -18,7 +19,7 @@ import (
 )
 
 // AcceptHandler ...
-func AcceptHandler(in *models.Accept) int {
+func AcceptHandler(in *inbox2.Accept) int {
 	domain := viper.GetString("activitypub")
 
 	idr := strconv.Itoa(rand.Int())
@@ -47,13 +48,13 @@ func AcceptHandler(in *models.Accept) int {
 	eib := fmt.Sprintf("%s/inbox", in.Actor)
 	method := "POST"
 
-	sa := *models.NewSendActivity(data, eib, method, in.Name, uad, in.Actor)
+	sa := *activitypub.NewSendActivity(data, eib, method, in.Name, uad, in.Actor)
 	r := activitypub.SendActivity(&sa)
 
 	// 将关注者写到数据库并将关注数 +1
 	db := db2.GetMongo()
 	co := db.Collection("follower")
-	a := new(models.Follow)
+	a := new(inbox.Follow)
 	a.Name = in.Name
 	a.Actor = in.Actor
 	a.Date = time.Now().UTC().Format(http.TimeFormat)

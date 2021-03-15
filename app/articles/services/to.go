@@ -9,7 +9,6 @@ import (
 	pb "hvxahv/api/hvxahv/v1alpha1"
 	"hvxahv/pkg/activitypub"
 	db2 "hvxahv/pkg/db"
-	"hvxahv/pkg/models"
 	"log"
 	"math/rand"
 	"net/http"
@@ -73,7 +72,7 @@ func SendActivity(in *pb.ArticleData) {
 		eib := fmt.Sprintf("%s/inbox", i)
 		method := "POST"
 
-		sa := *models.NewSendActivity(data, eib, method, in.Author, authorUrl, i)
+		sa := *activitypub.NewSendActivity(data, eib, method, in.Author, authorUrl, i)
 		r := activitypub.SendActivity(&sa)
 		log.Println("-------------发送创建事件到远程服务器--------------->", r)
 	}

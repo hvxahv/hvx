@@ -7,7 +7,7 @@ import (
 	"golang.org/x/net/context"
 	pb "hvxahv/api/hvxahv/v1alpha1"
 	"hvxahv/pkg/db"
-	"hvxahv/pkg/models"
+	"hvxahv/pkg/inbox"
 	"log"
 	"net/http"
 	"time"
@@ -15,7 +15,7 @@ import (
 
 // ReceiveInbox 接收 Inbox 数据
 func ReceiveInbox(in *pb.InboxData) string {
-	i := &models.Inbox{
+	i := &inbox.Inbox{
 		Actor: in.Actor,
 		RequestId: in.RequestId,
 		EventType: in.EventType,
@@ -40,7 +40,7 @@ func ReceiveInbox(in *pb.InboxData) string {
 		db := db.GetMongo()
 
 		co := db.Collection("inbox")
-		inbox := models.NewInboxStructs(i)
+		inbox := inbox.NewInboxStructs(i)
 		ir, err := co.InsertOne(context.TODO(), &inbox)
 		if err != nil {
 			log.Println("insert data in inbox error: ", err)
@@ -69,7 +69,7 @@ func ReceiveInbox(in *pb.InboxData) string {
 func followingSave(name, actor string) {
 	db := db.GetMongo()
 	co := db.Collection("following")
-	a := new(models.Follow)
+	a := new(inbox.Follow)
 	a.Name = name
 	a.Actor = actor
 	a.Date = time.Now().UTC().Format(http.TimeFormat)

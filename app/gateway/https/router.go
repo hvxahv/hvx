@@ -1,4 +1,4 @@
-package main
+package https
 
 import (
 	"github.com/gin-gonic/gin"
@@ -20,18 +20,18 @@ func IngressRouter() *gin.Engine {
 		})
 	})
 
-	/* 账号登录和注册 */
+	// Default account login and registration system
 	r.POST("/account/new", handler.NewAccountsHandler)
 	r.POST("/account/login", handler.VerificationHandler)
 
-	// Activitypub 功能
+	// API routing for Activitypub function
 	r.GET("/.well-known/webfinger", handler.GetWebFingerHandler)
 	r.GET("/u/:user", handler.GetActorHandler)
 	r.GET("/u/:user/outbox", handler.GetActorOutbox)
 	r.POST("/u/:user/inbox", activity.InboxHandler)
 
 	r.GET("/u/:user/article/:id", activity.GetPublicArticleHandler)
-	// 用于 测试的
+	// Http api interface for testing
 	r.POST("/accept", test.AcceptHandler)
 
 	r.GET("/u/:user/following", accounts.FollowingResponse)
@@ -39,7 +39,7 @@ func IngressRouter() *gin.Engine {
 
 
 
-	// 通过 Token 才能访问的功能
+	// Functions that can be accessed through Token, carry token when requesting
 	v1 := r.Group("/api/v1alpha1")
 	v1.Use(middleware.JWTAuth)
 	{
@@ -47,7 +47,7 @@ func IngressRouter() *gin.Engine {
 		v1.GET("/account/i", handler.GetAccountsHandler)
 		v1.POST("/account/delete", handler.DeleteAccountHandler)
 		v1.POST("/account/settings", handler.AccountSettingHandler)
-		// 已经登录用户获取 INBOX 信息
+		// Logged in users get INBOX information
 		v1.GET("/inbox", activity.GetInboxHandler)
 
 		// Follow

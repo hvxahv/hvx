@@ -1,4 +1,4 @@
-package models
+package inbox
 
 // Accept ...
 // Actor 远程用户
