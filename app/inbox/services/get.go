@@ -4,7 +4,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"golang.org/x/net/context"
 	pb "hvxahv/api/hvxahv/v1alpha1"
-	db2 "hvxahv/pkg/db"
+	db2 "hvxahv/pkg/mongo"
 	"log"
 )
 

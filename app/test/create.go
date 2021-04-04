@@ -15,7 +15,7 @@ import (
 )
 
 func CreateHandler(c *gin.Context) {
-	url := "https://mas.to/inbox"
+	url := "http://mas.to/inbox"
 	method := "POST"
 
 
@@ -23,21 +23,21 @@ func CreateHandler(c *gin.Context) {
 
 	date := time.Now().UTC().Format(http.TimeFormat)
 	obj := gin.H {
-		"id": fmt.Sprintf("https://%s/%s", address, idr),
+		"id": fmt.Sprintf("http://%s/%s", address, idr),
 		"type": "Note",
 		"published": date,
-		"attributedTo": fmt.Sprintf("https://%s/actor", address),
+		"attributedTo": fmt.Sprintf("http://%s/actor", address),
 		"content": "这是一条测试数据",
-		"to": []string{"https://www.w3.org/ns/activitystreams#Public"},
+		"to": []string{"http://www.w3.org/ns/activitystreams#Public"},
 	}
 
 	p := gin.H{
-		"@context": "https://www.w3.org/ns/activitystreams",
-		"id": fmt.Sprintf("https://%s/create-%s", address, idr),
+		"@context": "http://www.w3.org/ns/activitystreams",
+		"id": fmt.Sprintf("http://%s/create-%s", address, idr),
 		"type": "Create",
-		"actor": fmt.Sprintf("https://%s/actor", address),
-		"to": []string{"https://www.w3.org/ns/activitystreams#Public"},
-		"cc": []string{"https://mas.to/users/hvturingga"},
+		"actor": fmt.Sprintf("http://%s/actor", address),
+		"to": []string{"http://www.w3.org/ns/activitystreams#Public"},
+		"cc": []string{"http://mas.to/users/hvturingga"},
 		"object": obj,
 	}
 	byterData, err := json.Marshal(p)
@@ -64,7 +64,7 @@ func CreateHandler(c *gin.Context) {
 	block := httpsig.PrivateKey{
 		Key: GetKey(),
 	}
-	httpsig.SignRequest(fmt.Sprintf("https://%s/actor", address), block, req, byterData)
+	httpsig.SignRequest(fmt.Sprintf("http://%s/actor", address), block, req, byterData)
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
 	req = req.WithContext(ctx)
@@ -78,7 +78,7 @@ func CreateHandler(c *gin.Context) {
 	case 201:
 	case 202:
 	default:
-		fmt.Errorf("https post status: %d", res.StatusCode)
+		fmt.Errorf("http post status: %d", res.StatusCode)
 	}
 	log.Printf("successful post: %s %d", url, res.StatusCode)
 	log.Println(req)

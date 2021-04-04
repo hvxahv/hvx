@@ -7,10 +7,11 @@ import (
 	"github.com/gomodule/redigo/redis"
 	"github.com/spf13/viper"
 	"golang.org/x/net/context"
+	"hvxahv/internal/inbox"
+	inbox2 "hvxahv/internal/outbox"
 	"hvxahv/pkg/activitypub"
-	db2 "hvxahv/pkg/db"
-	"hvxahv/pkg/inbox"
-	inbox2 "hvxahv/pkg/outbox"
+	db2 "hvxahv/pkg/mongo"
+	redis2 "hvxahv/pkg/redis"
 	"log"
 	"math/rand"
 	"net/http"
@@ -23,8 +24,8 @@ func AcceptHandler(in *inbox2.Accept) int {
 	domain := viper.GetString("activitypub")
 
 	idr := strconv.Itoa(rand.Int())
-	uad := fmt.Sprintf("https://%s/u/%s", domain, in.Name)
-	randId := fmt.Sprintf("https://%s/%s", domain, idr)
+	uad := fmt.Sprintf("http://%s/u/%s", domain, in.Name)
+	randId := fmt.Sprintf("http://%s/%s", domain, idr)
 
 	obj := map[string]string {
 		"id": in.RequestId,
@@ -33,7 +34,7 @@ func AcceptHandler(in *inbox2.Accept) int {
 		"object": uad,
 	}
 	p := gin.H{
-		"@context": "https://www.w3.org/ns/activitystreams",
+		"@context": "http://www.w3.org/ns/activitystreams",
 		"id": randId,
 		"type": "Accept",
 		"actor": uad,
@@ -66,7 +67,7 @@ func AcceptHandler(in *inbox2.Accept) int {
 
 	log.Println("Inserted follower: ", insertResult.InsertedID)
 	go func() {
-		rdb := db2.GetRDB()
+		rdb := redis2.GetRDB()
 		v, err := redis.Int64(rdb.Do("INCR", fmt.Sprintf("%s-follower", in.Name)))
 		if err != nil {
 			log.Println("INCR failed:", err)

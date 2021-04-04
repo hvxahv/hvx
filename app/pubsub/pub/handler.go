@@ -2,14 +2,14 @@ package main
 //
 //import (
 //	"fmt"
-//	"github.com/gin-gonic/gin"
+//	"github.com/mw-gonic/mw"
 //	"golang.org/x/net/context"
 //	"google.golang.org/grpc"
 //	"hvxahv/api/util/v1alpha1"
 //	"log"
 //)
 //
-//func PubHandler(c *gin.Context) {
+//func PubHandler(c *mw.Context) {
 //	message := c.Query("message")
 //	// 发布客户端
 //	conn, err := grpc.Dial("localhost:9010", grpc.WithInsecure())

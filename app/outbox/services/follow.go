@@ -18,11 +18,11 @@ func FollowHandler(actor string, name string) int {
 	domain := viper.GetString("activitypub")
 
 	idr := strconv.Itoa(rand.Int())
-	uad := fmt.Sprintf("https://%s/u/%s", domain, name)
+	uad := fmt.Sprintf("http://%s/u/%s", domain, name)
 
 	p := gin.H{
-		"@context": "https://www.w3.org/ns/activitystreams",
-		"id": fmt.Sprintf("https://%s/%s", domain, idr),
+		"@context": "http://www.w3.org/ns/activitystreams",
+		"id": fmt.Sprintf("http://%s/%s", domain, idr),
 		"type": "Follow",
 		"actor": uad, // 当前用户的 Actor 地址
 		"object": actor, // 对方的 Actor 地址, 类似 https://mas.to/users/hvturingga
@@ -37,7 +37,7 @@ func FollowHandler(actor string, name string) int {
 		log.Fatal(err)
 	}
 
-	eib := fmt.Sprintf("https://%s/inbox", h.Hostname())
+	eib := fmt.Sprintf("http://%s/inbox", h.Hostname())
 	method := "POST"
 
 	sa := *activitypub.NewSendActivity(data, eib, method, name, uad, actor)

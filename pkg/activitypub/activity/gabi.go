@@ -4,13 +4,13 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"golang.org/x/net/context"
-	"hvxahv/pkg/db"
+	"hvxahv/pkg/mongo"
 	"log"
 )
 
 func GetPublicArticleById(activityId string, c *gin.Context) {
 	// 从 MongoDB 取出
-	db := db.GetMongo()
+	db := mongo.GetMongo()
 	f := bson.M{"id": activityId}
 
 	co := db.Collection("articles")

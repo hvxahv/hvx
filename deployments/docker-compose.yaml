@@ -24,10 +24,10 @@ services:
 
   mariadb:
     image: mariadb
-    container_name: mariadb
+    container_name: maria
     restart: always
     volumes:
-      - "./mariadb/data:/var/lib/mysql"
+      - "./maria/data:/var/lib/mysql"
     environment:
       MYSQL_ROOT_PASSWORD: hvxahv123
     ports:
@@ -38,7 +38,7 @@ services:
     container_name: mongo
     restart: always
     volumes:
-      - "./mongo/:/data/db"
+      - "./mongo/:/data/mongo"
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: hvxahv123

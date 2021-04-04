@@ -2,16 +2,16 @@ package services
 //
 //import (
 //	"errors"
-//	"github.com/gin-gonic/gin"
+//	"github.com/mw-gonic/mw"
 //	"log"
 //)
 //
-//func DeleteArticleHandler(c *gin.Context) {
+//func DeleteArticleHandler(c *mw.Context) {
 //	id := c.PostForm("id")
 //	if err := DeleteArticleByID(id); err != nil {
 //		log.Println("Delete Error!", err)
 //	}
-//	c.JSON(200, gin.H{
+//	c.JSON(200, mw.H{
 //		"status": "200",
 //		"message": "DELETE SUCCESS",
 //	})

@@ -7,7 +7,9 @@ import (
 	"google.golang.org/grpc/reflection"
 	pb "hvxahv/api/hvxahv/v1alpha1"
 	"hvxahv/pkg/bot"
-	"hvxahv/pkg/db"
+	"hvxahv/pkg/mongo"
+	"hvxahv/pkg/maria"
+	"hvxahv/pkg/redis"
 	"log"
 	"net"
 )
@@ -17,13 +19,13 @@ type server struct {
 }
 
 func main()  {
-	if err := db.InitMongoDB(); err != nil {
+	if err := mongo.InitMongoDB(); err != nil {
 		log.Println(err)
 	}
-	if err := db.InitMariaDB(); err != nil {
+	if err := maria.InitMariaDB(); err != nil {
 		log.Println("数据库初始化失败：", err)
 	}
-	db.InitRedis()
+	redis.InitRedis()
 
 	viper.SetConfigFile("./configs/config.yaml")
 	err := viper.ReadInConfig()

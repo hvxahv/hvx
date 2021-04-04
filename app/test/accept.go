@@ -16,23 +16,23 @@ import (
 
 func AcceptHandler(c *gin.Context) {
 	idid := c.PostForm("id")
-	url := "https://mas.to/inbox"
+	url := "http://mas.to/inbox"
 	method := "POST"
 
 	idr := strconv.Itoa(rand.Int())
 
 
 	obj := map[string]string {
-		"id": fmt.Sprintf("https://mas.to/%s", idid),
+		"id": fmt.Sprintf("http://mas.to/%s", idid),
 		"type": "Follow",
-		"actor": "https://mas.to/users/hvturingga",
-		"object": "https://ba7b8a81471d.ngrok.io/u/hvturingga",
+		"actor": "http://mas.to/users/hvturingga",
+		"object": "http://ba7b8a81471d.ngrok.io/u/hvturingga",
 	}
 	p := gin.H{
-		"@context": "https://www.w3.org/ns/activitystreams",
-		"id": fmt.Sprintf("https://%s/%s", address, idr),
+		"@context": "http://www.w3.org/ns/activitystreams",
+		"id": fmt.Sprintf("http://%s/%s", address, idr),
 		"type": "Accept",
-		"actor": "https://ba7b8a81471d.ngrok.io/u/hvturingga",
+		"actor": "http://ba7b8a81471d.ngrok.io/u/hvturingga",
 		"object": obj,
 	}
 	byterData, err := json.Marshal(p)
@@ -62,7 +62,7 @@ func AcceptHandler(c *gin.Context) {
 	block := httpsig.PrivateKey{
 		Key: GetKey(),
 	}
-	httpsig.SignRequest("https://ba7b8a81471d.ngrok.io/u/hvturingga", block, req, byterData)
+	httpsig.SignRequest("http://ba7b8a81471d.ngrok.io/u/hvturingga", block, req, byterData)
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
 	req = req.WithContext(ctx)
@@ -76,7 +76,7 @@ func AcceptHandler(c *gin.Context) {
 	case 201:
 	case 202:
 	default:
-		fmt.Errorf("https post status: %d", res.StatusCode)
+		fmt.Errorf("http post status: %d", res.StatusCode)
 	}
 	log.Printf("successful post: %s %d", url, res.StatusCode)
 	log.Println(req)

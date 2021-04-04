@@ -3,14 +3,14 @@ package activity
 import (
 	"go.mongodb.org/mongo-driver/bson"
 	"golang.org/x/net/context"
-	"hvxahv/pkg/db"
+	"hvxahv/pkg/mongo"
 	"log"
 )
 
 // GetArticleByName ...
 func GetArticleByName(name string) []*map[string]interface{} {
 	// 从 MongoDB 取出
-	db := db.GetMongo()
+	db := mongo.GetMongo()
 	f := bson.M{"actor": name}
 
 	co := db.Collection("articles")

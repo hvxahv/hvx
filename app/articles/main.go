@@ -7,7 +7,8 @@ import (
 	"google.golang.org/grpc/reflection"
 	pb "hvxahv/api/hvxahv/v1alpha1"
 	"hvxahv/pkg/bot"
-	"hvxahv/pkg/db"
+	"hvxahv/pkg/mongo"
+	"hvxahv/pkg/maria"
 	"log"
 	"net"
 )
@@ -16,11 +17,11 @@ import (
 	获取配置文件并初始化数据库
  */
 func main()  {
-	if err := db.InitMongoDB(); err != nil {
+	if err := mongo.InitMongoDB(); err != nil {
 		log.Println(err)
 	}
 	// 初始化数据库
-	if err := db.InitMariaDB(); err != nil {
+	if err := maria.InitMariaDB(); err != nil {
 		log.Println("数据库初始化失败：", err)
 	}
 	// 获取配置文件

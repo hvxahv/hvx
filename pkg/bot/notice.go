@@ -3,7 +3,7 @@ package bot
 import (
 	"fmt"
 	"golang.org/x/net/context"
-	db2 "hvxahv/pkg/db"
+	db2 "hvxahv/pkg/mongo"
 	"log"
 	"time"
 )
@@ -37,11 +37,11 @@ func ServicesRunningNotice(srvname string, port string) {
 	}
 
 	//// 将服务启动的消息持久化到 mongo
-	//db, err := mongo.InitMongoDB()
+	//mongo, err := mongo.InitMongoDB()
 	//if err != nil {
 	//	log.Println("Use InitDB error: ", err)
 	//}
-	//coll := db.Collection("service_startup_log")
+	//coll := mongo.Collection("service_startup_log")
 	//
 	//a := new(ServicesRunNotice)
 	//a.Name = str

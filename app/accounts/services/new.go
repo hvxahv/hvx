@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"golang.org/x/crypto/bcrypt"
 	pb "hvxahv/api/hvxahv/v1alpha1"
-	"hvxahv/pkg/accounts"
-	"hvxahv/pkg/db"
-	"hvxahv/pkg/utils"
+	"hvxahv/internal/accounts"
+	"hvxahv/pkg/maria"
+	"hvxahv/pkg/generate"
 	"log"
 )
 
@@ -31,7 +31,7 @@ func NewAccount(in *pb.AccountData) int {
 		PublicKey: public,
 	}
 
-	db := db.GetMaria()
+	db := maria.GetMaria()
 	// 自动创建数据库 table
 	db.AutoMigrate(&accounts.Accounts{})
 	// 账户名为唯一，如果没有这个账户名就创建账户，如果有就返回该账户已经存在
@@ -48,16 +48,16 @@ func NewAccount(in *pb.AccountData) int {
 	}
 }
 
-// GenRasKey 该方法调用 utils.GenerateKey 包生成 2068 位的 ras key 返回公钥和私钥
+// GenRasKey 该方法调用 generate.GenerateKey 包生成 2068 位的 ras key 返回公钥和私钥
 func GenRasKey() (string, string, error) {
-	privateKey, publicKey, err := utils.GenerateKey(2048)
+	privateKey, publicKey, err := generate.GenerateKey(2048)
 	if err != nil {
 		fmt.Printf("Generate key is error: %s", err)
 	}
 
-	private := utils.EncodePrivateKey(privateKey)
+	private := generate.EncodePrivateKey(privateKey)
 
-	public, err := utils.EncodePublicKey(publicKey)
+	public, err := generate.EncodePublicKey(publicKey)
 	if err != nil {
 		fmt.Println("Encode Public Key is error: ", err)
 	}

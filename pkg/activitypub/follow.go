@@ -3,7 +3,7 @@ package activitypub
 import (
 	"go.mongodb.org/mongo-driver/bson"
 	"golang.org/x/net/context"
-	"hvxahv/pkg/db"
+	"hvxahv/pkg/mongo"
 	"log"
 )
 
@@ -16,7 +16,7 @@ type Follow struct {
 
 // GetFollow 获取关注的方法，返回一个数组
 func GetFollow(name, collection string) []string {
-	db := db.GetMongo()
+	db := mongo.GetMongo()
 	f := bson.M{"name": name}
 	log.Println(name)
 	co := db.Collection(collection)

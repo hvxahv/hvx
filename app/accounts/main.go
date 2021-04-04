@@ -7,7 +7,8 @@ import (
 	"google.golang.org/grpc/reflection"
 	pb "hvxahv/api/hvxahv/v1alpha1"
 	"hvxahv/pkg/bot"
-	"hvxahv/pkg/db"
+	"hvxahv/pkg/maria"
+	"hvxahv/pkg/redis"
 	"log"
 	"net"
 )
@@ -17,7 +18,7 @@ type server struct {
 }
 
 /**
- Accounts 功能的 GRPC 微服务的服务端实现
+ Accounts system compatible with Activitypub protocol.
 */
 func main() {
 
@@ -27,8 +28,8 @@ func main() {
 		panic(fmt.Errorf("Fatal error config file: %s \n", err))
 	}
 
-	db.InitRedis()
-	if err := db.InitMariaDB(); err != nil {
+	redis.InitRedis()
+	if err := maria.InitMariaDB(); err != nil {
 		log.Println("数据库初始化失败：", err)
 	}
 	p := viper.GetString("port.accounts")

@@ -4,7 +4,7 @@ import (
 	"golang.org/x/net/context"
 	pb "hvxahv/api/hvxahv/v1alpha1"
 	"hvxahv/app/outbox/services"
-	"hvxahv/pkg/outbox"
+	"hvxahv/internal/outbox"
 	"log"
 )
 

@@ -3,12 +3,12 @@ package follow
 import (
 	"github.com/gin-gonic/gin"
 	"hvxahv/pkg/activitypub"
-	"hvxahv/pkg/utils"
+	"hvxahv/pkg/mw"
 )
 
 // GetFollowerHandler 获取关注者
 func GetFollowerHandler(c *gin.Context) {
-	name := utils.GetUserName(c)
+	name := mw.GetUserName(c)
 	r := activitypub.GetFollow(name, "follower")
 	c.JSON(200, gin.H{
 		"res": r,

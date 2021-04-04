@@ -16,26 +16,26 @@ import (
 
 func Req(da string, pk []byte) {
 
-	url := "https://mstdn.social/inbox"
+	url := "http://mstdn.social/inbox"
 	method := "POST"
 
 	idr := strconv.Itoa(rand.Int())
 	obj := map[string]string {
-		"id": "https://4e54ea0be52f.ngrok.io/"+ idr,
+		"id": "http://4e54ea0be52f.ngrok.io/"+ idr,
 		"type": "Note",
 		"published": time.Now().UTC().Format(http.TimeFormat),
-		"attributedTo": "https://4e54ea0be52f.ngrok.io/actor",
-		"inReplyTo": "https://mstdn.social/@hvturingga/105515197741965407",
+		"attributedTo": "http://4e54ea0be52f.ngrok.io/actor",
+		"inReplyTo": "http://mstdn.social/@hvturingga/105515197741965407",
 		"content": fmt.Sprintf("<p>Hello %s world</p>", idr),
-		"to": "https://www.w3.org/ns/activitystreams#Public",
+		"to": "http://www.w3.org/ns/activitystreams#Public",
 	}
 
 	p := gin.H{
-		"@context": "https://www.w3.org/ns/activitystreams",
+		"@context": "http://www.w3.org/ns/activitystreams",
 
-		"id": "https://4e54ea0be52f.ngrok.io/create-" + idr,
+		"id": "http://4e54ea0be52f.ngrok.io/create-" + idr,
 		"type": "Create",
-		"actor": "https://4e54ea0be52f.ngrok.io/actor",
+		"actor": "http://4e54ea0be52f.ngrok.io/actor",
 		"object": obj,
 	}
 	byterData, err := json.Marshal(p)
@@ -64,7 +64,7 @@ func Req(da string, pk []byte) {
 	block := httpsig.PrivateKey{
 		Key: pk,
 	}
-	httpsig.SignRequest("https://4e54ea0be52f.ngrok.io/actor", block, req, byterData)
+	httpsig.SignRequest("http://4e54ea0be52f.ngrok.io/actor", block, req, byterData)
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
 	req = req.WithContext(ctx)
@@ -78,7 +78,7 @@ func Req(da string, pk []byte) {
 	case 201:
 	case 202:
 	default:
-		fmt.Errorf("https post status: %d", res.StatusCode)
+		fmt.Errorf("http post status: %d", res.StatusCode)
 	}
 	log.Printf("successful post: %s %d", url, res.StatusCode)
 	log.Println("请求出现错误",req)
@@ -88,14 +88,14 @@ func Req(da string, pk []byte) {
 // 发送私信
 func Req2(da string, pk []byte) {
 
-	url := "https://mstdn.social/inbox"
+	url := "http://mstdn.social/inbox"
 	method := "POST"
 
 	idr := strconv.Itoa(rand.Int())
 	//obj := map[string]string {
 	//	"id": "https://activitypub.disism.com/"+ idr,
 	//	"type": "Note",
-	//	"published": time.Now().UTC().Format(https.TimeFormat),
+	//	"published": time.Now().UTC().Format(http.TimeFormat),
 	//	"attributedTo": "https://activitypub.disism.com/actor",
 	//	"inReplyTo": "https://mastodon.social/@hvturingga/104812740119120055",
 	//	//"content": da,
@@ -103,12 +103,12 @@ func Req2(da string, pk []byte) {
 	//}
 
 	p := gin.H{
-		"@context": "https://www.w3.org/ns/activitystreams",
+		"@context": "http://www.w3.org/ns/activitystreams",
 
-		"id": "https://services.disism.com/create-" + idr,
+		"id": "http://services.disism.com/create-" + idr,
 		"type": "Like",
-		"actor": "https://services.disism.com/actor",
-		"object": "https://mastodon.social/@hvturingga/104812740119120055",
+		"actor": "http://services.disism.com/actor",
+		"object": "http://mastodon.social/@hvturingga/104812740119120055",
 	}
 	byterData, err := json.Marshal(p)
 	if err != nil {
@@ -136,7 +136,7 @@ func Req2(da string, pk []byte) {
 	block := httpsig.PrivateKey{
 		Key: pk,
 	}
-	httpsig.SignRequest("https://services.disism.com/actor", block, req, byterData)
+	httpsig.SignRequest("http://services.disism.com/actor", block, req, byterData)
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
 	req = req.WithContext(ctx)
@@ -150,7 +150,7 @@ func Req2(da string, pk []byte) {
 	case 201:
 	case 202:
 	default:
-		fmt.Errorf("https post status: %d", res.StatusCode)
+		fmt.Errorf("http post status: %d", res.StatusCode)
 	}
 	log.Printf("successful post: %s %d", url, res.StatusCode)
 }

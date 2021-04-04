@@ -15,23 +15,23 @@ import (
 )
 
 func NewActivity(c *gin.Context) {
-	url := "https://mas.to/inbox"
+	url := "http://mas.to/inbox"
 	method := "POST"
 
 	idr := strconv.Itoa(rand.Int())
 
 
 	obj := map[string]string {
-		"id": "https://mas.to/76c94894-fa77-42be-ab8d-e35779c9cb63",
+		"id": "http://mas.to/76c94894-fa77-42be-ab8d-e35779c9cb63",
 		"type": "Follow",
-		"actor": "https://mas.to/users/hvturingga",
-		"object": "https://47d8ab2e4028.ngrok.io/actor",
+		"actor": "http://mas.to/users/hvturingga",
+		"object": "http://47d8ab2e4028.ngrok.io/actor",
 	}
 	p := gin.H{
-		"@context": "https://www.w3.org/ns/activitystreams",
-		"id": fmt.Sprintf("https://%s/%s", address, idr),
+		"@context": "http://www.w3.org/ns/activitystreams",
+		"id": fmt.Sprintf("http://%s/%s", address, idr),
 		"type": "Accept",
-		"actor": fmt.Sprintf("https://%s/actor", address),
+		"actor": fmt.Sprintf("http://%s/actor", address),
 		"object": obj,
 	}
 	byterData, err := json.Marshal(p)
@@ -61,7 +61,7 @@ func NewActivity(c *gin.Context) {
 	block := httpsig.PrivateKey{
 		Key: GetKey(),
 	}
-	httpsig.SignRequest(fmt.Sprintf("https://%s/actor", address), block, req, byterData)
+	httpsig.SignRequest(fmt.Sprintf("http://%s/actor", address), block, req, byterData)
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
 	req = req.WithContext(ctx)
@@ -75,7 +75,7 @@ func NewActivity(c *gin.Context) {
 	case 201:
 	case 202:
 	default:
-		fmt.Errorf("https post status: %d", res.StatusCode)
+		fmt.Errorf("http post status: %d", res.StatusCode)
 	}
 	log.Printf("successful post: %s %d", url, res.StatusCode)
 	log.Println(req)

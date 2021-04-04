@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"golang.org/x/net/context"
-	"hvxahv/pkg/client/accounts"
+	"hvxahv/internal/client/accounts"
 	"log"
 	"net/http"
 	"net/url"

@@ -15,16 +15,16 @@ import (
 )
 
 func Follow(c *gin.Context) {
-	url := "https://mas.to/inbox"
+	url := "http://mas.to/inbox"
 	method := "POST"
 
 	idr := strconv.Itoa(rand.Int())
 	p := gin.H{
-		"@context": "https://www.w3.org/ns/activitystreams",
-		"id": fmt.Sprintf("https://%s/%s", address, idr),
+		"@context": "http://www.w3.org/ns/activitystreams",
+		"id": fmt.Sprintf("http://%s/%s", address, idr),
 		"type": "Follow",
-		"actor": fmt.Sprintf("https://%s/actor", address),
-		"object": "https://mas.to/users/hvturingga",
+		"actor": fmt.Sprintf("http://%s/actor", address),
+		"object": "http://mas.to/users/hvturingga",
 	}
 	byterData, err := json.Marshal(p)
 	if err != nil {
@@ -52,7 +52,7 @@ func Follow(c *gin.Context) {
 	block := httpsig.PrivateKey{
 		Key: GetKey(),
 	}
-	httpsig.SignRequest(fmt.Sprintf("https://%s/actor", address), block, req, byterData)
+	httpsig.SignRequest(fmt.Sprintf("http://%s/actor", address), block, req, byterData)
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
 	req = req.WithContext(ctx)
@@ -66,7 +66,7 @@ func Follow(c *gin.Context) {
 	case 201:
 	case 202:
 	default:
-		fmt.Errorf("https post status: %d", res.StatusCode)
+		fmt.Errorf("http post status: %d", res.StatusCode)
 	}
 	log.Printf("successful post: %s %d", url, res.StatusCode)
 	log.Println(req)
@@ -81,21 +81,21 @@ type UndoObj struct {
 }
 
 func Undo(c *gin.Context) {
-	url := "https://mas.to/inbox"
+	url := "http://mas.to/inbox"
 	method := "POST"
 
 	idr := strconv.Itoa(rand.Int())
 	obj := UndoObj{
-		ID: fmt.Sprintf("https://%s/%s", address, idr),
+		ID: fmt.Sprintf("http://%s/%s", address, idr),
 		Type:  "Follow",
-		Actor: fmt.Sprintf("https://%s/actor", address),
-		Object: "https://mas.to/users/hvturingga",
+		Actor: fmt.Sprintf("http://%s/actor", address),
+		Object: "http://mas.to/users/hvturingga",
 	}
 	p := gin.H{
-		"@context": "https://www.w3.org/ns/activitystreams",
-		"id": fmt.Sprintf("https://%s/%s", address, idr),
+		"@context": "http://www.w3.org/ns/activitystreams",
+		"id": fmt.Sprintf("http://%s/%s", address, idr),
 		"type": "Undo",
-		"actor": fmt.Sprintf("https://%s/actor", address),
+		"actor": fmt.Sprintf("http://%s/actor", address),
 		"object": obj,
 	}
 	byterData, err := json.Marshal(p)
@@ -124,7 +124,7 @@ func Undo(c *gin.Context) {
 	block := httpsig.PrivateKey{
 		Key: GetKey(),
 	}
-	httpsig.SignRequest(fmt.Sprintf("https://%s/actor", address), block, req, byterData)
+	httpsig.SignRequest(fmt.Sprintf("http://%s/actor", address), block, req, byterData)
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
 	req = req.WithContext(ctx)
@@ -138,7 +138,7 @@ func Undo(c *gin.Context) {
 	case 201:
 	case 202:
 	default:
-		fmt.Errorf("https post status: %d", res.StatusCode)
+		fmt.Errorf("http post status: %d", res.StatusCode)
 	}
 	log.Printf("successful post: %s %d", url, res.StatusCode)
 	log.Println(req)

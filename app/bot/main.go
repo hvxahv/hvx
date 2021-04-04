@@ -5,14 +5,14 @@ import (
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
-	v1 "hvxahv/api/util/v1alpha1"
+	bot2 "hvxahv/api/bot"
 	"hvxahv/pkg/bot"
 	"log"
 	"net"
 )
 
 type server struct {
-	v1.BotNoticeServer
+	bot2.BotNoticeServer
 }
 
 // 实现 Telegram Bot 的服务接口，供外部调用。
@@ -35,7 +35,7 @@ func main()  {
 		go bot.ServicesRunningNotice("bot", port)
 	}
 	s := grpc.NewServer()
-	v1.RegisterBotNoticeServer(s, &server{})
+	bot2.RegisterBotNoticeServer(s, &server{})
 	reflection.Register(s)
 
 	if err := s.Serve(lis); err != nil {

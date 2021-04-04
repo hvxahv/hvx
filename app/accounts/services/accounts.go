@@ -4,8 +4,9 @@ import (
 	"encoding/json"
 	"github.com/gomodule/redigo/redis"
 	pb "hvxahv/api/hvxahv/v1alpha1"
-	"hvxahv/pkg/accounts"
-	"hvxahv/pkg/db"
+	"hvxahv/internal/accounts"
+	"hvxahv/pkg/maria"
+	redis2 "hvxahv/pkg/redis"
 	"log"
 )
 
@@ -13,7 +14,7 @@ import (
 func GetAccountData(u string) *accounts.Accounts {
 	a := new(accounts.Accounts)
 
-	db := db.GetMaria()
+	db := maria.GetMaria()
 
 	db.Debug().Table("accounts").Where("username = ?", u).First(&a)
 	return a
@@ -23,8 +24,8 @@ func GetAccountData(u string) *accounts.Accounts {
 func GetActorData(u string) *pb.AccountData{
 	a := new(pb.AccountData)
 
-	rdb := db.GetRDB()
-	db := db.GetMaria()
+	rdb := redis2.GetRDB()
+	db := maria.GetMaria()
 	// 判断查询的 key 是否存在,如果不存在, 将在数据库中查询并将数据持久化到 redis
 	isKey, err := redis.Bool(rdb.Do("EXISTS", u))
 	if err != nil {
@@ -44,7 +45,7 @@ func GetActorData(u string) *pb.AccountData{
 // VerifyAccount
 func VerifyAccounts(u string) *accounts.Accounts {
 	a := new(accounts.Accounts)
-	db := db.GetMaria()
+	db := maria.GetMaria()
 
 	if db.Debug().Table("accounts").Where("username = ?", u).First(&a).RecordNotFound() {
 		db.Debug().Table("accounts").Where("username = ?", u).First(&a)
@@ -56,7 +57,7 @@ func VerifyAccounts(u string) *accounts.Accounts {
 
 // accountCache 使用缓存数据库避免数据库的重复查询
 func accountCache(method string, a *pb.AccountData, k string) *pb.AccountData {
-	rdb := db.GetRDB()
+	rdb := redis2.GetRDB()
 	switch method {
 	case "SET":
 		v, _ := json.Marshal(a)
