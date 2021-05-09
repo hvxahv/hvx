@@ -2,10 +2,10 @@ package activity
 
 import (
 	"github.com/gin-gonic/gin"
+	"hvxahv/api/server/middleware"
 	social2 "hvxahv/internal/client/social"
 	"hvxahv/internal/inbox"
 	"hvxahv/pkg/activitypub"
-	"hvxahv/pkg/mw"
 	"log"
 )
 
@@ -35,7 +35,7 @@ func InboxHandler(c *gin.Context) {
 
 // GetInboxHandler 获取用户的收件箱内容
 func GetInboxHandler(c *gin.Context) {
-	name := mw.GetUserName(c)
+	name := middleware.GetUserName(c)
 	r, err := social2.GetInboxClient(name)
 	if err != nil {
 		log.Println(err)

@@ -2,7 +2,7 @@ package inbox
 
 import "github.com/gin-gonic/gin"
 
-// CreateArticleResponse 创建文章时返回的 http response
+// CreateArticleResponse 创建文章时返回的 server response
 func CreateArticleResponse(c *gin.Context, r string) {
 	if r == "error" {
 		c.JSON(500, gin.H{

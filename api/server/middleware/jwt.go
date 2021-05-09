@@ -1,26 +1,24 @@
-package mw
+package middleware
 
 import (
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
-	"hvxahv/pkg/generate"
+	"hvxahv/api/server/httputils"
 	"log"
 	"strings"
 )
 
-// JWTAuth ... 进行 JWT 验证的中间件
-// 检测请求中是否携带 Token
-// 判断 Token 是否正确
-// 如果 Token 正确，将通过解析 Token 获取用户名并将用户名添加在上下文将 key 设置为 loginUser
+// JWTAuth JWT authentication middleware for gin network framework,
+// Check whether the Token is carried in the request, and verify whether the Token is correct,
+// Will obtain the username by parsing the Token and add the username in the context and set the key to loginUser.
 func JWTAuth(c *gin.Context) {
 	ht := c.Request.Header.Get("Authorization")
 	t := strings.Split(ht, "Bearer ")[1]
-	// 如果用户 header 请求中未携带 token
 	if ht == "" {
 		c.JSON(500, gin.H{
 			"state": "500",
-			"message": "请求中未携带 Token ",
+			"message": "Token is not carried in the request.",
 		})
 		c.Abort()
 		return
@@ -29,7 +27,7 @@ func JWTAuth(c *gin.Context) {
 	if err != nil {
 		c.JSON(500, gin.H{
 			"state": "500",
-			"message": "登陆失败 Token 不正确！",
+			"message": "Login failed. Token is incorrect!",
 		})
 		c.Abort()
 	} else {
@@ -43,11 +41,11 @@ func JWTAuth(c *gin.Context) {
 
 }
 
-func JwtParseToken(tokenString string) (*jwt.Token, *generate.Claims, error) {
-	Claims := &generate.Claims{}
+func JwtParseToken(tokenString string) (*jwt.Token, *httputils.Claims, error) {
+	Claims := &httputils.Claims{}
 	token, err := jwt.ParseWithClaims(tokenString, Claims,
 		func(token *jwt.Token) (i interface{}, err error) {
-			return generate.K, nil
+			return httputils.K, nil
 		})
 	if err != nil {
 		log.Println("解 Token 失败！")
@@ -55,17 +53,17 @@ func JwtParseToken(tokenString string) (*jwt.Token, *generate.Claims, error) {
 	return token, Claims, err
 }
 
-func JwtParseUser(tokenString string) (*generate.Claims, error) {
+func JwtParseUser(tokenString string) (*httputils.Claims, error) {
 	if tokenString == "" {
 		log.Println("需要传 Token ")
 	}
-	Claims := &generate.Claims{}
+	Claims := &httputils.Claims{}
 	_, err := jwt.ParseWithClaims(tokenString, Claims,
 		func(token *jwt.Token) (interface{}, error) {
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 			}
-			return []byte(generate.K), nil
+			return []byte(httputils.K), nil
 		})
 	if err != nil {
 		return nil, err

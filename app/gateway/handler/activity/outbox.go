@@ -2,16 +2,16 @@ package activity
 
 import (
 	"github.com/gin-gonic/gin"
+	"hvxahv/api/server/middleware"
 	"hvxahv/internal/activity"
 	social2 "hvxahv/internal/client/social"
 	"hvxahv/internal/outbox"
-	"hvxahv/pkg/mw"
 	"log"
 )
 
 // FollowersAcceptHandler 同意关注的 Handler
 func FollowerAcceptHandler(c *gin.Context) {
-	name := mw.GetUserName(c)
+	name := middleware.GetUserName(c)
 	actor := c.PostForm("actor")
 	id := c.PostForm("id")
 
@@ -26,7 +26,7 @@ func FollowerAcceptHandler(c *gin.Context) {
 
 // FollowHandler ... 请求关注的 Handler
 func FollowHandler(c *gin.Context) {
-	name := mw.GetUserName(c)
+	name := middleware.GetUserName(c)
 	actor := c.PostForm("actor")
 
 	r, err := social2.OutboxFollowClient(name, actor)

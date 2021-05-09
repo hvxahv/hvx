@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/net/context"
-	httpsig "hvxahv/pkg/activitypub"
+	"hvxahv/api/server/httputils"
 	"log"
 	"math/rand"
 	"net/http"
@@ -16,18 +16,18 @@ import (
 
 func LikeReq(da string, pk []byte) {
 
-	url := "http://mas.to/inbox"
+	url := "server://mas.to/inbox"
 	method := "POST"
 
 	idr := strconv.Itoa(rand.Int())
 
 	p := gin.H{
-		"@context": "http://www.w3.org/ns/activitystreams",
+		"@context": "server://www.w3.org/ns/activitystreams",
 
-		"id": "http://4e54ea0be52f.ngrok.io/create-" + idr,
+		"id": "server://4e54ea0be52f.ngrok.io/create-" + idr,
 		"type": "Like",
-		"actor": "http://4e54ea0be52f.ngrok.io/actor",
-		"object": "http://mas.to/@hvturingga/105515218721573733",
+		"actor": "server://4e54ea0be52f.ngrok.io/actor",
+		"object": "server://mas.to/@hvturingga/105515218721573733",
 	}
 	byterData, err := json.Marshal(p)
 	if err != nil {
@@ -52,10 +52,10 @@ func LikeReq(da string, pk []byte) {
 	req.Header.Add("Date", date)
 
 	//req.Header.Add("Signature", header)
-	block := httpsig.PrivateKey{
+	block := httputils.PrivateKey{
 		Key: pk,
 	}
-	httpsig.SignRequest("http://4e54ea0be52f.ngrok.io/actor", block, req, byterData)
+	httputils.SignRequest("server://4e54ea0be52f.ngrok.io/actor", block, req, byterData)
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
 	req = req.WithContext(ctx)
@@ -69,7 +69,7 @@ func LikeReq(da string, pk []byte) {
 	case 201:
 	case 202:
 	default:
-		fmt.Errorf("http post status: %d", res.StatusCode)
+		fmt.Errorf("server post status: %d", res.StatusCode)
 	}
 	log.Printf("successful post: %s %d", url, res.StatusCode)
 	log.Print(res)

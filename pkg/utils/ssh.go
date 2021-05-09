@@ -1,7 +1,7 @@
 /*
  * Genarate rsa keys.
  */
-package generate
+package utils
 
 import (
 	"crypto/rand"

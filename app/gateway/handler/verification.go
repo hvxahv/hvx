@@ -7,10 +7,9 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
+	"hvxahv/api/server/httputils"
 	"hvxahv/internal/accounts"
 	"hvxahv/internal/client/accounts"
-	"hvxahv/pkg/response"
-	"hvxahv/pkg/generate"
 	"log"
 )
 
@@ -36,7 +35,7 @@ func VerificationHandler(c *gin.Context) {
 		response.SimpleResponse(c, "401", "密码错误")
 		return
 	}
-	t, err := generate.GenerateToken(a)
+	t, err := httputils.GenerateToken(a)
 	if err != nil {
 		fmt.Println("生成 Token 失败！")
 	}

@@ -2,8 +2,8 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
+	"hvxahv/api/server/middleware"
 	"hvxahv/internal/client/accounts"
-	"hvxahv/pkg/mw"
 	"log"
 )
 
@@ -24,7 +24,7 @@ func NewAccountsHandler(c *gin.Context) {
 // 通过解析 Token 得到的用户名获取账户信息
 // 不同于 Actor ，因为它是给用户使用的接口
 func GetAccountsHandler(c *gin.Context) {
-	author := mw.GetUserName(c)
+	author := middleware.GetUserName(c)
 	r, err := accounts.GetAccountsClient(author)
 	if err != nil {
 		log.Println(err)

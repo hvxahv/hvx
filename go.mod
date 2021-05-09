@@ -8,6 +8,7 @@ require (
 	github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible
 	github.com/gomodule/redigo v1.8.3
 	github.com/jinzhu/gorm v1.9.16
+	github.com/spf13/cobra v1.1.3 // indirect
 	github.com/spf13/viper v1.7.1
 	github.com/technoweenie/multipartstreamer v1.0.1 // indirect
 	go.mongodb.org/mongo-driver v1.4.5

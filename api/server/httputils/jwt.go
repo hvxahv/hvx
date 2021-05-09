@@ -1,4 +1,4 @@
-package generate
+package httputils
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-var K = []byte("jwt_key_godis.disism.com")
+var K = []byte("jwt_key_hvxahv.half_memories.com")
 
 type Claims struct {
 	ID uint

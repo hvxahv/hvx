@@ -6,7 +6,7 @@ import (
 	pb "hvxahv/api/hvxahv/v1alpha1"
 	"hvxahv/internal/accounts"
 	"hvxahv/pkg/maria"
-	"hvxahv/pkg/generate"
+	"hvxahv/pkg/utils"
 	"log"
 )
 
@@ -48,16 +48,16 @@ func NewAccount(in *pb.AccountData) int {
 	}
 }
 
-// GenRasKey 该方法调用 generate.GenerateKey 包生成 2068 位的 ras key 返回公钥和私钥
+// GenRasKey 该方法调用 utils.GenerateKey 包生成 2068 位的 ras key 返回公钥和私钥
 func GenRasKey() (string, string, error) {
-	privateKey, publicKey, err := generate.GenerateKey(2048)
+	privateKey, publicKey, err := utils.GenerateKey(2048)
 	if err != nil {
 		fmt.Printf("Generate key is error: %s", err)
 	}
 
-	private := generate.EncodePrivateKey(privateKey)
+	private := utils.EncodePrivateKey(privateKey)
 
-	public, err := generate.EncodePublicKey(publicKey)
+	public, err := utils.EncodePublicKey(publicKey)
 	if err != nil {
 		fmt.Println("Encode Public Key is error: ", err)
 	}

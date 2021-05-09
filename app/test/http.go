@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	httpsig "hvxahv/pkg/activitypub"
+	"hvxahv/api/server/httputils"
 	"log"
 	"math/rand"
 	"net/http"
@@ -16,26 +16,26 @@ import (
 
 func Req(da string, pk []byte) {
 
-	url := "http://mstdn.social/inbox"
+	url := "server://mstdn.social/inbox"
 	method := "POST"
 
 	idr := strconv.Itoa(rand.Int())
 	obj := map[string]string {
-		"id": "http://4e54ea0be52f.ngrok.io/"+ idr,
+		"id": "server://4e54ea0be52f.ngrok.io/"+ idr,
 		"type": "Note",
 		"published": time.Now().UTC().Format(http.TimeFormat),
-		"attributedTo": "http://4e54ea0be52f.ngrok.io/actor",
-		"inReplyTo": "http://mstdn.social/@hvturingga/105515197741965407",
+		"attributedTo": "server://4e54ea0be52f.ngrok.io/actor",
+		"inReplyTo": "server://mstdn.social/@hvturingga/105515197741965407",
 		"content": fmt.Sprintf("<p>Hello %s world</p>", idr),
-		"to": "http://www.w3.org/ns/activitystreams#Public",
+		"to": "server://www.w3.org/ns/activitystreams#Public",
 	}
 
 	p := gin.H{
-		"@context": "http://www.w3.org/ns/activitystreams",
+		"@context": "server://www.w3.org/ns/activitystreams",
 
-		"id": "http://4e54ea0be52f.ngrok.io/create-" + idr,
+		"id": "server://4e54ea0be52f.ngrok.io/create-" + idr,
 		"type": "Create",
-		"actor": "http://4e54ea0be52f.ngrok.io/actor",
+		"actor": "server://4e54ea0be52f.ngrok.io/actor",
 		"object": obj,
 	}
 	byterData, err := json.Marshal(p)
@@ -61,10 +61,10 @@ func Req(da string, pk []byte) {
 	req.Header.Add("Date", date)
 
 	//req.Header.Add("Signature", header)
-	block := httpsig.PrivateKey{
+	block := httputils.PrivateKey{
 		Key: pk,
 	}
-	httpsig.SignRequest("http://4e54ea0be52f.ngrok.io/actor", block, req, byterData)
+	httputils.SignRequest("server://4e54ea0be52f.ngrok.io/actor", block, req, byterData)
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
 	req = req.WithContext(ctx)
@@ -78,7 +78,7 @@ func Req(da string, pk []byte) {
 	case 201:
 	case 202:
 	default:
-		fmt.Errorf("http post status: %d", res.StatusCode)
+		fmt.Errorf("server post status: %d", res.StatusCode)
 	}
 	log.Printf("successful post: %s %d", url, res.StatusCode)
 	log.Println("请求出现错误",req)
@@ -88,14 +88,14 @@ func Req(da string, pk []byte) {
 // 发送私信
 func Req2(da string, pk []byte) {
 
-	url := "http://mstdn.social/inbox"
+	url := "server://mstdn.social/inbox"
 	method := "POST"
 
 	idr := strconv.Itoa(rand.Int())
 	//obj := map[string]string {
 	//	"id": "https://activitypub.disism.com/"+ idr,
 	//	"type": "Note",
-	//	"published": time.Now().UTC().Format(http.TimeFormat),
+	//	"published": time.Now().UTC().Format(server.TimeFormat),
 	//	"attributedTo": "https://activitypub.disism.com/actor",
 	//	"inReplyTo": "https://mastodon.social/@hvturingga/104812740119120055",
 	//	//"content": da,
@@ -103,12 +103,12 @@ func Req2(da string, pk []byte) {
 	//}
 
 	p := gin.H{
-		"@context": "http://www.w3.org/ns/activitystreams",
+		"@context": "server://www.w3.org/ns/activitystreams",
 
-		"id": "http://services.disism.com/create-" + idr,
+		"id": "server://services.disism.com/create-" + idr,
 		"type": "Like",
-		"actor": "http://services.disism.com/actor",
-		"object": "http://mastodon.social/@hvturingga/104812740119120055",
+		"actor": "server://services.disism.com/actor",
+		"object": "server://mastodon.social/@hvturingga/104812740119120055",
 	}
 	byterData, err := json.Marshal(p)
 	if err != nil {
@@ -133,10 +133,10 @@ func Req2(da string, pk []byte) {
 	req.Header.Add("Date", date)
 
 	//req.Header.Add("Signature", header)
-	block := httpsig.PrivateKey{
+	block := httputils.PrivateKey{
 		Key: pk,
 	}
-	httpsig.SignRequest("http://services.disism.com/actor", block, req, byterData)
+	httputils.SignRequest("server://services.disism.com/actor", block, req, byterData)
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
 	req = req.WithContext(ctx)
@@ -150,7 +150,7 @@ func Req2(da string, pk []byte) {
 	case 201:
 	case 202:
 	default:
-		fmt.Errorf("http post status: %d", res.StatusCode)
+		fmt.Errorf("server post status: %d", res.StatusCode)
 	}
 	log.Printf("successful post: %s %d", url, res.StatusCode)
 }

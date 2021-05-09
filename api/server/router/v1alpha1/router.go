@@ -1,18 +1,22 @@
-package http
+package v1alpha1
 
 import (
 	"github.com/gin-gonic/gin"
+	"hvxahv/api/server/middleware"
 	"hvxahv/app/gateway/handler"
 	"hvxahv/app/gateway/handler/activity"
 	"hvxahv/app/gateway/handler/follow"
 	"hvxahv/app/test"
 	"hvxahv/internal/client/accounts"
-	"hvxahv/pkg/mw"
 )
 
-func IngressRouter() *gin.Engine {
+// Router Used to provide routing for http access,
+// set up middleware to solve cross-domain (CORS),
+// set up JWTAuth middleware,
+// Implementation of routing using gin web framework.
+func Router() *gin.Engine {
 	r := gin.Default()
-	r.Use(mw.CORS())
+	r.Use(middleware.CORS())
 
 	r.GET("ping", func(context *gin.Context) {
 		context.JSON(200, gin.H{
@@ -41,7 +45,7 @@ func IngressRouter() *gin.Engine {
 
 	// Functions that can be accessed through Token, carry token when requesting
 	v1 := r.Group("/api/v1alpha1")
-	v1.Use(mw.JWTAuth)
+	v1.Use(middleware.JWTAuth)
 	{
 		/* Accounts Services */
 		v1.GET("/account/i", handler.GetAccountsHandler)

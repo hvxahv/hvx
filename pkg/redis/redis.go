@@ -4,13 +4,12 @@ import (
 	"fmt"
 	"github.com/gomodule/redigo/redis"
 	"github.com/spf13/viper"
-	"log"
 )
 
 var (
 	pool *redis.Pool
 )
-func InitRedis() {
+func InitRedis() error {
 	viper.SetConfigFile("./configs/config.yaml")
 	err := viper.ReadInConfig()
 	if err != nil {
@@ -25,11 +24,12 @@ func InitRedis() {
 		Dial: func() (redis.Conn, error) {
 			c, err := redis.Dial("tcp", addr, pwd)
 			if err != nil {
-				log.Printf("连接不上 redis : %s 地址: %s", err, addr)
+				panic(fmt.Sprintf("Can't connect to redis %s address: %s", err, addr))
 			}
 			return c, err
 		},
 	}
+	return err
 }
 
 func GetRDB() redis.Conn {

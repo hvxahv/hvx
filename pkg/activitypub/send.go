@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"golang.org/x/net/context"
+	"hvxahv/api/server/httputils"
 	"hvxahv/internal/client/accounts"
 	"log"
 	"net/http"
@@ -37,10 +38,10 @@ func SendActivity(data *Activity) int {
 		log.Println(err)
 	}
 
-	block := PrivateKey{
+	block := httputils.PrivateKey{
 		Key: []byte(r.PrivateKey),
 	}
-	SignRequest(data.UserAddress, block, req, data.Data)
+	httputils.SignRequest(data.UserAddress, block, req, data.Data)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()

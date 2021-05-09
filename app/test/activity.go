@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/net/context"
-	httpsig "hvxahv/pkg/activitypub"
+	"hvxahv/api/server/httputils"
 	"log"
 	"math/rand"
 	"net/http"
@@ -15,23 +15,23 @@ import (
 )
 
 func NewActivity(c *gin.Context) {
-	url := "http://mas.to/inbox"
+	url := "server://mas.to/inbox"
 	method := "POST"
 
 	idr := strconv.Itoa(rand.Int())
 
 
 	obj := map[string]string {
-		"id": "http://mas.to/76c94894-fa77-42be-ab8d-e35779c9cb63",
+		"id": "server://mas.to/76c94894-fa77-42be-ab8d-e35779c9cb63",
 		"type": "Follow",
-		"actor": "http://mas.to/users/hvturingga",
-		"object": "http://47d8ab2e4028.ngrok.io/actor",
+		"actor": "server://mas.to/users/hvturingga",
+		"object": "server://47d8ab2e4028.ngrok.io/actor",
 	}
 	p := gin.H{
-		"@context": "http://www.w3.org/ns/activitystreams",
-		"id": fmt.Sprintf("http://%s/%s", address, idr),
+		"@context": "server://www.w3.org/ns/activitystreams",
+		"id": fmt.Sprintf("server://%s/%s", address, idr),
 		"type": "Accept",
-		"actor": fmt.Sprintf("http://%s/actor", address),
+		"actor": fmt.Sprintf("server://%s/actor", address),
 		"object": obj,
 	}
 	byterData, err := json.Marshal(p)
@@ -58,10 +58,10 @@ func NewActivity(c *gin.Context) {
 
 	//req.Header.Add("Signature", header)
 
-	block := httpsig.PrivateKey{
+	block := httputils.PrivateKey{
 		Key: GetKey(),
 	}
-	httpsig.SignRequest(fmt.Sprintf("http://%s/actor", address), block, req, byterData)
+	httputils.SignRequest(fmt.Sprintf("server://%s/actor", address), block, req, byterData)
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
 	req = req.WithContext(ctx)
@@ -75,7 +75,7 @@ func NewActivity(c *gin.Context) {
 	case 201:
 	case 202:
 	default:
-		fmt.Errorf("http post status: %d", res.StatusCode)
+		fmt.Errorf("server post status: %d", res.StatusCode)
 	}
 	log.Printf("successful post: %s %d", url, res.StatusCode)
 	log.Println(req)

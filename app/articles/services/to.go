@@ -22,13 +22,13 @@ func SendActivity(in *pb.ArticleData) {
 	idr := strconv.Itoa(rand.Int())
 	date := time.Now().UTC().Format(http.TimeFormat)
 
-	articleId := fmt.Sprintf("http://%s/u/%s/article/%s", addr, in.Author, idr)
-	authorUrl := fmt.Sprintf("http://%s/u/%s", addr, in.Author)
+	articleId := fmt.Sprintf("server://%s/u/%s/article/%s", addr, in.Author, idr)
+	authorUrl := fmt.Sprintf("server://%s/u/%s", addr, in.Author)
 
-	activityId := fmt.Sprintf("http://%s/u/%s/%s", addr, in.Author, idr)
+	activityId := fmt.Sprintf("server://%s/u/%s/%s", addr, in.Author, idr)
 
 	to := activitypub.GetFollow(in.Author,"follower")
-	cc := []string{"http://www.w3.org/ns/activitystreams#Public"}
+	cc := []string{"server://www.w3.org/ns/activitystreams#Public"}
 
 	obj := gin.H{
 		"id": articleId,
@@ -40,7 +40,7 @@ func SendActivity(in *pb.ArticleData) {
 		"cc": cc,
 	}
 	hd := gin.H{
-		"@context": "http://www.w3.org/ns/activitystreams",
+		"@context": "server://www.w3.org/ns/activitystreams",
 		"type": "Create",
 		"id": activityId,
 		"actor": authorUrl,

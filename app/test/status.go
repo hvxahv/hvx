@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/net/context"
-	httpsig "hvxahv/pkg/activitypub"
+	"hvxahv/api/server/httputils"
 	"log"
 	"math/rand"
 	"net/http"
@@ -51,24 +51,24 @@ type StatusObj struct {
 }
 
 func Status(c *gin.Context) {
-	url := fmt.Sprintf("http://%s/inbox", address)
+	url := fmt.Sprintf("server://%s/inbox", address)
 	method := "POST"
 
 	idr := strconv.Itoa(rand.Int())
 
 
 	obj := StatusObj{
-		ID:         fmt.Sprintf("http://%s/users/hvturingga/statuses/111/activitypub", address),
+		ID:         fmt.Sprintf("server://%s/users/hvturingga/statuses/111/activitypub", address),
 		Type:       "Create",
-		Summary:    fmt.Sprintf("http://%s/users/hvturingga", address),
+		Summary:    fmt.Sprintf("server://%s/users/hvturingga", address),
 		Published:  time.Now(),
-		To:         []string{"http://www.w3.org/ns/activitystreams#Public"},
-		Cc:         []string{fmt.Sprintf("http://%s/users/hvturingga/followers", address)},
+		To:         []string{"server://www.w3.org/ns/activitystreams#Public"},
+		Cc:         []string{fmt.Sprintf("server://%s/users/hvturingga/followers", address)},
 		Sensitive:  false,
 		Content:    "<p>这是一条测试消息</p>",
 		ContentMap: ContentMap{Zh: "<p>我发送了一条测试消息</p>"},
 		Replies: Replies{
-			ID: fmt.Sprintf("http://%s/users/hvturingga/statuses/111/replies", address),
+			ID: fmt.Sprintf("server://%s/users/hvturingga/statuses/111/replies", address),
 			Type: "Collection",
 			First: First{
 				Type: "CollectionPage",
@@ -77,10 +77,10 @@ func Status(c *gin.Context) {
 
 	}
 	p := gin.H{
-		"@context": "http://www.w3.org/ns/activitystreams",
-		"id": fmt.Sprintf("http://%s/%s", address, idr),
+		"@context": "server://www.w3.org/ns/activitystreams",
+		"id": fmt.Sprintf("server://%s/%s", address, idr),
 		"type": "Follow",
-		"actor": fmt.Sprintf("http://%s/actor", address),
+		"actor": fmt.Sprintf("server://%s/actor", address),
 		"object": obj,
 	}
 
@@ -107,10 +107,10 @@ func Status(c *gin.Context) {
 	req.Header.Add("Date", date)
 
 	//req.Header.Add("Signature", header)
-	block := httpsig.PrivateKey{
+	block := httputils.PrivateKey{
 		Key: GetKey(),
 	}
-	httpsig.SignRequest(fmt.Sprintf("http://%s/actor", address), block, req, byterData)
+	httputils.SignRequest(fmt.Sprintf("server://%s/actor", address), block, req, byterData)
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
 	req = req.WithContext(ctx)
@@ -124,7 +124,7 @@ func Status(c *gin.Context) {
 	case 201:
 	case 202:
 	default:
-		fmt.Errorf("http post status: %d", res.StatusCode)
+		fmt.Errorf("server post status: %d", res.StatusCode)
 	}
 	log.Printf("successful post: %s %d", url, res.StatusCode)
 	log.Println(req)

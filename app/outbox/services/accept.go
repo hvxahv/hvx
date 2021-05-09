@@ -24,8 +24,8 @@ func AcceptHandler(in *inbox2.Accept) int {
 	domain := viper.GetString("activitypub")
 
 	idr := strconv.Itoa(rand.Int())
-	uad := fmt.Sprintf("http://%s/u/%s", domain, in.Name)
-	randId := fmt.Sprintf("http://%s/%s", domain, idr)
+	uad := fmt.Sprintf("server://%s/u/%s", domain, in.Name)
+	randId := fmt.Sprintf("server://%s/%s", domain, idr)
 
 	obj := map[string]string {
 		"id": in.RequestId,
@@ -34,7 +34,7 @@ func AcceptHandler(in *inbox2.Accept) int {
 		"object": uad,
 	}
 	p := gin.H{
-		"@context": "http://www.w3.org/ns/activitystreams",
+		"@context": "server://www.w3.org/ns/activitystreams",
 		"id": randId,
 		"type": "Accept",
 		"actor": uad,

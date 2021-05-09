@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/net/context"
-	httpsig "hvxahv/pkg/activitypub"
+	"hvxahv/api/server/httputils"
 	"log"
 	"math/rand"
 	"net/http"
@@ -16,23 +16,23 @@ import (
 
 func AcceptHandler(c *gin.Context) {
 	idid := c.PostForm("id")
-	url := "http://mas.to/inbox"
+	url := "server://mas.to/inbox"
 	method := "POST"
 
 	idr := strconv.Itoa(rand.Int())
 
 
 	obj := map[string]string {
-		"id": fmt.Sprintf("http://mas.to/%s", idid),
+		"id": fmt.Sprintf("server://mas.to/%s", idid),
 		"type": "Follow",
-		"actor": "http://mas.to/users/hvturingga",
-		"object": "http://ba7b8a81471d.ngrok.io/u/hvturingga",
+		"actor": "server://mas.to/users/hvturingga",
+		"object": "server://ba7b8a81471d.ngrok.io/u/hvturingga",
 	}
 	p := gin.H{
-		"@context": "http://www.w3.org/ns/activitystreams",
-		"id": fmt.Sprintf("http://%s/%s", address, idr),
+		"@context": "server://www.w3.org/ns/activitystreams",
+		"id": fmt.Sprintf("server://%s/%s", address, idr),
 		"type": "Accept",
-		"actor": "http://ba7b8a81471d.ngrok.io/u/hvturingga",
+		"actor": "server://ba7b8a81471d.ngrok.io/u/hvturingga",
 		"object": obj,
 	}
 	byterData, err := json.Marshal(p)
@@ -59,10 +59,10 @@ func AcceptHandler(c *gin.Context) {
 
 	//req.Header.Add("Signature", header)
 
-	block := httpsig.PrivateKey{
+	block := httputils.PrivateKey{
 		Key: GetKey(),
 	}
-	httpsig.SignRequest("http://ba7b8a81471d.ngrok.io/u/hvturingga", block, req, byterData)
+	httputils.SignRequest("server://ba7b8a81471d.ngrok.io/u/hvturingga", block, req, byterData)
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
 	req = req.WithContext(ctx)
@@ -76,7 +76,7 @@ func AcceptHandler(c *gin.Context) {
 	case 201:
 	case 202:
 	default:
-		fmt.Errorf("http post status: %d", res.StatusCode)
+		fmt.Errorf("server post status: %d", res.StatusCode)
 	}
 	log.Printf("successful post: %s %d", url, res.StatusCode)
 	log.Println(req)

@@ -1,4 +1,4 @@
-package activitypub
+package httputils
 
 import (
 	"bytes"

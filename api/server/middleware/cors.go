@@ -1,8 +1,8 @@
-package mw
+package middleware
 
 import "github.com/gin-gonic/gin"
 
-// CORS cors configuration for mw
+// CORS For middleware of gin network framework, solve cross-domain problems.
 func CORS() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")

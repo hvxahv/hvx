@@ -8,23 +8,17 @@
 package main
 
 import (
-	"fmt"
-	"github.com/spf13/viper"
-	"hvxahv/app/gateway/http"
-	"hvxahv/pkg/bot"
-	"hvxahv/pkg/mongo"
+	"hvxahv/pkg/config"
 	"hvxahv/pkg/maria"
+	"hvxahv/pkg/mongo"
 	"hvxahv/pkg/redis"
 	"log"
 )
 
 func main()  {
-	viper.SetConfigFile("./configs/config.yaml")
-	err := viper.ReadInConfig()
-	if err != nil {
-		panic(fmt.Errorf("Fatal error config file: %s \n", err))
+	if err := config.InitConfig("local"); err != nil {
+		log.Println(err)
 	}
-
 	if err := maria.InitMariaDB(); err != nil {
 		log.Println(err)
 	}
@@ -32,10 +26,12 @@ func main()  {
 		log.Println(err)
 	}
 
-	redis.InitRedis()
+	if err := redis.InitRedis(); err != nil {
+		log.Println(err)
+	}
 
-	r := http.IngressRouter()
-	go bot.ServicesRunningNotice("gateway gateway", "7000")
-	_ = r.Run(fmt.Sprintf(":%s", viper.GetString("port.gateway")))
+	//r := server.IngressRouter()
+	//go bot.ServicesRunningNotice("gateway gateway", "7000")
+	//_ = r.Run(fmt.Sprintf(":%s", viper.GetString("port.gateway")))
 }
 

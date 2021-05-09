@@ -5,9 +5,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 	pb "hvxahv/api/hvxahv/v1alpha1"
+	"hvxahv/api/server/middleware"
 	social2 "hvxahv/internal/client/social"
 	"hvxahv/pkg/activitypub/activity"
-	"hvxahv/pkg/mw"
 	"log"
 )
 
@@ -19,7 +19,7 @@ type 是接收内容的类型, 接收一个参数用于区分获取类型
 需要传递 activity 和 status 这两个类型, 其他类型不接收!
 */
 func NewArticleHandler(c *gin.Context) {
-	author := mw.GetUserName(c)
+	author := middleware.GetUserName(c)
 	content := c.PostForm("content")
 	t := c.PostForm("type")
 
@@ -55,7 +55,7 @@ func GetPublicArticleHandler(c *gin.Context) {
 	id := c.Param("id")
 	log.Printf("通过 ID %s 查找 %s 发布的文章", id, name)
 
-	aid := fmt.Sprintf("http://%s/u/%s/%s", viper.GetString("activitypub"), name, id)
+	aid := fmt.Sprintf("server://%s/u/%s/%s", viper.GetString("activitypub"), name, id)
 
 	activity.GetPublicArticleById(aid, c)
 
@@ -65,8 +65,8 @@ func GetPublicArticleHandler(c *gin.Context) {
 
 // GetArticles ...
 func GetArticles(c *gin.Context) {
-	name := mw.GetUserName(c)
-	address := fmt.Sprintf("http://%s/u/%s", viper.GetString("activitypub"), name)
+	name := middleware.GetUserName(c)
+	address := fmt.Sprintf("server://%s/u/%s", viper.GetString("activitypub"), name)
 
 	r := activity.GetArticleByName(address)
 
