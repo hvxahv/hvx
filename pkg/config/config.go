@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"github.com/spf13/viper"
 )
+
 const (
-	fileAddr = "../../configs/config.yaml"
+	fileAddr   = "../../configs/config.yaml"
 	remoteAddr = ""
 )
 

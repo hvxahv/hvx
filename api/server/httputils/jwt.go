@@ -2,7 +2,6 @@ package httputils
 
 import (
 	"fmt"
-	"github.com/dgrijalva/jwt-go"
 	"hvxahv/internal/accounts"
 	"time"
 )
@@ -10,7 +9,7 @@ import (
 var K = []byte("jwt_key_hvxahv.half_memories.com")
 
 type Claims struct {
-	ID uint
+	ID   uint
 	User string
 	jwt.StandardClaims
 }
@@ -19,7 +18,7 @@ type Claims struct {
 func GenerateToken(u accounts.Accounts) (string, error) {
 	expireTime := time.Now().Add(30 * 24 * time.Hour)
 	claims := &Claims{
-		ID:  u.ID,
+		ID:   u.ID,
 		User: u.Username,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expireTime.Unix(),

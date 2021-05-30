@@ -20,7 +20,6 @@ func GetPublicArticleById(activityId string, c *gin.Context) {
 		log.Fatal(err)
 	}
 
-
 	c.JSON(200, gin.H{
 		"res": a,
 	})

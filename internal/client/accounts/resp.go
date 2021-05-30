@@ -43,8 +43,8 @@ func ActorResponse(c *gin.Context, r *pb.AccountData) {
 
 	con := []string{"server://www.w3.org/ns/activitystreams", "server://w3id.org/security/v1alpha1"}
 	publicKey := map[string]string{
-		"id": r.Id,
-		"owner": fmt.Sprintf("server://%s/actor/%s", address, name),
+		"id":           r.Id,
+		"owner":        fmt.Sprintf("server://%s/actor/%s", address, name),
 		"publicKeyPem": r.PublicKey,
 	}
 
@@ -66,6 +66,7 @@ func formatLink(route, name string) string {
 	address := viper.GetString("activitypub")
 	return fmt.Sprintf("server://%s/u/%s/%s", address, name, route)
 }
+
 // WebFingerResponse 它是 Activitypub 协议的 webfinger 的 JSON-LD 标准数据返回
 func WebFingerResponse(c *gin.Context, r *pb.AccountData) {
 	address := viper.GetString("activitypub")
@@ -73,19 +74,18 @@ func WebFingerResponse(c *gin.Context, r *pb.AccountData) {
 
 	links := []accounts.WebFingerLinks{
 		{
-			Rel: "self",
+			Rel:  "self",
 			Type: "application/activitypub+json",
 			Href: fmt.Sprintf("server://%s/u/%s", address, name),
 		},
 	}
 	finger := &accounts.WebFinger{
 		Subject: fmt.Sprintf("accounts:%s@%s", name, address),
-		Links: links,
+		Links:   links,
 	}
 	log.Println(finger)
 	c.JSON(200, finger)
 }
-
 
 type Create struct {
 	Type   string `json:"type"`
@@ -102,16 +102,15 @@ type Object struct {
 	Name         string `json:"name,omitempty"`
 }
 
-
 func OutboxResponse(c *gin.Context, name string) {
 	address := fmt.Sprintf("server://%s/u/%s", viper.GetString("activitypub"), name)
 	r := activity.GetArticleByName(address)
 
 	c.JSON(200, gin.H{
-		"@context": "server://www.w3.org/ns/activitystreams",
-		"id": address,
-		"type": "OrderedCollection",
-		"totalItems": len(r),
+		"@context":     "server://www.w3.org/ns/activitystreams",
+		"id":           address,
+		"type":         "OrderedCollection",
+		"totalItems":   len(r),
 		"orderedItems": r,
 	})
 }
@@ -126,10 +125,10 @@ func FollowersResponse(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{
-		"@context": "server://www.w3.org/ns/activitystreams",
-		"summary": "Sally followed John",
-		"type": "OrderedCollection",
-		"totalItems": res,
+		"@context":     "server://www.w3.org/ns/activitystreams",
+		"summary":      "Sally followed John",
+		"type":         "OrderedCollection",
+		"totalItems":   res,
 		"orderedItems": "",
 	})
 
@@ -144,12 +143,11 @@ func FollowingResponse(c *gin.Context) {
 		log.Println("Redis 获取 Actor 数据失败:", err)
 	}
 
-
 	c.JSON(200, gin.H{
-		"@context": "server://www.w3.org/ns/activitystreams",
-		"summary": "Sally followed John",
-		"type": "OrderedCollection",
-		"totalItems": res,
+		"@context":     "server://www.w3.org/ns/activitystreams",
+		"summary":      "Sally followed John",
+		"type":         "OrderedCollection",
+		"totalItems":   res,
 		"orderedItems": "",
 	})
 }

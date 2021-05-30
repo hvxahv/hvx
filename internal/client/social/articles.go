@@ -18,7 +18,6 @@ func CreateArticleClient(data *pb.ArticleData) (string, error) {
 	}
 	defer conn.Close()
 
-
 	cli := pb.NewArticlesClient(conn)
 
 	r, err := cli.NewArticle(context.Background(), data)
@@ -37,9 +36,7 @@ func GetArticlesClient(data *pb.GetArticleData) ([]*pb.ArticleData, error) {
 	}
 	defer conn.Close()
 
-
 	cli := pb.NewArticlesClient(conn)
-
 
 	r, err := cli.GetArticles(context.Background(), data)
 	if err != nil {
@@ -47,6 +44,7 @@ func GetArticlesClient(data *pb.GetArticleData) ([]*pb.ArticleData, error) {
 	}
 	return r.Articles, err
 }
+
 //
 //// UpdateStatusListHandler 更新状态 Handler
 //func UpdateArticleClient(author string) {

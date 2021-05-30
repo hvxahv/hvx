@@ -18,7 +18,7 @@ func VerificationHandler(c *gin.Context) {
 	u := c.PostForm("username")
 	p := c.PostForm("password")
 
-	a := accounts.Accounts{ Username: u, Password: p }
+	a := accounts.Accounts{Username: u, Password: p}
 
 	// 调用验证客户端获取返回的账户信息
 	r, err := accounts.VerifyAccountsClient(u)
@@ -40,8 +40,8 @@ func VerificationHandler(c *gin.Context) {
 		fmt.Println("生成 Token 失败！")
 	}
 	c.JSON(200, gin.H{
-		"state": "200",
+		"state":   "200",
 		"message": "登陆成功，欢迎您：" + u,
-		"token": t,
+		"token":   t,
 	})
 }

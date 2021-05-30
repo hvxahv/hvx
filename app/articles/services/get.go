@@ -14,5 +14,4 @@ func GetArticleHandler(in *pb.GetArticleData) ([]*pb.ArticleData, string) {
 	}
 	return a, "ok"
 
-
 }

@@ -11,7 +11,7 @@ func GetFollowerHandler(c *gin.Context) {
 	name := middleware.GetUserName(c)
 	r := activitypub.GetFollow(name, "follower")
 	c.JSON(200, gin.H{
-		"res": r,
+		"res":   r,
 		"count": len(r),
 	})
 }

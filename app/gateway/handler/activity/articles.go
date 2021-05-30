@@ -25,9 +25,9 @@ func NewArticleHandler(c *gin.Context) {
 
 	if t == "activity" || t == "status" {
 		data := &pb.ArticleData{
-			Author: author,
+			Author:  author,
 			Content: content,
-			Type: t,
+			Type:    t,
 		}
 		log.Println("-------- 接收内容的 Handler ---------")
 		log.Println(data.Content)
@@ -47,8 +47,8 @@ func NewArticleHandler(c *gin.Context) {
 		})
 	}
 
-
 }
+
 // GetPublicArticle ...
 func GetPublicArticleHandler(c *gin.Context) {
 	name := c.Param("user")
@@ -59,9 +59,7 @@ func GetPublicArticleHandler(c *gin.Context) {
 
 	activity.GetPublicArticleById(aid, c)
 
-
 }
-
 
 // GetArticles ...
 func GetArticles(c *gin.Context) {
@@ -72,7 +70,6 @@ func GetArticles(c *gin.Context) {
 
 	c.JSON(200, gin.H{
 		"article_lens": len(r),
-		"articles": r,
+		"articles":     r,
 	})
 }
-

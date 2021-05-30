@@ -1,6 +1,6 @@
 /**
-	实现 Accounts GRPC 服务的方法
- */
+实现 Accounts GRPC 服务的方法
+*/
 package main
 
 import (
@@ -9,8 +9,6 @@ import (
 	"hvxahv/app/accounts/services"
 	"log"
 )
-
-
 
 // NewAccount 创建账户 将接收到的用户数据存储到数据库
 func (s *server) NewAccount(ctx context.Context, in *pb.AccountData) (*pb.NewAccountReply, error) {
@@ -26,7 +24,7 @@ func (s *server) GetAccount(ctx context.Context, in *pb.AccountName) (*pb.Accoun
 	r := services.GetAccountData(in.Username)
 
 	ad := &pb.AccountData{
-		Name: r.Name,
+		Name:     r.Name,
 		Username: r.Username,
 		Password: r.Password,
 	}
@@ -38,10 +36,10 @@ func (s *server) GetActor(ctx context.Context, in *pb.AccountName) (*pb.AccountD
 	r := services.GetActorData(in.Username)
 
 	ad := &pb.AccountData{
-		Username: r.Username,
-		Name: r.Name,
+		Username:   r.Username,
+		Name:       r.Name,
 		PrivateKey: r.PrivateKey,
-		PublicKey: r.PublicKey,
+		PublicKey:  r.PublicKey,
 	}
 	return ad, nil
 }
@@ -51,7 +49,7 @@ func (s *server) VerifyAccount(ctx context.Context, in *pb.AccountName) (*pb.Acc
 	r := services.VerifyAccounts(in.Username)
 
 	ad := &pb.AccountData{
-		Name: r.Name,
+		Name:     r.Name,
 		Username: r.Username,
 		Password: r.Password,
 	}

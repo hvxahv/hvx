@@ -27,28 +27,27 @@ func SendActivity(in *pb.ArticleData) {
 
 	activityId := fmt.Sprintf("server://%s/u/%s/%s", addr, in.Author, idr)
 
-	to := activitypub.GetFollow(in.Author,"follower")
+	to := activitypub.GetFollow(in.Author, "follower")
 	cc := []string{"server://www.w3.org/ns/activitystreams#Public"}
 
 	obj := gin.H{
-		"id": articleId,
-		"type": "Note",
+		"id":           articleId,
+		"type":         "Note",
 		"attributedTo": authorUrl,
-		"content": in.Content,
-		"published": date,
-		"to": to,
-		"cc": cc,
+		"content":      in.Content,
+		"published":    date,
+		"to":           to,
+		"cc":           cc,
 	}
 	hd := gin.H{
-		"@context": "server://www.w3.org/ns/activitystreams",
-		"type": "Create",
-		"id": activityId,
-		"actor": authorUrl,
-		"object": obj,
+		"@context":  "server://www.w3.org/ns/activitystreams",
+		"type":      "Create",
+		"id":        activityId,
+		"actor":     authorUrl,
+		"object":    obj,
 		"published": date,
-		"to": to,
-		"cc": cc,
-
+		"to":        to,
+		"cc":        cc,
 	}
 	log.Println("活动ID ", activityId)
 	log.Println("文章 ID", articleId)
@@ -78,5 +77,3 @@ func SendActivity(in *pb.ArticleData) {
 	}
 
 }
-
-

@@ -27,18 +27,18 @@ func AcceptHandler(in *inbox2.Accept) int {
 	uad := fmt.Sprintf("server://%s/u/%s", domain, in.Name)
 	randId := fmt.Sprintf("server://%s/%s", domain, idr)
 
-	obj := map[string]string {
-		"id": in.RequestId,
-		"type": "Follow",
-		"actor": in.Actor,
+	obj := map[string]string{
+		"id":     in.RequestId,
+		"type":   "Follow",
+		"actor":  in.Actor,
 		"object": uad,
 	}
 	p := gin.H{
 		"@context": "server://www.w3.org/ns/activitystreams",
-		"id": randId,
-		"type": "Accept",
-		"actor": uad,
-		"object": obj,
+		"id":       randId,
+		"type":     "Accept",
+		"actor":    uad,
+		"object":   obj,
 	}
 
 	data, err := json.Marshal(p)

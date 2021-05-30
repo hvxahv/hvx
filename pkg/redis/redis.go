@@ -9,6 +9,7 @@ import (
 var (
 	pool *redis.Pool
 )
+
 func InitRedis() error {
 	viper.SetConfigFile("./configs/config.yaml")
 	err := viper.ReadInConfig()
@@ -19,7 +20,7 @@ func InitRedis() error {
 
 	pwd := redis.DialPassword(viper.GetString("redis.password"))
 	pool = &redis.Pool{
-		MaxIdle: 80,
+		MaxIdle:   80,
 		MaxActive: 12000,
 		Dial: func() (redis.Conn, error) {
 			c, err := redis.Dial("tcp", addr, pwd)

@@ -17,11 +17,11 @@ import (
 // ReceiveInbox 接收 Inbox 数据
 func ReceiveInbox(in *pb.InboxData) string {
 	i := &inbox.Inbox{
-		Actor: in.Actor,
+		Actor:     in.Actor,
 		RequestId: in.RequestId,
 		EventType: in.EventType,
-		Name: in.Name,
-		Date: time.Now().UTC().Format(http.TimeFormat),
+		Name:      in.Name,
+		Date:      time.Now().UTC().Format(http.TimeFormat),
 	}
 
 	k := fmt.Sprintf("%s-inbox", in.Name)

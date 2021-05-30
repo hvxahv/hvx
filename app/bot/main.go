@@ -16,7 +16,7 @@ type server struct {
 }
 
 // 实现 Telegram Bot 的服务接口，供外部调用。
-func main()  {
+func main() {
 
 	viper.SetConfigFile("./configs/config.yaml")
 	err := viper.ReadInConfig()

@@ -1,6 +1,5 @@
 package accounts
 
-
 type ServerConfig struct {
 	Port string
 }
@@ -8,7 +7,6 @@ type ServerConfig struct {
 func NewServerConfig(port string) *ServerConfig {
 	return &ServerConfig{Port: port}
 }
-
 
 func (sc *ServerConfig) Start() {
 

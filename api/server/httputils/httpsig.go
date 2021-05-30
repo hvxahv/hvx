@@ -275,10 +275,6 @@ func DecodeKey(s string) (pri PrivateKey, pub PublicKey, err error) {
 		rsakey, err = x509.ParsePKCS1PrivateKey(block.Bytes)
 		if err == nil {
 
-
-
-
-
 			pri.Type = RSA
 			pub.Key = &rsakey.PublicKey
 			pub.Type = RSA

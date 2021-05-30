@@ -21,19 +21,18 @@ func Follow(c *gin.Context) {
 	idr := strconv.Itoa(rand.Int())
 	p := gin.H{
 		"@context": "server://www.w3.org/ns/activitystreams",
-		"id": fmt.Sprintf("server://%s/%s", address, idr),
-		"type": "Follow",
-		"actor": fmt.Sprintf("server://%s/actor", address),
-		"object": "server://mas.to/users/hvturingga",
+		"id":       fmt.Sprintf("server://%s/%s", address, idr),
+		"type":     "Follow",
+		"actor":    fmt.Sprintf("server://%s/actor", address),
+		"object":   "server://mas.to/users/hvturingga",
 	}
 	byterData, err := json.Marshal(p)
 	if err != nil {
 		log.Println(err)
 	}
 
-
 	payload := bytes.NewBuffer(byterData)
-	client := &http.Client {
+	client := &http.Client{
 	}
 	fmt.Println(payload)
 	req, err := http.NewRequest(method, url, payload)
@@ -41,7 +40,6 @@ func Follow(c *gin.Context) {
 	if err != nil {
 		fmt.Println(err)
 	}
-
 
 	date := time.Now().UTC().Format(http.TimeFormat)
 
@@ -72,7 +70,6 @@ func Follow(c *gin.Context) {
 	log.Println(req)
 }
 
-
 type UndoObj struct {
 	ID     string `json:"id"`
 	Type   string `json:"type"`
@@ -86,26 +83,25 @@ func Undo(c *gin.Context) {
 
 	idr := strconv.Itoa(rand.Int())
 	obj := UndoObj{
-		ID: fmt.Sprintf("server://%s/%s", address, idr),
-		Type:  "Follow",
-		Actor: fmt.Sprintf("server://%s/actor", address),
+		ID:     fmt.Sprintf("server://%s/%s", address, idr),
+		Type:   "Follow",
+		Actor:  fmt.Sprintf("server://%s/actor", address),
 		Object: "server://mas.to/users/hvturingga",
 	}
 	p := gin.H{
 		"@context": "server://www.w3.org/ns/activitystreams",
-		"id": fmt.Sprintf("server://%s/%s", address, idr),
-		"type": "Undo",
-		"actor": fmt.Sprintf("server://%s/actor", address),
-		"object": obj,
+		"id":       fmt.Sprintf("server://%s/%s", address, idr),
+		"type":     "Undo",
+		"actor":    fmt.Sprintf("server://%s/actor", address),
+		"object":   obj,
 	}
 	byterData, err := json.Marshal(p)
 	if err != nil {
 		log.Println(err)
 	}
 
-
 	payload := bytes.NewBuffer(byterData)
-	client := &http.Client {
+	client := &http.Client{
 	}
 	fmt.Println(payload)
 	req, err := http.NewRequest(method, url, payload)
@@ -113,7 +109,6 @@ func Undo(c *gin.Context) {
 	if err != nil {
 		fmt.Println(err)
 	}
-
 
 	date := time.Now().UTC().Format(http.TimeFormat)
 

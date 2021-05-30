@@ -12,15 +12,15 @@ import (
 /**
 InboxHandler 这是一个公共的收件箱
 用于处理接收到收件箱的数据并调用 Inbox 客户端，接收客户端返回的数据
- */
+*/
 func InboxHandler(c *gin.Context) {
 	name := c.Param("user")
 	e, reqId, actor := activitypub.GetEvent(c)
 	data := &inbox.Inbox{
-		Name: name,
+		Name:      name,
 		RequestId: reqId,
-		EventType:  e,
-		Actor: actor,
+		EventType: e,
+		Actor:     actor,
 	}
 	r, err := social2.InboxClient(data)
 	if err != nil {

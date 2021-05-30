@@ -44,6 +44,7 @@ func GetActorHandler(c *gin.Context) {
 		accounts.ActorResponse(c, r)
 	}
 }
+
 // GetWebFingerHandler
 // 给查询的服务器返回 WebFinger，常与 Actor 一起使用
 // 接受 resource 参数并交给客户端进一步处理
@@ -61,7 +62,7 @@ func DeleteAccountHandler(c *gin.Context) {
 
 }
 
-func AccountSettingHandler(c *gin.Context)  {
+func AccountSettingHandler(c *gin.Context) {
 
 }
 
@@ -70,7 +71,5 @@ func GetActorOutbox(c *gin.Context) {
 	name := c.Param("user")
 	log.Println(name, "用户请求了数据")
 
-
 	accounts.OutboxResponse(c, name)
 }
-

@@ -5,16 +5,16 @@ package inbox
 // Name 当前登录用户名
 // RequestId 请求 ID
 type Accept struct {
-	Actor    	string
-	Name		string
-	RequestId 	string
+	Actor     string
+	Name      string
+	RequestId string
 }
 
 // NewAccept ...
 func NewAccept(actor, name, reqId string) *Accept {
 	accept := &Accept{
-		Actor: actor,
-		Name: name,
+		Actor:     actor,
+		Name:      name,
 		RequestId: reqId,
 	}
 	return accept

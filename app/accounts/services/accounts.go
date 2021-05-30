@@ -21,7 +21,7 @@ func GetAccountData(u string) *accounts.Accounts {
 }
 
 // GetActorData 获取 Actor ,
-func GetActorData(u string) *pb.AccountData{
+func GetActorData(u string) *pb.AccountData {
 	a := new(pb.AccountData)
 
 	rdb := redis2.GetRDB()
@@ -50,7 +50,7 @@ func VerifyAccounts(u string) *accounts.Accounts {
 	if db.Debug().Table("accounts").Where("username = ?", u).First(&a).RecordNotFound() {
 		db.Debug().Table("accounts").Where("username = ?", u).First(&a)
 		return a
-	} else  {
+	} else {
 		return a
 	}
 }

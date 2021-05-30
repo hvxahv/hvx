@@ -29,8 +29,8 @@ func newMaria() *maria {
 		username: viper.GetString("maria.username"),
 		password: viper.GetString("maria.password"),
 		hostname: viper.GetString("maria.hostname"),
-		port: viper.GetString("maria.prot"),
-		dbName: viper.GetString("maria.dbname"),
+		port:     viper.GetString("maria.prot"),
+		dbName:   viper.GetString("maria.dbname"),
 	}
 }
 

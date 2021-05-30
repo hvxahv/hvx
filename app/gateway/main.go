@@ -15,7 +15,7 @@ import (
 	"log"
 )
 
-func main()  {
+func main() {
 	if err := config.InitConfig("local"); err != nil {
 		log.Println(err)
 	}
@@ -34,4 +34,3 @@ func main()  {
 	//go bot.ServicesRunningNotice("gateway gateway", "7000")
 	//_ = r.Run(fmt.Sprintf(":%s", viper.GetString("port.gateway")))
 }
-

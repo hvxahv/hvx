@@ -37,6 +37,5 @@ func GetFollow(name, collection string) []string {
 	}
 	_ = findA.Close(context.TODO())
 
-
 	return i
 }

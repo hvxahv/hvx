@@ -24,9 +24,9 @@ func LikeReq(da string, pk []byte) {
 	p := gin.H{
 		"@context": "server://www.w3.org/ns/activitystreams",
 
-		"id": "server://4e54ea0be52f.ngrok.io/create-" + idr,
-		"type": "Like",
-		"actor": "server://4e54ea0be52f.ngrok.io/actor",
+		"id":     "server://4e54ea0be52f.ngrok.io/create-" + idr,
+		"type":   "Like",
+		"actor":  "server://4e54ea0be52f.ngrok.io/actor",
 		"object": "server://mas.to/@hvturingga/105515218721573733",
 	}
 	byterData, err := json.Marshal(p)
@@ -34,9 +34,8 @@ func LikeReq(da string, pk []byte) {
 		log.Println(err)
 	}
 
-
 	payload := bytes.NewBuffer(byterData)
-	client := &http.Client {
+	client := &http.Client{
 	}
 	fmt.Println(payload)
 	req, err := http.NewRequest(method, url, payload)
@@ -44,7 +43,6 @@ func LikeReq(da string, pk []byte) {
 	if err != nil {
 		fmt.Println(err)
 	}
-
 
 	date := time.Now().UTC().Format(http.TimeFormat)
 

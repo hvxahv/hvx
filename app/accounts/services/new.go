@@ -25,10 +25,10 @@ func NewAccount(in *pb.AccountData) int {
 	}
 
 	a := &accounts.Accounts{
-		Username: u,
-		Password: string(hash),
+		Username:   u,
+		Password:   string(hash),
 		PrivateKey: private,
-		PublicKey: public,
+		PublicKey:  public,
 	}
 
 	db := maria.GetMaria()
@@ -38,12 +38,12 @@ func NewAccount(in *pb.AccountData) int {
 	if db.Debug().Table("accounts").Where("username = ?", u).First(&a).RecordNotFound() {
 		db.Debug().Table("accounts").Create(&a)
 		db.LogMode(true)
-		if db.NewRecord(a){
+		if db.NewRecord(a) {
 			return 500
 		} else {
 			return 200
 		}
-	} else  {
+	} else {
 		return 202
 	}
 }
@@ -64,4 +64,3 @@ func GenRasKey() (string, string, error) {
 
 	return string(private), string(public), err
 }
-

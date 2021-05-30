@@ -5,7 +5,6 @@ import (
 	"testing"
 )
 
-
 func TestGetMaria(t *testing.T) {
 	if err := InitMariaDB(); err != nil {
 		t.Log(err)
@@ -13,4 +12,3 @@ func TestGetMaria(t *testing.T) {
 	db := GetMaria()
 	fmt.Println(db)
 }
-

@@ -18,7 +18,6 @@ func (s *server) NewInbox(ctx context.Context, in *pb.InboxData) (*pb.NewInboxRe
 	return &pb.NewInboxReply{Reply: r}, nil
 }
 
-
 // NewInbox 将接收到的收件箱的新消息保存并通知用户
 func (s *server) GetInbox(ctx context.Context, in *pb.Name) (*pb.GetInboxReply, error) {
 	r := services.GetInboxData(in)
@@ -26,4 +25,3 @@ func (s *server) GetInbox(ctx context.Context, in *pb.Name) (*pb.GetInboxReply, 
 	log.Println("获得的 INBOX 数据, ", r)
 	return &pb.GetInboxReply{Inbox: r}, nil
 }
-

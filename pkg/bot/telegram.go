@@ -2,7 +2,6 @@ package bot
 
 import (
 	"fmt"
-	"github.com/go-telegram-bot-api/telegram-bot-api"
 	"log"
 )
 
@@ -10,6 +9,7 @@ const (
 	token  = "1428818014:AAEv4ZRvRR0wi4Rmu336vYO_UAtshOIjFxA"
 	chatid = 441776537
 )
+
 // SendNotice 将通知发送给 Telegram 管理者
 func SendNotice(str string) error {
 	bot, err := tgbotapi.NewBotAPI(token)

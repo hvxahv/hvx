@@ -24,7 +24,7 @@ func GetEvent(c *gin.Context) (string, string, string) {
 	// 通过事件 ID 可以查看 Activitypub 的元数据
 	log.Println("-------------------------------------")
 	log.Println("接收到的请求类型：", f["type"])
-	log.Println( "得到的活动事件 ID：",  id)
+	log.Println("得到的活动事件 ID：", id)
 	log.Println("获取活动用户：", f["actor"])
 	log.Println("-------------------------------------")
 
@@ -42,4 +42,3 @@ func GetEvent(c *gin.Context) (string, string, string) {
 		return "", "", ""
 	}
 }
-

@@ -18,7 +18,7 @@ type server struct {
 }
 
 /**
- Accounts system compatible with Activitypub protocol.
+Accounts system compatible with Activitypub protocol.
 */
 func main() {
 

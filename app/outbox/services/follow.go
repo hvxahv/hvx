@@ -22,10 +22,10 @@ func FollowHandler(actor string, name string) int {
 
 	p := gin.H{
 		"@context": "server://www.w3.org/ns/activitystreams",
-		"id": fmt.Sprintf("server://%s/%s", domain, idr),
-		"type": "Follow",
-		"actor": uad, // 当前用户的 Actor 地址
-		"object": actor, // 对方的 Actor 地址, 类似 https://mas.to/users/hvturingga
+		"id":       fmt.Sprintf("server://%s/%s", domain, idr),
+		"type":     "Follow",
+		"actor":    uad,   // 当前用户的 Actor 地址
+		"object":   actor, // 对方的 Actor 地址, 类似 https://mas.to/users/hvturingga
 	}
 
 	data, err := json.Marshal(p)

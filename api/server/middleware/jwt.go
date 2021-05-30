@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"fmt"
-	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"hvxahv/api/server/httputils"
 	"log"
@@ -17,7 +16,7 @@ func JWTAuth(c *gin.Context) {
 	t := strings.Split(ht, "Bearer ")[1]
 	if ht == "" {
 		c.JSON(500, gin.H{
-			"state": "500",
+			"state":   "500",
 			"message": "Token is not carried in the request.",
 		})
 		c.Abort()
@@ -26,7 +25,7 @@ func JWTAuth(c *gin.Context) {
 	_, _, err := JwtParseToken(t)
 	if err != nil {
 		c.JSON(500, gin.H{
-			"state": "500",
+			"state":   "500",
 			"message": "Login failed. Token is incorrect!",
 		})
 		c.Abort()

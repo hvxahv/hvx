@@ -7,8 +7,8 @@ import (
 	"google.golang.org/grpc/reflection"
 	pb "hvxahv/api/hvxahv/v1alpha1"
 	"hvxahv/pkg/bot"
-	"hvxahv/pkg/mongo"
 	"hvxahv/pkg/maria"
+	"hvxahv/pkg/mongo"
 	"hvxahv/pkg/redis"
 	"log"
 	"net"
@@ -18,7 +18,7 @@ type server struct {
 	pb.OutboxServer
 }
 
-func main()  {
+func main() {
 	if err := mongo.InitMongoDB(); err != nil {
 		log.Println(err)
 	}

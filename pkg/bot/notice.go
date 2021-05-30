@@ -9,7 +9,7 @@ import (
 )
 
 // NewAccountNotice 新增用户通知
-func NewAccountNotice(str string)  {
+func NewAccountNotice(str string) {
 	if err := SendNotice(str); err != nil {
 		log.Println(err)
 	}

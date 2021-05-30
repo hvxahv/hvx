@@ -20,10 +20,10 @@ func InboxClient(data *inbox.Inbox) (string, error) {
 
 	cli := pb.NewInboxClient(conn)
 	d := &pb.InboxData{
-		Actor: data.Actor,
+		Actor:     data.Actor,
 		RequestId: data.RequestId,
 		EventType: data.EventType,
-		Name: data.Name,
+		Name:      data.Name,
 	}
 	r, err := cli.NewInbox(context.Background(), d)
 	if err != nil {

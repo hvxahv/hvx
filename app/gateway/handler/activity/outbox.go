@@ -5,7 +5,6 @@ import (
 	"hvxahv/api/server/middleware"
 	"hvxahv/internal/activity"
 	social2 "hvxahv/internal/client/social"
-	"hvxahv/internal/outbox"
 	"log"
 )
 
@@ -36,4 +35,3 @@ func FollowHandler(c *gin.Context) {
 
 	activity.SendActivityResponse(c, r.Reply)
 }
-

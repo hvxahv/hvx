@@ -18,27 +18,26 @@ func CreateHandler(c *gin.Context) {
 	url := "server://mas.to/inbox"
 	method := "POST"
 
-
 	idr := strconv.Itoa(rand.Int())
 
 	date := time.Now().UTC().Format(http.TimeFormat)
-	obj := gin.H {
-		"id": fmt.Sprintf("server://%s/%s", address, idr),
-		"type": "Note",
-		"published": date,
+	obj := gin.H{
+		"id":           fmt.Sprintf("server://%s/%s", address, idr),
+		"type":         "Note",
+		"published":    date,
 		"attributedTo": fmt.Sprintf("server://%s/actor", address),
-		"content": "这是一条测试数据",
-		"to": []string{"server://www.w3.org/ns/activitystreams#Public"},
+		"content":      "这是一条测试数据",
+		"to":           []string{"server://www.w3.org/ns/activitystreams#Public"},
 	}
 
 	p := gin.H{
 		"@context": "server://www.w3.org/ns/activitystreams",
-		"id": fmt.Sprintf("server://%s/create-%s", address, idr),
-		"type": "Create",
-		"actor": fmt.Sprintf("server://%s/actor", address),
-		"to": []string{"server://www.w3.org/ns/activitystreams#Public"},
-		"cc": []string{"server://mas.to/users/hvturingga"},
-		"object": obj,
+		"id":       fmt.Sprintf("server://%s/create-%s", address, idr),
+		"type":     "Create",
+		"actor":    fmt.Sprintf("server://%s/actor", address),
+		"to":       []string{"server://www.w3.org/ns/activitystreams#Public"},
+		"cc":       []string{"server://mas.to/users/hvturingga"},
+		"object":   obj,
 	}
 	byterData, err := json.Marshal(p)
 	if err != nil {
@@ -46,7 +45,7 @@ func CreateHandler(c *gin.Context) {
 	}
 
 	payload := bytes.NewBuffer(byterData)
-	client := &http.Client {
+	client := &http.Client{
 	}
 	fmt.Println(payload)
 	req, err := http.NewRequest(method, url, payload)
@@ -54,7 +53,6 @@ func CreateHandler(c *gin.Context) {
 	if err != nil {
 		fmt.Println(err)
 	}
-
 
 	req.Header.Add("Host", "mas.to")
 	req.Header.Add("Date", date)

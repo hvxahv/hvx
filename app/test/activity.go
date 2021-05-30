@@ -20,28 +20,26 @@ func NewActivity(c *gin.Context) {
 
 	idr := strconv.Itoa(rand.Int())
 
-
-	obj := map[string]string {
-		"id": "server://mas.to/76c94894-fa77-42be-ab8d-e35779c9cb63",
-		"type": "Follow",
-		"actor": "server://mas.to/users/hvturingga",
+	obj := map[string]string{
+		"id":     "server://mas.to/76c94894-fa77-42be-ab8d-e35779c9cb63",
+		"type":   "Follow",
+		"actor":  "server://mas.to/users/hvturingga",
 		"object": "server://47d8ab2e4028.ngrok.io/actor",
 	}
 	p := gin.H{
 		"@context": "server://www.w3.org/ns/activitystreams",
-		"id": fmt.Sprintf("server://%s/%s", address, idr),
-		"type": "Accept",
-		"actor": fmt.Sprintf("server://%s/actor", address),
-		"object": obj,
+		"id":       fmt.Sprintf("server://%s/%s", address, idr),
+		"type":     "Accept",
+		"actor":    fmt.Sprintf("server://%s/actor", address),
+		"object":   obj,
 	}
 	byterData, err := json.Marshal(p)
 	if err != nil {
 		log.Println(err)
 	}
 
-
 	payload := bytes.NewBuffer(byterData)
-	client := &http.Client {
+	client := &http.Client{
 	}
 	fmt.Println(payload)
 	req, err := http.NewRequest(method, url, payload)
@@ -49,7 +47,6 @@ func NewActivity(c *gin.Context) {
 	if err != nil {
 		fmt.Println(err)
 	}
-
 
 	date := time.Now().UTC().Format(http.TimeFormat)
 
@@ -80,4 +77,3 @@ func NewActivity(c *gin.Context) {
 	log.Printf("successful post: %s %d", url, res.StatusCode)
 	log.Println(req)
 }
-

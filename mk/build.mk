@@ -1,22 +1,22 @@
-gbow := go build -o ./build/windows
-gbol := $$Env:GOOS = "linux"; $$Env:GOARCH = "amd64" ; go build -o ./build/linux
+# build to windows
+b2w := go build -o ./build/windows
+# build output windows
+b2l := $$Env:GOOS = "linux"; $$Env:GOARCH = "amd64" ; go build -o ./build/linux
 
-hvx_out := go build -o ./build/windows
-
-build-windows:
+# build to windows command
+bw:
 	rm ./build/windows/*.exe
-	$(gbow) ./app/accounts
-	$(gbow) ./app/gateway
-	$(gbow) ./app/status
-	$(gbow) ./app/bot
+	$(b2w) ./app/accounts
+	$(b2w) ./app/gateway
+	$(b2w) ./app/status
+	$(b2w) ./app/bot
+	$(b2w)./app/hvx
 
-build-linux:
+# build to Linux command
+bl:
 	rm ./build/linux/*
-	$(gbol)	./app/accounts
-	$(gbol) ./app/gateway
-	$(gbol) ./app/status
-	$(gbol) ./app/bot
-
-hvx-windows:
-	rm ./build/windows/*.exe
-	$(hvx_out) ./app/accounts
+	$(b2l)	./app/accounts
+	$(b2l) ./app/gateway
+	$(b2l) ./app/status
+	$(b2l) ./app/bot
+	$(b2l)./app/hvx

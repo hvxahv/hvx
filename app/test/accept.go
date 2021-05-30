@@ -21,28 +21,26 @@ func AcceptHandler(c *gin.Context) {
 
 	idr := strconv.Itoa(rand.Int())
 
-
-	obj := map[string]string {
-		"id": fmt.Sprintf("server://mas.to/%s", idid),
-		"type": "Follow",
-		"actor": "server://mas.to/users/hvturingga",
+	obj := map[string]string{
+		"id":     fmt.Sprintf("server://mas.to/%s", idid),
+		"type":   "Follow",
+		"actor":  "server://mas.to/users/hvturingga",
 		"object": "server://ba7b8a81471d.ngrok.io/u/hvturingga",
 	}
 	p := gin.H{
 		"@context": "server://www.w3.org/ns/activitystreams",
-		"id": fmt.Sprintf("server://%s/%s", address, idr),
-		"type": "Accept",
-		"actor": "server://ba7b8a81471d.ngrok.io/u/hvturingga",
-		"object": obj,
+		"id":       fmt.Sprintf("server://%s/%s", address, idr),
+		"type":     "Accept",
+		"actor":    "server://ba7b8a81471d.ngrok.io/u/hvturingga",
+		"object":   obj,
 	}
 	byterData, err := json.Marshal(p)
 	if err != nil {
 		log.Println(err)
 	}
 
-
 	payload := bytes.NewBuffer(byterData)
-	client := &http.Client {
+	client := &http.Client{
 	}
 	fmt.Println(payload)
 	req, err := http.NewRequest(method, url, payload)
@@ -50,7 +48,6 @@ func AcceptHandler(c *gin.Context) {
 	if err != nil {
 		fmt.Println(err)
 	}
-
 
 	date := time.Now().UTC().Format(http.TimeFormat)
 

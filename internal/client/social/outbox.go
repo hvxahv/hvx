@@ -5,7 +5,6 @@ import (
 	"golang.org/x/net/context"
 	pb "hvxahv/api/hvxahv/v1alpha1"
 	"hvxahv/internal/client"
-	"hvxahv/internal/outbox"
 	"log"
 )
 
@@ -21,8 +20,8 @@ func OutboxAcceptClient(data *inbox.Accept) (*pb.ReplyCode, error) {
 	cli := pb.NewOutboxClient(conn)
 
 	d := &pb.AcceptData{
-		Name: data.Name,
-		Actor: data.Actor,
+		Name:      data.Name,
+		Actor:     data.Actor,
 		RequestId: data.RequestId,
 	}
 
@@ -32,7 +31,6 @@ func OutboxAcceptClient(data *inbox.Accept) (*pb.ReplyCode, error) {
 	}
 	return r, err
 }
-
 
 // OutboxFollowClient ... 发送请求关注的客户端, 它接收两个参数 name 当前的用户名, actor 请求关注的人的 URL
 func OutboxFollowClient(name, actor string) (*pb.ReplyCode, error) {
@@ -46,7 +44,7 @@ func OutboxFollowClient(name, actor string) (*pb.ReplyCode, error) {
 	cli := pb.NewOutboxClient(conn)
 
 	d := &pb.FollowData{
-		Name: name,
+		Name:  name,
 		Actor: actor,
 	}
 

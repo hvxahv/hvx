@@ -41,8 +41,6 @@ func Router() *gin.Engine {
 	r.GET("/u/:user/following", accounts.FollowingResponse)
 	r.GET("/u/:user/followers", accounts.FollowersResponse)
 
-
-
 	// Functions that can be accessed through Token, carry token when requesting
 	v1 := r.Group("/api/v1alpha1")
 	v1.Use(middleware.JWTAuth)

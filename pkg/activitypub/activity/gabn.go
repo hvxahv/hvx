@@ -33,4 +33,3 @@ func GetArticleByName(name string) []*map[string]interface{} {
 
 	return i
 }
-

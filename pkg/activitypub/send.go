@@ -15,7 +15,7 @@ import (
 // SendActivity 发送活动
 func SendActivity(data *Activity) int {
 	payload := bytes.NewBuffer(data.Data)
-	cli := &http.Client {}
+	cli := &http.Client{}
 
 	req, err := http.NewRequest(data.Method, data.EndInbox, payload)
 	if err != nil {
@@ -54,4 +54,3 @@ func SendActivity(data *Activity) int {
 
 	return res.StatusCode
 }
-

@@ -30,24 +30,24 @@ type Replies struct {
 }
 
 type StatusObj struct {
-		ID               string      `json:"id"`
-		Type             string      `json:"type"`
-		Summary          interface{} `json:"summary"`
-		InReplyTo        interface{} `json:"inReplyTo"`
-		Published        time.Time     `json:"published"`
-		URL              string        `json:"url"`
-		AttributedTo     string        `json:"attributedTo"`
-		To               []string      `json:"to"`
-		Cc               []string      `json:"cc"`
-		Sensitive        bool          `json:"sensitive"`
-		AtomURI          string        `json:"atomUri"`
-		InReplyToAtomURI interface{}   `json:"inReplyToAtomUri"`
-		Conversation     string        `json:"conversation"`
-		Content          string        `json:"content"`
-		ContentMap       ContentMap    `json:"contentMap"`
-		Attachment       []interface{} `json:"attachment"`
-		Tag              []interface{} `json:"tag"`
-		Replies          Replies       `json:"replies"`
+	ID               string        `json:"id"`
+	Type             string        `json:"type"`
+	Summary          interface{}   `json:"summary"`
+	InReplyTo        interface{}   `json:"inReplyTo"`
+	Published        time.Time     `json:"published"`
+	URL              string        `json:"url"`
+	AttributedTo     string        `json:"attributedTo"`
+	To               []string      `json:"to"`
+	Cc               []string      `json:"cc"`
+	Sensitive        bool          `json:"sensitive"`
+	AtomURI          string        `json:"atomUri"`
+	InReplyToAtomURI interface{}   `json:"inReplyToAtomUri"`
+	Conversation     string        `json:"conversation"`
+	Content          string        `json:"content"`
+	ContentMap       ContentMap    `json:"contentMap"`
+	Attachment       []interface{} `json:"attachment"`
+	Tag              []interface{} `json:"tag"`
+	Replies          Replies       `json:"replies"`
 }
 
 func Status(c *gin.Context) {
@@ -55,7 +55,6 @@ func Status(c *gin.Context) {
 	method := "POST"
 
 	idr := strconv.Itoa(rand.Int())
-
 
 	obj := StatusObj{
 		ID:         fmt.Sprintf("server://%s/users/hvturingga/statuses/111/activitypub", address),
@@ -68,30 +67,27 @@ func Status(c *gin.Context) {
 		Content:    "<p>这是一条测试消息</p>",
 		ContentMap: ContentMap{Zh: "<p>我发送了一条测试消息</p>"},
 		Replies: Replies{
-			ID: fmt.Sprintf("server://%s/users/hvturingga/statuses/111/replies", address),
+			ID:   fmt.Sprintf("server://%s/users/hvturingga/statuses/111/replies", address),
 			Type: "Collection",
 			First: First{
 				Type: "CollectionPage",
 			},
 		},
-
 	}
 	p := gin.H{
 		"@context": "server://www.w3.org/ns/activitystreams",
-		"id": fmt.Sprintf("server://%s/%s", address, idr),
-		"type": "Follow",
-		"actor": fmt.Sprintf("server://%s/actor", address),
-		"object": obj,
+		"id":       fmt.Sprintf("server://%s/%s", address, idr),
+		"type":     "Follow",
+		"actor":    fmt.Sprintf("server://%s/actor", address),
+		"object":   obj,
 	}
-
-
 
 	byterData, err := json.Marshal(p)
 	if err != nil {
 		log.Println(err)
 	}
 	payload := bytes.NewBuffer(byterData)
-	client := &http.Client {
+	client := &http.Client{
 	}
 	fmt.Println(payload)
 	req, err := http.NewRequest(method, url, payload)
@@ -99,7 +95,6 @@ func Status(c *gin.Context) {
 	if err != nil {
 		fmt.Println(err)
 	}
-
 
 	date := time.Now().UTC().Format(http.TimeFormat)
 

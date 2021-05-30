@@ -20,22 +20,22 @@ func Req(da string, pk []byte) {
 	method := "POST"
 
 	idr := strconv.Itoa(rand.Int())
-	obj := map[string]string {
-		"id": "server://4e54ea0be52f.ngrok.io/"+ idr,
-		"type": "Note",
-		"published": time.Now().UTC().Format(http.TimeFormat),
+	obj := map[string]string{
+		"id":           "server://4e54ea0be52f.ngrok.io/" + idr,
+		"type":         "Note",
+		"published":    time.Now().UTC().Format(http.TimeFormat),
 		"attributedTo": "server://4e54ea0be52f.ngrok.io/actor",
-		"inReplyTo": "server://mstdn.social/@hvturingga/105515197741965407",
-		"content": fmt.Sprintf("<p>Hello %s world</p>", idr),
-		"to": "server://www.w3.org/ns/activitystreams#Public",
+		"inReplyTo":    "server://mstdn.social/@hvturingga/105515197741965407",
+		"content":      fmt.Sprintf("<p>Hello %s world</p>", idr),
+		"to":           "server://www.w3.org/ns/activitystreams#Public",
 	}
 
 	p := gin.H{
 		"@context": "server://www.w3.org/ns/activitystreams",
 
-		"id": "server://4e54ea0be52f.ngrok.io/create-" + idr,
-		"type": "Create",
-		"actor": "server://4e54ea0be52f.ngrok.io/actor",
+		"id":     "server://4e54ea0be52f.ngrok.io/create-" + idr,
+		"type":   "Create",
+		"actor":  "server://4e54ea0be52f.ngrok.io/actor",
 		"object": obj,
 	}
 	byterData, err := json.Marshal(p)
@@ -43,9 +43,8 @@ func Req(da string, pk []byte) {
 		log.Println(err)
 	}
 
-
 	payload := bytes.NewBuffer(byterData)
-	client := &http.Client {
+	client := &http.Client{
 	}
 	fmt.Println(payload)
 	req, err := http.NewRequest(method, url, payload)
@@ -53,7 +52,6 @@ func Req(da string, pk []byte) {
 	if err != nil {
 		fmt.Println(err)
 	}
-
 
 	date := time.Now().UTC().Format(http.TimeFormat)
 
@@ -81,9 +79,8 @@ func Req(da string, pk []byte) {
 		fmt.Errorf("server post status: %d", res.StatusCode)
 	}
 	log.Printf("successful post: %s %d", url, res.StatusCode)
-	log.Println("请求出现错误",req)
+	log.Println("请求出现错误", req)
 }
-
 
 // 发送私信
 func Req2(da string, pk []byte) {
@@ -105,9 +102,9 @@ func Req2(da string, pk []byte) {
 	p := gin.H{
 		"@context": "server://www.w3.org/ns/activitystreams",
 
-		"id": "server://services.disism.com/create-" + idr,
-		"type": "Like",
-		"actor": "server://services.disism.com/actor",
+		"id":     "server://services.disism.com/create-" + idr,
+		"type":   "Like",
+		"actor":  "server://services.disism.com/actor",
 		"object": "server://mastodon.social/@hvturingga/104812740119120055",
 	}
 	byterData, err := json.Marshal(p)
@@ -115,9 +112,8 @@ func Req2(da string, pk []byte) {
 		log.Println(err)
 	}
 
-
 	payload := bytes.NewBuffer(byterData)
-	client := &http.Client {
+	client := &http.Client{
 	}
 	fmt.Println(payload)
 	req, err := http.NewRequest(method, url, payload)
@@ -125,7 +121,6 @@ func Req2(da string, pk []byte) {
 	if err != nil {
 		fmt.Println(err)
 	}
-
 
 	date := time.Now().UTC().Format(http.TimeFormat)
 

@@ -6,7 +6,7 @@ import (
 	"strconv"
 )
 
-func LikeHandler(c *gin.Context)  {
+func LikeHandler(c *gin.Context) {
 	privKey := []byte(`
 -----BEGIN RSA PRIVATE KEY-----
 MIIEogIBAAKCAQEAzcU2iJkBv6GpgU02t9/6w1ZrKVhlw/iBLN5RmsC7K1jVLEPG
