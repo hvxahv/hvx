@@ -1,4 +1,0 @@
-# RESTful API
-
-## Actor
-

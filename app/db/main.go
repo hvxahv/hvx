@@ -15,7 +15,7 @@ limitations under the License.
 */
 package main
 
-import "hvxahv/app/accounts/cmd"
+import "hvxahv/app/db/cmd"
 
 func main() {
 	cmd.Execute()
