@@ -26,6 +26,13 @@ type accounts struct {
 	FollowerCount  int `gorm:"follower_count"`
 }
 
+type Accounts interface {
+	New()
+	Query()
+	Update()
+	Delete()
+}
+
 func NewAccounts(
 	username string,
 	password string,
@@ -42,7 +49,7 @@ func NewAccounts(
 	publicKey string,
 	followingCount int,
 	followerCount int,
-	) *accounts {
+	) Accounts {
 	return &accounts{
 		Username: username,
 		Password: password,
@@ -62,12 +69,6 @@ func NewAccounts(
 	}
 }
 
-type Accounts interface {
-	New()
-	Query()
-	Update()
-	Delete()
-}
 
 func (a *accounts) New() {
 	db := db.GetDB()
