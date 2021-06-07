@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
-	"hvxahv/api/gateway/httputils"
+	httputils2 "hvxahv/pkg/httputils"
 	"log"
 	"strings"
 )
@@ -41,11 +41,11 @@ func JWTAuth(c *gin.Context) {
 
 }
 
-func JwtParseToken(tokenString string) (*jwt.Token, *httputils.Claims, error) {
-	Claims := &httputils.Claims{}
+func JwtParseToken(tokenString string) (*jwt.Token, *httputils2.Claims, error) {
+	Claims := &httputils2.Claims{}
 	token, err := jwt.ParseWithClaims(tokenString, Claims,
 		func(token *jwt.Token) (i interface{}, err error) {
-			return httputils.K, nil
+			return httputils2.K, nil
 		})
 	if err != nil {
 		log.Println("解 Token 失败！")
@@ -53,17 +53,17 @@ func JwtParseToken(tokenString string) (*jwt.Token, *httputils.Claims, error) {
 	return token, Claims, err
 }
 
-func JwtParseUser(tokenString string) (*httputils.Claims, error) {
+func JwtParseUser(tokenString string) (*httputils2.Claims, error) {
 	if tokenString == "" {
 		log.Println("需要传 Token ")
 	}
-	Claims := &httputils.Claims{}
+	Claims := &httputils2.Claims{}
 	_, err := jwt.ParseWithClaims(tokenString, Claims,
 		func(token *jwt.Token) (interface{}, error) {
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 			}
-			return []byte(httputils.K), nil
+			return []byte(httputils2.K), nil
 		})
 	if err != nil {
 		return nil, err

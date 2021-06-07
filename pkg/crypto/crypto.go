@@ -5,6 +5,7 @@ import (
 	"crypto/rsa"
 	"crypto/x509"
 	"encoding/pem"
+	"fmt"
 	"golang.org/x/crypto/ssh"
 )
 // GenerateKey ...
@@ -56,3 +57,21 @@ func MakeSSHKeyPair() (string, string, error) {
 
 	return string(EncodePrivateKey(pkey)), string(pub), nil
 }
+
+// GenRasKey 该方法调用 utils.GenerateKey 包生成 2068 位的 ras key 返回公钥和私钥
+func GenRasKey() (string, string, error) {
+	privateKey, publicKey, err := GenerateKey(2048)
+	if err != nil {
+		fmt.Printf("Generate key is error: %s", err)
+	}
+
+	private := EncodePrivateKey(privateKey)
+
+	public, err := EncodePublicKey(publicKey)
+	if err != nil {
+		fmt.Println("Encode Public Key is error: ", err)
+	}
+
+	return string(private), string(public), err
+}
+

@@ -6,6 +6,7 @@ require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-gonic/gin v1.7.2
 	github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible
+	github.com/lib/pq v1.10.2
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/pelletier/go-toml v1.7.0 // indirect
 	github.com/spf13/cobra v1.1.3
@@ -16,4 +17,7 @@ require (
 	golang.org/x/sys v0.0.0-20210423082822-04245dca01da // indirect
 	golang.org/x/text v0.3.6 // indirect
 	google.golang.org/protobuf v1.26.0 // indirect
+	gorm.io/driver/mysql v1.1.0
+	gorm.io/driver/postgres v1.1.0
+	gorm.io/gorm v1.21.10
 )

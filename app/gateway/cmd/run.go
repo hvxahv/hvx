@@ -17,7 +17,7 @@ package cmd
 
 import (
 	"fmt"
-	"hvxahv/api/gateway/router"
+	router2 "hvxahv/app/gateway/router"
 
 	"github.com/spf13/cobra"
 )
@@ -25,17 +25,12 @@ import (
 // runCmd represents the run command
 var runCmd = &cobra.Command{
 	Use:   "run",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Start the http api server of hvxahx on port 8088.",
+	Long: `gateway run`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("run http server.")
-		r := router.Router()
-		if err := r.Run(":8900"); err != nil {
+		r := router2.Router()
+		if err := r.Run(":8088"); err != nil {
 			return 
 		}
 	},

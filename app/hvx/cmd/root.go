@@ -17,11 +17,10 @@ package cmd
 
 import (
 	"fmt"
-	"os"
-	"github.com/spf13/cobra"
-
 	homedir "github.com/mitchellh/go-homedir"
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"os"
 )
 
 var cfgFile string
@@ -63,6 +62,13 @@ func init() {
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
+	// Set found configuration file.
+	file, err := os.Getwd()
+	if err != nil {
+		fmt.Println(err)
+	}
+	cfgFile = fmt.Sprintf("%s/configs/config.yaml", file)
+
 	if cfgFile != "" {
 		// Use config file from the flag.
 		viper.SetConfigFile(cfgFile)

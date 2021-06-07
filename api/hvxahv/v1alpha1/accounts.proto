@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package kurotobi.v1alpha1.proto;
+option go_package = "hvxahv/api/hvxahv/v1alpha1/accounts";
+
+// Accounts Services ...
+service Accounts {
+  rpc AddAccounts (AccountsData) returns (AddAccountsReply) {}
+}
+
+message AccountsData {
+  string uuid       = 1;
+  string username   = 2;
+  string password   = 3;
+  string avatar     = 4;
+  string bio        = 5;
+  string name       = 6;
+  string email      = 7;
+  string phone      = 8;
+  string telegram   = 9;
+  string social     = 10;
+  int32  Private    = 11;
+  string PrivateKey = 12;
+  string PublicKey  = 13;
+  int32  NSFW       = 14;
+}
+
+message AddAccountsReply {
+  string reply = 1;
+}

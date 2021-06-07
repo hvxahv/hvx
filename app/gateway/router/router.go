@@ -2,8 +2,7 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
-	"hvxahv/api/gateway/middleware"
-	"hvxahv/api/gateway/router/v1alpha1"
+	middleware2 "hvxahv/pkg/middleware"
 )
 
 // Router Used to provide routing for RESTful access,
@@ -12,7 +11,7 @@ import (
 // Implementation of routing using gin web framework.
 func Router() *gin.Engine {
 	r := gin.Default()
-	r.Use(middleware.CORS())
+	r.Use(middleware2.CORS())
 
 	r.GET("ping", func(context *gin.Context) {
 		context.JSON(200, gin.H{
@@ -21,13 +20,13 @@ func Router() *gin.Engine {
 	})
 
 	// Default account login and registration system
-	//r.POST("/account/new", handler.NewAccountsHandler)
-	//r.POST("/account/login", handler.VerificationHandler)
+	//r.POST("/account/new", v1alpha1.NewAccountsHandler)
+	//r.POST("/account/login", v1alpha1.VerificationHandler)
 	//
 	//// API routing for Activitypub function
-	//r.GET("/.well-known/webfinger", handler.GetWebFingerHandler)
-	//r.GET("/u/:user", handler.GetActorHandler)
-	//r.GET("/u/:user/outbox", handler.GetActorOutbox)
+	//r.GET("/.well-known/webfinger", v1alpha1.GetWebFingerHandler)
+	//r.GET("/u/:user", v1alpha1.GetActorHandler)
+	//r.GET("/u/:user/outbox", v1alpha1.GetActorOutbox)
 	//r.POST("/u/:user/inbox", activity.InboxHandler)
 	//
 	//r.GET("/u/:user/article/:id", activity.GetPublicArticleHandler)
@@ -37,7 +36,7 @@ func Router() *gin.Engine {
 	//r.GET("/u/:user/following", accounts.FollowingResponse)
 	//r.GET("/u/:user/followers", accounts.FollowersResponse)
 
-	v1alpha1.V1Group(r)
+	V1Group(r)
 
 	return r
 }

@@ -17,6 +17,8 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/spf13/viper"
+	"hvxahv/pkg/db"
 
 	"github.com/spf13/cobra"
 )
@@ -24,21 +26,34 @@ import (
 // cdbCmd represents the cdb command
 var cdbCmd = &cobra.Command{
 	Use:   "cdb",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Fast Create PostgreSQL or Mysql DB.",
+	Long: `hvx cdb postgres hvxahv`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("cdb called")
+		host := viper.GetString("db.host")
+		port := viper.GetString("db.port")
+		user := viper.GetString("db.user")
+		password := viper.GetString("db.password")
+		dbName := viper.GetString("db.dbName")
+		sslMode := viper.GetString("db.sslMode")
+
+
+		nd :=  db.NewDb(host, port, user, password, dbName, sslMode)
+		fmt.Println(nd)
+		if len(args) == 0 || len(args) == 1 || args[0] == "" || args[1] == "" {
+			fmt.Println("Please enter at least 2 parameters 1. database drive 2. database name.")
+		} else if args[0] != "postgres" && args[0] != "mysql"{
+			fmt.Println("Unsupported database driver, please input postgres or mysql")
+		} else if err := nd.Create(args[0], args[1]); err != nil {
+			fmt.Printf("Failed to initialize PostgreSQL : %s", err)
+		} else {
+			fmt.Println("Initialize PostgreSQL success.")
+		}
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(cdbCmd)
-
+	rootCmd.Flags().String("database name", "", "Enter your database name.")
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
