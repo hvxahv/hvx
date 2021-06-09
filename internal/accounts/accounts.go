@@ -1,7 +1,9 @@
 package accounts
 
 import (
+	"github.com/google/uuid"
 	"gorm.io/gorm"
+	"hvxahv/pkg/crypto"
 	"hvxahv/pkg/db"
 	"log"
 )
@@ -9,6 +11,7 @@ import (
 // accounts ...
 type accounts struct {
 	gorm.Model
+	Uuid           string `gorm:"uuid"`
 	Username       string `gorm:"username"`
 	Password       string `gorm:"password"`
 	Avatar         string `gorm:"avatar"`
@@ -22,17 +25,18 @@ type accounts struct {
 	NSFW           int    `gorm:"nsfw"`
 	PrivateKey     string `gorm:"private_key"`
 	PublicKey      string `gorm:"public_key"`
-	FollowingCount int `gorm:"following_count"`
-	FollowerCount  int `gorm:"follower_count"`
+	FollowingCount int    `gorm:"following_count"`
+	FollowerCount  int    `gorm:"follower_count"`
 }
 
 type Accounts interface {
-	New()
-	Query()
-	Update()
-	Delete()
+	New() error
+	Query() (*accounts, error)
+	Update() error
+	Delete() error
 }
 
+// NewAccounts ...
 func NewAccounts(
 	username string,
 	password string,
@@ -45,35 +49,45 @@ func NewAccounts(
 	social string,
 	private int,
 	NSFW int,
-	privateKey string,
-	publicKey string,
 	followingCount int,
 	followerCount int,
-	) Accounts {
+) Accounts {
+
+	privateKey, publicKey, err := crypto.GenRSA()
+	if err != nil {
+		return nil
+		log.Printf("Failed to generate public and private keys: %v", err)
+	}
+	id := uuid.New().String()
 	return &accounts{
-		Username: username,
-		Password: password,
-		Avatar: avatar,
-		Bio: bio,
-		Name: name,
-		EMail: EMail,
-		Phone: phone,
-		Telegram: telegram,
-		Social: social,
-		Private: private,
-		NSFW: NSFW,
-		PrivateKey: privateKey,
-		PublicKey: publicKey,
+		Uuid:           id,
+		Username:       username,
+		Password:       password,
+		Avatar:         avatar,
+		Bio:            bio,
+		Name:           name,
+		EMail:          EMail,
+		Phone:          phone,
+		Telegram:       telegram,
+		Social:         social,
+		Private:        private,
+		NSFW:           NSFW,
+		PrivateKey:     privateKey,
+		PublicKey:      publicKey,
 		FollowingCount: followingCount,
-		FollowerCount: followerCount,
+		FollowerCount:  followerCount,
 	}
 }
 
+// NewAccountQUD Query Update Delete.
+func NewAccountQUD(username string) *accounts {
+	return &accounts{Username: username}
+}
 
-func (a *accounts) New() {
-	db := db.GetDB()
-	if err := db.AutoMigrate(&accounts{}); err != nil {
-		return
+func (a *accounts) New() error {
+	d := db.GetDB()
+	if err := d.AutoMigrate(&accounts{}); err != nil {
+		return nil
 	}
 
 	acct := &accounts{
@@ -94,21 +108,56 @@ func (a *accounts) New() {
 		FollowerCount:  a.FollowerCount,
 	}
 
-
-	if err := db.Debug().Table("accounts").Create(&acct).Error; err != nil {
+	if err := d.Debug().Table("accounts").Create(&acct).Error; err != nil {
 		log.Println(err)
+		return err
+	}
+	return nil
+}
+
+func (a *accounts) Query() (*accounts, error) {
+	d := db.GetDB()
+	if err := d.Debug().Table("accounts").Where("username = ?", a.Username).First(&a).Error; err != nil {
+		log.Println(gorm.ErrMissingWhereClause)
+		return nil, err
 	}
 
+	return a, nil
 }
 
-func (a *accounts) Query() {
-	panic("implement me")
+func (a *accounts) Update() error {
+	d := db.GetDB()
+	acct := &accounts{
+		Username:       a.Username,
+		Password:       a.Password,
+		Avatar:         a.Avatar,
+		Bio:            a.Bio,
+		Name:           a.Name,
+		EMail:          a.EMail,
+		Phone:          a.Phone,
+		Telegram:       a.Telegram,
+		Social:         a.Social,
+		Private:        a.Private,
+		NSFW:           a.NSFW,
+		PrivateKey:     a.PrivateKey,
+		PublicKey:      a.PublicKey,
+		FollowingCount: a.FollowingCount,
+		FollowerCount:  a.FollowerCount,
+	}
+
+
+	if err := d.Debug().Table("accounts").Where("username = ?", a.Username).Updates(&acct).Error; err != nil {
+		log.Println(gorm.ErrMissingWhereClause)
+		return err
+	}
+	return nil
 }
 
-func (a *accounts) Update() {
-	panic("implement me")
-}
-
-func (a *accounts) Delete() {
-	panic("implement me")
+func (a *accounts) Delete() error {
+	d := db.GetDB()
+	if err := d.Debug().Table("accounts").Where("username = ?", a.Username).Delete(&a).Error; err != nil {
+		log.Println(gorm.ErrMissingWhereClause)
+		return err
+	}
+	return nil
 }

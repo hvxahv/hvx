@@ -3,15 +3,13 @@ package accounts
 import (
 	"fmt"
 	"github.com/spf13/viper"
-	"hvxahv/pkg/crypto"
 	"hvxahv/pkg/db"
-	"log"
 	"os"
 	"path/filepath"
 	"testing"
 )
 
-func TestNewAccounts(t *testing.T) {
+func TestInitDB(t *testing.T) {
 	file, err := os.Getwd()
 	if err != nil {
 		fmt.Println(err)
@@ -37,11 +35,11 @@ func TestNewAccounts(t *testing.T) {
 	if err := nd.InitPostgre(); err != nil {
 		t.Errorf("%v",err)
 	}
+}
 
-	privateKey, publicKey, err := crypto.GenRasKey()
-	if err != nil {
-		log.Println(err)
-	}
+func TestNewAccounts(t *testing.T) {
+	TestInitDB(t)
+
 	na := NewAccounts(
 		"hvturingga",
 		"hvxahv123",
@@ -54,11 +52,32 @@ func TestNewAccounts(t *testing.T) {
 		"",
 		1,
 		0,
-		privateKey,
-		publicKey,
 		2,
 		6,
 		)
 
-	na.New()
+	if err := na.New(); err != nil {
+		return 
+	}
+}
+
+func TestAccounts_Update(t *testing.T) {
+	TestInitDB(t)
+
+	a := NewAccountQUD("hvturingga")
+	a.Bio  = "我很开心，现在我在录制视频, 欢迎关注我的频道!"
+	if err := a.Update(); err != nil {
+		t.Errorf("%v",err)
+	}
+}
+
+func TestAccounts_Query(t *testing.T) {
+	TestInitDB(t)
+
+	a := NewAccountQUD("hvturinggas")
+	r, err := a.Query()
+	if err != nil {
+		return
+	}
+	t.Log(r)
 }
