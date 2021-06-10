@@ -3,12 +3,12 @@ package accounts
 import (
 	"github.com/google/uuid"
 	"gorm.io/gorm"
-	"hvxahv/pkg/crypto"
 	"hvxahv/pkg/db"
+	"hvxahv/pkg/encrypt"
 	"log"
 )
 
-// accounts ...
+// accounts The object tops a user’s profile data and is targeted at GORM.
 type accounts struct {
 	gorm.Model
 	Uuid           string `gorm:"uuid"`
@@ -29,14 +29,23 @@ type accounts struct {
 	FollowerCount  int    `gorm:"follower_count"`
 }
 
+// Accounts The interface defines the CRUD function for accounts.
 type Accounts interface {
+	// New Add a user Instantiate using the NewAccounts function.
 	New() error
+	// Query This method implements the function of querying accounts.
+	// It needs to accept the username to be queried through the function of the
+	// instantiated object NewAccountQUD,
+	// and then return the query error and the data of the accounts structure.
 	Query() (*accounts, error)
+	// Update Use the NewAccountQUD function to pass the username and
+	// accept the accounts object data to update the accounts data.
 	Update() error
+	// Delete Pass the user name through the NewAccountQUD function to delete the user.
 	Delete() error
 }
 
-// NewAccounts ...
+// NewAccounts Instantiate accounts object.
 func NewAccounts(
 	username string,
 	password string,
@@ -52,12 +61,11 @@ func NewAccounts(
 	followingCount int,
 	followerCount int,
 ) Accounts {
-
-	privateKey, publicKey, err := crypto.GenRSA()
+	privateKey, publicKey, err := encrypt.GenRSA()
 	if err != nil {
-		return nil
 		log.Printf("Failed to generate public and private keys: %v", err)
 	}
+
 	id := uuid.New().String()
 	return &accounts{
 		Uuid:           id,
