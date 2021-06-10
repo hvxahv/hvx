@@ -87,8 +87,9 @@ func NewAccounts(
 	}
 }
 
-// NewAccountQUD Query Update Delete.
-func NewAccountQUD(username string) *accounts {
+// NewAccountByName The accounts object will be instantiated by the username
+// for deleting, querying and modifying methods.
+func NewAccountByName(username string) *accounts {
 	return &accounts{Username: username}
 }
 

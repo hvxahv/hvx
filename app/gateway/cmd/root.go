@@ -17,8 +17,8 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 	"github.com/spf13/cobra"
+	"os"
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
@@ -63,6 +63,13 @@ func init() {
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
+	// Set found configuration file.
+	file, err := os.Getwd()
+	if err != nil {
+		fmt.Println(err)
+	}
+	cfgFile = fmt.Sprintf("%s/configs/config.yaml", file)
+
 	if cfgFile != "" {
 		// Use config file from the flag.
 		viper.SetConfigFile(cfgFile)
@@ -71,9 +78,9 @@ func initConfig() {
 		home, err := homedir.Dir()
 		cobra.CheckErr(err)
 
-		// Search config in home directory with name ".gateway" (without extension).
+		// Search config in home directory with name ".hvx" (without extension).
 		viper.AddConfigPath(home)
-		viper.SetConfigName(".gateway")
+		viper.SetConfigName(".hvx")
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match

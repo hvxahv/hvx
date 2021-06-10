@@ -2,6 +2,7 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
+	"hvxahv/api/gateway/v1alpha1"
 	"hvxahv/pkg/middleware"
 )
 
@@ -19,11 +20,9 @@ func Router() *gin.Engine {
 		})
 	})
 
-	// HTTP API for public query of Activitypub.
-	// Activitypub webfinger https://github.com/w3c/activitypub/issues/194 .
-	r.GET("/.well-known/webfinger", func(context *gin.Context) {
-
-	})
+	// HTTP API for public query of ActivityPub.
+	// ActivityPub WebFinger https://github.com/w3c/activitypub/issues/194 .
+	r.GET("/.well-known/webfinger", v1alpha1.WebFingerHandler)
 
 	//r.GET("/u/:user", v1alpha1.GetActorHandler)
 	//r.GET("/u/:user/outbox", v1alpha1.GetActorOutbox)

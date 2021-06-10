@@ -64,7 +64,7 @@ func TestNewAccounts(t *testing.T) {
 func TestAccounts_Update(t *testing.T) {
 	TestInitDB(t)
 
-	a := NewAccountQUD("hvturingga")
+	a := NewAccountByName("hvturingga")
 	a.Bio  = "我很开心，现在我在录制视频, 欢迎关注我的频道!"
 	if err := a.Update(); err != nil {
 		t.Errorf("%v",err)
@@ -74,7 +74,7 @@ func TestAccounts_Update(t *testing.T) {
 func TestAccounts_Query(t *testing.T) {
 	TestInitDB(t)
 
-	a := NewAccountQUD("hvturinggas")
+	a := NewAccountByName("hvturinggas")
 	r, err := a.Query()
 	if err != nil {
 		return
