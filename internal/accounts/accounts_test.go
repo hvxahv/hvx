@@ -47,13 +47,9 @@ func TestNewAccounts(t *testing.T) {
 		"I Love Programming",
 		"HVTURINGGA",
 		"x@disism.com",
-		7064263007,
+		"7064263007",
 		"hvturingga",
-		"",
-		1,
 		0,
-		2,
-		6,
 		)
 
 	if err := na.New(); err != nil {
@@ -65,7 +61,7 @@ func TestAccounts_Update(t *testing.T) {
 	TestInitDB(t)
 
 	a := NewAccountByName("hvturingga")
-	a.Bio  = "我很开心，现在我在录制视频, 欢迎关注我的频道!"
+	//a.Bio  = "我很开心，现在我在录制视频, 欢迎关注我的频道!"
 	if err := a.Update(); err != nil {
 		t.Errorf("%v",err)
 	}
@@ -74,7 +70,7 @@ func TestAccounts_Update(t *testing.T) {
 func TestAccounts_Query(t *testing.T) {
 	TestInitDB(t)
 
-	a := NewAccountByName("hvturinggas")
+	a := NewAccountByName("hvturingga")
 	r, err := a.Query()
 	if err != nil {
 		return

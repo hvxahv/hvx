@@ -18,11 +18,9 @@ message AccountsData {
   string email      = 7;
   string phone      = 8;
   string telegram   = 9;
-  string social     = 10;
   int32  Private    = 11;
   string PrivateKey = 12;
   string PublicKey  = 13;
-  int32  NSFW       = 14;
 }
 
 message AddAccountsReply {

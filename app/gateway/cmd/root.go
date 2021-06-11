@@ -18,7 +18,9 @@ package cmd
 import (
 	"fmt"
 	"github.com/spf13/cobra"
+	"hvxahv/pkg/db"
 	"os"
+	"path/filepath"
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
@@ -68,6 +70,10 @@ func initConfig() {
 	if err != nil {
 		fmt.Println(err)
 	}
+	for i := 0; i <= 1; i ++ {
+		file = filepath.Dir(file)
+	}
+
 	cfgFile = fmt.Sprintf("%s/configs/config.yaml", file)
 
 	if cfgFile != "" {
@@ -80,7 +86,7 @@ func initConfig() {
 
 		// Search config in home directory with name ".hvx" (without extension).
 		viper.AddConfigPath(home)
-		viper.SetConfigName(".hvx")
+		viper.SetConfigName(".gateway")
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match
@@ -88,5 +94,17 @@ func initConfig() {
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
+	}
+
+	host := viper.GetString("db.host")
+	port := viper.GetString("db.port")
+	user := viper.GetString("db.user")
+	password := viper.GetString("db.password")
+	dbName := viper.GetString("db.dbName")
+	sslMode := viper.GetString("db.sslMode")
+
+	nd :=  db.NewDb(host, port, user, password, dbName, sslMode)
+	if err := nd.InitPostgre(); err != nil {
+		return
 	}
 }

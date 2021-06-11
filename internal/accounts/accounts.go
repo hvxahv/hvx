@@ -11,22 +11,18 @@ import (
 // accounts The object tops a user’s profile data and is targeted at GORM.
 type accounts struct {
 	gorm.Model
-	Uuid           string `gorm:"uuid"`
-	Username       string `gorm:"username"`
-	Password       string `gorm:"password"`
-	Avatar         string `gorm:"avatar"`
-	Bio            string `gorm:"bio"`
-	Name           string `gorm:"name"`
-	EMail          string `gorm:"email"`
-	Phone          int    `gorm:"phone"`
-	Telegram       string `gorm:"telegram"`
-	Social         string `gorm:"social"`
-	Private        int    `gorm:"private"`
-	NSFW           int    `gorm:"nsfw"`
-	PrivateKey     string `gorm:"private_key"`
-	PublicKey      string `gorm:"public_key"`
-	FollowingCount int    `gorm:"following_count"`
-	FollowerCount  int    `gorm:"follower_count"`
+	Uuid       string `gorm:"uuid;->:false;<-:create"`
+	Username   string `gorm:"type:varchar(100);username;unique"`
+	Password   string `gorm:"type:varchar(100);password"`
+	Avatar     string `gorm:"type:varchar(100);avatar"`
+	Bio        string `gorm:"type:varchar(999);bio"`
+	Name       string `gorm:"type:varchar(100);name"`
+	EMail      string `gorm:"type:varchar(100);email"`
+	Phone      string `gorm:"type:varchar(100);phone"`
+	Telegram   string `gorm:"type:varchar(100);telegram"`
+	Private    int    `gorm:"private"`
+	PrivateKey string `gorm:"type:varchar(3000);private_key;->:false;<-:create;<-:update"`
+	PublicKey  string `gorm:"type:varchar(3000);public_key"`
 }
 
 // Accounts The interface defines the CRUD function for accounts.
@@ -53,13 +49,9 @@ func NewAccounts(
 	bio string,
 	name string,
 	EMail string,
-	phone int,
+	phone string,
 	telegram string,
-	social string,
 	private int,
-	NSFW int,
-	followingCount int,
-	followerCount int,
 ) Accounts {
 	privateKey, publicKey, err := encrypt.GenRSA()
 	if err != nil {
@@ -68,22 +60,18 @@ func NewAccounts(
 
 	id := uuid.New().String()
 	return &accounts{
-		Uuid:           id,
-		Username:       username,
-		Password:       password,
-		Avatar:         avatar,
-		Bio:            bio,
-		Name:           name,
-		EMail:          EMail,
-		Phone:          phone,
-		Telegram:       telegram,
-		Social:         social,
-		Private:        private,
-		NSFW:           NSFW,
-		PrivateKey:     privateKey,
-		PublicKey:      publicKey,
-		FollowingCount: followingCount,
-		FollowerCount:  followerCount,
+		Uuid:       id,
+		Username:   username,
+		Password:   password,
+		Avatar:     avatar,
+		Bio:        bio,
+		Name:       name,
+		EMail:      EMail,
+		Phone:      phone,
+		Telegram:   telegram,
+		Private:    private,
+		PrivateKey: privateKey,
+		PublicKey:  publicKey,
 	}
 }
 
@@ -99,23 +87,7 @@ func (a *accounts) New() error {
 		return nil
 	}
 
-	acct := &accounts{
-		Username:       a.Username,
-		Password:       a.Password,
-		Avatar:         a.Avatar,
-		Bio:            a.Bio,
-		Name:           a.Name,
-		EMail:          a.EMail,
-		Phone:          a.Phone,
-		Telegram:       a.Telegram,
-		Social:         a.Social,
-		Private:        a.Private,
-		NSFW:           a.NSFW,
-		PrivateKey:     a.PrivateKey,
-		PublicKey:      a.PublicKey,
-		FollowingCount: a.FollowingCount,
-		FollowerCount:  a.FollowerCount,
-	}
+	acct := &a
 
 	if err := d.Debug().Table("accounts").Create(&acct).Error; err != nil {
 		log.Println(err)
@@ -136,24 +108,7 @@ func (a *accounts) Query() (*accounts, error) {
 
 func (a *accounts) Update() error {
 	d := db.GetDB()
-	acct := &accounts{
-		Username:       a.Username,
-		Password:       a.Password,
-		Avatar:         a.Avatar,
-		Bio:            a.Bio,
-		Name:           a.Name,
-		EMail:          a.EMail,
-		Phone:          a.Phone,
-		Telegram:       a.Telegram,
-		Social:         a.Social,
-		Private:        a.Private,
-		NSFW:           a.NSFW,
-		PrivateKey:     a.PrivateKey,
-		PublicKey:      a.PublicKey,
-		FollowingCount: a.FollowingCount,
-		FollowerCount:  a.FollowerCount,
-	}
-
+	acct := &a
 
 	if err := d.Debug().Table("accounts").Where("username = ?", a.Username).Updates(&acct).Error; err != nil {
 		log.Println(gorm.ErrMissingWhereClause)
