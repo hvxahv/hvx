@@ -1,28 +1,66 @@
 syntax = "proto3";
 
 package kurotobi.v1alpha1.proto;
-option go_package = "hvxahv/api/hvxahv/v1alpha1/accounts";
+option go_package = "hvxahv/api/hvxahv/v1alpha1/v1alpha1";
 
 // Accounts Services ...
 service Accounts {
-  rpc AddAccounts (AccountsData) returns (AddAccountsReply) {}
+  rpc NewAccounts (NewAccountsData) returns (AccountsReply) {}
+  rpc QueryAccounts (AccountsName) returns (AccountsData) {}
+  rpc UpdateAccounts (UpdateAccountsData) returns (AccountsReply) {}
+  rpc DeleteAccounts (AccountsName) returns (AccountsReply) {}
+  rpc LoginAccounts (AccountsLogin) returns (AccountsLoginReply) {}
 }
 
 message AccountsData {
-  string uuid       = 1;
-  string username   = 2;
-  string password   = 3;
-  string avatar     = 4;
-  string bio        = 5;
-  string name       = 6;
-  string email      = 7;
-  string phone      = 8;
-  string telegram   = 9;
-  int32  Private    = 11;
-  string PrivateKey = 12;
-  string PublicKey  = 13;
+  string Uuid      = 1;
+  string Username  = 2;
+  string Password  = 3;
+  string Avatar    = 4;
+  string Bio       = 5;
+  string Name      = 6;
+  string Email     = 7;
+  string Phone     = 8;
+  string Telegram  = 9;
+  int32  Private   = 10;
+  string PublicKey = 11;
 }
 
-message AddAccountsReply {
-  string reply = 1;
+message NewAccountsData {
+  string Username = 1;
+  string Password = 2;
+  string Avatar   = 3;
+  string Name     = 4;
+  string Email    = 5;
+  int32  Private  = 6;
+}
+
+message UpdateAccountsData {
+  string Username = 1;
+  string Password = 2;
+  string Avatar   = 3;
+  string Bio      = 4;
+  string Name     = 5;
+  string Email    = 6;
+  string Phone    = 7;
+  string Telegram = 8;
+  int32  Private  = 9;
+}
+
+message AccountsName {
+  string Username = 1;
+}
+
+message AccountsReply {
+  string Reply = 1;
+}
+
+message AccountsLogin {
+  string Username = 1;
+  string Password = 2;
+}
+
+message AccountsLoginReply {
+  string Username = 1;
+  string Token    = 2;
 }

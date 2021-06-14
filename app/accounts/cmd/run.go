@@ -17,6 +17,7 @@ package cmd
 
 import (
 	"fmt"
+	"hvxahv/pkg/microservice"
 
 	"github.com/spf13/cobra"
 )
@@ -33,6 +34,11 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("run called")
+		s := microservice.NewServer("accounts", "7041")
+		err := s.AccountServer()
+		if err != nil {
+			return 
+		}
 	},
 }
 

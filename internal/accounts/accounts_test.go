@@ -42,13 +42,10 @@ func TestNewAccounts(t *testing.T) {
 
 	na := NewAccounts(
 		"hvturingga",
-		"hvxahv123",
+		"hvxahv",
 		"https://cdn.keyakizaka46.com/images/14/103/4f2a17f7f544a1635c244502dc8ea/400_320_102400.jpg",
-		"I Love Programming",
 		"HVTURINGGA",
 		"x@disism.com",
-		"7064263007",
-		"hvturingga",
 		0,
 		)
 
@@ -61,7 +58,8 @@ func TestAccounts_Update(t *testing.T) {
 	TestInitDB(t)
 
 	a := NewAccountByName("hvturingga")
-	//a.Bio  = "我很开心，现在我在录制视频, 欢迎关注我的频道!"
+
+	a.Bio = "我很开心，现在我在录制视频, 欢迎关注我的频道!"
 	if err := a.Update(); err != nil {
 		t.Errorf("%v",err)
 	}
@@ -76,4 +74,21 @@ func TestAccounts_Query(t *testing.T) {
 		return
 	}
 	t.Log(r)
+}
+
+func TestAccounts_Delete(t *testing.T) {
+
+}
+
+func TestAccounts_Login(t *testing.T) {
+	TestInitDB(t)
+	//a := NewAccountLogin("hvturingga", "hvxahv")
+	a := NewAccountLogin("hvturingga", "hvxahv")
+	r, err := a.Login()
+	if err != nil {
+		t.Error(err)
+	}
+	t.Log(r)
+
+
 }

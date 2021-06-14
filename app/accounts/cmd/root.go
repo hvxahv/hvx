@@ -17,8 +17,10 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 	"github.com/spf13/cobra"
+	"hvxahv/pkg/db"
+	"os"
+	"path/filepath"
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
@@ -63,6 +65,17 @@ func init() {
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
+	// Set found configuration file.
+	file, err := os.Getwd()
+	if err != nil {
+		fmt.Println(err)
+	}
+	for i := 0; i <= 1; i ++ {
+		file = filepath.Dir(file)
+	}
+
+	cfgFile = fmt.Sprintf("%s/configs/config.yaml", file)
+
 	if cfgFile != "" {
 		// Use config file from the flag.
 		viper.SetConfigFile(cfgFile)
@@ -81,5 +94,18 @@ func initConfig() {
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
+	}
+
+	// Initialize DB at startup.
+	host := viper.GetString("db.host")
+	port := viper.GetString("db.port")
+	user := viper.GetString("db.user")
+	password := viper.GetString("db.password")
+	dbName := viper.GetString("db.dbName")
+	sslMode := viper.GetString("db.sslMode")
+
+	nd :=  db.NewDb(host, port, user, password, dbName, sslMode)
+	if err := nd.InitPostgre(); err != nil {
+		return
 	}
 }

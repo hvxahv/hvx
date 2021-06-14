@@ -24,6 +24,12 @@ func Router() *gin.Engine {
 	// ActivityPub WebFinger https://github.com/w3c/activitypub/issues/194 .
 	r.GET("/.well-known/webfinger", v1alpha1.WebFingerHandler)
 
+
+	// Account function of hvxahv
+	r.POST("/accounts/new", v1alpha1.NewAccountsHandler)
+	r.POST("/accounts/login", v1alpha1.LoginHandler)
+
+
 	//r.GET("/u/:user", v1alpha1.GetActorHandler)
 	//r.GET("/u/:user/outbox", v1alpha1.GetActorOutbox)
 	//r.POST("/u/:user/inbox", activity.InboxHandler)
@@ -36,7 +42,8 @@ func Router() *gin.Engine {
 	//r.GET("/u/:user/followers", accounts.FollowersResponse)
 
 	// Default account login and registration system
-	//r.POST("/account/new", v1alpha1.NewAccountsHandler)
+
+
 	//r.POST("/account/login", v1alpha1.VerificationHandler)
 	//
 
