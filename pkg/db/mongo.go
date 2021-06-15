@@ -16,10 +16,10 @@ var (
 
 // InitMongoDB 初始化 MongoDB
 func InitMongoDB() error {
-	viper.SetConfigFile("./configs/config.yaml")
+	viper.SetConfigFile("./configs/configs.yaml")
 	err := viper.ReadInConfig()
 	if err != nil {
-		panic(fmt.Errorf("Fatal error config file: %s \n", err))
+		panic(fmt.Errorf("Fatal error configs file: %s \n", err))
 	}
 
 	url := viper.GetString("mongo.address")

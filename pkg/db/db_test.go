@@ -11,7 +11,7 @@ import (
 func TestInitDB(t *testing.T) {
 	viper.SetConfigFile("./db.yaml")
 	if err := viper.ReadInConfig(); err != nil {
-		panic(fmt.Errorf("Fatal error config file: %s \n", err))
+		panic(fmt.Errorf("Fatal error configs file: %s \n", err))
 	}
 	host := viper.GetString("db.host")
 	port := viper.GetString("db.port")
@@ -36,11 +36,11 @@ func TestCreateDB(t *testing.T) {
 	for i := 0; i <= 1; i ++ {
 		file = filepath.Dir(file)
 	}
-	cfgFile := fmt.Sprintf("%s/configs/config.yaml", file)
+	cfgFile := fmt.Sprintf("%s/configs/configs.yaml", file)
 	viper.SetConfigFile(cfgFile)
 	fmt.Println(file)
 	if err := viper.ReadInConfig(); err != nil {
-		panic(fmt.Errorf("Fatal error config file: %s \n", err))
+		panic(fmt.Errorf("Fatal error configs file: %s \n", err))
 	}
 
 	host := viper.GetString("db.host")

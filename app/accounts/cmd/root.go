@@ -17,13 +17,11 @@ package cmd
 
 import (
 	"fmt"
+	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"hvxahv/pkg/db"
 	"os"
-	"path/filepath"
-
-	homedir "github.com/mitchellh/go-homedir"
-	"github.com/spf13/viper"
 )
 
 var cfgFile string
@@ -56,44 +54,33 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.accounts.yaml)")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "configs", "", "configs file (default is $HOME/.accounts.yaml)")
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
-// initConfig reads in config file and ENV variables if set.
+// initConfig reads in configs file and ENV variables if set.
 func initConfig() {
-	// Set found configuration file.
-	file, err := os.Getwd()
-	if err != nil {
-		fmt.Println(err)
-	}
-	for i := 0; i <= 1; i ++ {
-		file = filepath.Dir(file)
-	}
-
-	cfgFile = fmt.Sprintf("%s/configs/config.yaml", file)
-
 	if cfgFile != "" {
-		// Use config file from the flag.
+		// Use configs file from the flag.
 		viper.SetConfigFile(cfgFile)
 	} else {
 		// Find home directory.
 		home, err := homedir.Dir()
 		cobra.CheckErr(err)
 
-		// Search config in home directory with name ".accounts" (without extension).
+		// Search configs in home directory with name ".accounts" (without extension).
 		viper.AddConfigPath(home)
 		viper.SetConfigName(".accounts")
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match
 
-	// If a config file is found, read it in.
+	// If a configs file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
-		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
+		fmt.Fprintln(os.Stderr, "Using configs file:", viper.ConfigFileUsed())
 	}
 
 	// Initialize DB at startup.

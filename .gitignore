@@ -15,9 +15,3 @@
 vendor/
 
 .idea
-
-configs/config.yaml
-
-./build/linux/
-
-./build/windows/
