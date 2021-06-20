@@ -1,12 +1,15 @@
 package db
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	_ "github.com/lib/pq"
+	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"time"
 )
 
 type DB interface {
@@ -26,7 +29,6 @@ type db struct {
 }
 
 type Config struct {
-
 	Conn *viper.Viper
 }
 
@@ -58,21 +60,33 @@ func (d *db) InitDB() error {
 		d.sslMode,
 	)
 
-	dbs, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	if err != nil {
-		return err
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+	var initError error
+
+	for {
+		select {
+		case <-ctx.Done():
+			return errors.Errorf("Init DB Error: %v", initError)
+		default:
+			dbs, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+			if err != nil {
+				initError = err
+			} else {
+				return nil
+			}
+			sdb = dbs
+		}
 	}
-	sdb = dbs
-	return nil
 }
 
 func (d *db) Create(name string) error {
 	addr := fmt.Sprintf("port=%s user=%s password=%s host=%s sslmode=%s",
-			d.port,
-			d.user,
-			d.password,
-			d.host,
-			d.sslMode)
+		d.port,
+		d.user,
+		d.password,
+		d.host,
+		d.sslMode)
 
 	cdb, err := sql.Open("postgres", addr)
 	if err != nil {

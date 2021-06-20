@@ -24,15 +24,9 @@ func TestInitDB(t *testing.T) {
 		panic(fmt.Errorf("Fatal error configs file: %s \n", err))
 	}
 
-	host := viper.GetString("db.host")
-	port := viper.GetString("db.port")
-	user := viper.GetString("db.user")
-	password := viper.GetString("db.password")
-	dbName := viper.GetString("db.dbName")
-	sslMode := viper.GetString("db.sslMode")
 
-	nd := db.NewDb(host, port, user, password, dbName, sslMode)
-	if err := nd.InitPostgre(); err != nil {
+	nd := db.NewDb()
+	if err := nd.InitDB(); err != nil {
 		t.Errorf("%v",err)
 	}
 }
