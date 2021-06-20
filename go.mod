@@ -7,7 +7,6 @@ require (
 	github.com/gin-gonic/gin v1.7.2
 	github.com/go-redis/redis/v8 v8.10.0
 	github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible
-	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/uuid v1.1.2
 	github.com/lib/pq v1.10.2
 	github.com/mitchellh/go-homedir v1.1.0
@@ -23,7 +22,6 @@ require (
 	google.golang.org/genproto v0.0.0-20210611144927-798beca9d670 // indirect
 	google.golang.org/grpc v1.38.0
 	google.golang.org/protobuf v1.26.0
-	gorm.io/driver/mysql v1.1.0
 	gorm.io/driver/postgres v1.1.0
 	gorm.io/gorm v1.21.10
 )

@@ -104,7 +104,7 @@ func initConfig() {
 	sslMode := viper.GetString("db.sslMode")
 
 	nd :=  db.NewDb(host, port, user, password, dbName, sslMode)
-	if err := nd.InitPostgre(); err != nil {
+	if err := nd.InitDB(); err != nil {
 		return
 	}
 }

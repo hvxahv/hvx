@@ -83,16 +83,8 @@ func initConfig() {
 		fmt.Fprintln(os.Stderr, "Using configs file:", viper.ConfigFileUsed())
 	}
 
-	// Initialize DB at startup.
-	host := viper.GetString("db.host")
-	port := viper.GetString("db.port")
-	user := viper.GetString("db.user")
-	password := viper.GetString("db.password")
-	dbName := viper.GetString("db.dbName")
-	sslMode := viper.GetString("db.sslMode")
-
-	nd :=  db.NewDb(host, port, user, password, dbName, sslMode)
-	if err := nd.InitPostgre(); err != nil {
+	nd :=  db.NewDb()
+	if err := nd.InitDB(); err != nil {
 		return
 	}
 }

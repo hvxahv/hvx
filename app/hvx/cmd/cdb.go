@@ -38,14 +38,8 @@ var cdbCmd = &cobra.Command{
 
 
 		nd :=  db.NewDb(host, port, user, password, dbName, sslMode)
-		if len(args) == 0 || len(args) == 1 || args[0] == "" || args[1] == "" {
-			fmt.Println("Please enter at least 2 parameters 1. database drive 2. database name.")
-		} else if args[0] != "postgres" && args[0] != "mysql"{
-			fmt.Println("Unsupported database driver, please input postgres or mysql")
-		} else if err := nd.Create(args[0], args[1]); err != nil {
+		if err := nd.Create(args[0]); err != nil {
 			fmt.Printf("Failed to initialize PostgreSQL : %s", err)
-		} else {
-			fmt.Println("Initialize PostgreSQL success.")
 		}
 	},
 }

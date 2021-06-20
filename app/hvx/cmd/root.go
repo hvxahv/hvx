@@ -16,11 +16,9 @@ limitations under the License.
 package cmd
 
 import (
-	"fmt"
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"os"
 )
 
 var cfgFile string
@@ -52,12 +50,8 @@ func init() {
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
-	pwd, err := os.Getwd()
-	if err != nil {
-		return 
-	}
-	cfg := fmt.Sprintf("%s/configs/config.yaml", pwd)
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "configs", cfg, "configs file (default is $HOME/.hvx.yaml)")
+
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "configs", "", "configs file (default is $HOME/.hvx.yaml)")
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
@@ -67,7 +61,6 @@ func init() {
 // initConfig reads in configs file and ENV variables if set.
 func initConfig() {
 
-	fmt.Println(cfgFile)
 	if cfgFile != "" {
 		// Use configs file from the flag.
 		viper.SetConfigFile(cfgFile)
