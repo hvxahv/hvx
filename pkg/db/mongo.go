@@ -14,14 +14,8 @@ var (
 	MongoDB *mongo.Database
 )
 
-// InitMongoDB 初始化 MongoDB
+// InitMongoDB Initialize MongoDB.
 func InitMongoDB() error {
-	viper.SetConfigFile("./configs/configs.yaml")
-	err := viper.ReadInConfig()
-	if err != nil {
-		panic(fmt.Errorf("Fatal error configs file: %s \n", err))
-	}
-
 	url := viper.GetString("mongo.address")
 	username := viper.GetString("mongo.username")
 	password := viper.GetString("mongo.password")

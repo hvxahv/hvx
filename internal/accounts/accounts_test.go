@@ -2,33 +2,36 @@ package accounts
 
 import (
 	"fmt"
+	"github.com/mitchellh/go-homedir"
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"hvxahv/pkg/db"
 	"os"
-	"path/filepath"
 	"testing"
 )
 
 func TestInitDB(t *testing.T) {
-	file, err := os.Getwd()
-	if err != nil {
-		fmt.Println(err)
-	}
-	for i := 0; i <= 1; i ++ {
-		file = filepath.Dir(file)
-	}
-	cfgFile := fmt.Sprintf("%s/configs/configs.yaml", file)
-	viper.SetConfigFile(cfgFile)
-	fmt.Println(file)
-	if err := viper.ReadInConfig(); err != nil {
-		panic(fmt.Errorf("Fatal error configs file: %s \n", err))
+
+	home, err := homedir.Dir()
+	cobra.CheckErr(err)
+
+	// Search configs in home directory with name ".hvxahv" (without extension).
+	viper.AddConfigPath(home)
+	viper.SetConfigName(".hvxahv")
+
+	viper.AutomaticEnv()
+
+	// If a configs file is found, read it in.
+	if err := viper.ReadInConfig(); err == nil {
+		fmt.Fprintln(os.Stderr, "Using configs file:", viper.ConfigFileUsed())
 	}
 
-
-	nd := db.NewDb()
+	// Initialize the database.
+	nd :=  db.NewDb()
 	if err := nd.InitDB(); err != nil {
-		t.Errorf("%v",err)
+		return
 	}
+
 }
 
 func TestNewAccounts(t *testing.T) {
@@ -44,15 +47,15 @@ func TestNewAccounts(t *testing.T) {
 		)
 
 	if err := na.New(); err != nil {
-		return 
+		t.Error(err)
 	}
 }
 
 func TestAccounts_Update(t *testing.T) {
 	TestInitDB(t)
 
-	a := NewAccountByName("hvturingga")
-
+	a := NewUpdateAcct()
+	a.Username = "hvturingga"
 	a.Bio = "我很开心，现在我在录制视频, 欢迎关注我的频道!"
 	if err := a.Update(); err != nil {
 		t.Errorf("%v",err)
@@ -62,7 +65,7 @@ func TestAccounts_Update(t *testing.T) {
 func TestAccounts_Query(t *testing.T) {
 	TestInitDB(t)
 
-	a := NewAccountByName("hvturingga")
+	a := NewQueryAcctByName("hvturingga")
 	r, err := a.Query()
 	if err != nil {
 		return
@@ -76,8 +79,9 @@ func TestAccounts_Delete(t *testing.T) {
 
 func TestAccounts_Login(t *testing.T) {
 	TestInitDB(t)
-	//a := NewAccountLogin("hvturingga", "hvxahv")
+
 	a := NewAccountLogin("hvturingga", "hvxahv")
+
 	r, err := a.Login()
 	if err != nil {
 		t.Error(err)

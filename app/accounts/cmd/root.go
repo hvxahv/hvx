@@ -71,9 +71,9 @@ func initConfig() {
 		home, err := homedir.Dir()
 		cobra.CheckErr(err)
 
-		// Search configs in home directory with name ".accounts" (without extension).
+		// Search configs in home directory with name ".hvxahv" (without extension).
 		viper.AddConfigPath(home)
-		viper.SetConfigName(".accounts")
+		viper.SetConfigName(".hvxahv")
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match

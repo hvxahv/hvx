@@ -22,8 +22,8 @@ func Router() *gin.Engine {
 
 	// HTTP API for public query of ActivityPub.
 	// ActivityPub WebFinger https://github.com/w3c/activitypub/issues/194 .
-	r.GET("/.well-known/webfinger", v1alpha1.WebFingerHandler)
-
+	//r.GET("/.well-known/webfinger", v1alpha1.WebFingerHandler)
+	//
 
 	// Account function of hvxahv
 	r.POST("/accounts/new", v1alpha1.NewAccountsHandler)

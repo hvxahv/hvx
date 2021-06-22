@@ -77,7 +77,7 @@ func initConfig() {
 
 		// Search configs in home directory with name ".articles" (without extension).
 		viper.AddConfigPath(home)
-		viper.SetConfigName(".articles")
+		viper.SetConfigName(".hvxahv")
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match

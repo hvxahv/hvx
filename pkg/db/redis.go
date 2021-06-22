@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/go-redis/redis/v8"
+	"github.com/spf13/viper"
 	"log"
 	"sync"
 	"time"
@@ -14,12 +15,13 @@ var ctx = context.Background()
 var once sync.Once
 var rdb *redis.Client
 
-const (
-	addr = "10.143.24.84:6379"
-)
-
 // InitRedis Initialize redis, set parameters, and return to redis client.
 func InitRedis() {
+	h := viper.GetString("redis.host")
+	p := viper.GetString("redis.port")
+
+	addr := fmt.Sprintf("%s:%s", h, p)
+
 	once.Do(func() {
 		rdb = redis.NewClient(&redis.Options{
 			Network:            "tcp",

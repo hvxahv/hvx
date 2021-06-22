@@ -86,7 +86,7 @@ func initConfig() {
 
 		// Search configs in home directory with name ".hvx" (without extension).
 		viper.AddConfigPath(home)
-		viper.SetConfigName(".gateway")
+		viper.SetConfigName(".hvxahv")
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match
@@ -96,14 +96,7 @@ func initConfig() {
 		fmt.Fprintln(os.Stderr, "Using configs file:", viper.ConfigFileUsed())
 	}
 
-	host := viper.GetString("db.host")
-	port := viper.GetString("db.port")
-	user := viper.GetString("db.user")
-	password := viper.GetString("db.password")
-	dbName := viper.GetString("db.dbName")
-	sslMode := viper.GetString("db.sslMode")
-
-	nd :=  db.NewDb(host, port, user, password, dbName, sslMode)
+	nd :=  db.NewDb()
 	if err := nd.InitDB(); err != nil {
 		return
 	}

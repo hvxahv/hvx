@@ -1,10 +1,12 @@
 package accounts
 
 import (
+	"fmt"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
+	"hvxahv/pkg/bot"
 	"hvxahv/pkg/db"
 	"hvxahv/pkg/encrypt"
 	"log"
@@ -77,47 +79,28 @@ func NewAccounts(
 	}
 }
 
-// NewUpdateAccounts Instantiate accounts object.
-func NewUpdateAccounts(
-	username string,
-	password string,
-	avatar string,
-	bio string,
-	name string,
-	EMail string,
-	phone string,
-	telegram string,
-	private int32,
-) Accounts {
-	hash := encrypt.GenPassword(password)
-
-	return &accounts{
-		Username:   username,
-		Password:   hash,
-		Avatar:     avatar,
-		Bio:        bio,
-		Name:       name,
-		EMail:      EMail,
-		Phone:      phone,
-		Telegram:   telegram,
-		Private:    private,
-	}
+func NewUpdateAcct() *accounts {
+	return &accounts{}
 }
 
-// NewAccountByName The accounts object will be instantiated by the username
-// for deleting, querying and modifying methods.
-func NewAccountByName(username string) *accounts {
-	return &accounts{Username: username}
+func NewDelAcctByName(name string) Accounts {
+	return &accounts{Username: name}
 }
-func NewAccountLogin(username string, password string) *accounts {
-	return &accounts{Username: username, Password: password}
+
+func NewQueryAcctByName(name string) Accounts {
+	return &accounts{Username: name}
+}
+
+func NewAccountLogin(name string, password string) Accounts {
+	return &accounts{Username: name, Password: password}
 }
 
 
 func (a *accounts) New() error {
 	d := db.GetDB()
+
 	if err := d.AutoMigrate(&accounts{}); err != nil {
-		return nil
+		return err
 	}
 
 	acct := &a
@@ -125,6 +108,16 @@ func (a *accounts) New() error {
 	if err := d.Debug().Table("accounts").Create(&acct).Error; err != nil {
 		log.Println(err)
 		return err
+	}
+	//go func() {
+	//	b := bot.NewBot(1, fmt.Sprintf("Added a user: %s", a.Name))
+	//	if err := b.Send(); err != nil {
+	//		log.Println(err)
+	//	}
+	//}()
+	b := bot.NewBot(1, fmt.Sprintf("Added a user: %s", a.Name))
+	if err := b.Send(); err != nil {
+		log.Println(err)
 	}
 	return nil
 }

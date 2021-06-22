@@ -45,8 +45,19 @@ func (s *server) NewAccounts(ctx context.Context, in *pb.NewAccountsData) (*pb.A
 
 // UpdateAccounts ...
 func (s *server) UpdateAccounts(ctx context.Context, in *pb.UpdateAccountsData) (*pb.AccountsReply, error) {
-	r := accounts.NewUpdateAccounts(in.Username, in.Password, in.Avatar, in.Bio, in.Name, in.Email, in.Phone, in.Telegram, in.Private)
-	if err := r.Update(); err != nil {
+	// Accounts
+	a := accounts.NewUpdateAcct()
+	a.Username = in.Username
+	a.Password = in.Password
+	a.Avatar = in.Avatar
+	a.Bio = in.Bio
+	a.Name = in.Name
+	a.EMail = in.Email
+	a.Phone = in.Phone
+	a.Telegram = in.Telegram
+	a.Private = in.Private
+
+	if err := a.Update(); err != nil {
 		return nil, err
 	}
 
@@ -55,7 +66,7 @@ func (s *server) UpdateAccounts(ctx context.Context, in *pb.UpdateAccountsData) 
 
 // QueryAccounts ...
 func (s *server) QueryAccounts(ctx context.Context, in *pb.AccountsName) (*pb.AccountsData, error) {
-	r := accounts.NewAccountByName(in.Username)
+	r := accounts.NewQueryAcctByName(in.Username)
 	a, err := r.Query()
 	if err != nil {
 		return nil, err
@@ -77,7 +88,7 @@ func (s *server) QueryAccounts(ctx context.Context, in *pb.AccountsName) (*pb.Ac
 
 // DeleteAccounts ...
 func (s *server) DeleteAccounts(ctx context.Context, in *pb.AccountsName) (*pb.AccountsReply, error) {
-	r := accounts.NewAccountByName(in.Username)
+	r := accounts.NewDelAcctByName(in.Username)
 	err := r.Delete()
 	if err != nil {
 		return nil, err

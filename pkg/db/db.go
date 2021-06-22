@@ -9,6 +9,7 @@ import (
 	"github.com/spf13/viper"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"log"
 	"time"
 )
 
@@ -73,9 +74,10 @@ func (d *db) InitDB() error {
 			if err != nil {
 				initError = err
 			} else {
+				log.Println("Initialize the database successfully.")
+				sdb = dbs
 				return nil
 			}
-			sdb = dbs
 		}
 	}
 }
