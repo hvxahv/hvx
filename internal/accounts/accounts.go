@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 	"hvxahv/pkg/bot"
 	"hvxahv/pkg/db"
-	"hvxahv/pkg/encrypt"
+	"hvxahv/pkg/utils"
 	"log"
 )
 
@@ -52,11 +52,11 @@ func NewAccounts(
 	password string,
 	avatar string,
 	name string,
-	EMail string,
+	mail string,
 	private int32,
 ) Accounts {
 	// Generate a default public key and private key.
-	privateKey, publicKey, err := encrypt.GenRSA()
+	privateKey, publicKey, err := utils.GenRSA()
 	if err != nil {
 		log.Printf("Failed to generate public and private keys: %v", err)
 	}
@@ -64,7 +64,7 @@ func NewAccounts(
 	// Generate a uuid.
 	id := uuid.New().String()
 
-	hash := encrypt.GenPassword(password)
+	hash := utils.GenPassword(password)
 
 	return &accounts{
 		Uuid:       id,
@@ -72,7 +72,7 @@ func NewAccounts(
 		Password:   hash,
 		Avatar:     avatar,
 		Name:       name,
-		EMail:      EMail,
+		EMail:      mail,
 		Private:    private,
 		PrivateKey: privateKey,
 		PublicKey:  publicKey,
@@ -145,7 +145,8 @@ func (a *accounts) Update() error {
 
 func (a *accounts) Delete() error {
 	d := db.GetDB()
-	if err := d.Debug().Table("accounts").Where("username = ?", a.Username).Delete(&a).Error; err != nil {
+	//  Unscoped() Use gorm's Unscoped method to permanently delete data.
+	if err := d.Debug().Table("accounts").Where("username = ?", a.Username).Unscoped().Delete(&a).Error; err != nil {
 		log.Println(gorm.ErrMissingWhereClause)
 		return err
 	}
@@ -164,9 +165,10 @@ func (a *accounts) Login() (string, error) {
 	if err := bcrypt.CompareHashAndPassword([]byte(qa.Password), []byte(a.Password)); err != nil {
 		return "", errors.Errorf("Password verification failed.")
 	}
-	token, err := encrypt.GenToken(a.Uuid, a.Username)
-	if err != nil {
-		log.Println("Token generation failed!")
-	}
-	return token, nil
+	//token, err := utils.Gen(a.Uuid, a.Username)
+	//if err != nil {
+	//	log.Println("Token generation failed!")
+	//}
+	//return token, nil
+	return "", nil
 }

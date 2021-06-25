@@ -1,4 +1,4 @@
-package graph
+package gql
 
 import (
 	"fmt"
@@ -16,7 +16,7 @@ func Graphql() {
 		Pretty: true,
 		GraphiQL: true,
 	})
-	
+
 	http.Handle("/graphql", h)
 
 	port := fmt.Sprintf(":%s", viper.GetString("graphql_port"))

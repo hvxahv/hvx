@@ -28,7 +28,7 @@ var runCmd = &cobra.Command{
 	Long: ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		// message
-		m := fmt.Sprintf("Bot microservice running. %s\n", time.Now())
+		m := fmt.Sprintf("Bot microservices running. %s\n", time.Now())
 		fmt.Println(m)
 	},
 }

@@ -77,7 +77,7 @@ func createDB(name string) {
 	}
 }
 
-// newServices Create a microservice.
+// newServices Create a microservices.
 func newServices(name string) {
 	// author
 	a := viper.GetString("author")
@@ -86,7 +86,7 @@ func newServices(name string) {
 	pn := fmt.Sprintf("hvxahv/app/%s", name)
 	dn := fmt.Sprintf("../%s", name)
 
-	// Execute the command to create the microservice and return the standard output.
+	// Execute the command to create the microservices and return the standard output.
 	cmd := exec.Command("cobra", "init", "--pkg-name", pn, dn, "-a", a)
 	out, err := cmd.CombinedOutput()
 	if err != nil {

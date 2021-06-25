@@ -16,18 +16,25 @@ limitations under the License.
 package cmd
 
 import (
+	"fmt"
+	"github.com/spf13/viper"
+	"hvxahv/internal/powers"
+	"log"
+
 	"github.com/spf13/cobra"
-	"hvxahv/internal/accounts"
 )
 
 // runCmd represents the run command
 var runCmd = &cobra.Command{
 	Use:   "run",
-	Short: "Run Accounts Services...",
+	Short: "Run http server of hvxahv.",
 	Long: ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		if err := accounts.Run(); err != nil {
-			return 
+		log.Println("Run http server of hvxahv.")
+		r := powers.Router()
+		if err := r.Run(fmt.Sprintf(":%s", viper.GetString("http_port"))); err != nil {
+			log.Println(err)
+			return
 		}
 	},
 }

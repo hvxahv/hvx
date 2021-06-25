@@ -41,7 +41,7 @@ func TestNewAccounts(t *testing.T) {
 		"hvturingga",
 		"hvxahv",
 		"https://cdn.keyakizaka46.com/images/14/103/4f2a17f7f544a1635c244502dc8ea/400_320_102400.jpg",
-		"HVTURINGGA",
+		"HVTURINGGA" ,
 		"x@disism.com",
 		0,
 		)
@@ -74,6 +74,15 @@ func TestAccounts_Query(t *testing.T) {
 }
 
 func TestAccounts_Delete(t *testing.T) {
+	TestInitDB(t)
+
+	a := NewDelAcctByName("hvturingga")
+	if err := a.Delete(); err != nil {
+		t.Log(err)
+		return
+	}
+	t.Log("Delete account successfully.")
+
 
 }
 
@@ -83,10 +92,9 @@ func TestAccounts_Login(t *testing.T) {
 	a := NewAccountLogin("hvturingga", "hvxahv")
 
 	r, err := a.Login()
-	if err != nil {
+ 	if err != nil {
 		t.Error(err)
 	}
 	t.Log(r)
-
 
 }
