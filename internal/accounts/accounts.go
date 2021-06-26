@@ -98,8 +98,9 @@ func (a *accounts) New() (int32, error) {
 	d := db.GetDB()
 
 	if err := d.AutoMigrate(&accounts{}); err != nil {
-		log.Println("Automatic table creation failed.")
-		return 500, err
+		e := "Automatic table creation failed."
+		log.Printf("%s: %v", e, err)
+		return 500, errors.Errorf(e)
 	}
 
 	acct := &a
@@ -110,9 +111,11 @@ func (a *accounts) New() (int32, error) {
 	if res.Error != nil {
 		if res.Error == gorm.ErrRecordNotFound {
 			if err := d.Debug().Table("accounts").Create(&acct).Error; err != nil {
-				log.Printf("Failed to create user: %v", err)
-				return 200, err
+				e := "Failed to create user."
+				log.Printf("%s: %v", e, err)
+				return 202, errors.Errorf(e)
 			}
+			return 201, errors.Errorf("New account ok!")
 		}
 	} else {
 		return 202, errors.Errorf("Username already exists.")

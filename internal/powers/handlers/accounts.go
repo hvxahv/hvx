@@ -31,26 +31,31 @@ func NewAccountsHandler(c *gin.Context) {
 	fmt.Println(username, password, avatar, name, email, private)
 
 	// Use the client to call the Accounts service to create users.
-	conn, err := client.Accounts()
+	cli, conn,  err := client.Accounts()
 	if err != nil {
 		log.Println(err)
 	}
 	defer conn.Close()
-	cli := pb.NewAccountsClient(conn)
+
 	r, err := cli.NewAccounts(context.Background(), &pb.NewAccountsData{
 		Username: username,
 		Password: password,
 		Avatar:   avatar,
 		Name:     name,
 		Email:    email,
-		Private: int32(private),
+		Private:  int32(private),
 	})
 	if err != nil {
 		log.Printf("Failed to send message to Accounts server: %v", err)
 	}
 	fmt.Println(r)
+	c.JSON(int(r.Code), gin.H{
+		"code":    r.Code,
+		"message": r.Message,
+	})
 
 }
+
 //
 //// LoginHandler ...
 //func LoginHandler(c *gin.Context) {

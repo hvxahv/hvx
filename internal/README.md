@@ -4,3 +4,4 @@ The internal directory mainly contains codes used to implement basic logic in th
 
 placed in pkg/microservice and do not directly perform database operations, so you need to call the internal package to perform database operations.
 
+It contains the internal functions of the program and the server implementation of microservices.

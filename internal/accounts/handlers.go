@@ -1,24 +1,18 @@
 package accounts
 
 import (
-	"fmt"
 	"golang.org/x/net/context"
 	pb "hvxahv/api/hvxahv/v1alpha1"
 )
 
-// NewAccounts ...
+// NewAccounts Implementation of the method of creating an account.
 func (s *server) NewAccounts(ctx context.Context, in *pb.NewAccountsData) (*pb.AccountsReply, error) {
-	fmt.Println(in)
 	a := NewAccounts(in.Username, in.Password, in.Avatar, in.Name, in.Email, in.Private)
 	code, err := a.New()
-	if err != nil {
-		return nil, err
-	}
-
 	return &pb.AccountsReply{Code: code, Message: err.Error()}, nil
 }
 
-// UpdateAccounts ...
+// UpdateAccounts Implementation of the method to update the account.
 func (s *server) UpdateAccounts(ctx context.Context, in *pb.UpdateAccountsData) (*pb.AccountsReply, error) {
 	// Accounts
 	a := NewUpdateAcct()
@@ -39,7 +33,7 @@ func (s *server) UpdateAccounts(ctx context.Context, in *pb.UpdateAccountsData) 
 	return &pb.AccountsReply{Code: 200, Message: "ok"}, nil
 }
 
-// QueryAccounts ...
+// QueryAccounts Implementation of the method of querying the account.
 func (s *server) QueryAccounts(ctx context.Context, in *pb.AccountsName) (*pb.AccountsData, error) {
 	r := NewQueryAcctByName(in.Username)
 	a, err := r.Query()
@@ -61,7 +55,7 @@ func (s *server) QueryAccounts(ctx context.Context, in *pb.AccountsName) (*pb.Ac
 	}, nil
 }
 
-// DeleteAccounts ...
+// DeleteAccounts Implementation of the delete account method.
 func (s *server) DeleteAccounts(ctx context.Context, in *pb.AccountsName) (*pb.AccountsReply, error) {
 	r := NewDelAcctByName(in.Username)
 	err := r.Delete()
@@ -71,7 +65,8 @@ func (s *server) DeleteAccounts(ctx context.Context, in *pb.AccountsName) (*pb.A
 	return &pb.AccountsReply{Code: 200, Message: "ok"}, nil
 }
 
-// LoginAccounts ...
+// LoginAccounts The implementation of the login account method returns the user name and token,
+// and returns a specific error if there is an error.
 func (s *server) LoginAccounts(ctx context.Context, in *pb.AccountsLogin) (*pb.AccountsLoginReply, error) {
 	r := NewAccountLogin(in.Username, in.Password)
 	token, err := r.Login()

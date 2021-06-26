@@ -61,9 +61,9 @@ func (d *db) InitDB() error {
 		d.sslMode,
 	)
 
+	var initError error
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
-	var initError error
 
 	for {
 		select {

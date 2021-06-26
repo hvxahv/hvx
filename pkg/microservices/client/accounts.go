@@ -4,22 +4,26 @@ import (
 	"fmt"
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
+	pb "hvxahv/api/hvxahv/v1alpha1"
 	"log"
 )
 
 // Accounts Microservice client for Accounts.
-func Accounts() (*grpc.ClientConn, error) {
+func Accounts() (pb.AccountsClient, *grpc.ClientConn, error) {
 	name := "accounts"
 
 	host := viper.GetString(fmt.Sprintf("microservices.%s.host", name))
 	port := viper.GetString(fmt.Sprintf("microservices.%s.port", name))
 	addr := fmt.Sprintf("%s:%s", host, port)
+
+	// Connect to gPRC service.
 	conn, err := grpc.Dial(addr, grpc.WithInsecure())
 	if err != nil {
 		log.Printf("Failed to connect to %s service: %v", name , err)
-		return nil, err
+		return nil, nil, nil
 	}
 
+	cli := pb.NewAccountsClient(conn)
 
-	return conn, nil
+	return cli, conn, nil
 }
