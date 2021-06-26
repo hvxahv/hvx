@@ -21,44 +21,44 @@ type min struct {
 }
 
 func (m *min) MakeBucket() error {
-	bucket := m.bucket
 	cli := m.client
 
-	if err := cli.MakeBucket(m.ctx, bucket, minio.MakeBucketOptions{Region: m.location}); err != nil {
+	if err := cli.MakeBucket(m.ctx, m.bucket, minio.MakeBucketOptions{Region: m.location}); err != nil {
 		// Check to see if we already own this bucket (which happens if you run this twice)
-		exists, errBucketExists := cli.BucketExists(m.ctx, bucket)
+		exists, errBucketExists := cli.BucketExists(m.ctx, m.bucket)
 		if errBucketExists == nil && exists {
 			// If the Bucket has been created, the output has already created the Bucket.
-			log.Printf("We already own %s\n", bucket)
-			p, _ := cli.GetBucketPolicy(m.ctx, "accounts")
-			log.Println("权限：" + p)
+			log.Printf("We already own %s\n", m.bucket)
 			return nil
 		} else {
 			return err
 		}
 	} else {
-		log.Printf("Successfully created %s\n", bucket)
+		log.Printf("Successfully created %s\n", m.bucket)
+		// Set bucket permissions.
+		// Set the access permissions of the bucket.
+		// By default, it has read and write permissions so that the returned url can be
+		// accessed and downloaded in the browser. It can be changed according to business needs.
+		policy := `{"Version":"2012-10-17",
+"Statement":[{"Effect":"Allow","Principal":{"AWS":["*"]},
+"Action":["s3:ListBucket","s3:ListBucketMultipartUploads","s3:GetBucketLocation"],
+"Resource":["arn:aws:s3:::accounts"]},{"Effect":"Allow",
+"Principal":{"AWS":["*"]},
+"Action":["s3:AbortMultipartUpload","s3:DeleteObject","s3:GetObject","s3:ListMultipartUploadParts","s3:PutObject"],
+"Resource":["arn:aws:s3:::accounts/*"]}]}
+`
+
+		if err := cli.SetBucketPolicy(context.Background(), m.bucket, policy); err != nil {
+			return err
+		}
+		log.Printf("Successfully set permissions %s\n", m.bucket)
+
+		// The method used to obtain minio permissions,
+		// returns the detailed permissions of the bucket,
+		// which can be used to obtain settings,
+		// in development and used in the method ( SetBucketPolicy() ) of setting permissions.
+		// p, err := cli.GetBucketPolicy(context.Background(), m.bucket)
 	}
-
-	// Set bucket permissions.
-	//// Create policy
-	//policy := `{"Version": "2012-10-17","Statement": [{"Action": ["s3:GetObject"],"Effect": "Allow","Principal": {"AWS": ["*"]},"Resource": ["arn:aws:s3:::my-bucketname/*"],"Sid": ""}]}`
-
-	//if err := cli.SetBucketPolicy(context.Background(), bucket, policy); err != nil {
-	//	return err
-	//}
-	//log.Println("设置了权限")
-
-	p, _ := cli.GetBucketPolicy(m.ctx, bucket)
-	log.Println("权限：" + p)
-	// 给创建的桶设置读写权限 如果不设置读写权限返回的url 将无法直接下载或在html中显示
-	// json 数据由GetBucketPolicy读取而来，只需要替换 cfg.MinioBucket 即可
-	//policy := `{Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":{"AWS":["*"]},"Action":["s3:ListBucketMultipartUploads","s3:GetBucketLocation","s3:ListBucket"],"Resource":["arn:aws:s3:::"+cfg.MinioBucket+""]},{"Effect":"Allow","Principal":{"AWS":["*"]},"Action":["s3:AbortMultipartUpload","s3:DeleteObject","s3:GetObject","s3:ListMultipartUploadParts","s3:PutObject"],"Resource":["arn:aws:s3:::"` + bucket +`"/*"]}]}`
-	//if err := cli.SetBucketPolicy(m.ctx, bucket, policy); err!=nil {
-	//	log.Printf("Bucket: %s 权限设置失败\n", bucket)
-	//	log.Println(err.Error())
-	//}
-
 	return nil
 }
 

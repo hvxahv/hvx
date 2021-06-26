@@ -10,11 +10,12 @@ import (
 func (s *server) NewAccounts(ctx context.Context, in *pb.NewAccountsData) (*pb.AccountsReply, error) {
 	fmt.Println(in)
 	a := NewAccounts(in.Username, in.Password, in.Avatar, in.Name, in.Email, in.Private)
-	if err := a.New(); err != nil {
+	code, err := a.New()
+	if err != nil {
 		return nil, err
 	}
 
-	return &pb.AccountsReply{Reply: "ok"}, nil
+	return &pb.AccountsReply{Code: code, Message: err.Error()}, nil
 }
 
 // UpdateAccounts ...
@@ -35,7 +36,7 @@ func (s *server) UpdateAccounts(ctx context.Context, in *pb.UpdateAccountsData) 
 		return nil, err
 	}
 
-	return &pb.AccountsReply{Reply: "ok"}, nil
+	return &pb.AccountsReply{Code: 200, Message: "ok"}, nil
 }
 
 // QueryAccounts ...
@@ -67,7 +68,7 @@ func (s *server) DeleteAccounts(ctx context.Context, in *pb.AccountsName) (*pb.A
 	if err != nil {
 		return nil, err
 	}
-	return &pb.AccountsReply{Reply: "ok"}, nil
+	return &pb.AccountsReply{Code: 200, Message: "ok"}, nil
 }
 
 // LoginAccounts ...

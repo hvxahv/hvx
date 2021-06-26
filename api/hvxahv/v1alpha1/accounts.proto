@@ -52,7 +52,8 @@ message AccountsName {
 }
 
 message AccountsReply {
-  string Reply = 1;
+  int32  code    = 1;
+  string message = 2;
 }
 
 message AccountsLogin {

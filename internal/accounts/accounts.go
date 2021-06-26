@@ -1,12 +1,10 @@
 package accounts
 
 import (
-	"fmt"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
-	"hvxahv/pkg/bot"
 	"hvxahv/pkg/db"
 	"hvxahv/pkg/utils"
 	"log"
@@ -32,7 +30,7 @@ type accounts struct {
 // Accounts The interface defines the CRUD function for accounts.
 type Accounts interface {
 	// New Add a user Instantiate using the NewAccounts function.
-	New() error
+	New() (int32, error)
 	// Query This method implements the function of querying accounts.
 	// It needs to accept the username to be queried through the function of the
 	// instantiated object NewAccountQUD,
@@ -96,30 +94,39 @@ func NewAccountLogin(name string, password string) Accounts {
 }
 
 
-func (a *accounts) New() error {
+func (a *accounts) New() (int32, error) {
 	d := db.GetDB()
 
 	if err := d.AutoMigrate(&accounts{}); err != nil {
-		return err
+		log.Println("Automatic table creation failed.")
+		return 500, err
 	}
 
 	acct := &a
 
-	if err := d.Debug().Table("accounts").Create(&acct).Error; err != nil {
-		log.Println(err)
-		return err
+	// Before creating, first check whether the user exists. If it does not exist, create the user.
+	// If it does, it needs to return an error to the client to explain that the user already exists.
+	res := d.Debug().Table("accounts").Where("username = ?", a.Username).First(&acct)
+	if res.Error != nil {
+		if res.Error == gorm.ErrRecordNotFound {
+			if err := d.Debug().Table("accounts").Create(&acct).Error; err != nil {
+				log.Printf("Failed to create user: %v", err)
+				return 200, err
+			}
+		}
+	} else {
+		return 202, errors.Errorf("Username already exists.")
 	}
+
+
 	//go func() {
 	//	b := bot.NewBot(1, fmt.Sprintf("Added a user: %s", a.Name))
 	//	if err := b.Send(); err != nil {
 	//		log.Println(err)
 	//	}
 	//}()
-	b := bot.NewBot(1, fmt.Sprintf("Added a user: %s", a.Name))
-	if err := b.Send(); err != nil {
-		log.Println(err)
-	}
-	return nil
+
+	return 0, nil
 }
 
 func (a *accounts) Query() (*accounts, error) {

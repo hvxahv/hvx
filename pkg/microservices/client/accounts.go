@@ -4,12 +4,11 @@ import (
 	"fmt"
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
-	pb "hvxahv/api/hvxahv/v1alpha1"
 	"log"
 )
 
 // Accounts Microservice client for Accounts.
-func Accounts() (pb.AccountsClient, error) {
+func Accounts() (*grpc.ClientConn, error) {
 	name := "accounts"
 
 	host := viper.GetString(fmt.Sprintf("microservices.%s.host", name))
@@ -21,8 +20,6 @@ func Accounts() (pb.AccountsClient, error) {
 		return nil, err
 	}
 
-	defer conn.Close()
-	cli := pb.NewAccountsClient(conn)
 
-	return cli, nil
+	return conn, nil
 }

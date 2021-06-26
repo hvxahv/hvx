@@ -46,7 +46,7 @@ func TestNewAccounts(t *testing.T) {
 		0,
 		)
 
-	if err := na.New(); err != nil {
+	if _, err := na.New(); err != nil {
 		t.Error(err)
 	}
 }

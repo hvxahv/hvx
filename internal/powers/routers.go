@@ -22,8 +22,8 @@ func Router() *gin.Engine {
 
 	// Account function of hvxahv
 	r.POST("/accounts/new", handlers.NewAccountsHandler)
-	r.POST("/accounts/login", handlers.LoginHandler)
-	r.POST("/upload/avatar", handlers.Avatar)
+	//r.POST("/accounts/login", handlers.LoginHandler)
+	//r.POST("/upload/avatar", handlers.Avatar)
 
 
 	activityPubV1(r)
