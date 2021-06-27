@@ -1,4 +1,4 @@
-package db
+package redis
 
 import (
 	"context"
@@ -16,10 +16,10 @@ var once sync.Once
 var rdb *redis.Client
 
 // InitRedis Initialize redis, set parameters, and return to redis client.
-func InitRedis() {
+func InitRedis(db int) {
 	h := viper.GetString("redis.host")
 	p := viper.GetString("redis.port")
-
+	pwd := viper.GetString("redis.password")
 	addr := fmt.Sprintf("%s:%s", h, p)
 
 	once.Do(func() {
@@ -29,8 +29,8 @@ func InitRedis() {
 			Dialer:             nil,
 			OnConnect:          nil,
 			Username:           "",
-			Password:           "",
-			DB:                 0,
+			Password:           pwd,
+			DB:                 db,
 			MaxRetries:         0,
 			MinRetryBackoff:    0,
 			MaxRetryBackoff:    0,

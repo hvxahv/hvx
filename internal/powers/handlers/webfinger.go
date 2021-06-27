@@ -1,72 +1,67 @@
 package handlers
 
 import (
-	"github.com/pkg/errors"
-	"strings"
+	"context"
+	"fmt"
+	"github.com/gin-gonic/gin"
+	pb "hvxahv/api/hvxahv/v1alpha1"
+	"hvxahv/pkg/activitypub"
+	"hvxahv/pkg/microservices/client"
+	"log"
 )
 
-// getUser Get the username in the request url such,
-// as "/.well-known/webfinger?resource=acct:hvturingga@0efb43b41a8a.ngrok.io" Will get hvturingga,
-// If the match fails, it will return a custom username not found error.
-func getUser(resource string) (string, error) {
-	if strings.HasPrefix(resource, "acct:") {
-		resource = resource[5:]
-		if ali := strings.IndexByte(resource, '@'); ali != -1 {
-			resource = resource[:ali]
-		}
-	} else {
-		return "", errors.New("Failed to get username.")
-	}
-
-	return resource, nil
-}
-
-// WebFinger 和 WebFingerLinks 组成标准 Activitypub 的 JSON-LD 协议
+// WebFinger and WebFingerLinks form the JSON-LD protocol of the standard Activitypub
 type WebFinger struct {
 	Subject string           `json:"subject"`
 	Links   []WebFingerLinks `json:"links"`
 }
 
-// WebFingerLinks 供 WebFinger 使用
+// WebFingerLinks is used by WebFinger
 type WebFingerLinks struct {
 	Rel  string `json:"rel"`
 	Type string `json:"type"`
 	Href string `json:"href"`
 }
 
-//
-//func WebFingerHandler(c *gin.Context) {
-//	res := c.Query("resource")
-//	fmt.Println(res)
-//	// Perform some filtering operations from the request to obtain the user name,
-//	// and then search for the user name to find whether the user exists in the database.
-//	// Currently only tested mastodon has not supported other ActivityPub implementations.
-//	name, err := getUser(res)
-//	if err != nil {
-//		log.Println(err)
-//		return
-//	}
-//	fmt.Println(name)
-//	a := accounts.NewAccountByName(name)
-//	query, err := a.Query()
-//	if err != nil {
-//		return
-//	}
-//	fmt.Println(query)
-//
-//	address := "ad907fce3836.ngrok.io"
-//
-//	links := []WebFingerLinks{
-//		{
-//			Rel:  "self",
-//			Type: "application/activitypub+json",
-//			Href: fmt.Sprintf("https://%s/u/%s", address, name),
-//		},
-//	}
-//	finger := &WebFinger{
-//		Subject: fmt.Sprintf("acct:%s@%s", name, address),
-//		Links:   links,
-//	}
-//	log.Println(finger)
-//	c.JSON(200, finger)
-//}
+func WebFingerHandler(c *gin.Context) {
+	// Perform some filtering operations from the request to obtain the user name,
+	// and then search for the user name to find whether the user exists in the database.
+	// Currently only tested mastodon has not supported other ActivityPub implementations.
+	res := c.Query("resource")
+	name, err := activitypub.GetActor(res)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	fmt.Println(name)
+
+	// Use the client to call the Accounts service to create users.
+	cli, conn,  err := client.Accounts()
+	if err != nil {
+		log.Println(err)
+	}
+	defer conn.Close()
+	accounts, err := cli.QueryAccounts(context.Background(), &pb.AccountsName{Username: name})
+	if err != nil {
+		return 
+	}
+	fmt.Println(accounts)
+
+
+	address := "2cf915078b27.ngrok.io"
+
+	links := []WebFingerLinks{
+		{
+			Rel: "self",
+			Type: "application/activity+json",
+			Href: fmt.Sprintf("https://%s/actor", address),
+		},
+	}
+	finger := &WebFinger{
+		Subject: fmt.Sprintf("acct:hvturingga@%s", address),
+		Links: links,
+	}
+
+	c.JSON(200, finger)
+}
+

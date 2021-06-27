@@ -28,7 +28,6 @@ func NewAccountsHandler(c *gin.Context) {
 	if err != nil {
 		log.Println(err)
 	}
-	fmt.Println(username, password, avatar, name, email, private)
 
 	// Use the client to call the Accounts service to create users.
 	cli, conn,  err := client.Accounts()

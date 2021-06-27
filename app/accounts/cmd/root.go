@@ -21,6 +21,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"hvxahv/pkg/db"
+	"hvxahv/pkg/redis"
 	"os"
 )
 
@@ -87,4 +88,6 @@ func initConfig() {
 	if err := nd.InitDB(); err != nil {
 		return
 	}
+
+	redis.InitRedis(1)
 }

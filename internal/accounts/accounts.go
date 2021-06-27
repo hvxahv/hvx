@@ -1,11 +1,16 @@
 package accounts
 
 import (
+	"context"
+	"encoding/json"
+	"fmt"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
+	"hvxahv/pkg/bot"
 	"hvxahv/pkg/db"
+	"hvxahv/pkg/redis"
 	"hvxahv/pkg/utils"
 	"log"
 )
@@ -115,31 +120,58 @@ func (a *accounts) New() (int32, error) {
 				log.Printf("%s: %v", e, err)
 				return 202, errors.Errorf(e)
 			}
+
+			// After the user is successfully created,
+			// the data encoded by the user's json is stored in the cache,
+			// and the cache will never expire.
+			ad, _ := json.Marshal(&a)
+			_, err := redis.GetRDB().Set(context.Background(), a.Username, ad, 0).Result()
+			if err != nil {
+				log.Println("Failed to store to cache:", err)
+				return 503, errors.New("Failed to store to cache.")
+			}
+
+			// Notify the telegram bot that a new user has been added.
+			go func() {
+				b := bot.NewBot(1, fmt.Sprintf("Added a user: %s", a.Name))
+				if err := b.Send(); err != nil {
+					log.Println(err)
+				}
+			}()
+
 			return 201, errors.Errorf("New account ok!")
 		}
-	} else {
-		return 202, errors.Errorf("Username already exists.")
 	}
-
-
-	//go func() {
-	//	b := bot.NewBot(1, fmt.Sprintf("Added a user: %s", a.Name))
-	//	if err := b.Send(); err != nil {
-	//		log.Println(err)
-	//	}
-	//}()
-
-	return 0, nil
+	return 202, errors.Errorf("Username already exists.")
 }
 
 func (a *accounts) Query() (*accounts, error) {
 	d := db.GetDB()
-	if err := d.Debug().Table("accounts").Where("username = ?", a.Username).First(&a).Error; err != nil {
-		log.Println(gorm.ErrMissingWhereClause)
-		return nil, err
-	}
 
+	result, err := redis.GetRDB().Get(context.Background(), a.Username).Result()
+	if err != nil {
+		if err := d.Debug().Table("accounts").Where("username = ?", a.Username).First(&a).Error; err != nil {
+			log.Println(gorm.ErrMissingWhereClause)
+			return nil, err
+		}
+
+		// The data obtained from the database is stored in the cache again.
+		go func() {
+			ad, _ := json.Marshal(&a)
+			_, err := redis.GetRDB().Set(context.Background(), a.Username, ad, 0).Result()
+			if err != nil {
+				log.Println("Failed to store to cache:", err)
+			}
+		}()
+
+		return a, nil
+	}
+	if err := json.Unmarshal([]byte(result), a); err != nil {
+		log.Println("Accounts failed to find user cache and parse json.")
+		// TODO - If the cache decoding fails, you should go to the database to find the data and return.
+	}
 	return a, nil
+
 }
 
 func (a *accounts) Update() error {
