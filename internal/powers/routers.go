@@ -23,8 +23,7 @@ func Router() *gin.Engine {
 	// The internal open API service provided by hvxahv usually does not require Token authentication,
 	// as login and registration.
 	r.POST("/accounts/new", handlers.NewAccountsHandler)
-	//r.POST("/accounts/login", handlers.LoginHandler)
-	//r.POST("/upload/avatar", handlers.Avatar)
+	r.POST("/accounts/login", handlers.LoginHandler)
 
 
 	// Open API routing for the ActivityPub protocol.

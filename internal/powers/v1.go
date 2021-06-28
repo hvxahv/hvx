@@ -1,6 +1,9 @@
 package powers
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"hvxahv/internal/powers/handlers"
+)
 
 func v1(r *gin.Engine) {
 
@@ -13,6 +16,8 @@ func v1(r *gin.Engine) {
 				"status": "ok",
 			})
 		})
+
+		v1.POST("/upload/avatar", handlers.UploadAvatar)
 
 		//v1.GET("/u/:user", v1alpha1.GetActorHandler)
 		//v1.GET("/u/:user/outbox", v1alpha1.GetActorOutbox)

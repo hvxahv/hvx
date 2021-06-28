@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"context"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	pb "hvxahv/api/hvxahv/v1alpha1"
 	"hvxahv/pkg/activitypub"
@@ -28,14 +27,14 @@ func WebFingerHandler(c *gin.Context) {
 	// and then search for the user name to find whether the user exists in the database.
 	// Currently only tested mastodon has not supported other ActivityPub implementations.
 	res := c.Query("resource")
-	name, err := activitypub.GetActor(res)
+	name, err := activitypub.IsActorExists(res)
 	if err != nil {
 		log.Println(err)
 		return
 	}
-	fmt.Println(name)
 
-	// Use the client to call the Accounts service to create users.
+	// Use this client to call the remote Accounts gRPC service,
+	// and then pass the user name to get the queried data.
 	cli, conn,  err := client.Accounts()
 	if err != nil {
 		log.Println(err)
@@ -45,23 +44,8 @@ func WebFingerHandler(c *gin.Context) {
 	if err != nil {
 		return 
 	}
-	fmt.Println(accounts)
 
 
-	address := "2cf915078b27.ngrok.io"
-
-	links := []WebFingerLinks{
-		{
-			Rel: "self",
-			Type: "application/activity+json",
-			Href: fmt.Sprintf("https://%s/actor", address),
-		},
-	}
-	finger := &WebFinger{
-		Subject: fmt.Sprintf("acct:hvturingga@%s", address),
-		Links: links,
-	}
-
-	c.JSON(200, finger)
+	c.JSON(200, activitypub.NewWebFinger(accounts.Username))
 }
 

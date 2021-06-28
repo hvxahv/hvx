@@ -64,7 +64,7 @@ func (privkey PrivateKey) Sign(msg []byte) []byte {
 	}
 	sig, err := rsa.SignPKCS1v15(rand.Reader, privateKey, crypto.SHA256, msg)
 	if err != nil {
-		log.Panic("error signing msg: %s", err)
+		log.Printf("error signing msg: %v", err)
 	}
 	return sig
 

@@ -27,4 +27,3 @@ func TestGenToken(t *testing.T) {
 	t.Log(token)
 }
 
-

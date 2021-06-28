@@ -1,12 +1,5 @@
 package middleware
 
-import (
-	"fmt"
-	"github.com/dgrijalva/jwt-go"
-	"github.com/spf13/viper"
-	"time"
-)
-
 // JWTAuth JWT authentication middleware for gin network framework,
 // Check whether the Token is carried in the request, and verify whether the Token is correct,
 // Will obtain the username by parsing the Token and add the username in the context and set the key to loginUser.
@@ -71,32 +64,3 @@ import (
 
 
 
-var k = []byte(viper.GetString("token_signed"))
-
-type claims struct {
-	Uuid   string
-	User string
-	jwt.StandardClaims
-}
-
-// GenToken ...
-func GenToken(Uuid, username string) (string, error) {
-	expireTime := time.Now().Add(30 * 24 * time.Hour)
-	claims := &claims{
-		Uuid: Uuid,
-		User: username,
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: expireTime.Unix(),
-			IssuedAt:  time.Now().Unix(),
-			Issuer:    "127.0.0.1",
-			Subject:   "token",
-		},
-	}
-	t := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	token, err := t.SignedString(k)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	return token, nil
-}

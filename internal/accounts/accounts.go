@@ -18,7 +18,7 @@ import (
 // accounts The object tops a user’s profile data and is targeted at GORM.
 type accounts struct {
 	gorm.Model
-	Uuid       string `gorm:"uuid;->:false;<-:create"`
+	Uuid       string `gorm:"type:varchar(100);uuid"`
 	Username   string `gorm:"type:varchar(100);username;unique"`
 	Password   string `gorm:"type:varchar(100);password"`
 	Avatar     string `gorm:"type:varchar(100);avatar"`
@@ -154,7 +154,6 @@ func (a *accounts) Query() (*accounts, error) {
 			log.Println(gorm.ErrMissingWhereClause)
 			return nil, err
 		}
-
 		// The data obtained from the database is stored in the cache again.
 		go func() {
 			ad, _ := json.Marshal(&a)
@@ -207,10 +206,9 @@ func (a *accounts) Login() (string, error) {
 	if err := bcrypt.CompareHashAndPassword([]byte(qa.Password), []byte(a.Password)); err != nil {
 		return "", errors.Errorf("Password verification failed.")
 	}
-	//token, err := utils.Gen(a.Uuid, a.Username)
-	//if err != nil {
-	//	log.Println("Token generation failed!")
-	//}
-	//return token, nil
-	return "", nil
+	token, err := utils.GenToken(a.Uuid, a.Username)
+	if err != nil {
+		log.Println("Token generation failed!")
+	}
+	return token, nil
 }
