@@ -16,8 +16,8 @@ limitations under the License.
 package cmd
 
 import (
+	"github.com/disism/hvxahv/internal/accounts"
 	"github.com/spf13/cobra"
-	"hvxahv/internal/accounts"
 )
 
 // runCmd represents the run command

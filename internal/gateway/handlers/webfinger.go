@@ -2,10 +2,10 @@ package handlers
 
 import (
 	"context"
+	pb "github.com/disism/hvxahv/api/hvxahv/v1alpha1"
+	"github.com/disism/hvxahv/pkg/activitypub"
+	"github.com/disism/hvxahv/pkg/microservices/client"
 	"github.com/gin-gonic/gin"
-	pb "hvxahv/api/hvxahv/v1alpha1"
-	"hvxahv/pkg/activitypub"
-	"hvxahv/pkg/microservices/client"
 	"log"
 )
 

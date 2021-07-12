@@ -1,4 +1,4 @@
-module hvxahv
+module github.com/disism/hvxahv
 
 go 1.16
 

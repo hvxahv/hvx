@@ -15,7 +15,7 @@ limitations under the License.
 */
 package main
 
-import "hvxahv/app/graphql/cmd"
+import "github.com/disism/hvxahv/app/gateway/cmd"
 
 func main() {
 	cmd.Execute()

@@ -4,14 +4,14 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/disism/hvxahv/pkg/bot"
+	"github.com/disism/hvxahv/pkg/db"
+	"github.com/disism/hvxahv/pkg/redis"
+	"github.com/disism/hvxahv/pkg/utils"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
-	"hvxahv/pkg/bot"
-	"hvxahv/pkg/db"
-	"hvxahv/pkg/redis"
-	"hvxahv/pkg/utils"
 	"log"
 )
 

@@ -1,9 +1,9 @@
-package powers
+package gateway
 
 import (
+	"github.com/disism/hvxahv/internal/gateway/handlers"
+	"github.com/disism/hvxahv/internal/gateway/middleware"
 	"github.com/gin-gonic/gin"
-	"hvxahv/internal/powers/handlers"
-	"hvxahv/internal/powers/middleware"
 )
 
 // Router Used to provide routing for RESTful access,

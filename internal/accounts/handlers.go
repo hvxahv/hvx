@@ -1,8 +1,8 @@
 package accounts
 
 import (
+	pb "github.com/disism/hvxahv/api/hvxahv/v1alpha1"
 	"golang.org/x/net/context"
-	pb "hvxahv/api/hvxahv/v1alpha1"
 )
 
 // NewAccounts Implementation of the method of creating an account.

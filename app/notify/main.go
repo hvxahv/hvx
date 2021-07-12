@@ -15,7 +15,7 @@ limitations under the License.
 */
 package main
 
-import "hvxahv/app/notify/cmd"
+import "github.com/disism/hvxahv/app/notify/cmd"
 
 func main() {
 	cmd.Execute()

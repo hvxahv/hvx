@@ -2,9 +2,9 @@ package client
 
 import (
 	"fmt"
+	pb "github.com/disism/hvxahv/api/hvxahv/v1alpha1"
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
-	pb "hvxahv/api/hvxahv/v1alpha1"
 	"log"
 )
 

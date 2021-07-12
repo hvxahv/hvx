@@ -69,16 +69,16 @@ func encodePublicKey(public *rsa.PublicKey) ([]byte, error) {
 		Type:  "PUBLIC KEY",
 	}), nil
 }
-// ***************************************************
-type claims struct {
+// Claims ***************************************************
+type Claims struct {
 	Uuid   string
 	User string
 	jwt.StandardClaims
 }
 
-func NewClaims(uuid string, user string) *claims {
+func NewClaims(uuid string, user string) *Claims {
 	expireTime := time.Now().Add(30 * 24 * time.Hour)
-	c := &claims{
+	c := &Claims{
 		Uuid: uuid,
 		User: user,
 		StandardClaims: jwt.StandardClaims{

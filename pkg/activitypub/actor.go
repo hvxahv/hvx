@@ -2,9 +2,9 @@ package activitypub
 
 import (
 	"fmt"
+	pb "github.com/disism/hvxahv/api/hvxahv/v1alpha1"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
-	pb "hvxahv/api/hvxahv/v1alpha1"
 	"strings"
 )
 

@@ -17,9 +17,9 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/disism/hvxahv/pkg/db"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"hvxahv/pkg/db"
 	"os/exec"
 )
 

@@ -2,12 +2,12 @@ package handlers
 
 import (
 	"fmt"
+	pb "github.com/disism/hvxahv/api/hvxahv/v1alpha1"
+	"github.com/disism/hvxahv/pkg/microservices/client"
+	"github.com/disism/hvxahv/pkg/oos"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 	"golang.org/x/net/context"
-	pb "hvxahv/api/hvxahv/v1alpha1"
-	"hvxahv/pkg/microservices/client"
-	"hvxahv/pkg/oos"
 	"log"
 	"strconv"
 )
@@ -120,4 +120,33 @@ func UploadAvatar(c *gin.Context)  {
 		"message":"Avatar uploaded successfully.",
 		"url": link,
 	})
+}
+
+func GetAccountsHandler(c *gin.Context) {
+	//name := middleware.GetUserName(c)
+	//a := GetAccounts(name)
+	//log.Println(name)
+	//log.Println(a)
+
+
+	c.JSON(200, gin.H{
+		"code": 200,
+		"messages": "ok",
+	})
+}
+
+func GetAccounts(name string) *pb.AccountsData {
+	// Use the client to call the Accounts service to create users.
+	// Pass in the username and search for the user, if found, the accounts data will be returned.
+	cli, conn,  err := client.Accounts()
+	if err != nil {
+		log.Println(err)
+	}
+	defer conn.Close()
+	accounts, err := cli.QueryAccounts(context.Background(), &pb.AccountsName{Username: name})
+	if err != nil {
+		return nil
+	}
+
+	return accounts
 }

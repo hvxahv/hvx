@@ -1,8 +1,8 @@
-package powers
+package gateway
 
 import (
+	"github.com/disism/hvxahv/internal/gateway/handlers"
 	"github.com/gin-gonic/gin"
-	"hvxahv/internal/powers/handlers"
 )
 
 func activityPubV1(r *gin.Engine) {

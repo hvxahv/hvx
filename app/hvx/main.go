@@ -15,7 +15,7 @@ limitations under the License.
 */
 package main
 
-import "hvxahv/app/hvx/cmd"
+import "github.com/disism/hvxahv/app/hvx/cmd"
 
 func main() {
 	cmd.Execute()

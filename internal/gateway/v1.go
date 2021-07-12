@@ -1,14 +1,17 @@
-package powers
+package gateway
 
 import (
+	"github.com/disism/hvxahv/internal/gateway/handlers"
+	"github.com/disism/hvxahv/internal/gateway/middleware"
 	"github.com/gin-gonic/gin"
-	"hvxahv/internal/powers/handlers"
 )
 
 func v1(r *gin.Engine) {
 
 	// Simple group: v1
-	v1 := r.Group("/v1")
+	v1 := r.Group("/api/v1")
+	// Load verification token middleware.
+	v1.Use(middleware.JWTAuth)
 	{
 
 		v1.GET("/ping", func(c *gin.Context) {
@@ -17,6 +20,7 @@ func v1(r *gin.Engine) {
 			})
 		})
 
+		v1.GET("/accounts/i", handlers.GetAccountsHandler)
 		v1.POST("/upload/avatar", handlers.UploadAvatar)
 
 		//v1.GET("/u/:user", v1alpha1.GetActorHandler)

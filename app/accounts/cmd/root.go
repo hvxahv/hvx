@@ -17,11 +17,11 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/disism/hvxahv/pkg/db"
+	"github.com/disism/hvxahv/pkg/redis"
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"hvxahv/pkg/db"
-	"hvxahv/pkg/redis"
 	"os"
 )
 
