@@ -24,9 +24,9 @@ type accounts struct {
 	Avatar     string `gorm:"type:varchar(100);avatar"`
 	Bio        string `gorm:"type:varchar(999);bio"`
 	Name       string `gorm:"type:varchar(100);name"`
-	EMail      string `gorm:"type:varchar(100);email"`
-	Phone      string `gorm:"type:varchar(100);phone"`
-	Telegram   string `gorm:"type:varchar(100);telegram"`
+	EMail      string `gorm:"type:varchar(100);email;unique"`
+	Phone      string `gorm:"type:varchar(100);phone;unique"`
+	Telegram   string `gorm:"type:varchar(100);telegram;unique"`
 	Private    int32  `gorm:"private"`
 	PrivateKey string `gorm:"type:varchar(3000);private_key"`
 	PublicKey  string `gorm:"type:varchar(3000);public_key"`

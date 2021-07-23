@@ -1,19 +1,25 @@
 # hvxahv-platform
 
-[disism.com](https://disism.com/love-letter)
+Instance: [halfmemories.com](https://halfmemories.com)
 
-- activitypub (social)
-- ipfs (file)
-- matrix.org (chat)
-- telegram bot
+Preview version: [dev.halfmemories.com](https://dev.halfmemories.com)
 
 --
 
-- Web
-- Android APP
-
---
+A multifunctional decentralized social network implementation.
 
 A decentralized application based on the activitypub protocol, a social platform server based on the microservice architecture.
 
-halfmemories.com
+--
+
+Supported protocols, decentralization and encryption.
+
+- activitypub (social)
+- ipfs (channel & file)
+- matrix.org (chat)
+
+--
+
+
+
+[disism.com](https://disism.com/love-letter)

@@ -135,18 +135,19 @@ func GetAccountsHandler(c *gin.Context) {
 	})
 }
 
-func GetAccounts(name string) *pb.AccountsData {
+// GetAccountsByName Incoming username is used to query account.
+func GetAccountsByName(name string) (*pb.AccountsData, error) {
 	// Use the client to call the Accounts service to create users.
 	// Pass in the username and search for the user, if found, the accounts data will be returned.
-	cli, conn,  err := client.Accounts()
+	cli, conn, err := client.Accounts()
 	if err != nil {
 		log.Println(err)
 	}
 	defer conn.Close()
 	accounts, err := cli.QueryAccounts(context.Background(), &pb.AccountsName{Username: name})
 	if err != nil {
-		return nil
+		return nil, err
 	}
 
-	return accounts
+	return accounts, nil
 }

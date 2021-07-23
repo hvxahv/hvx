@@ -10,7 +10,13 @@ import (
 // and return the JsonLD of the standard activitypub protocol.
 func GetActorHandler(c *gin.Context) {
 	name := c.Param("actor")
-	acct := GetAccounts(name)
+	acct, err := GetAccountsByName(name)
+	if err != nil {
+		c.JSON(200, gin.H{
+			"status": "600",
+			"message": "No query to the account.",
+		})
+	}
 	a := activitypub.NewActor(acct)
 	c.JSON(200, a)
 }

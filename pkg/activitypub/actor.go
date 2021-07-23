@@ -80,7 +80,7 @@ type actor struct {
 	Icon              *icon       `json:"icon"`
 }
 
-// NewActor Return the actor json.
+// NewActor Return standard ActivityPub protocol user data.
 func NewActor(a *pb.AccountsData) *actor {
 	addr := viper.GetString("localhost")
 
