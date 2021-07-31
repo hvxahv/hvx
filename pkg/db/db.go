@@ -34,7 +34,6 @@ type Config struct {
 }
 
 func NewDb() *db {
-
 	host := viper.GetString("db.host")
 	port := viper.GetString("db.port")
 	user := viper.GetString("db.user")

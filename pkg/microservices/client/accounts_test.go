@@ -3,7 +3,7 @@ package client
 import "testing"
 
 func TestAccounts(t *testing.T) {
-	_, _, accounts := Accounts()
+	_, err, accounts := Accounts()
 	if err != nil {
 		return 
 	}

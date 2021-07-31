@@ -7,7 +7,7 @@ import (
 
 // NewAccounts Implementation of the method of creating an account.
 func (s *server) NewAccounts(ctx context.Context, in *pb.NewAccountsData) (*pb.AccountsReply, error) {
-	a := NewAccounts(in.Username, in.Password, in.Avatar, in.Name, in.Email, in.Private)
+	a := NewAccounts(in.Username, in.Password, in.Email)
 	code, err := a.New()
 	return &pb.AccountsReply{Code: code, Message: err.Error()}, nil
 }

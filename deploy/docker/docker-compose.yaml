@@ -8,8 +8,7 @@ services:
     restart: always
     volumes:
       - "./redis/data:/data"
-      - "./redis/redis.conf:/etc/redis/redis.conf"
-    command: redis-gateway /etc/redis/redis.conf
+    command: redis-server --requirepass hvxahv123 --appendonly yes
     ports:
       - 6379:6379
 
@@ -21,17 +20,6 @@ services:
     ports:
       - 4222:4222
       - 8222:8222
-
-  mariadb:
-    image: mariadb
-    container_name: maria
-    restart: always
-    volumes:
-      - "./maria/data:/var/lib/mysql"
-    environment:
-      MYSQL_ROOT_PASSWORD: hvxahv123
-    ports:
-      - 3306:3306
 
   mongodb:
     image: mongo
@@ -47,10 +35,23 @@ services:
 
   postgres:
     image: postgres
-    container_name: pg
+    container_name: postgres
     restart: always
     environment:
       POSTGRES_PASSWORD: hvxahv123
-      POSTGRES_DB: kuma
+      POSTGRES_DB: hvxahv
     ports:
       - 5432:5432
+
+  minio:
+    image: minio
+    container_name: minio
+    restart: always
+    environment:
+      MINIO_ACCESS_KEY: hvxahv
+      MINIO_SECRET_KEY: hvxahv123
+    volumes:
+      - "$HOME/docker/volumes/minio-data:/data"
+      - "$HOME/docker/volumes/minio-config:/root/.minio"
+    ports:
+      - 9000:9000
