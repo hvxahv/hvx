@@ -9,7 +9,6 @@ import (
 	"github.com/spf13/viper"
 	"golang.org/x/net/context"
 	"log"
-	"strconv"
 )
 
 // NewAccountsHandler ...
@@ -18,18 +17,8 @@ func NewAccountsHandler(c *gin.Context) {
 	username := c.PostForm("username")
 	// Password for login.
 	password := c.PostForm("password")
-	// Account avatar.
-	avatar := c.PostForm("avatar")
-	// User's name, displayed name.
-	name := c.PostForm("name")
 	// User's email, used to retrieve password.
 	email := c.PostForm("email")
-	// Choose whether the account is a private account.
-	p := c.PostForm("private")
-	private, err := strconv.Atoi(p)
-	if err != nil {
-		log.Println(err)
-	}
 
 	// Use the client to call the Accounts service to create users.
 	cli, conn,  err := client.Accounts()
@@ -41,10 +30,7 @@ func NewAccountsHandler(c *gin.Context) {
 	r, err := cli.NewAccounts(context.Background(), &pb.NewAccountsData{
 		Username: username,
 		Password: password,
-		Avatar:   avatar,
-		Name:     name,
 		Email:    email,
-		Private:  int32(private),
 	})
 	if err != nil {
 		log.Printf("Failed to send message to Accounts server: %v", err)

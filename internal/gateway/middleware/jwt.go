@@ -3,7 +3,8 @@ package middleware
 import (
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
-	"github.com/disism/hvxahv/pkg/utils"
+	"github.com/disism/hvxahv/pkg/security"
+
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 	"log"
@@ -42,8 +43,8 @@ func JWTAuth(c *gin.Context) {
 
 }
 
-func jwtParseToken(tokenString string) (*jwt.Token, *utils.Claims, error) {
-	Claims := &utils.Claims{}
+func jwtParseToken(tokenString string) (*jwt.Token, *security.Claims, error) {
+	Claims := &security.Claims{}
 	token, err := jwt.ParseWithClaims(tokenString, Claims,
 		func(token *jwt.Token) (i interface{}, err error) {
 			return viper.GetString("token_signed"), nil
@@ -54,11 +55,11 @@ func jwtParseToken(tokenString string) (*jwt.Token, *utils.Claims, error) {
 	return token, Claims, err
 }
 
-func jwtParseUser(tokenString string) (*utils.Claims, error) {
+func jwtParseUser(tokenString string) (*security.Claims, error) {
 	if tokenString == "" {
 		log.Println("Need to pass Token.")
 	}
-	Claims := &utils.Claims{}
+	Claims := &security.Claims{}
 	_, err := jwt.ParseWithClaims(tokenString, Claims,
 		func(token *jwt.Token) (interface{}, error) {
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {

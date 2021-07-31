@@ -1,27 +1,12 @@
-package utils
+package security
 
 import (
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/x509"
 	"encoding/pem"
-	"fmt"
-	"github.com/dgrijalva/jwt-go"
 	"github.com/pkg/errors"
-	"github.com/spf13/viper"
-	"golang.org/x/crypto/bcrypt"
-	"time"
 )
-
-// GenPassword Use the bcrypt package to crypto the password and return the encrypted hash,
-// which needs to be converted into a string.
-func GenPassword(password string) string {
-	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	if err != nil {
-		fmt.Println("Encryption password failed: ", err)
-	}
-	return string(hash)
-}
 
 // ***************************************************
 
@@ -69,40 +54,3 @@ func encodePublicKey(public *rsa.PublicKey) ([]byte, error) {
 		Type:  "PUBLIC KEY",
 	}), nil
 }
-// Claims ***************************************************
-type Claims struct {
-	Uuid   string
-	User string
-	jwt.StandardClaims
-}
-
-func NewClaims(uuid string, user string) *Claims {
-	expireTime := time.Now().Add(30 * 24 * time.Hour)
-	c := &Claims{
-		Uuid: uuid,
-		User: user,
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: expireTime.Unix(),
-			IssuedAt:  time.Now().Unix(),
-			Issuer:    viper.GetString("localhost"),
-			Subject:   "token",
-		},
-	}
-	return c
-}
-
-// GenToken After the user logs in and the password is successfully verified,
-// this method will be used to generate a Token and return.
-func GenToken(uuid, username string) (string, error) {
-	t := jwt.NewWithClaims(jwt.SigningMethodHS256, NewClaims(uuid, username))
-	token, err := t.SignedString([]byte(viper.GetString("token_signed")))
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	return token, nil
-}
-
-
-
-

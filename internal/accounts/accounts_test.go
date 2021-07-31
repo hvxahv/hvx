@@ -2,10 +2,10 @@ package accounts
 
 import (
 	"fmt"
+	"github.com/disism/hvxahv/pkg/db"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"hvxahv/pkg/db"
 	"os"
 	"testing"
 )
@@ -40,10 +40,7 @@ func TestNewAccounts(t *testing.T) {
 	na := NewAccounts(
 		"hvturingga",
 		"hvxahv",
-		"https://cdn.keyakizaka46.com/images/14/103/4f2a17f7f544a1635c244502dc8ea/400_320_102400.jpg",
-		"HVTURINGGA" ,
 		"x@disism.com",
-		0,
 		)
 
 	if _, err := na.New(); err != nil {

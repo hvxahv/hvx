@@ -8,8 +8,6 @@ require (
 	github.com/go-redis/redis/v8 v8.10.0
 	github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible
 	github.com/google/uuid v1.1.2
-	github.com/graphql-go/graphql v0.7.9
-	github.com/graphql-go/handler v0.2.3
 	github.com/lib/pq v1.10.2
 	github.com/minio/minio-go/v7 v7.0.11
 	github.com/mitchellh/go-homedir v1.1.0

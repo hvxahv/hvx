@@ -3,11 +3,9 @@ package accounts
 import (
 	"context"
 	"encoding/json"
-	"fmt"
-	"github.com/disism/hvxahv/pkg/bot"
 	"github.com/disism/hvxahv/pkg/db"
 	"github.com/disism/hvxahv/pkg/redis"
-	"github.com/disism/hvxahv/pkg/utils"
+	"github.com/disism/hvxahv/pkg/security"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
@@ -16,15 +14,16 @@ import (
 )
 
 // accounts The object tops a user’s profile data and is targeted at GORM.
+// Must be a unique key: username, telegram, email, phone.
 type accounts struct {
 	gorm.Model
 	Uuid       string `gorm:"type:varchar(100);uuid"`
-	Username   string `gorm:"type:varchar(100);username;unique"`
+	Username   string `gorm:"primaryKey;type:varchar(100);username;unique"`
 	Password   string `gorm:"type:varchar(100);password"`
 	Avatar     string `gorm:"type:varchar(100);avatar"`
 	Bio        string `gorm:"type:varchar(999);bio"`
 	Name       string `gorm:"type:varchar(100);name"`
-	EMail      string `gorm:"type:varchar(100);email;unique"`
+	EMail      string `gorm:"primaryKey;type:varchar(100);email;unique"`
 	Phone      string `gorm:"type:varchar(100);phone;unique"`
 	Telegram   string `gorm:"type:varchar(100);telegram;unique"`
 	Private    int32  `gorm:"private"`
@@ -53,13 +52,10 @@ type Accounts interface {
 func NewAccounts(
 	username string,
 	password string,
-	avatar string,
-	name string,
 	mail string,
-	private int32,
 ) Accounts {
 	// Generate a default public key and private key.
-	privateKey, publicKey, err := utils.GenRSA()
+	privateKey, publicKey, err := security.GenRSA()
 	if err != nil {
 		log.Printf("Failed to generate public and private keys: %v", err)
 	}
@@ -67,16 +63,13 @@ func NewAccounts(
 	// Generate a uuid.
 	id := uuid.New().String()
 
-	hash := utils.GenPassword(password)
+	hash := security.GenPassword(password)
 
 	return &accounts{
 		Uuid:       id,
 		Username:   username,
 		Password:   hash,
-		Avatar:     avatar,
-		Name:       name,
 		EMail:      mail,
-		Private:    private,
 		PrivateKey: privateKey,
 		PublicKey:  publicKey,
 	}
@@ -132,12 +125,12 @@ func (a *accounts) New() (int32, error) {
 			}
 
 			// Notify the telegram bot that a new user has been added.
-			go func() {
-				b := bot.NewBot(1, fmt.Sprintf("Added a user: %s", a.Name))
-				if err := b.Send(); err != nil {
-					log.Println(err)
-				}
-			}()
+			//go func() {
+			//	b := bot.NewBot(1, fmt.Sprintf("Added a user: %s", a.Name))
+			//	if err := b.Send(); err != nil {
+			//		log.Println(err)
+			//	}
+			//}()
 
 			return 201, errors.Errorf("New account ok!")
 		}
@@ -206,7 +199,7 @@ func (a *accounts) Login() (string, error) {
 	if err := bcrypt.CompareHashAndPassword([]byte(qa.Password), []byte(a.Password)); err != nil {
 		return "", errors.Errorf("Password verification failed.")
 	}
-	token, err := utils.GenToken(a.Uuid, a.Username)
+	token, err := security.GenToken(a.Uuid, a.Username)
 	if err != nil {
 		log.Println("Token generation failed!")
 	}
