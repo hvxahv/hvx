@@ -3,10 +3,10 @@ module github.com/disism/hvxahv
 go 1.16
 
 require (
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gin-gonic/gin v1.7.2
 	github.com/go-redis/redis/v8 v8.10.0
 	github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible
+	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/uuid v1.1.2
 	github.com/lib/pq v1.10.2
 	github.com/minio/minio-go/v7 v7.0.11
