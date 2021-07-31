@@ -2,8 +2,8 @@ package middleware
 
 import (
 	"fmt"
-	"github.com/dgrijalva/jwt-go"
 	"github.com/disism/hvxahv/pkg/security"
+	"github.com/golang-jwt/jwt"
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
