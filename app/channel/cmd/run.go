@@ -24,7 +24,7 @@ import (
 // runCmd represents the run command
 var runCmd = &cobra.Command{
 	Use:   "run",
-	Short: "Run the articles service of hvxahv.",
+	Short: "Run the channel service of hvxahv.",
 	Long: ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("run called")

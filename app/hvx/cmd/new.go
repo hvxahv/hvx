@@ -17,10 +17,8 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/disism/hvxahv/pkg/db"
+	"github.com/disism/hvxahv/app/hvx/pkg"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
-	"os/exec"
 )
 
 // newCmd represents the new command
@@ -41,9 +39,9 @@ var newCmd = &cobra.Command{
 		name := args[1]
 		switch args[0] {
 		case "db":
-			createDB(name)
+			pkg.CreateDB(name)
 		case "svc":
-			newServices(name)
+			pkg.NewServices(name)
 		default:
 			fmt.Println("Execute command error.")
 			return
@@ -63,34 +61,4 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// newCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-}
-
-// createDB Create a database.
-// An error will be returned if the creation fails,
-// and a successful creation message will be output if the creation is successful.
-func createDB(name string) {
-	nd :=  db.NewDb()
-	if err := nd.Create(name); err != nil {
-		fmt.Printf("Failed to initialize PostgreSQL : %s", err)
-	} else {
-		fmt.Printf("Create %s database successfully.", name)
-	}
-}
-
-// newServices Create a microservices.
-func newServices(name string) {
-	// author
-	a := viper.GetString("author")
-
-	// package name and directory name
-	pn := fmt.Sprintf("hvxahv/app/%s", name)
-	dn := fmt.Sprintf("../%s", name)
-
-	// Execute the command to create the microservices and return the standard output.
-	cmd := exec.Command("cobra", "init", "--pkg-name", pn, dn, "-a", a)
-	out, err := cmd.CombinedOutput()
-	if err != nil {
-		fmt.Printf("cmd.Run() failed with %s\n", err)
-	}
-	fmt.Printf(string(out))
 }

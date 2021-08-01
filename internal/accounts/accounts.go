@@ -13,9 +13,9 @@ import (
 	"log"
 )
 
-// accounts The object tops a user’s profile data and is targeted at GORM.
+// AccountData The object tops a user’s profile data and is targeted at GORM.
 // Must be a unique key: username, telegram, email, phone.
-type accounts struct {
+type AccountData struct {
 	gorm.Model
 	Uuid       string `gorm:"type:varchar(100);uuid"`
 	Username   string `gorm:"primaryKey;type:varchar(100);username;unique"`
@@ -39,7 +39,7 @@ type Accounts interface {
 	// It needs to accept the username to be queried through the function of the
 	// instantiated object NewAccountQUD,
 	// and then return the query error and the data of the accounts structure.
-	Query() (*accounts, error)
+	Query() (*AccountData, error)
 	// Update Use the NewAccountQUD function to pass the username and
 	// accept the accounts object data to update the accounts data.
 	Update() error
@@ -49,11 +49,7 @@ type Accounts interface {
 	Login() (string, error)
 }
 
-func NewAccounts(
-	username string,
-	password string,
-	mail string,
-) Accounts {
+func NewAccounts(username string, password string, mail string) Accounts {
 	// Generate a default public key and private key.
 	privateKey, publicKey, err := security.GenRSA()
 	if err != nil {
@@ -65,7 +61,7 @@ func NewAccounts(
 
 	hash := security.GenPassword(password)
 
-	return &accounts{
+	return &AccountData{
 		Uuid:       id,
 		Username:   username,
 		Password:   hash,
@@ -75,27 +71,27 @@ func NewAccounts(
 	}
 }
 
-func NewUpdateAcct() *accounts {
-	return &accounts{}
+func NewUpdateAcct() *AccountData {
+	return &AccountData{}
 }
 
 func NewDelAcctByName(name string) Accounts {
-	return &accounts{Username: name}
+	return &AccountData{Username: name}
 }
 
 func NewQueryAcctByName(name string) Accounts {
-	return &accounts{Username: name}
+	return &AccountData{Username: name}
 }
 
 func NewAccountLogin(name string, password string) Accounts {
-	return &accounts{Username: name, Password: password}
+	return &AccountData{Username: name, Password: password}
 }
 
 
-func (a *accounts) New() (int32, error) {
+func (a *AccountData) New() (int32, error) {
 	d := db.GetDB()
 
-	if err := d.AutoMigrate(&accounts{}); err != nil {
+	if err := d.AutoMigrate(&AccountData{}); err != nil {
 		e := "Automatic table creation failed."
 		log.Printf("%s: %v", e, err)
 		return 500, errors.Errorf(e)
@@ -138,7 +134,7 @@ func (a *accounts) New() (int32, error) {
 	return 202, errors.Errorf("Username already exists.")
 }
 
-func (a *accounts) Query() (*accounts, error) {
+func (a *AccountData) Query() (*AccountData, error) {
 	d := db.GetDB()
 
 	result, err := redis.GetRDB().Get(context.Background(), a.Username).Result()
@@ -166,7 +162,7 @@ func (a *accounts) Query() (*accounts, error) {
 
 }
 
-func (a *accounts) Update() error {
+func (a *AccountData) Update() error {
 	d := db.GetDB()
 	acct := &a
 
@@ -177,7 +173,7 @@ func (a *accounts) Update() error {
 	return nil
 }
 
-func (a *accounts) Delete() error {
+func (a *AccountData) Delete() error {
 	d := db.GetDB()
 	//  Unscoped() Use gorm's Unscoped method to permanently delete data.
 	if err := d.Debug().Table("accounts").Where("username = ?", a.Username).Unscoped().Delete(&a).Error; err != nil {
@@ -187,10 +183,10 @@ func (a *accounts) Delete() error {
 	return nil
 }
 
-func (a *accounts) Login() (string, error) {
+func (a *AccountData) Login() (string, error) {
 	d := db.GetDB()
 
-	var qa *accounts
+	var qa *AccountData
 	if err := d.Debug().Table("accounts").Where("username = ?", a.Username).First(&qa).Error; err != nil {
 		log.Println(gorm.ErrMissingWhereClause)
 		return "", err
