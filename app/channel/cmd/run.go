@@ -17,48 +17,30 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/disism/hvxahv/app/hvx/pkg"
+
 	"github.com/spf13/cobra"
 )
 
-// newCmd represents the new command
-var newCmd = &cobra.Command{
-	Use:                    "new",
-	Aliases:                nil,
-	SuggestFor:             nil,
-	Short:                  "A new function of hvx.",
-	Long:                   `You can use this method to create databases and microservices.`,
-	Example:                "hvx new db <name> or hvx new svc <name>",
+// runCmd represents the run command
+var runCmd = &cobra.Command{
+	Use:   "run",
+	Short: "Run the channel service of hvxahv.",
+	Long: ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		if len(args) != 2 {
-			fmt.Println("You must enter 2 parameters. For example, hvx new <parameter> <name> .")
-			return
-		}
-
-		// Parameter name of the creation method.
-		name := args[1]
-		switch args[0] {
-		case "db":
-			pkg.CreateDB(name)
-		case "svc":
-			pkg.NewServices(name)
-		default:
-			fmt.Println("Execute command error.")
-			return
-		}
+		fmt.Println("run called")
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(newCmd)
+	rootCmd.AddCommand(runCmd)
 
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	// newCmd.PersistentFlags().String("foo", "", "A help for foo")
+	// runCmd.PersistentFlags().String("foo", "", "A help for foo")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// newCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// runCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
