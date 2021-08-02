@@ -62,7 +62,7 @@ FOR CLIENT DEVELOPERS:
 
 - WEB CLIENT REPO: [HVXAHV-WEB](https://github.com/disism/hvxahv-web)
 
-- RESTful API DOCS: [RESTful.md](./app/gateway/RESTful.md)
+- RESTful API DOCS: [RESTful.md](./app/gateway/RESTFul.md)
 
 ## Finally
 
