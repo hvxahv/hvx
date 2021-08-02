@@ -58,6 +58,12 @@ DEPLOY:
 - DEVLOPMENT: [DEVLOPMENT_ENV](./deploy/PRODUCTION_ENV.md)
 - PRODUCTION: [PRODUCTION_ENV](./deploy/PRODUCTION_ENV.md)
 
+FOR CLIENT DEVELOPERS: 
+
+- WEB CLIENT REPO: [HVXAHV-WEB](https://github.com/disism/hvxahv-web)
+
+- RESTful API DOCS: [RESTful.md](./app/gateway/RESTful.md)
+
 ## Finally
 
 Everyone has the right to control their data and privacy, and choose who to share with.
