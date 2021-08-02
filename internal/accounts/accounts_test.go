@@ -37,7 +37,7 @@ func TestInitDB(t *testing.T) {
 func TestNewAccounts(t *testing.T) {
 	TestInitDB(t)
 
-	na := NewAccounts(
+	na, _ := NewAccounts(
 		"hvturingga",
 		"hvxahv",
 		"x@disism.com",

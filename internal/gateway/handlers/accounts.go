@@ -17,8 +17,6 @@ func NewAccountsHandler(c *gin.Context) {
 	username := c.PostForm("username")
 	// Password for login.
 	password := c.PostForm("password")
-	// User's email, used to retrieve password.
-	email := c.PostForm("email")
 
 	// Use the client to call the Accounts service to create users.
 	cli, conn,  err := client.Accounts()
@@ -30,7 +28,6 @@ func NewAccountsHandler(c *gin.Context) {
 	r, err := cli.NewAccounts(context.Background(), &pb.NewAccountsData{
 		Username: username,
 		Password: password,
-		Email:    email,
 	})
 	if err != nil {
 		log.Printf("Failed to send message to Accounts server: %v", err)

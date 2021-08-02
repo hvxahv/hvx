@@ -8,7 +8,7 @@ Preview version: [dev.halfmemories.com](https://dev.halfmemories.com)
 
 A decentralized social network implementation.
 
-Based on the decentralized activitypub social protocol, the content publishing channel function of the ipfs de-sino file system, the end-to-end encrypted instant messaging of the matrix.org protocol, an open source decentralized social network whose data is truly in your hands.
+Based on the decentralized activitypub social protocol, the decentralized file system content publishing channel of the ipfs protocol, and the end-to-end encrypted instant messaging of the matrix.org protocol, an open source decentralized social network whose data is truly in your hands.
 
 - Find and add your social network friends like an email address: `name@domain` .
 - Find public channels across servers.

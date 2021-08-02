@@ -19,9 +19,9 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AccountsClient interface {
 	NewAccounts(ctx context.Context, in *NewAccountsData, opts ...grpc.CallOption) (*AccountsReply, error)
-	QueryAccounts(ctx context.Context, in *AccountsName, opts ...grpc.CallOption) (*AccountsData, error)
-	UpdateAccounts(ctx context.Context, in *UpdateAccountsData, opts ...grpc.CallOption) (*AccountsReply, error)
+	UpdateAccounts(ctx context.Context, in *AccountsData, opts ...grpc.CallOption) (*AccountsReply, error)
 	DeleteAccounts(ctx context.Context, in *AccountsName, opts ...grpc.CallOption) (*AccountsReply, error)
+	QueryAccounts(ctx context.Context, in *AccountsName, opts ...grpc.CallOption) (*AccountsData, error)
 	LoginAccounts(ctx context.Context, in *AccountsLogin, opts ...grpc.CallOption) (*AccountsLoginReply, error)
 }
 
@@ -42,16 +42,7 @@ func (c *accountsClient) NewAccounts(ctx context.Context, in *NewAccountsData, o
 	return out, nil
 }
 
-func (c *accountsClient) QueryAccounts(ctx context.Context, in *AccountsName, opts ...grpc.CallOption) (*AccountsData, error) {
-	out := new(AccountsData)
-	err := c.cc.Invoke(ctx, "/kurotobi.v1alpha1.proto.Accounts/QueryAccounts", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *accountsClient) UpdateAccounts(ctx context.Context, in *UpdateAccountsData, opts ...grpc.CallOption) (*AccountsReply, error) {
+func (c *accountsClient) UpdateAccounts(ctx context.Context, in *AccountsData, opts ...grpc.CallOption) (*AccountsReply, error) {
 	out := new(AccountsReply)
 	err := c.cc.Invoke(ctx, "/kurotobi.v1alpha1.proto.Accounts/UpdateAccounts", in, out, opts...)
 	if err != nil {
@@ -63,6 +54,15 @@ func (c *accountsClient) UpdateAccounts(ctx context.Context, in *UpdateAccountsD
 func (c *accountsClient) DeleteAccounts(ctx context.Context, in *AccountsName, opts ...grpc.CallOption) (*AccountsReply, error) {
 	out := new(AccountsReply)
 	err := c.cc.Invoke(ctx, "/kurotobi.v1alpha1.proto.Accounts/DeleteAccounts", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *accountsClient) QueryAccounts(ctx context.Context, in *AccountsName, opts ...grpc.CallOption) (*AccountsData, error) {
+	out := new(AccountsData)
+	err := c.cc.Invoke(ctx, "/kurotobi.v1alpha1.proto.Accounts/QueryAccounts", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -83,9 +83,9 @@ func (c *accountsClient) LoginAccounts(ctx context.Context, in *AccountsLogin, o
 // for forward compatibility
 type AccountsServer interface {
 	NewAccounts(context.Context, *NewAccountsData) (*AccountsReply, error)
-	QueryAccounts(context.Context, *AccountsName) (*AccountsData, error)
-	UpdateAccounts(context.Context, *UpdateAccountsData) (*AccountsReply, error)
+	UpdateAccounts(context.Context, *AccountsData) (*AccountsReply, error)
 	DeleteAccounts(context.Context, *AccountsName) (*AccountsReply, error)
+	QueryAccounts(context.Context, *AccountsName) (*AccountsData, error)
 	LoginAccounts(context.Context, *AccountsLogin) (*AccountsLoginReply, error)
 	mustEmbedUnimplementedAccountsServer()
 }
@@ -97,14 +97,14 @@ type UnimplementedAccountsServer struct {
 func (UnimplementedAccountsServer) NewAccounts(context.Context, *NewAccountsData) (*AccountsReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method NewAccounts not implemented")
 }
-func (UnimplementedAccountsServer) QueryAccounts(context.Context, *AccountsName) (*AccountsData, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method QueryAccounts not implemented")
-}
-func (UnimplementedAccountsServer) UpdateAccounts(context.Context, *UpdateAccountsData) (*AccountsReply, error) {
+func (UnimplementedAccountsServer) UpdateAccounts(context.Context, *AccountsData) (*AccountsReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateAccounts not implemented")
 }
 func (UnimplementedAccountsServer) DeleteAccounts(context.Context, *AccountsName) (*AccountsReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteAccounts not implemented")
+}
+func (UnimplementedAccountsServer) QueryAccounts(context.Context, *AccountsName) (*AccountsData, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryAccounts not implemented")
 }
 func (UnimplementedAccountsServer) LoginAccounts(context.Context, *AccountsLogin) (*AccountsLoginReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method LoginAccounts not implemented")
@@ -140,26 +140,8 @@ func _Accounts_NewAccounts_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Accounts_QueryAccounts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AccountsName)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AccountsServer).QueryAccounts(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/kurotobi.v1alpha1.proto.Accounts/QueryAccounts",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccountsServer).QueryAccounts(ctx, req.(*AccountsName))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _Accounts_UpdateAccounts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateAccountsData)
+	in := new(AccountsData)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -171,7 +153,7 @@ func _Accounts_UpdateAccounts_Handler(srv interface{}, ctx context.Context, dec 
 		FullMethod: "/kurotobi.v1alpha1.proto.Accounts/UpdateAccounts",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccountsServer).UpdateAccounts(ctx, req.(*UpdateAccountsData))
+		return srv.(AccountsServer).UpdateAccounts(ctx, req.(*AccountsData))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -190,6 +172,24 @@ func _Accounts_DeleteAccounts_Handler(srv interface{}, ctx context.Context, dec 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AccountsServer).DeleteAccounts(ctx, req.(*AccountsName))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Accounts_QueryAccounts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AccountsName)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountsServer).QueryAccounts(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/kurotobi.v1alpha1.proto.Accounts/QueryAccounts",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountsServer).QueryAccounts(ctx, req.(*AccountsName))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -224,16 +224,16 @@ var Accounts_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Accounts_NewAccounts_Handler,
 		},
 		{
-			MethodName: "QueryAccounts",
-			Handler:    _Accounts_QueryAccounts_Handler,
-		},
-		{
 			MethodName: "UpdateAccounts",
 			Handler:    _Accounts_UpdateAccounts_Handler,
 		},
 		{
 			MethodName: "DeleteAccounts",
 			Handler:    _Accounts_DeleteAccounts_Handler,
+		},
+		{
+			MethodName: "QueryAccounts",
+			Handler:    _Accounts_QueryAccounts_Handler,
 		},
 		{
 			MethodName: "LoginAccounts",
