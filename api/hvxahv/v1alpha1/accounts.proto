@@ -3,64 +3,54 @@ syntax = "proto3";
 package kurotobi.v1alpha1.proto;
 option go_package = "github.com/disism/hvxahv/api/hvxahv/v1alpha1/v1alpha1";
 
-// Accounts Services ...
+// Accounts List of account service gRPC interfaces.
 service Accounts {
   rpc NewAccounts (NewAccountsData) returns (AccountsReply) {}
-  rpc QueryAccounts (AccountsName) returns (AccountsData) {}
-  rpc UpdateAccounts (UpdateAccountsData) returns (AccountsReply) {}
+  rpc UpdateAccounts (AccountsData) returns (AccountsReply) {}
   rpc DeleteAccounts (AccountsName) returns (AccountsReply) {}
+  rpc QueryAccounts (AccountsName) returns (AccountsData) {}
   rpc LoginAccounts (AccountsLogin) returns (AccountsLoginReply) {}
 }
 
+// AccountsData List of all data of the account service
 message AccountsData {
-  string Uuid      = 1;
-  string Username  = 2;
-  string Password  = 3;
-  string Avatar    = 4;
-  string Bio       = 5;
-  string Name      = 6;
-  string Email     = 7;
-  string Phone     = 8;
-  string Telegram  = 9;
-  int32  Private   = 10;
-  string PublicKey = 11;
+  string Uuid       = 1;
+  string Username   = 2;
+  string Password   = 3;
+  string Avatar     = 4;
+  string Bio        = 5;
+  string Name       = 6;
+  string Email      = 7;
+  string Phone      = 8;
+  int32  Private    = 9;
+  string PrivateKey = 10;
+  string PublicKey  = 11;
 }
 
+// NewAccountsData Data Object of New Account.
 message NewAccountsData {
   string Username = 1;
   string Password = 2;
-  string Avatar   = 3;
-  string Name     = 4;
-  string Email    = 5;
-  int32  Private  = 6;
 }
 
-message UpdateAccountsData {
-  string Username = 1;
-  string Password = 2;
-  string Avatar   = 3;
-  string Bio      = 4;
-  string Name     = 5;
-  string Email    = 6;
-  string Phone    = 7;
-  string Telegram = 8;
-  int32  Private  = 9;
-}
-
+// AccountsName Data operated by accounts name.
 message AccountsName {
   string Username = 1;
 }
 
+// AccountsReply The return value, code and message of the Accounts operation.
 message AccountsReply {
   int32  code    = 1;
   string message = 2;
 }
 
+// AccountsLogin Login account data.
 message AccountsLogin {
   string Username = 1;
   string Password = 2;
 }
 
+// The data returned by the login account needs to return a token.
 message AccountsLoginReply {
   string Username = 1;
   string Token    = 2;
