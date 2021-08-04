@@ -8,5 +8,5 @@
 
 
 
-[RESTful API DOCS](./RESTFul.md)
+[RESTful API DOCS](./RESTful.md)
 

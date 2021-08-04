@@ -1,14 +1,5 @@
 package handlers
 
-import (
-	"context"
-	pb "github.com/disism/hvxahv/api/hvxahv/v1alpha1"
-	"github.com/disism/hvxahv/pkg/activitypub"
-	"github.com/disism/hvxahv/pkg/microservices/client"
-	"github.com/gin-gonic/gin"
-	"log"
-)
-
 // WebFinger and WebFingerLinks form the JSON-LD protocol of the standard Activitypub
 type WebFinger struct {
 	Subject string           `json:"subject"`
@@ -22,30 +13,30 @@ type WebFingerLinks struct {
 	Href string `json:"href"`
 }
 
-func WebFingerHandler(c *gin.Context) {
-	// Perform some filtering operations from the request to obtain the user name,
-	// and then search for the user name to find whether the user exists in the database.
-	// Currently only tested mastodon has not supported other ActivityPub implementations.
-	res := c.Query("resource")
-	name, err := activitypub.IsActorExists(res)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-	// Use this client to call the remote Accounts gRPC service,
-	// and then pass the user name to get the queried data.
-	cli, conn,  err := client.Accounts()
-	if err != nil {
-		log.Println(err)
-	}
-	defer conn.Close()
-	accounts, err := cli.QueryAccounts(context.Background(), &pb.AccountsName{Username: name})
-	if err != nil {
-		return 
-	}
-
-
-	c.JSON(200, activitypub.NewWebFinger(accounts.Username))
-}
-
+//func WebFingerHandler(c *gin.Context) {
+//	// Perform some filtering operations from the request to obtain the user name,
+//	// and then search for the user name to find whether the user exists in the database.
+//	// Currently only tested mastodon has not supported other ActivityPub implementations.
+//	res := c.Query("resource")
+//	name, err := activitypub.IsActorExists(res)
+//	if err != nil {
+//		log.Println(err)
+//		return
+//	}
+//
+//	// Use this client to call the remote Accounts gRPC service,
+//	// and then pass the user name to get the queried data.
+//	cli, conn,  err := client.Accounts()
+//	if err != nil {
+//		log.Println(err)
+//	}
+//	defer conn.Close()
+//	accounts, err := cli.QueryAccount(context.Background(), &pb.AccountByName{Username: name})
+//	if err != nil {
+//		return
+//	}
+//
+//
+//	c.JSON(200, activitypub.NewWebFinger(accounts.Username))
+//}
+//

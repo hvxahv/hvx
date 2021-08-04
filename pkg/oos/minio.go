@@ -57,7 +57,7 @@ func (m *min) MakeBucket() error {
 		// returns the detailed permissions of the bucket,
 		// which can be used to obtain settings,
 		// in development and used in the method ( SetBucketPolicy() ) of setting permissions.
-		// p, err := cli.GetBucketPolicy(context.Background(), m.bucket)
+		// p, err := client.GetBucketPolicy(context.Background(), m.bucket)
 	}
 	return nil
 }

@@ -1,14 +1,15 @@
 package redis
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/go-redis/redis/v8"
 	"log"
-	"time"
 )
 
-// ExistKey Check if redis exists, if KEY is available, return true, otherwise return false.
+// ExistAcct Check if redis exists, if KEY is available, return true, otherwise return false.
 // https://redis.uptrace.dev/#redisnil
-func ExistKey(key string) bool {
+func ExistAcct(key string) bool {
 	_, err := GetRDB().Get(ctx, key).Result()
 	if err != redis.Nil {
 		return true
@@ -16,11 +17,21 @@ func ExistKey(key string) bool {
 	return false
 }
 
-func SetJsonData(key string, value []byte, expiration time.Duration) error {
-	_, err := GetRDB().Set(ctx, key, value, expiration).Result()
+func SETAcctHash(key, field string, value interface{}) error {
+	ad, err := json.Marshal(value)
 	if err != nil {
-		log.Println("failed to store to cache:", err)
+		log.Println(err)
 		return err
 	}
+
+	data := make(map[string]interface{})
+	data[field] = ad
+
+	if err := GetRDB().HMSet(ctx, key, data).Err(); err != nil {
+		fmt.Println(err)
+		return err
+	}
+
 	return nil
 }
+
