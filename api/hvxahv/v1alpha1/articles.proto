@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package kurotobi.v1alpha1.proto;
+package hvxahv.v1alpha1.proto;
 option go_package = "github.com/disism/hvxahv/api/hvxahv/v1alpha1/v1alpha1";
 
 service Articles {

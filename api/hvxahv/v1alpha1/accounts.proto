@@ -1,57 +1,63 @@
 syntax = "proto3";
 
-package kurotobi.v1alpha1.proto;
+package hvxahv.v1alpha1.proto;
 option go_package = "github.com/disism/hvxahv/api/hvxahv/v1alpha1/v1alpha1";
 
-// Accounts List of account service gRPC interfaces.
+// Accounts List of account gRPC service.
 service Accounts {
-  rpc NewAccounts (NewAccountsData) returns (AccountsReply) {}
-  rpc UpdateAccounts (AccountsData) returns (AccountsReply) {}
-  rpc DeleteAccounts (AccountsName) returns (AccountsReply) {}
-  rpc QueryAccounts (AccountsName) returns (AccountsData) {}
-  rpc LoginAccounts (AccountsLogin) returns (AccountsLoginReply) {}
+  // NewAccount Create an account through the NewAccountData data structure.
+  rpc NewAccount (NewAccountData) returns (AccountsReply) {}
+  // UpdateAccount Update the account through AccountData data.
+  rpc UpdateAccount (AccountData) returns (AccountsReply) {}
+  // DeleteAccount Delete the specified account by user name.
+  rpc DeleteAccount (AccountByName) returns (AccountsReply) {}
+  // FindAccount Query specified user data by user name.
+  rpc FindAccount (AccountByName) returns (AccountData) {}
+  rpc LoginAccount (LoginData) returns (LoginReply) {}
 }
 
+
 // AccountsData List of all data of the account service
-message AccountsData {
+message AccountData {
   string Uuid       = 1;
   string Username   = 2;
   string Password   = 3;
-  string Avatar     = 4;
-  string Bio        = 5;
-  string Name       = 6;
-  string Email      = 7;
+  string Mail       = 4;
+  string Avatar     = 5;
+  string Bio        = 6;
+  string Name       = 7;
   string Phone      = 8;
   int32  Private    = 9;
   string PrivateKey = 10;
   string PublicKey  = 11;
 }
 
-// NewAccountsData Data Object of New Account.
-message NewAccountsData {
-  string Username = 1;
-  string Password = 2;
-}
-
-// AccountsName Data operated by accounts name.
-message AccountsName {
-  string Username = 1;
-}
-
 // AccountsReply The return value, code and message of the Accounts operation.
 message AccountsReply {
-  int32  code    = 1;
-  string message = 2;
+  int32  Code    = 1;
+  string Message = 2;
 }
 
-// AccountsLogin Login account data.
-message AccountsLogin {
+// AccountByName Functions operated by username.
+message AccountByName{
   string Username = 1;
+}
+
+// NewAccountData Data needed to create a new account.
+message NewAccountData {
+  string Username   = 1;
+  string Password   = 2;
+  string Mail       = 3;
+}
+
+// LoginData Account login, use email and password.
+message LoginData {
+  string Mail     = 1;
   string Password = 2;
 }
 
-// The data returned by the login account needs to return a token.
-message AccountsLoginReply {
+// LoginReply The data returned by the login account needs to return a token.
+message LoginReply {
   string Username = 1;
   string Token    = 2;
 }

@@ -8,6 +8,23 @@ import (
 	"log"
 )
 
+type client struct {
+	name string
+	host string
+	port string
+	addr string
+}
+
+func NewClient(name string) *client {
+	host := viper.GetString(fmt.Sprintf("microservices.%s.host", name))
+	port := viper.GetString(fmt.Sprintf("microservices.%s.port", name))
+	addr := fmt.Sprintf("%s:%s", host, port)
+
+
+	return &client{name: name, host: host, port: port, addr: addr}
+}
+
+
 // Accounts Microservice client for Accounts.
 func Accounts() (pb.AccountsClient, *grpc.ClientConn, error) {
 	name := "accounts"
@@ -27,3 +44,4 @@ func Accounts() (pb.AccountsClient, *grpc.ClientConn, error) {
 
 	return cli, conn, nil
 }
+

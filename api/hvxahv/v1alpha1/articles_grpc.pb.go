@@ -31,7 +31,7 @@ func NewArticlesClient(cc grpc.ClientConnInterface) ArticlesClient {
 
 func (c *articlesClient) NewArticles(ctx context.Context, in *NewArticlesData, opts ...grpc.CallOption) (*ArticlesReply, error) {
 	out := new(ArticlesReply)
-	err := c.cc.Invoke(ctx, "/kurotobi.v1alpha1.proto.Articles/NewArticles", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Articles/NewArticles", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -76,7 +76,7 @@ func _Articles_NewArticles_Handler(srv interface{}, ctx context.Context, dec fun
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/kurotobi.v1alpha1.proto.Articles/NewArticles",
+		FullMethod: "/hvxahv.v1alpha1.proto.Articles/NewArticles",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ArticlesServer).NewArticles(ctx, req.(*NewArticlesData))
@@ -88,7 +88,7 @@ func _Articles_NewArticles_Handler(srv interface{}, ctx context.Context, dec fun
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Articles_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "kurotobi.v1alpha1.proto.Articles",
+	ServiceName: "hvxahv.v1alpha1.proto.Articles",
 	HandlerType: (*ArticlesServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

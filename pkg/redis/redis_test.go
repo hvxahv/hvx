@@ -27,7 +27,7 @@ func initRedisConfig(t *testing.T) {
 	}
 
 
-	InitRedis(0)
+	InitRedis(1)
 }
 
 

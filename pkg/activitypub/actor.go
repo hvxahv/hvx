@@ -81,7 +81,7 @@ type actor struct {
 }
 
 // NewActor Return standard ActivityPub protocol user data.
-func NewActor(a *pb.AccountsData) *actor {
+func NewActor(a *pb.AccountData) *actor {
 	addr := viper.GetString("localhost")
 
 	act := fmt.Sprintf("https://%s/u/%s", addr, a.Username)

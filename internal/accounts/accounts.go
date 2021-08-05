@@ -18,7 +18,8 @@ const (
 	ERROR_NEW_ACCOUNT   = "FAILED TO CREATE USER!"
 	SERVER_ERROR        = "SERVER ERROR!"
 	SUCCESS_NEW_ACCOUNT = "NEW ACCOUNT OK!"
-	EXISTS_ACCOUNT      = "ACCOUNT ALREADY EXISTS!"
+	EXISTS_MAIL      = "MAIL ALREADY EXISTS!"
+	EXISTS_USERNAME     = "USERNAME ALREADY EXISTS!"
 )
 
 // AccountData The object tops a user’s profile data and is targeted at GORM.
@@ -31,7 +32,7 @@ type AccountData struct {
 	Avatar     string `gorm:"type:varchar(100);avatar"`
 	Bio        string `gorm:"type:varchar(999);bio"`
 	Name       string `gorm:"type:varchar(100);name"`
-	EMail      string `gorm:"type:varchar(100);email;unique"`
+	Mail       string `gorm:"primaryKey;type:varchar(100);mail;unique"`
 	Phone      string `gorm:"type:varchar(100);phone;unique"`
 	Private    int32  `gorm:"private"`
 	PrivateKey string `gorm:"type:varchar(3000);private_key"`
@@ -43,11 +44,11 @@ type Accounts interface {
 	// New Add a user Instantiate using the NewAccounts function.
 	New() (int32, string)
 
-	// Query This method implements the function of querying accounts.
+	// Find This method implements the function of querying accounts.
 	// It needs to accept the username to be queried through the function of the
 	// instantiated object NewAccountQUD,
 	// and then return the query error and the data of the accounts structure.
-	Query() (*AccountData, error)
+	Find() (*AccountData, error)
 
 	// Update Use the NewAccountQUD function to pass the username and
 	// accept the accounts object data to update the accounts data.
@@ -57,10 +58,10 @@ type Accounts interface {
 	Delete() error
 
 	// Login to the account and generate token, Return token and custom error message.
-	Login() (string, error)
+	Login() (string, string, error)
 }
 
-func NewAccounts(username, password string) (Accounts, error) {
+func NewAccounts(username, password, mail string) (Accounts, error) {
 	privateKey, publicKey, err := security.GenRSA()
 	if err != nil {
 		log.Printf("failed to generate public and private keys: %v", err)
@@ -72,6 +73,7 @@ func NewAccounts(username, password string) (Accounts, error) {
 	return &AccountData{
 		Uuid:       id,
 		Username:   username,
+		Mail:       mail,
 		Password:   hash,
 		PrivateKey: privateKey,
 		PublicKey:  publicKey,
@@ -82,8 +84,8 @@ func NewAcctFuncByName(name string) Accounts {
 	return &AccountData{Username: name}
 }
 
-func NewAccountLogin(name string, password string) Accounts {
-	return &AccountData{Username: name, Password: password}
+func NewAccountLogin(mail string, password string) Accounts {
+	return &AccountData{Mail: mail, Password: password}
 }
 
 func (a *AccountData) New() (int32, string) {
@@ -96,9 +98,22 @@ func (a *AccountData) New() (int32, string) {
 
 	acct := &a
 
-	if redis.ExistKey(a.Username) {
-		return 202, EXISTS_ACCOUNT
+	var e string
+	m, u := redis.FINDAcctMailAndUN(a.Mail, a.Username)
+
+	if m == true {
+		e = EXISTS_MAIL
 	}
+	if u == true {
+		e = EXISTS_USERNAME
+	}
+	if u == true && m == true {
+		e = fmt.Sprintf("%s and %s", EXISTS_USERNAME, EXISTS_MAIL)
+	}
+	if u == true || m == true {
+		return 202, e
+	}
+
 
 	// Before creating, first check whether the user exists. If it does not exist, create the user.
 	// If it does, it needs to return an error to the client to explain that the user already exists.
@@ -113,8 +128,12 @@ func (a *AccountData) New() (int32, string) {
 			// the data encoded by the user's json is stored in the cache,
 			// and the cache will never expire.
 			ad, _ := json.Marshal(&a)
-			if err := redis.SetJsonData(a.Username, ad, 0); err != nil {
-				fmt.Println(err)
+			if err := redis.SETAcct(a.Username, ad, 0); err != nil {
+				log.Println(err)
+			}
+
+			if err := redis.SETAcctMailORUN(a.Mail, a.Username); err != nil {
+				log.Println(err)
 			}
 
 			// Notify the telegram bot that a new user has been added.
@@ -130,14 +149,10 @@ func (a *AccountData) New() (int32, string) {
 		}
 	}
 
-	ad, _ := json.Marshal(&a)
-	if err := redis.SetJsonData(a.Username, ad, 0); err != nil {
-		fmt.Println(err)
-	}
-	return 202, EXISTS_ACCOUNT
+	return 202, e
 }
 
-func (a *AccountData) Query() (*AccountData, error) {
+func (a *AccountData) Find() (*AccountData, error) {
 	d := db.GetDB()
 
 	result, err := redis.GetRDB().Get(context.Background(), a.Username).Result()
@@ -186,21 +201,21 @@ func (a *AccountData) Delete() error {
 	return nil
 }
 
-func (a *AccountData) Login() (string, error) {
+func (a *AccountData) Login() (string, string, error) {
 	d := db.GetDB()
 
 	var qa *AccountData
-	if err := d.Debug().Table("account_data").Where("username = ?", a.Username).First(&qa).Error; err != nil {
+	if err := d.Debug().Table("account_data").Where("mail = ?", a.Mail).First(&qa).Error; err != nil {
 		log.Println(gorm.ErrMissingWhereClause)
-		return "", err
+		return "", "", err
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(qa.Password), []byte(a.Password)); err != nil {
-		return "", errors.Errorf("Password verification failed.")
+		return "", "", errors.Errorf("Password verification failed.")
 	}
 	token, err := security.GenToken(a.Uuid, a.Username)
 	if err != nil {
 		log.Println("Token generation failed!")
 	}
-	return token, nil
+	return qa.Username, token, nil
 }

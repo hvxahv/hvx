@@ -1,7 +1,6 @@
 package gateway
 
 import (
-	"github.com/disism/hvxahv/internal/gateway/handlers"
 	"github.com/disism/hvxahv/internal/gateway/middleware"
 	"github.com/gin-gonic/gin"
 )
@@ -20,8 +19,8 @@ func v1(r *gin.Engine) {
 			})
 		})
 
-		v1.GET("/accounts/i", handlers.GetAccountsHandler)
-		v1.POST("/upload/avatar", handlers.UploadAvatar)
+		//v1.GET("/accounts/i", handlers.GetAccountsHandler)
+		//v1.POST("/upload/avatar", handlers.UploadAvatar)
 
 		//v1.GET("/u/:user", v1alpha1.GetActorHandler)
 		//v1.GET("/u/:user/outbox", v1alpha1.GetActorOutbox)
