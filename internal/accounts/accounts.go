@@ -18,7 +18,8 @@ const (
 	ERROR_NEW_ACCOUNT   = "FAILED TO CREATE USER!"
 	SERVER_ERROR        = "SERVER ERROR!"
 	SUCCESS_NEW_ACCOUNT = "NEW ACCOUNT OK!"
-	EXISTS_ACCOUNT      = "ACCOUNT ALREADY EXISTS!"
+	EXISTS_MAIL      = "MAIL ALREADY EXISTS!"
+	EXISTS_USERNAME     = "USERNAME ALREADY EXISTS!"
 )
 
 // AccountData The object tops a user’s profile data and is targeted at GORM.
@@ -97,48 +98,58 @@ func (a *AccountData) New() (int32, string) {
 
 	acct := &a
 
-	if err := redis.SETAcctHash(a.Mail, a.Username, acct); err != nil {
-		fmt.Println(err)
+	var e string
+	m, u := redis.FINDAcctMailAndUN(a.Mail, a.Username)
+
+	if m == true {
+		e = EXISTS_MAIL
 	}
-	//if redis.ExistAcct(a.Username) {
-	//	return 202, EXISTS_ACCOUNT
-	//}
-	//
-	//// Before creating, first check whether the user exists. If it does not exist, create the user.
-	//// If it does, it needs to return an error to the client to explain that the user already exists.
-	//if r := d.Debug().Table("account_data").Where("username = ? ", a.Username).First(&acct); r.Error != nil {
-	//	if r.Error == gorm.ErrRecordNotFound {
-	//		if err := d.Debug().Table("account_data").Create(&acct).Error; err != nil {
-	//			log.Printf("an error occurred while creating the account: %v", err)
-	//			return 500, ERROR_NEW_ACCOUNT
-	//		}
-	//
-	//		// After the user is successfully created,
-	//		// the data encoded by the user's json is stored in the cache,
-	//		// and the cache will never expire.
-	//		ad, _ := json.Marshal(&a)
-	//		if err := redis.SetJsonData(a.Username, ad, 0); err != nil {
-	//			fmt.Println(err)
-	//		}
-	//
-	//		// Notify the telegram bot that a new user has been added.
-	//		//go func() {
-	//		//	b := bot.NewBot(1, fmt.Sprintf("Added a user: %s", a.Name))
-	//		//	if err := b.Send(); err != nil {
-	//		//		log.Println(err)
-	//		//	}
-	//		//}()
-	//
-	//		// 201 The request is successful and the server has created a new resource.
-	//		return 201, SUCCESS_NEW_ACCOUNT
-	//	}
-	//}
-	//
-	//ad, _ := json.Marshal(&a)
-	//if err := redis.SetJsonData(a.Username, ad, 0); err != nil {
-	//	fmt.Println(err)
-	//}
-	return 202, EXISTS_ACCOUNT
+	if u == true {
+		e = EXISTS_USERNAME
+	}
+	if u == true && m == true {
+		e = fmt.Sprintf("%s and %s", EXISTS_USERNAME, EXISTS_MAIL)
+	}
+	if u == true || m == true {
+		return 202, e
+	}
+
+
+	// Before creating, first check whether the user exists. If it does not exist, create the user.
+	// If it does, it needs to return an error to the client to explain that the user already exists.
+	if r := d.Debug().Table("account_data").Where("username = ? ", a.Username).First(&acct); r.Error != nil {
+		if r.Error == gorm.ErrRecordNotFound {
+			if err := d.Debug().Table("account_data").Create(&acct).Error; err != nil {
+				log.Printf("an error occurred while creating the account: %v", err)
+				return 500, ERROR_NEW_ACCOUNT
+			}
+
+			// After the user is successfully created,
+			// the data encoded by the user's json is stored in the cache,
+			// and the cache will never expire.
+			ad, _ := json.Marshal(&a)
+			if err := redis.SETAcct(a.Username, ad, 0); err != nil {
+				log.Println(err)
+			}
+
+			if err := redis.SETAcctMailORUN(a.Mail, a.Username); err != nil {
+				log.Println(err)
+			}
+
+			// Notify the telegram bot that a new user has been added.
+			//go func() {
+			//	b := bot.NewBot(1, fmt.Sprintf("Added a user: %s", a.Name))
+			//	if err := b.Send(); err != nil {
+			//		log.Println(err)
+			//	}
+			//}()
+
+			// 201 The request is successful and the server has created a new resource.
+			return 201, SUCCESS_NEW_ACCOUNT
+		}
+	}
+
+	return 202, e
 }
 
 func (a *AccountData) Find() (*AccountData, error) {
