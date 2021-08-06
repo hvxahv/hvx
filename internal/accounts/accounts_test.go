@@ -2,6 +2,7 @@ package accounts
 
 import (
 	"fmt"
+	"github.com/disism/hvxahv/pkg/cache"
 	"github.com/disism/hvxahv/pkg/db"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
@@ -32,28 +33,46 @@ func TestInitDB(t *testing.T) {
 		return
 	}
 
+	// If a configs file is found, read it in.
+	if err := viper.ReadInConfig(); err == nil {
+		fmt.Fprintln(os.Stderr, "Using configs file:", viper.ConfigFileUsed())
+	}
+
+
+	cache.InitRedis(1)
+
 }
 
 func TestNewAccounts(t *testing.T) {
 	TestInitDB(t)
-
 	na, _ := NewAccounts(
 		"hvturingga",
 		"hvxahv",
 		"x@disism.com",
 		)
 
-	if _, err := na.New(); err != nil {
-		t.Error(err)
-	}
+	code, message := na.New()
+
+	t.Log(code, message)
 }
+
 
 func TestAccounts_Update(t *testing.T) {
 	TestInitDB(t)
 
-	a := NewUpdateAcct()
-	a.Username = "hvturingga"
-	a.Bio = "我很开心，现在我在录制视频, 欢迎关注我的频道!"
+	a := AccountData{
+		Username:   "hvturingga",
+		Password:   "",
+		Avatar:     "",
+		Bio:        "我很开心，现在我在录制视频, 欢迎关注我的 YouTube 频道! AHHHHh.....",
+		Name:       "",
+		Mail:       "",
+		Phone:      "",
+		Private:    0,
+		PrivateKey: "",
+		PublicKey:  "",
+	}
+
 	if err := a.Update(); err != nil {
 		t.Errorf("%v",err)
 	}
@@ -62,8 +81,8 @@ func TestAccounts_Update(t *testing.T) {
 func TestAccounts_Query(t *testing.T) {
 	TestInitDB(t)
 
-	a := NewQueryAcctByName("hvturingga")
-	r, err := a.Query()
+	a := NewAcctByName("hvturingga")
+	r, err := a.Find()
 	if err != nil {
 		return
 	}
@@ -73,7 +92,7 @@ func TestAccounts_Query(t *testing.T) {
 func TestAccounts_Delete(t *testing.T) {
 	TestInitDB(t)
 
-	a := NewDelAcctByName("hvturingga")
+	a := NewAcctByName("hvturingga")
 	if err := a.Delete(); err != nil {
 		t.Log(err)
 		return
@@ -86,12 +105,12 @@ func TestAccounts_Delete(t *testing.T) {
 func TestAccounts_Login(t *testing.T) {
 	TestInitDB(t)
 
-	a := NewAccountLogin("hvturingga", "hvxahv")
+	a := NewAccountLogin("x@disism.com", "hvxahv")
 
-	r, err := a.Login()
+	r, s, err := a.Login()
  	if err != nil {
 		t.Error(err)
 	}
-	t.Log(r)
+	t.Log(r, s)
 
 }

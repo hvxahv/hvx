@@ -4,11 +4,11 @@ version: "3.3"
 services:
   redis:
     image: redis
-    container_name: redis
+    container_name: cache
     restart: always
     volumes:
-      - "./redis/data:/data"
-    command: redis-server --requirepass hvxahv123 --appendonly yes
+      - "./cache/data:/data"
+    command: cache-server --requirepass hvxahv123 --appendonly yes
     ports:
       - 6379:6379
 

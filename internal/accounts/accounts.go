@@ -4,8 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/disism/hvxahv/pkg/cache"
 	"github.com/disism/hvxahv/pkg/db"
-	"github.com/disism/hvxahv/pkg/redis"
 	"github.com/disism/hvxahv/pkg/security"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
@@ -18,8 +18,9 @@ const (
 	ERROR_NEW_ACCOUNT   = "FAILED TO CREATE USER!"
 	SERVER_ERROR        = "SERVER ERROR!"
 	SUCCESS_NEW_ACCOUNT = "NEW ACCOUNT OK!"
-	EXISTS_MAIL      = "MAIL ALREADY EXISTS!"
+	EXISTS_MAIL         = "MAIL ALREADY EXISTS!"
 	EXISTS_USERNAME     = "USERNAME ALREADY EXISTS!"
+	EXISTS_ACCOUNTS     = "ACCOUNTS ALREADY EXISTS!"
 )
 
 // AccountData The object tops a user’s profile data and is targeted at GORM.
@@ -80,7 +81,7 @@ func NewAccounts(username, password, mail string) (Accounts, error) {
 	}, nil
 }
 
-func NewAcctFuncByName(name string) Accounts {
+func NewAcctByName(name string) Accounts {
 	return &AccountData{Username: name}
 }
 
@@ -98,22 +99,23 @@ func (a *AccountData) New() (int32, string) {
 
 	acct := &a
 
+	// TODO -  Test whether the mailbox and user name found during registration exist.
 	var e string
-	m, u := redis.FINDAcctMailAndUN(a.Mail, a.Username)
-
-	if m == true {
+	isMail := cache.FINDAcctMail(a.Mail)
+	if !isMail {
 		e = EXISTS_MAIL
 	}
-	if u == true {
+
+	isUser := cache.ExistAcct(a.Username)
+	if !isUser {
 		e = EXISTS_USERNAME
 	}
-	if u == true && m == true {
+	if isMail == true && !isUser == true {
 		e = fmt.Sprintf("%s and %s", EXISTS_USERNAME, EXISTS_MAIL)
 	}
-	if u == true || m == true {
+	if isMail == true || isUser == true {
 		return 202, e
 	}
-
 
 	// Before creating, first check whether the user exists. If it does not exist, create the user.
 	// If it does, it needs to return an error to the client to explain that the user already exists.
@@ -128,53 +130,45 @@ func (a *AccountData) New() (int32, string) {
 			// the data encoded by the user's json is stored in the cache,
 			// and the cache will never expire.
 			ad, _ := json.Marshal(&a)
-			if err := redis.SETAcct(a.Username, ad, 0); err != nil {
+			if err := cache.SETAcct(a.Username, ad, 0); err != nil {
 				log.Println(err)
 			}
 
-			if err := redis.SETAcctMailORUN(a.Mail, a.Username); err != nil {
+			if err := cache.SETAcctMailORUN(a.Mail, a.Username); err != nil {
 				log.Println(err)
 			}
 
-			// Notify the telegram bot that a new user has been added.
-			//go func() {
-			//	b := bot.NewBot(1, fmt.Sprintf("Added a user: %s", a.Name))
-			//	if err := b.Send(); err != nil {
-			//		log.Println(err)
-			//	}
-			//}()
+			// TODO - Hand over to the notification server.
 
 			// 201 The request is successful and the server has created a new resource.
 			return 201, SUCCESS_NEW_ACCOUNT
 		}
 	}
 
-	return 202, e
+	return 202, EXISTS_ACCOUNTS
 }
 
 func (a *AccountData) Find() (*AccountData, error) {
 	d := db.GetDB()
 
-	result, err := redis.GetRDB().Get(context.Background(), a.Username).Result()
+	result, err := cache.GetRDB().Get(context.Background(), a.Username).Result()
 	if err != nil {
+		// If the cache is not found, the data will be searched from the database.
 		if err := d.Debug().Table("account_data").Where("username = ?", a.Username).First(&a).Error; err != nil {
 			log.Println(gorm.ErrMissingWhereClause)
 			return nil, err
 		}
 		// The data obtained from the database is stored in the cache again.
-		go func() {
-			ad, _ := json.Marshal(&a)
-			_, err := redis.GetRDB().Set(context.Background(), a.Username, ad, 0).Result()
-			if err != nil {
-				log.Println("Failed to store to cache:", err)
-			}
-		}()
+		ad, _ := json.Marshal(&a)
+		if sce := cache.SETAcct(a.Username, ad, 0); sce != nil {
+			return nil, err
+		}
 
 		return a, nil
 	}
-	if err := json.Unmarshal([]byte(result), a); err != nil {
+	// If the cache is found, the data in the cache will be returned.
+	if sre := json.Unmarshal([]byte(result), a); sre != nil {
 		log.Println("Accounts failed to find user cache and parse json.")
-		// TODO - If the cache decoding fails, you should go to the database to find the data and return.
 	}
 	return a, nil
 
@@ -184,9 +178,17 @@ func (a *AccountData) Update() error {
 	d := db.GetDB()
 	acct := &a
 
-	if err := d.Debug().Table("account_data").Where("username = ?", a.Username).Updates(&acct).Error; err != nil {
+	if err := d.Debug().Table("account_data").Where("username = ?", a.Username).Updates(&acct).First(&acct).Error; err != nil {
 		log.Println(gorm.ErrMissingWhereClause)
 		return err
+	} else {
+		// update data to the cache server.
+		ad, _ := json.Marshal(&acct)
+		if err := cache.SETAcct(a.Username, ad, 0); err != nil {
+			fmt.Println("存储到 reids 失败")
+			log.Println(err)
+		}
+
 	}
 	return nil
 }
@@ -196,6 +198,9 @@ func (a *AccountData) Delete() error {
 	//  Unscoped() Use gorm's Unscoped method to permanently delete data.
 	if err := d.Debug().Table("account_data").Where("username = ?", a.Username).Unscoped().Delete(&a).Error; err != nil {
 		log.Println(gorm.ErrMissingWhereClause)
+		return err
+	}
+	if err := cache.DelKey(a.Username); err != nil {
 		return err
 	}
 	return nil
@@ -213,9 +218,5 @@ func (a *AccountData) Login() (string, string, error) {
 	if err := bcrypt.CompareHashAndPassword([]byte(qa.Password), []byte(a.Password)); err != nil {
 		return "", "", errors.Errorf("Password verification failed.")
 	}
-	token, err := security.GenToken(a.Uuid, a.Username)
-	if err != nil {
-		log.Println("Token generation failed!")
-	}
-	return qa.Username, token, nil
+	return qa.Username, qa.Uuid, nil
 }
