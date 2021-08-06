@@ -1,4 +1,4 @@
-package redis
+package cache
 
 import (
 	"context"
@@ -15,7 +15,7 @@ var ctx = context.Background()
 var once sync.Once
 var rdb *redis.Client
 
-// InitRedis Initialize redis, set parameters, and return to redis client.
+// InitRedis Initialize cache, set parameters, and return to cache client.
 func InitRedis(db int) {
 	h := viper.GetString("redis.host")
 	p := viper.GetString("redis.port")
@@ -49,13 +49,13 @@ func InitRedis(db int) {
 
 		pong, err := rdb.Ping(ctx).Result()
 		if err != nil {
-			log.Fatal(fmt.Sprintf("Connection redis error: %s", err))
+			log.Fatal(fmt.Sprintf("Connection cache error: %s", err))
 		}
 		log.Println(pong)
 	})
 }
 
-// GetRDB Get the initialized redis client.
+// GetRDB Get the initialized cache client.
 func GetRDB() *redis.Client {
 	return rdb
 }

@@ -18,7 +18,7 @@ package cmd
 import (
 	"fmt"
 	"github.com/disism/hvxahv/pkg/db"
-	"github.com/disism/hvxahv/pkg/redis"
+	"github.com/disism/hvxahv/pkg/cache"
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -89,5 +89,5 @@ func initConfig() {
 		return
 	}
 
-	redis.InitRedis(1)
+	cache.InitRedis(1)
 }

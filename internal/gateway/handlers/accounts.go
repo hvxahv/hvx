@@ -3,7 +3,9 @@ package handlers
 import (
 	"fmt"
 	pb "github.com/disism/hvxahv/api/hvxahv/v1alpha1"
+	"github.com/disism/hvxahv/internal/gateway/middleware"
 	"github.com/disism/hvxahv/pkg/microservices/client"
+	"github.com/disism/hvxahv/pkg/security"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/net/context"
 	"log"
@@ -58,12 +60,16 @@ func LoginHandler(c *gin.Context) {
 		Password: password,
 	})
 	if err != nil {
-		log.Printf("Failed to send message to Accounts server: %v", err)
+		log.Printf("failed to send message to accounts server: %v", err)
 	}
+
+
+	t, err := security.GenToken(r.Uuid, r.Username)
+
 	c.JSON(200, gin.H{
 		"code":     "200",
 		"username": r.Username,
-		"token":    r.Token,
+		"token":    t,
 	})
 }
 //
@@ -103,17 +109,29 @@ func LoginHandler(c *gin.Context) {
 //	})
 //}
 //
-//func GetAccountsHandler(c *gin.Context) {
-//	//name := middleware.GetUserName(c)
-//	//a := GetAccounts(name)
-//	//log.Println(name)
-//	//log.Println(a)
-//
-//	c.JSON(200, gin.H{
-//		"code":     200,
-//		"messages": "ok",
-//	})
-//}
+
+// GetAccountsHandler Obtain personal account information,
+// analyze the user through TOKEN and return user data.
+func GetAccountsHandler(c *gin.Context) {
+	name := middleware.GetUserName(c)
+	cli, conn, err := client.Accounts()
+	if err != nil {
+		log.Println(err)
+	}
+	defer conn.Close()
+
+	r, err := cli.FindAccount(context.Background(), &pb.AccountByName{
+		Username: name,
+	})
+	if err != nil {
+		log.Printf("Failed to send message to Accounts server: %v", err)
+	}
+
+	c.JSON(200, gin.H{
+		"code":     200,
+		"messages": r,
+	})
+}
 //
 //// GetAccountsByName Incoming username is used to query account.
 //func GetAccountsByName(name string) (*pb.AccountsData, error) {

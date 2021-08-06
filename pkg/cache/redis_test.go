@@ -1,4 +1,4 @@
-package redis
+package cache
 
 import (
 	"fmt"
@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-func initRedisConfig(t *testing.T) {
+func TestInitRedis(t *testing.T) {
 
 	home, err := homedir.Dir()
 	cobra.CheckErr(err)
@@ -32,6 +32,6 @@ func initRedisConfig(t *testing.T) {
 
 
 func TestNewResult(t *testing.T) {
-	initRedisConfig(t)
+	TestInitRedis(t)
 
 }
