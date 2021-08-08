@@ -1,6 +1,9 @@
 package cache
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
 
 func TestFINDAcctMail(t *testing.T) {
 	TestInitRedis(t)
@@ -16,4 +19,5 @@ func TestExistAcct(t *testing.T) {
 	if !ok {
 		t.Log("!ok")
 	}
+	fmt.Println(ok)
 }
