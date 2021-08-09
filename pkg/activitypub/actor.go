@@ -18,10 +18,21 @@ func IsActorExists(resource string) (string, error) {
 			resource = resource[:ali]
 		}
 	} else {
-		return "", errors.New("Failed to get username.")
+		return "", errors.New("failed to get username.")
 	}
 
 	return resource, nil
+}
+
+func GetHost(resource string) string {
+	if strings.HasPrefix(resource, "acct:") {
+		resource = resource[5:]
+		if ali := strings.IndexByte(resource, '@'); ali != -1 {
+			resource = resource[ali:]
+		}
+	}
+
+	return resource[1:]
 }
 
 // EXAMPLE 9

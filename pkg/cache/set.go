@@ -12,7 +12,7 @@ import (
 // add the data to the cache directly.
 func SETAcct(k string, v []byte, exp time.Duration) error {
 	rd := GetRDB()
-	if ok := ExistAcct(k); ok {
+	if ok := SISAcct(k); ok {
 		if err := DelKey(k); err != nil {
 			return err
 		}

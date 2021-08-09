@@ -27,14 +27,14 @@ const (
 // Must be a unique key: username, email and phone.
 type AccountData struct {
 	gorm.Model
-	Uuid       string `gorm:"type:varchar(100);uuid"`
+	Uuid       string `gorm:"type:varchar(100);uuid;unique"`
 	Username   string `gorm:"primaryKey;type:varchar(100);username;unique"`
 	Password   string `gorm:"type:varchar(100);password"`
-	Avatar     string `gorm:"type:varchar(100);avatar"`
+	Avatar     string `gorm:"type:varchar(999);avatar"`
 	Bio        string `gorm:"type:varchar(999);bio"`
 	Name       string `gorm:"type:varchar(100);name"`
 	Mail       string `gorm:"primaryKey;type:varchar(100);mail;unique"`
-	Phone      string `gorm:"type:varchar(100);phone"`
+	Phone      string `gorm:"type:varchar(100);phone;unique"`
 	Private    int32  `gorm:"private"`
 	PrivateKey string `gorm:"type:varchar(3000);private_key"`
 	PublicKey  string `gorm:"type:varchar(3000);public_key"`
@@ -89,9 +89,6 @@ func NewAccountLogin(mail string, password string) Accounts {
 	return &AccountData{Mail: mail, Password: password}
 }
 
-type acc struct {
-	Username   string `gorm:"primaryKey;type:varchar(100);username;unique"`
-}
 func (a *AccountData) New() (int32, string) {
 	d := db.GetDB()
 
@@ -101,8 +98,8 @@ func (a *AccountData) New() (int32, string) {
 	}
 
 	// Check if the username and mail exist from the cache.
-	mail := cache.FINDAcctMail(a.Mail)
-	user := cache.ExistAcct(a.Username)
+	mail := cache.SISAcctMail(a.Mail)
+	user := cache.SISAcct(a.Username)
 	if mail == true || user == true {
 		var r string
 		if mail == true {
@@ -126,34 +123,34 @@ func (a *AccountData) New() (int32, string) {
 		fmt.Println("CREATE ACCOUNTS")
 	}
 
-	//// Before creating, first check whether the user exists. If it does not exist, create the user.
-	//// If it does, it needs to return an error to the client to explain that the user already exists.
-	//if r := d.Debug().Table("account_data").Where("username = ?", a.Username).Find(&a); r.Error != nil {
-	//	fmt.Println("，没找到")
-	//	if r.Error == gorm.ErrRecordNotFound {
-	//		if err := d.Debug().Table("account_data").Create(&a).Error; err != nil {
-	//			log.Printf("an error occurred while creating the account: %v", err)
-	//			return 500, ERROR_NEW_ACCOUNT
-	//		}
-	//
-	//		// After the user is successfully created,
-	//		// the data encoded by the user's json is stored in the cache,
-	//		// and the cache will never expire.
-	//		ad, _ := json.Marshal(&a)
-	//		if err := cache.SETAcct(a.Username, ad, 0); err != nil {
-	//			log.Println(err)
-	//		}
-	//
-	//		if err := cache.SETAcctMail(a.Mail); err != nil {
-	//			log.Println(err)
-	//		}
-	//
-	//		// TODO - Hand over to the notification server.
-	//
-	//		// 201 The request is successful and the server has created a new resource.
-	//		return 201, SUCCESS_NEW_ACCOUNT
-	//	}
-	//}
+	// Before creating, first check whether the user exists. If it does not exist, create the user.
+	// If it does, it needs to return an error to the client to explain that the user already exists.
+	if r := d.Debug().Table("account_data").
+		Where("username = ? ", a.Username).Or("mail = ?", a.Mail).First(&AccountData{}); r.Error != nil {
+		if r.Error == gorm.ErrRecordNotFound {
+			if err := d.Debug().Table("account_data").Create(&a).Error; err != nil {
+				log.Printf("an error occurred while creating the account: %v", err)
+				return 500, ERROR_NEW_ACCOUNT
+			}
+
+			// After the user is successfully created,
+			// the data encoded by the user's json is stored in the cache,
+			// and the cache will never expire.
+			ad, _ := json.Marshal(&a)
+			if err := cache.SETAcct(a.Username, ad, 0); err != nil {
+				log.Println(err)
+			}
+
+			if err := cache.SETAcctMail(a.Mail); err != nil {
+				log.Println(err)
+			}
+
+			// TODO - Hand over to the notification server.
+
+			// 201 The request is successful and the server has created a new resource.
+			return 201, SUCCESS_NEW_ACCOUNT
+		}
+	}
 	// It will not be judged so detailed in the database,
 	// it just returns the error that the user has created.
 	return 202, EXISTS_ACCOUNTS

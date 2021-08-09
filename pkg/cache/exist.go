@@ -5,10 +5,10 @@ import (
 	"log"
 )
 
-// ExistAcct Check if cache exists, if KEY is available, return true, otherwise return false.
+// SISAcct Check if cache exists, if KEY is available, return true, otherwise return false.
 // If it returns true, it means that the username exists.
 // https://redis.uptrace.dev/#redisnil
-func ExistAcct(key string) bool {
+func SISAcct(key string) bool {
 	_, err := GetRDB().Get(ctx, key).Result()
 	if err != redis.Nil {
 		return true
@@ -16,8 +16,8 @@ func ExistAcct(key string) bool {
 	return false
 }
 
-// FINDAcctMail Check if the mail exist from the cache
-func FINDAcctMail(mail string) bool {
+// SISAcctMail Check if the mail exist from the cache
+func SISAcctMail(mail string) bool {
 	rd := GetRDB()
 	m, err := rd.SIsMember(ctx, "ACCT_MAIL", mail).Result()
 	if err != nil {
