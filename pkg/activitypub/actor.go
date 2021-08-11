@@ -3,57 +3,66 @@ package activitypub
 import (
 	"fmt"
 	pb "github.com/disism/hvxahv/api/hvxahv/v1alpha1"
-	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	"strings"
 )
 
-// IsActorExists Get the username in the request url such,
-// as "/.well-known/webfinger?resource=acct:hvturingga@0efb43b41a8a.ngrok.io" Will get hvturingga,
+// GetActorName Get the username in the request url such,
+// as "/.well-known/webFinger?resource=acct:hvturingga@0efb43b41a8a.ngrok.io" Will get hvturingga,
 // If the match fails, it will return a custom username not found error.
-func IsActorExists(resource string) (string, error) {
+func GetActorName(resource string) string {
 	if strings.HasPrefix(resource, "acct:") {
 		resource = resource[5:]
 		if ali := strings.IndexByte(resource, '@'); ali != -1 {
 			resource = resource[:ali]
 		}
-	} else {
-		return "", errors.New("failed to get username.")
 	}
 
-	return resource, nil
+	return resource
 }
 
+// IsRemote Get host to determine whether it is a remote instance user (not a user of this instance).
+func IsRemote(resource string) bool {
+	host := GetHost(resource)
+	if !strings.Contains(resource, "@") {
+		return false
+	}
+	if host != viper.GetString("localhost") {
+		return true
+	}
+	return false
+
+}
+
+// GetHost Get the host of the received resource.
 func GetHost(resource string) string {
 	if strings.HasPrefix(resource, "acct:") {
-		resource = resource[5:]
-		if ali := strings.IndexByte(resource, '@'); ali != -1 {
-			resource = resource[ali:]
+		ali := strings.IndexByte(resource, '@')
+		if ali != -1 {
+			return resource[ali+1:]
 		}
 	}
-
-	return resource[1:]
+	return resource[5:]
 }
 
 // EXAMPLE 9
-// {
-//   "@context": ["https://www.w3.org/ns/activitystreams",
-//                {"@language": "ja"}],
-//   "type": "Person",
-//   "id": "https://kenzoishii.example.com/",
-//   "following": "https://kenzoishii.example.com/following.json",
-//   "followers": "https://kenzoishii.example.com/followers.json",
-//   "liked": "https://kenzoishii.example.com/liked.json",
-//   "inbox": "https://kenzoishii.example.com/inbox.json",
-//   "outbox": "https://kenzoishii.example.com/feed.json",
-//   "preferredUsername": "kenzoishii",
-//   "name": "石井健蔵",
-//   "summary": "この方はただの例です",
-//   "icon": [
-//     "https://kenzoishii.example.com/image/165987aklre4"
-//   ]
-// }
-
+//{
+//  "@context": ["https://www.w3.org/ns/activitystreams",
+//               {"@language": "ja"}],
+//  "type": "Person",
+//  "id": "https://kenzoishii.example.com/",
+//  "following": "https://kenzoishii.example.com/following.json",
+//  "followers": "https://kenzoishii.example.com/followers.json",
+//  "liked": "https://kenzoishii.example.com/liked.json",
+//  "inbox": "https://kenzoishii.example.com/inbox.json",
+//  "outbox": "https://kenzoishii.example.com/feed.json",
+//  "preferredUsername": "kenzoishii",
+//  "name": "石井健蔵",
+//  "summary": "この方はただの例です",
+//  "icon": [
+//    "https://kenzoishii.example.com/image/165987aklre4"
+//  ]
+//}
 
 type icon struct {
 	Type      string `json:"type"`
@@ -73,7 +82,6 @@ func NewIcon(url string) *icon {
 	mt := "image/jpg"
 	return &icon{Type: t, MediaType: mt, Url: url}
 }
-
 
 type actor struct {
 	Context           []string    `json:"@context"`

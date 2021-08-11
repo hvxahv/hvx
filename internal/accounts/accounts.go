@@ -192,9 +192,8 @@ func (a *AccountData) Update() error {
 	} else {
 		// update data to the cache server.
 		ad, _ := json.Marshal(&acct)
-		if err := cache.SETAcct(a.Username, ad, 0); err != nil {
-			fmt.Println("存储到 reids 失败")
-			log.Println(err)
+		if errs := cache.SETAcct(a.Username, ad, 0); err != nil {
+			log.Println(errs)
 		}
 
 	}
