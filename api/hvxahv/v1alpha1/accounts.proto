@@ -19,45 +19,45 @@ service Accounts {
 
 // AccountsData List of all data of the account service
 message AccountData {
-  string Uuid       = 1;
-  string Username   = 2;
-  string Password   = 3;
-  string Mail       = 4;
-  string Avatar     = 5;
-  string Bio        = 6;
-  string Name       = 7;
-  string Phone      = 8;
-  int32  Private    = 9;
-  string PrivateKey = 10;
-  string PublicKey  = 11;
+  string uuid       = 1;
+  string username   = 2;
+  string password   = 3;
+  string mail       = 4;
+  string avatar     = 5;
+  string bio        = 6;
+  string name       = 7;
+  string phone      = 8;
+  int32  private    = 9;
+  string privateKey = 10;
+  string publicKey  = 11;
 }
 
 // AccountsReply The return value, code and message of the Accounts operation.
 message AccountsReply {
-  int32  Code    = 1;
-  string Message = 2;
+  int32  code    = 1;
+  string message = 2;
 }
 
 // AccountByName Functions operated by username.
 message AccountByName{
-  string Username = 1;
+  string username = 1;
 }
 
 // NewAccountData Data needed to create a new account.
 message NewAccountData {
-  string Username   = 1;
-  string Password   = 2;
-  string Mail       = 3;
+  string username   = 1;
+  string password   = 2;
+  string mail       = 3;
 }
 
 // LoginData Account login, use email and password.
 message LoginData {
-  string Mail     = 1;
-  string Password = 2;
+  string mail     = 1;
+  string password = 2;
 }
 
 // LoginReply The data returned by the login account needs to return a token.
 message LoginReply {
-  string Username = 1;
-  string Uuid     = 2;
+  string username = 1;
+  string uuid     = 2;
 }

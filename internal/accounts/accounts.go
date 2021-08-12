@@ -15,22 +15,22 @@ import (
 )
 
 const (
-	ERROR_NEW_ACCOUNT   = "FAILED TO CREATE USER!"
+	ERROR_NEW_ACCOUNT   = "FAILED TO CREATE ACCOUNTS!"
 	SERVER_ERROR        = "SERVER ERROR!"
 	SUCCESS_NEW_ACCOUNT = "NEW ACCOUNT OK!"
-	EXISTS_MAIL         = "MAIL ALREADY EXISTS!"
-	EXISTS_USERNAME     = "USERNAME ALREADY EXISTS!"
-	EXISTS_ACCOUNTS     = "ACCOUNTS ALREADY EXISTS!"
+	EXISTS_MAIL         = "MAIL_EXISTS!"
+	EXISTS_USERNAME     = "USERNAME_EXISTS!"
+	EXISTS_ACCOUNTS     = "ACCOUNTS_EXISTS!"
 )
 
 // AccountData The object tops a user’s profile data and is targeted at GORM.
 // Must be a unique key: username, email and phone.
 type AccountData struct {
 	gorm.Model
-	Uuid       string `gorm:"type:varchar(100);uuid"`
+	Uuid       string `gorm:"type:varchar(100);uuid;unique"`
 	Username   string `gorm:"primaryKey;type:varchar(100);username;unique"`
 	Password   string `gorm:"type:varchar(100);password"`
-	Avatar     string `gorm:"type:varchar(100);avatar"`
+	Avatar     string `gorm:"type:varchar(999);avatar"`
 	Bio        string `gorm:"type:varchar(999);bio"`
 	Name       string `gorm:"type:varchar(100);name"`
 	Mail       string `gorm:"primaryKey;type:varchar(100);mail;unique"`
@@ -47,7 +47,7 @@ type Accounts interface {
 
 	// Find This method implements the function of querying accounts.
 	// It needs to accept the username to be queried through the function of the
-	// instantiated object NewAccountQUD,
+	// instantiated object NewAccount,
 	// and then return the query error and the data of the accounts structure.
 	Find() (*AccountData, error)
 
@@ -97,31 +97,38 @@ func (a *AccountData) New() (int32, string) {
 		return 500, SERVER_ERROR
 	}
 
-	acct := &a
-
-	// TODO -  Test whether the mailbox and user name found during registration exist.
-	var e string
-	isMail := cache.FINDAcctMail(a.Mail)
-	if !isMail {
-		e = EXISTS_MAIL
+	// Check if the username and mail exist from the cache.
+	mail := cache.SISAcctMail(a.Mail)
+	user := cache.SISAcct(a.Username)
+	if mail == true || user == true {
+		var r string
+		if mail == true {
+			r = EXISTS_MAIL
+		}
+		if user == true {
+			r = EXISTS_USERNAME
+		}
+		if user && mail == true {
+			r = fmt.Sprintf("%s_AND_%s", EXISTS_MAIL, EXISTS_USERNAME)
+		}
+		return 202, r
 	}
 
-	isUser := cache.ExistAcct(a.Username)
-	if !isUser {
-		e = EXISTS_USERNAME
-	}
-	if isMail == true && !isUser == true {
-		e = fmt.Sprintf("%s and %s", EXISTS_USERNAME, EXISTS_MAIL)
-	}
-	if isMail == true || isUser == true {
-		return 202, e
+	err := d.Debug().
+		Table("account_data").
+		Where("username = ? ", a.Username).Or("mail = ?", a.Mail).
+		First(&AccountData{}).Error
+
+	if err != nil {
+		fmt.Println("CREATE ACCOUNTS")
 	}
 
 	// Before creating, first check whether the user exists. If it does not exist, create the user.
 	// If it does, it needs to return an error to the client to explain that the user already exists.
-	if r := d.Debug().Table("account_data").Where("username = ? ", a.Username).First(&acct); r.Error != nil {
+	if r := d.Debug().Table("account_data").
+		Where("username = ? ", a.Username).Or("mail = ?", a.Mail).First(&AccountData{}); r.Error != nil {
 		if r.Error == gorm.ErrRecordNotFound {
-			if err := d.Debug().Table("account_data").Create(&acct).Error; err != nil {
+			if err := d.Debug().Table("account_data").Create(&a).Error; err != nil {
 				log.Printf("an error occurred while creating the account: %v", err)
 				return 500, ERROR_NEW_ACCOUNT
 			}
@@ -134,7 +141,7 @@ func (a *AccountData) New() (int32, string) {
 				log.Println(err)
 			}
 
-			if err := cache.SETAcctMailORUN(a.Mail, a.Username); err != nil {
+			if err := cache.SETAcctMail(a.Mail); err != nil {
 				log.Println(err)
 			}
 
@@ -144,7 +151,8 @@ func (a *AccountData) New() (int32, string) {
 			return 201, SUCCESS_NEW_ACCOUNT
 		}
 	}
-
+	// It will not be judged so detailed in the database,
+	// it just returns the error that the user has created.
 	return 202, EXISTS_ACCOUNTS
 }
 
@@ -184,9 +192,8 @@ func (a *AccountData) Update() error {
 	} else {
 		// update data to the cache server.
 		ad, _ := json.Marshal(&acct)
-		if err := cache.SETAcct(a.Username, ad, 0); err != nil {
-			fmt.Println("存储到 reids 失败")
-			log.Println(err)
+		if errs := cache.SETAcct(a.Username, ad, 0); err != nil {
+			log.Println(errs)
 		}
 
 	}

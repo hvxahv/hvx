@@ -63,9 +63,9 @@ func TestAccounts_Update(t *testing.T) {
 	a := AccountData{
 		Username:   "hvturingga",
 		Password:   "",
-		Avatar:     "",
+		Avatar:     "http://stage48.net/wiki/images/5/5b/KobayashiYui8th.jpg",
 		Bio:        "我很开心，现在我在录制视频, 欢迎关注我的 YouTube 频道! AHHHHh.....",
-		Name:       "",
+		Name:       "HVTURINGGA",
 		Mail:       "",
 		Phone:      "",
 		Private:    0,

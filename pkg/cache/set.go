@@ -12,7 +12,7 @@ import (
 // add the data to the cache directly.
 func SETAcct(k string, v []byte, exp time.Duration) error {
 	rd := GetRDB()
-	if ok := ExistAcct(k); ok {
+	if ok := SISAcct(k); ok {
 		if err := DelKey(k); err != nil {
 			return err
 		}
@@ -25,16 +25,13 @@ func SETAcct(k string, v []byte, exp time.Duration) error {
 }
 
 
-// SETAcctMailORUN After successful registration,
-// put the user's email and username in the cache collection.
-func SETAcctMailORUN(mail, user string) error {
+// SETAcctMail After successful registration,
+// put the email the cache collection.
+func SETAcctMail(mail string) error {
 	rd := GetRDB()
 	if err := rd.SAdd(ctx, "ACCT_MAIL", mail).Err(); err != nil {
 		return errors.Errorf("failed to store mail in cache collection.")
 	}
 
-	if err := rd.SAdd(ctx, "ACCT_USERNAME", user).Err(); err != nil {
-		return errors.Errorf("failed to store username in cache collection.")
-	}
 	return nil
 }
