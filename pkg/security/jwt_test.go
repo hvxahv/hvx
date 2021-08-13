@@ -6,7 +6,7 @@ import (
 )
 
 func TestGenToken(t *testing.T) {
-	token, err := GenToken("foo", "bar")
+	token, err := GenToken("foo", "bar", "123")
 	if err != nil {
 		t.Error(err)
 	}
@@ -30,4 +30,9 @@ func TestParseToken(t *testing.T) {
 	}
 
 	fmt.Println(token.User)
+}
+
+func TestNewClaims(t *testing.T) {
+
+	NewClaims("foo", "bar", "123")
 }

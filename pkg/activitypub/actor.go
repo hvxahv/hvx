@@ -71,7 +71,7 @@ type icon struct {
 }
 
 func NewContext() []string {
-	ctx := []string{"https://www.w3.org/ns/activitystreams", "https://w3id.org/security/v1"}
+	ctx := []string{"https://www.w3.org/ns/activitystreams", "https://w3id.org/security/v1alpha1"}
 
 	return ctx
 

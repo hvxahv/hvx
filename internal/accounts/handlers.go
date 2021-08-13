@@ -3,6 +3,7 @@ package accounts
 import (
 	pb "github.com/disism/hvxahv/api/hvxahv/v1alpha1"
 	"golang.org/x/net/context"
+	"log"
 )
 
 // NewAccount Implementation of the method of creating an account.
@@ -57,15 +58,18 @@ func (s *server) FindAccount(ctx context.Context, in *pb.AccountByName) (*pb.Acc
 	}
 
 	return &pb.AccountData{
-		Uuid:      a.Uuid,
-		Username:  a.Username,
-		Avatar:    a.Avatar,
-		Bio:       a.Bio,
-		Name:      a.Name,
-		Mail:      a.Mail,
-		Phone:     a.Phone,
-		Private:   a.Private,
-		PublicKey: a.PublicKey,
+		Uuid:       a.Uuid,
+		Username:   a.Username,
+		Mail:       a.Mail,
+		Avatar:     a.Avatar,
+		Bio:        a.Bio,
+		Name:       a.Name,
+		Phone:      a.Phone,
+		Private:    a.Private,
+		Follower:   int32(a.Follower),
+		Following:  int32(a.Following),
+		Friend:     int32(a.Friend),
+		PublicKey:  a.PublicKey,
 	}, nil
 }
 
@@ -80,3 +84,19 @@ func (s *server) FindAccount(ctx context.Context, in *pb.AccountByName) (*pb.Acc
 //	return &pb.AccountsReply{Code: 200, Message: "ok"}, nil
 //}
 //
+
+// NewFollow Implementation of the method of querying the account.
+func (s *server) NewFollow(ctx context.Context, in *pb.FollowersData) (*pb.AccountsReply, error) {
+	nf := NewFollowers(in.Follower, in.Following)
+	if err := nf.New(); err != nil {
+		log.Println(err)
+		return &pb.AccountsReply{
+			Code:    202,
+			Message: "Follow failed!",
+		}, nil
+	}
+	return &pb.AccountsReply{
+		Code:    200,
+		Message: "Followed!",
+	}, nil
+}

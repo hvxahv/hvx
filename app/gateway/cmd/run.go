@@ -31,8 +31,8 @@ var runCmd = &cobra.Command{
 	Long: ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		log.Println("Run http server of hvxahv.")
-		r := gateway.Router()
-		if err := r.Run(fmt.Sprintf(":%s", viper.GetString("http_port"))); err != nil {
+		api := gateway.APIServer()
+		if err := api.Run(fmt.Sprintf(":%s", viper.GetString("http_port"))); err != nil {
 			log.Println(err)
 			return
 		}

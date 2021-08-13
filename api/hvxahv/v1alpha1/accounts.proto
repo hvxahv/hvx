@@ -11,9 +11,11 @@ service Accounts {
   rpc UpdateAccount (AccountData) returns (AccountsReply) {}
   // DeleteAccount Delete the specified account by user name.
   rpc DeleteAccount (AccountByName) returns (AccountsReply) {}
-  // FindAccount Query specified user data by user name.
+  // FindAccount Query specified user data by username.
   rpc FindAccount (AccountByName) returns (AccountData) {}
   rpc LoginAccount (LoginData) returns (LoginReply) {}
+  //  New follower.
+  rpc NewFollow (FollowersData) returns (AccountsReply) {}
 }
 
 
@@ -27,9 +29,12 @@ message AccountData {
   string bio        = 6;
   string name       = 7;
   string phone      = 8;
-  int32  private    = 9;
-  string privateKey = 10;
-  string publicKey  = 11;
+  bool   private    = 9;
+  int32  follower   = 10;
+  int32  following  = 11;
+  int32  friend     = 12;
+  string privateKey = 13;
+  string publicKey  = 14;
 }
 
 // AccountsReply The return value, code and message of the Accounts operation.
@@ -60,4 +65,9 @@ message LoginData {
 message LoginReply {
   string username = 1;
   string uuid     = 2;
+}
+
+message FollowersData {
+  string follower   = 1;
+  string following   = 2;
 }

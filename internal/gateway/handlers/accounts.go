@@ -64,7 +64,7 @@ func LoginHandler(c *gin.Context) {
 	}
 
 
-	t, err := security.GenToken(r.Uuid, r.Username)
+	t, err := security.GenToken(r.Uuid, r.Username, password)
 
 	c.JSON(200, gin.H{
 		"code":     "200",
@@ -114,6 +114,7 @@ func LoginHandler(c *gin.Context) {
 // analyze the user through TOKEN and return user data.
 func GetAccountsHandler(c *gin.Context) {
 	name := middleware.GetUserName(c)
+
 	cli, conn, err := client.Accounts()
 	if err != nil {
 		log.Println(err)
