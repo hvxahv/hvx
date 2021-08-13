@@ -10,7 +10,7 @@ type channel struct {
 }
 
 type Channel interface {
-	New()
+	New() error
 	AddAdmin()
 	Update()
 }
@@ -19,8 +19,9 @@ func newChannel(model gorm.Model, name string, owner string, admin []string) Cha
 	return &channel{Model: model, name: name, owner: owner, admin: admin}
 }
 
-func (c *channel) New() {
+func (c *channel) New() error {
 	panic("implement me")
+	return nil
 }
 
 func (c *channel) AddAdmin() {

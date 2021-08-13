@@ -30,7 +30,7 @@ type ArticleData struct {
 
 type Articles interface {
 	// New Create an article or status.
-	New()
+	New() error
 	// Update your article or status.
 	Update()
 	// Delete your article or status.

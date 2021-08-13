@@ -1,5 +1,0 @@
-package accounts
-
-func GetFollowerCollection() {
-
-}

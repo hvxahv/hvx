@@ -15,7 +15,7 @@ type server struct {
 	pb.AccountsServer
 }
 
-// Run Run the accounts gRPC service.
+// Run accounts gRPC service.
 func Run() error {
 	name := "Accounts"
 	port := viper.GetString("microservices.accounts.port")
