@@ -1,4 +1,4 @@
-package oos
+package storage
 
 import (
 	"context"
@@ -107,10 +107,10 @@ func NewMin(file *multipart.FileHeader, fileType string, bucket string, location
 
 // initMinio Initialize minio and return to client.
 func initMinio() (*minio.Client, error) {
-	endpoint := viper.GetString("oos.minio.addr")
-	accessKeyID := viper.GetString("oos.minio.accessKeyID")
-	secretAccessKey := viper.GetString("oos.minio.secretAccessKey")
-	useSSL := viper.GetBool("oos.minio.useSSL")
+	endpoint := viper.GetString("storage.minio.addr")
+	accessKeyID := viper.GetString("storage.minio.accessKeyID")
+	secretAccessKey := viper.GetString("storage.minio.secretAccessKey")
+	useSSL := viper.GetBool("storage.minio.useSSL")
 
 	cli, err := minio.New(endpoint, &minio.Options{
 		Creds:  credentials.NewStaticV4(accessKeyID, secretAccessKey, ""),

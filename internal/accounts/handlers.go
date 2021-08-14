@@ -58,18 +58,18 @@ func (s *server) FindAccount(ctx context.Context, in *pb.AccountByName) (*pb.Acc
 	}
 
 	return &pb.AccountData{
-		Uuid:       a.Uuid,
-		Username:   a.Username,
-		Mail:       a.Mail,
-		Avatar:     a.Avatar,
-		Bio:        a.Bio,
-		Name:       a.Name,
-		Phone:      a.Phone,
-		Private:    a.Private,
-		Follower:   int32(a.Follower),
-		Following:  int32(a.Following),
-		Friend:     int32(a.Friend),
-		PublicKey:  a.PublicKey,
+		Uuid:      a.Uuid,
+		Username:  a.Username,
+		Mail:      a.Mail,
+		Avatar:    a.Avatar,
+		Bio:       a.Bio,
+		Name:      a.Name,
+		Phone:     a.Phone,
+		IsPrivate: a.IsPrivate,
+		Follower:  int32(a.Follower),
+		Following: int32(a.Following),
+		Friend:    int32(a.Friend),
+		PublicKey: a.PublicKey,
 	}, nil
 }
 

@@ -1,4 +1,4 @@
-package oos
+package storage
 
 import (
 	"fmt"

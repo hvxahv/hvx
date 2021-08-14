@@ -29,7 +29,7 @@ message AccountData {
   string bio        = 6;
   string name       = 7;
   string phone      = 8;
-  bool   private    = 9;
+  bool   isPrivate  = 9;
   int32  follower   = 10;
   int32  following  = 11;
   int32  friend     = 12;

@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package hvxahv.v1alpha1.proto;
+option go_package = "github.com/disism/hvxahv/api/hvxahv/v1alpha1/v1alpha1";
+
+service Channel {
+  rpc NewChannel (ChannelData) returns (Reply) {}
+}
+
+message ChannelData {
+  string id        = 1;
+  string name      = 2;
+  string bio       = 3;
+  string avatar    = 4;
+  bool   isPrivate = 5;
+}
+
+message Reply {
+  int32  code    = 1;
+  string message = 2;
+}
