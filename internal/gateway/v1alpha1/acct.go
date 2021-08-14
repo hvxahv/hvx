@@ -19,13 +19,6 @@ func V1Accounts(r *gin.Engine) {
 	// Load verification token middleware.
 	v1.Use(middleware.Auth)
 	{
-
-		v1.GET("/accounts/ping", func(c *gin.Context) {
-			c.JSON(200, gin.H{
-				"status": "Accounts server...",
-			})
-		})
-
 		v1.GET("/accounts/i", handlers.GetAccountsHandler)
 		v1.POST("/accounts/follow", handlers.FollowHandler)
 		//v1alpha1.POST("/upload/avatar", handlers.UploadAvatar)
@@ -50,5 +43,4 @@ func V1Accounts(r *gin.Engine) {
 		r.GET("/u/:actor/outbox", handlers.GetActorOutbox)
 		//r.POST("/u/:user/inbox", handlers.InboxHandler)
 	}
-
 }

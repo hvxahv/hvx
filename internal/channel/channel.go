@@ -2,11 +2,16 @@ package channel
 
 import "gorm.io/gorm"
 
-type channel struct {
+type Channels struct {
 	gorm.Model
-	name  string   `gorm:"name"`
-	owner string   `gorm:"owner"`
-	admin []string `gorm:"admin"`
+	Name      string `gorm:"type:varchar(100);name"`
+	Id        string `gorm:"primaryKey;type:varchar(100);id;unique"`
+	Avatar    string `gorm:"type:varchar(999);avatar"`
+	Bio       string `gorm:"type:varchar(999);bio"`
+	Owner     string `gorm:"primaryKey;type:varchar(100);owner;"`
+	Admin     string `gorm:"name"`
+	Members   int    `gorm:"type:int;members"`
+	IsPrivate bool   `gorm:"type:boolean;is_private"`
 }
 
 type Channel interface {
@@ -15,19 +20,15 @@ type Channel interface {
 	Update()
 }
 
-func newChannel(model gorm.Model, name string, owner string, admin []string) Channel {
-	return &channel{Model: model, name: name, owner: owner, admin: admin}
-}
-
-func (c *channel) New() error {
+func (c *Channels) New() error {
 	panic("implement me")
 	return nil
 }
 
-func (c *channel) AddAdmin() {
+func (c *Channels) AddAdmin() {
 	panic("implement me")
 }
 
-func (c *channel) Update() {
+func (c *Channels) Update() {
 	panic("implement me")
 }

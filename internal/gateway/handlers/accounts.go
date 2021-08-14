@@ -86,7 +86,7 @@ func LoginHandler(c *gin.Context) {
 //	}
 //
 //	bucket := "accounts"
-//	m := oos.NewMin(file, "avatar", bucket, "")
+//	m := storage.NewMin(file, "avatar", bucket, "")
 //	url, err := m.FileUploader()
 //	if err != nil {
 //		log.Println(err)
@@ -97,10 +97,10 @@ func LoginHandler(c *gin.Context) {
 //		return
 //	}
 //	var link string
-//	if viper.GetBool("oos.minio.useSSL") {
-//		link = fmt.Sprintf("https://%s/%s/%s", viper.GetString("oos.minio.addr"), bucket, url)
+//	if viper.GetBool("storage.minio.useSSL") {
+//		link = fmt.Sprintf("https://%s/%s/%s", viper.GetString("storage.minio.addr"), bucket, url)
 //	} else {
-//		link = fmt.Sprintf("http://%s/%s/%s", viper.GetString("oos.minio.addr"), bucket, url)
+//		link = fmt.Sprintf("http://%s/%s/%s", viper.GetString("storage.minio.addr"), bucket, url)
 //	}
 //	c.JSON(200, gin.H{
 //		"status":  200,

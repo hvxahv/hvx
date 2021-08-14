@@ -35,14 +35,13 @@ type Accounts struct {
 	Name       string `gorm:"type:varchar(100);name"`
 	Mail       string `gorm:"primaryKey;type:varchar(100);mail;unique"`
 	Phone      string `gorm:"type:varchar(100);phone"`
-	Private    bool   `gorm:"type:boolean;private"`
+	IsPrivate  bool   `gorm:"type:boolean;is_private"`
 	Follower   int    `gorm:"type:int;follower"`
 	Following  int    `gorm:"type:int;following"`
 	Friend     int    `gorm:"type:int;friend"`
 	PrivateKey string `gorm:"type:varchar(3000);private_key"`
 	PublicKey  string `gorm:"type:varchar(3000);public_key"`
 }
-
 
 func (a *Accounts) New() (int32, string) {
 	d := db.GetDB()
@@ -204,7 +203,6 @@ type Account interface {
 	// Login to the account and generate token, Return token and custom error message.
 	Login() (string, string, error)
 }
-
 
 func NewAccounts(username, password, mail string) (Account, error) {
 	privateKey, publicKey, err := security.GenRSA()

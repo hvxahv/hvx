@@ -1,4 +1,4 @@
-# hvxahv-platform
+# hvxahv
 
 Instance: [halfmemories.com](https://halfmemories.com)
 

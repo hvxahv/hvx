@@ -68,7 +68,7 @@ func TestAccounts_Update(t *testing.T) {
 		Name:       "HVTURINGGA",
 		Mail:       "",
 		Phone:      "",
-		Private:    false,
+		IsPrivate:    false,
 		PrivateKey: "",
 		PublicKey:  "",
 	}
