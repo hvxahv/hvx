@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/disism/hvxahv/internal"
 	"github.com/disism/hvxahv/pkg/cache"
 	"github.com/disism/hvxahv/pkg/db"
 	"github.com/disism/hvxahv/pkg/security"
@@ -12,15 +13,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 	"log"
-)
-
-const (
-	ERROR_NEW_ACCOUNT   = "FAILED TO CREATE ACCOUNTS!"
-	SERVER_ERROR        = "SERVER ERROR!"
-	SUCCESS_NEW_ACCOUNT = "NEW ACCOUNT OK!"
-	EXISTS_MAIL         = "MAIL_EXISTS!"
-	EXISTS_USERNAME     = "USERNAME_EXISTS!"
-	EXISTS_ACCOUNTS     = "ACCOUNTS_EXISTS!"
 )
 
 // Accounts The object tops a user’s profile data and is targeted at GORM.
@@ -48,7 +40,7 @@ func (a *Accounts) New() (int32, string) {
 
 	if err := d.AutoMigrate(&Accounts{}); err != nil {
 		log.Printf("failed to automatically create database: %v", err)
-		return 500, SERVER_ERROR
+		return 500, internal.ServerError
 	}
 
 	// Check if the username and mail exist from the cache.
@@ -57,13 +49,13 @@ func (a *Accounts) New() (int32, string) {
 	if mail == true || user == true {
 		var r string
 		if mail == true {
-			r = EXISTS_MAIL
+			r = internal.ExistsMail
 		}
 		if user == true {
-			r = EXISTS_USERNAME
+			r = internal.ExistsUsername
 		}
 		if user && mail == true {
-			r = fmt.Sprintf("%s_AND_%s", EXISTS_MAIL, EXISTS_USERNAME)
+			r = fmt.Sprintf("%s_AND_%s", internal.ExistsMail, internal.ExistsUsername)
 		}
 		return 202, r
 	}
@@ -82,16 +74,16 @@ func (a *Accounts) New() (int32, string) {
 	if r := d.Debug().Table("accounts").
 		Where("username = ? ", a.Username).Or("mail = ?", a.Mail).First(&Accounts{}); r.Error != nil {
 		if r.Error == gorm.ErrRecordNotFound {
-			if err := d.Debug().Table("accounts").Create(&a).Error; err != nil {
+			if err1 := d.Debug().Table("accounts").Create(&a).Error; err1 != nil {
 				log.Printf("an error occurred while creating the account: %v", err)
-				return 500, ERROR_NEW_ACCOUNT
+				return 500, internal.ErrorNewAccount
 			}
 
 			// After the user is successfully created,
 			// the data encoded by the user's json is stored in the cache,
 			// and the cache will never expire.
 			ad, _ := json.Marshal(&a)
-			if err := cache.SETAcct(a.Username, ad, 0); err != nil {
+			if err2 := cache.SETAcct(a.Username, ad, 0); err2 != nil {
 				log.Println(err)
 			}
 
@@ -102,12 +94,12 @@ func (a *Accounts) New() (int32, string) {
 			// TODO - Hand over to the notification server.
 
 			// 201 The request is successful and the server has created a new resource.
-			return 201, SUCCESS_NEW_ACCOUNT
+			return 201, internal.SuccessNewAccount
 		}
 	}
 	// It will not be judged so detailed in the database,
 	// it just returns the error that the user has created.
-	return 202, EXISTS_ACCOUNTS
+	return 202, internal.ExistsAccounts
 }
 
 func (a *Accounts) Find() (*Accounts, error) {
