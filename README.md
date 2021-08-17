@@ -1,5 +1,7 @@
 # hvxahv
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/disism/hvxahv)](https://goreportcard.com/report/github.com/disism/hvxahv)
+
 Instance: [halfmemories.com](https://halfmemories.com)
 
 Preview version: [dev.halfmemories.com](https://dev.halfmemories.com)
@@ -70,7 +72,7 @@ Everyone has the right to control their data and privacy, and choose who to shar
 
 
 
-MIT License: [LISENSE](https://opensource.org/licenses/MIT/).
+MIT License: [LISENSE](https://github.com/disism/hvxahv/blob/main/LICENSE).
 
 COPYRIGHT: [disism.com](https://disism.com/)  All Rights Reserved.
 
