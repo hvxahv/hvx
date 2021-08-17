@@ -12,7 +12,8 @@ message ChannelData {
   string name      = 2;
   string bio       = 3;
   string avatar    = 4;
-  bool   isPrivate = 5;
+  string owner     = 5;
+  bool   isPrivate = 6;
 }
 
 message Reply {
