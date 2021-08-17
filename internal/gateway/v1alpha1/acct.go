@@ -21,6 +21,11 @@ func V1Accounts(r *gin.Engine) {
 	{
 		v1.GET("/accounts/i", handlers.GetAccountsHandler)
 		v1.POST("/accounts/follow", handlers.FollowHandler)
+
+		// Delete accounts
+		v1.POST("/accounts/delete", handlers.DeleteAccount)
+		v1.POST("/accounts/update", handlers.UpdateAccount)
+
 		//v1alpha1.POST("/upload/avatar", handlers.UploadAvatar)
 
 		//v1alpha1.GET("/u/:user", v1alpha1.GetActorHandler)
@@ -42,5 +47,6 @@ func V1Accounts(r *gin.Engine) {
 
 		r.GET("/u/:actor/outbox", handlers.GetActorOutbox)
 		//r.POST("/u/:user/inbox", handlers.InboxHandler)
+
 	}
 }

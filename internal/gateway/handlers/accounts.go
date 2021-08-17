@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"golang.org/x/net/context"
 	"log"
+	"strconv"
 )
 
 // NewAccountsHandler ...
@@ -33,7 +34,7 @@ func NewAccountsHandler(c *gin.Context) {
 		Mail:     mail,
 	})
 	if err != nil {
-		log.Printf("Failed to send message to Accounts server: %v", err)
+		log.Printf("failed to send message to accounts server: %v", err)
 	}
 	fmt.Println(r)
 	c.JSON(int(r.Code), gin.H{
@@ -55,14 +56,13 @@ func LoginHandler(c *gin.Context) {
 		log.Println(err)
 	}
 	defer conn.Close()
-	r, err := cli.LoginAccount(context.Background(), &pb.LoginData{
-		Mail: mail,
+	r, err := cli.LoginAccount(context.Background(), &pb.AuthData{
+		Mail:     mail,
 		Password: password,
 	})
 	if err != nil {
 		log.Printf("failed to send message to accounts server: %v", err)
 	}
-
 
 	t, err := security.GenToken(r.Uuid, r.Username, password)
 
@@ -72,6 +72,7 @@ func LoginHandler(c *gin.Context) {
 		"token":    t,
 	})
 }
+
 //
 //// UploadAvatar Interface for users to upload avatars.
 //func UploadAvatar(c *gin.Context) {
@@ -113,7 +114,14 @@ func LoginHandler(c *gin.Context) {
 // GetAccountsHandler Obtain personal account information,
 // analyze the user through TOKEN and return user data.
 func GetAccountsHandler(c *gin.Context) {
-	name := middleware.GetUserName(c)
+	name, err := middleware.GetUserName(c)
+	if err != nil {
+		c.JSON(500, gin.H{
+			"code":     500,
+			"messages": err.Error(),
+		})
+		return
+	}
 
 	cli, conn, err := client.Accounts()
 	if err != nil {
@@ -125,7 +133,7 @@ func GetAccountsHandler(c *gin.Context) {
 		Username: name,
 	})
 	if err != nil {
-		log.Printf("Failed to send message to Accounts server: %v", err)
+		log.Printf("failed to send message to accounts server: %v", err)
 	}
 
 	c.JSON(200, gin.H{
@@ -133,20 +141,77 @@ func GetAccountsHandler(c *gin.Context) {
 		"messages": r,
 	})
 }
-//
-//// GetAccountsByName Incoming username is used to query account.
-//func GetAccountsByName(name string) (*pb.AccountsData, error) {
-//	// Use the client to call the Accounts service to create users.
-//	// Pass in the username and search for the user, if found, the accounts data will be returned.
-//	client, conn, err := client.Accounts()
-//	if err != nil {
-//		log.Println(err)
-//	}
-//	defer conn.Close()
-//	accounts, err := client.QueryAccounts(context.Background(), &pb.AccountsData{Username: name})
-//	if err != nil {
-//		return nil, err
-//	}
-//
-//	return accounts, nil
-//}
+
+func DeleteAccount(c *gin.Context) {
+	password := c.PostForm("password")
+	mail := c.PostForm("mail")
+
+	cli, conn, err := client.Accounts()
+	if err != nil {
+		log.Println(err)
+	}
+	defer conn.Close()
+
+	r, err := cli.DeleteAccount(context.Background(), &pb.AuthData{
+		Mail:     mail,
+		Password: password,
+	})
+	if err != nil {
+		log.Printf("failed to send message to accounts server: %v", err)
+	}
+	fmt.Println(r)
+	c.JSON(int(r.Code), gin.H{
+		"code":    r.Code,
+		"message": r.Message,
+	})
+
+}
+
+func UpdateAccount(c *gin.Context) {
+	username, err := middleware.GetUserName(c)
+	if err  != nil {
+		c.JSON(500, gin.H{
+			"code":    500,
+			"message": err.Error(),
+		})
+		return
+	}
+	password := c.PostForm("password")
+	bio := c.PostForm("bio")
+	name := c.PostForm("name")
+	mail := c.PostForm("mail")
+	phone := c.PostForm("phone")
+	is_private := c.PostForm("is_private")
+	
+	fmt.Println(username, password, bio, name, mail, phone, is_private)
+	cli, conn, err := client.Accounts()
+	if err != nil {
+		log.Println(err)
+	}
+	defer conn.Close()
+
+	parseBool, err := strconv.ParseBool(is_private)
+	if err != nil {
+		fmt.Println(err)
+	}
+	
+	r, err := cli.UpdateAccount(context.Background(), &pb.AccountData{
+		Username:   username,
+		Password:   password,
+		Mail:       mail,
+		Bio:        bio,
+		Name:       name,
+		Phone:      phone,
+		IsPrivate:  parseBool,
+	})
+
+	if err != nil {
+		log.Printf("failed to send message to accounts server: %v", err)
+	}
+	fmt.Println(r)
+	c.JSON(int(r.Code), gin.H{
+		"code":    r.Code,
+		"message": r.Message,
+	})
+
+}

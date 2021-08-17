@@ -7,16 +7,18 @@ import (
 	"github.com/gin-gonic/gin"
 	"golang.org/x/net/context"
 	"log"
+	"strings"
 )
 
 // GetActorHandler Get the actor's handler. It will get the queried user name from Param,
 // then call the gRPC service by the user name,
 // and return the JsonLD of the standard activitypub protocol.
 func GetActorHandler(c *gin.Context) {
-	name := c.Param("actor")
+	name := strings.Trim(c.Param("actor"), ".json")
+
 	// Use this client to call the remote Accounts gRPC service,
 	// and then pass the user name to get the queried data.
-	cli, conn,  err := client.Accounts()
+	cli, conn, err := client.Accounts()
 	if err != nil {
 		log.Println(err)
 	}
@@ -28,7 +30,7 @@ func GetActorHandler(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(200, gin.H{
-			"status": "600",
+			"status":  "600",
 			"message": "No query to the account.",
 		})
 	}

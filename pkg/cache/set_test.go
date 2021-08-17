@@ -5,10 +5,6 @@ import "testing"
 func TestSETAcctMailORUN(t *testing.T) {
 	TestInitRedis(t)
 
-	err := SETAcctMailORUN("x@disism.com", "hvturingga")
-	if err != nil {
-		return 
-	}
 
 }
 

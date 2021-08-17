@@ -74,5 +74,7 @@ Everyone has the right to control their data and privacy, and choose who to shar
 
 MIT License: [LISENSE](https://github.com/disism/hvxahv/blob/main/LICENSE).
 
-COPYRIGHT: [disism.com](https://disism.com/)  All Rights Reserved.
+
+
+[disism.com](https://disism.com/) OPEN SOURCE.
 

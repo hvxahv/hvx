@@ -13,7 +13,7 @@ import (
 func SETAcct(k string, v []byte, exp time.Duration) error {
 	rd := GetRDB()
 	if ok := SISAcct(k); ok {
-		if err := DelKey(k); err != nil {
+		if err := DELKey(k); err != nil {
 			return err
 		}
 	}
