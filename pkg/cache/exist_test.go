@@ -15,7 +15,7 @@ func TestFINDAcctMail(t *testing.T) {
 func TestExistAcct(t *testing.T) {
 	TestInitRedis(t)
 
-	ok := SISAcct("hvturingga")
+	ok := SISAcct("xxs")
 	if !ok {
 		t.Log("!ok")
 	}

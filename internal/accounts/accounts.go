@@ -129,6 +129,11 @@ func (a *Accounts) Find() (*Accounts, error) {
 }
 
 func (a *Accounts) Update() error {
+	// Password Re:encryption.
+	if a.Password != "" {
+		a.Password = security.GenPassword(a.Password)
+	}
+
 	d := db.GetDB()
 	acct := &a
 
@@ -147,14 +152,23 @@ func (a *Accounts) Update() error {
 }
 
 func (a *Accounts) Delete() error {
-	d := db.GetDB()
-	//  Unscoped() Use gorm's Unscoped method to permanently delete data.
-	if err := d.Debug().Table("accounts").Where("username = ?", a.Username).Unscoped().Delete(&a).Error; err != nil {
-		log.Println(gorm.ErrMissingWhereClause)
+	au := NewAccountAuth(a.Mail, a.Password)
+	name, _, err := au.Login()
+	if err != nil {
 		return err
 	}
-	if err := cache.DelKey(a.Username); err != nil {
-		return err
+
+	d := db.GetDB()
+	//  Unscoped() Use gorm's Unscoped method to permanently delete data.
+	if err2 := d.Debug().Table("accounts").Where("username = ?", name).Unscoped().Delete(&Accounts{}).Error; err != nil {
+		log.Println(gorm.ErrMissingWhereClause)
+		return err2
+	}
+	if err3 := cache.DELKey(name); err3 != nil {
+		return err3
+	}
+	if err4 := cache.DELAcctMail(a.Mail); err4 != nil {
+		return err4
 	}
 	return nil
 }
@@ -219,6 +233,6 @@ func NewAcctByName(name string) Account {
 	return &Accounts{Username: name}
 }
 
-func NewAccountLogin(mail string, password string) Account {
+func NewAccountAuth(mail string, password string) Account {
 	return &Accounts{Mail: mail, Password: password}
 }

@@ -21,6 +21,7 @@ func Auth(c *gin.Context) {
 		c.Abort()
 		return
 	}
+
 	_, err := security.VerifyToken(t)
 	if err != nil {
 		c.JSON(500, gin.H{
@@ -29,8 +30,8 @@ func Auth(c *gin.Context) {
 		})
 		c.Abort()
 	} else {
-		u, err := security.ParseToken(t)
-		if err != nil {
+		u, err1 := security.ParseToken(t)
+		if err1 != nil {
 			log.Println("failed to obtain user through token.")
 		}
 

@@ -1,6 +1,7 @@
 package accounts
 
 import (
+	"fmt"
 	pb "github.com/disism/hvxahv/api/hvxahv/v1alpha1"
 	"golang.org/x/net/context"
 	"log"
@@ -15,39 +16,39 @@ func (s *server) NewAccount(ctx context.Context, in *pb.NewAccountData) (*pb.Acc
 
 // LoginAccount The implementation of the login account method returns the user name and token,
 // and returns a specific error if there is an error.
-func (s *server) LoginAccount(ctx context.Context, in *pb.LoginData) (*pb.LoginReply, error) {
-	r := NewAccountLogin(in.Mail, in.Password)
+func (s *server) LoginAccount(ctx context.Context, in *pb.AuthData) (*pb.AuthReply, error) {
+	r := NewAccountAuth(in.Mail, in.Password)
 	u, uuid, err := r.Login()
 	if err != nil {
 		return nil, err
 	}
-	return &pb.LoginReply{
+	return &pb.AuthReply{
 		Username: u,
 		Uuid:     uuid,
 	}, nil
 }
 
-//// UpdateAccounts Implementation of the method to update the account.
-//func (s *server) UpdateAccount(ctx context.Context, in *pb.AccountData) (*pb.AccountsReply, error) {
-//	a := AccountData{
-//		Username:   in.Username,
-//		Password:   in.Password,
-//		Avatar:     in.Avatar,
-//		Bio:        in.Bio,
-//		Name:       in.Name,
-//		Mail:       in.Mail,
-//		Phone:      in.Phone,
-//		Private:    in.Private,
-//		PrivateKey: in.PrivateKey,
-//		PublicKey:  in.PublicKey,
-//	}
-//
-//	if err := a.Update(); err != nil {
-//		return nil, err
-//	}
-//
-//	return &pb.AccountsReply{Code: 200, Message: "ok"}, nil
-//}
+// UpdateAccount Implementation of the method to update the account.
+func (s *server) UpdateAccount(ctx context.Context, in *pb.AccountData) (*pb.AccountsReply, error) {
+	a := Accounts{
+		Username:   in.Username,
+		Password:   in.Password,
+		Avatar:     in.Avatar,
+		Bio:        in.Bio,
+		Name:       in.Name,
+		Mail:       in.Mail,
+		Phone:      in.Phone,
+		IsPrivate:  in.IsPrivate,
+		PrivateKey: in.PrivateKey,
+		PublicKey:  in.PublicKey,
+	}
+
+	if err := a.Update(); err != nil {
+		return &pb.AccountsReply{Code: 500, Message: "update error!"}, nil
+	}
+
+	return &pb.AccountsReply{Code: 200, Message: "ok!"}, nil
+}
 
 // FindAccount Implementation of the method of querying the account.
 func (s *server) FindAccount(ctx context.Context, in *pb.AccountByName) (*pb.AccountData, error) {
@@ -73,17 +74,16 @@ func (s *server) FindAccount(ctx context.Context, in *pb.AccountByName) (*pb.Acc
 	}, nil
 }
 
-//
-//// DeleteAccounts Implementation of the delete account method.
-//func (s *server) DeleteAccounts(ctx context.Context, in *pb.AccountsName) (*pb.AccountsReply, error) {
-//	r := NewDelAcctByName(in.Username)
-//	err := r.Delete()
-//	if err != nil {
-//		return nil, err
-//	}
-//	return &pb.AccountsReply{Code: 200, Message: "ok"}, nil
-//}
-//
+// DeleteAccount Implementation of delete account method.
+func (s *server) DeleteAccount(ctx context.Context, in *pb.AuthData) (*pb.AccountsReply, error) {
+	fmt.Println(in.Mail, in.Password)
+	r := NewAccountAuth(in.Mail, in.Password)
+	err := r.Delete()
+	if err != nil {
+		return &pb.AccountsReply{Code: 500, Message: "delete error!"}, nil
+	}
+	return &pb.AccountsReply{Code: 200, Message: "ok!"}, nil
+}
 
 // NewFollow Implementation of the method of querying the account.
 func (s *server) NewFollow(ctx context.Context, in *pb.FollowersData) (*pb.AccountsReply, error) {

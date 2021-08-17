@@ -62,7 +62,7 @@ func TestAccounts_Update(t *testing.T) {
 
 	a := Accounts{
 		Username:   "hvturingga",
-		Password:   "123",
+		Password:   "hvxahv123",
 		Avatar:     "http://stage48.net/wiki/images/5/5b/KobayashiYui8th.jpg",
 		Bio:        "我很开心，现在我在录制视频, 欢迎关注我的 YouTube 频道! AHHHHh.....",
 		Name:       "HVTURINGGA",
@@ -92,20 +92,18 @@ func TestAccounts_Query(t *testing.T) {
 func TestAccounts_Delete(t *testing.T) {
 	TestInitDB(t)
 
-	a := NewAcctByName("hvturingga")
+	a := NewAccountAuth("xxs@disism.com", "hvxahv123")
 	if err := a.Delete(); err != nil {
 		t.Log(err)
 		return
 	}
 	t.Log("Delete account successfully.")
-
-
 }
 
 func TestAccounts_Login(t *testing.T) {
 	TestInitDB(t)
 
-	a := NewAccountLogin("x@disism.com", "hvxahv")
+	a := NewAccountAuth("xxs@disism.com", "hvxahv123")
 
 	r, s, err := a.Login()
  	if err != nil {

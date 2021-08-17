@@ -10,7 +10,7 @@ import (
 )
 
 func FollowHandler(c *gin.Context) {
-	name := middleware.GetUserName(c)
+	name, _ := middleware.GetUserName(c)
 	target := c.PostForm("following")
 
 	cli, conn, err := client.Accounts()
