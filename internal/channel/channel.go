@@ -115,6 +115,7 @@ func (c *ChanAdmins) GetChanAdmLisByID() (int, []accounts.Accounts, error) {
 		return 500, nil, err
 	}
 
+	// The detailed data will be traversed through the acquired channel list.
 	var acts []accounts.Accounts
 	for _, i := range lis {
 		fa := accounts.NewAcctByName(i.Admin)
@@ -127,8 +128,6 @@ func (c *ChanAdmins) GetChanAdmLisByID() (int, []accounts.Accounts, error) {
 	}
 
 	return 200, acts, nil
-
-
 }
 
 func (c *ChanAdmins) AddAdmin() (int, string, error) {
