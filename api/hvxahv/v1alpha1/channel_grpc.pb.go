@@ -18,7 +18,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ChannelClient interface {
-	NewChannel(ctx context.Context, in *ChannelData, opts ...grpc.CallOption) (*Reply, error)
+	NewChannel(ctx context.Context, in *ChannelData, opts ...grpc.CallOption) (*ChannelReply, error)
 }
 
 type channelClient struct {
@@ -29,8 +29,8 @@ func NewChannelClient(cc grpc.ClientConnInterface) ChannelClient {
 	return &channelClient{cc}
 }
 
-func (c *channelClient) NewChannel(ctx context.Context, in *ChannelData, opts ...grpc.CallOption) (*Reply, error) {
-	out := new(Reply)
+func (c *channelClient) NewChannel(ctx context.Context, in *ChannelData, opts ...grpc.CallOption) (*ChannelReply, error) {
+	out := new(ChannelReply)
 	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Channel/NewChannel", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -42,7 +42,7 @@ func (c *channelClient) NewChannel(ctx context.Context, in *ChannelData, opts ..
 // All implementations must embed UnimplementedChannelServer
 // for forward compatibility
 type ChannelServer interface {
-	NewChannel(context.Context, *ChannelData) (*Reply, error)
+	NewChannel(context.Context, *ChannelData) (*ChannelReply, error)
 	mustEmbedUnimplementedChannelServer()
 }
 
@@ -50,7 +50,7 @@ type ChannelServer interface {
 type UnimplementedChannelServer struct {
 }
 
-func (UnimplementedChannelServer) NewChannel(context.Context, *ChannelData) (*Reply, error) {
+func (UnimplementedChannelServer) NewChannel(context.Context, *ChannelData) (*ChannelReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method NewChannel not implemented")
 }
 func (UnimplementedChannelServer) mustEmbedUnimplementedChannelServer() {}

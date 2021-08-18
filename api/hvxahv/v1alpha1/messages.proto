@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package hvxahv.v1alpha1.proto;
+option go_package = "github.com/disism/hvxahv/api/hvxahv/v1alpha1/v1alpha1";
+
+service Message {
+  rpc NewMessage (MessageData) returns (NewMessageReply) {}
+}
+
+message MessageData {
+  string message = 1;
+}
+
+message NewMessageReply {
+  int32  code    = 1;
+  string message = 2;
+}

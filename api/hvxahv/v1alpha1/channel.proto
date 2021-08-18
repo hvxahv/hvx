@@ -4,7 +4,7 @@ package hvxahv.v1alpha1.proto;
 option go_package = "github.com/disism/hvxahv/api/hvxahv/v1alpha1/v1alpha1";
 
 service Channel {
-  rpc NewChannel (ChannelData) returns (Reply) {}
+  rpc NewChannel (ChannelData) returns (ChannelReply) {}
 }
 
 message ChannelData {
@@ -16,7 +16,7 @@ message ChannelData {
   bool   isPrivate = 6;
 }
 
-message Reply {
+message ChannelReply {
   int32  code    = 1;
   string message = 2;
 }
