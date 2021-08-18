@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/disism/hvxahv/pkg/cache"
 	"github.com/disism/hvxahv/pkg/db"
+	"github.com/disism/hvxahv/pkg/ipfs"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -11,7 +12,7 @@ import (
 	"testing"
 )
 
-func TestInitDB(t *testing.T) {
+func TestInitChannelConfig(t *testing.T) {
 
 	home, err := homedir.Dir()
 	cobra.CheckErr(err)
@@ -23,21 +24,22 @@ func TestInitDB(t *testing.T) {
 	viper.AutomaticEnv()
 
 	// If a configs file is found, read it in.
-	if err := viper.ReadInConfig(); err == nil {
+	if err1 := viper.ReadInConfig(); err1 == nil {
 		fmt.Fprintln(os.Stderr, "Using configs file:", viper.ConfigFileUsed())
 	}
 
 	// Initialize the database.
 	nd :=  db.NewDb()
-	if err := nd.InitDB(); err != nil {
+	if err2 := nd.InitDB(); err2 != nil {
 		return
 	}
 
 	// If a configs file is found, read it in.
-	if err := viper.ReadInConfig(); err == nil {
+	if err3 := viper.ReadInConfig(); err3 == nil {
 		fmt.Fprintln(os.Stderr, "Using configs file:", viper.ConfigFileUsed())
 	}
 
+	ipfs.InitIPFS()
 
 	cache.InitRedis(1)
 
@@ -53,7 +55,7 @@ func TestNewChannels(t *testing.T) {
 }
 
 func TestNewChannels2(t *testing.T) {
-	TestInitDB(t)
+	TestInitChannelConfig(t)
 	nc := NewChannels("ALICE HOUSE", "", "avatar", "bio", "alice", true)
 	i, s, _, err := nc.New()
 	if err != nil {
@@ -72,7 +74,7 @@ func TestNewChannels2(t *testing.T) {
 
 
 func TestNewFindChannelByID(t *testing.T) {
-	TestInitDB(t)
+	TestInitChannelConfig(t)
 	nfc := NewChannelsByID("f6574uSSqGQ7CJX")
 	ch := nfc.Find()
 	fmt.Println(ch.Name)
@@ -80,7 +82,7 @@ func TestNewFindChannelByID(t *testing.T) {
 
 
 func TestMChannels_AddAdmin(t *testing.T) {
-	TestInitDB(t)
+	TestInitChannelConfig(t)
 	nmc := NewChanAdmins("Ja5QZv-fgxhg182", "bob")
 	admin, s, err := nmc.AddAdmin()
 	if err != nil {
@@ -98,7 +100,7 @@ func TestMChannels_AddAdmin(t *testing.T) {
 }
 
 func TestChanAdmins_GetChannelListByName(t *testing.T) {
-	TestInitDB(t)
+	TestInitChannelConfig(t)
 	name := NewChanAdminsByName("hvturingga")
 	_, cls, _ := name.GetChannelListByName()
 	fmt.Println(cls)
@@ -110,14 +112,14 @@ func TestChanAdmins_GetChannelListByName(t *testing.T) {
 }
 
 func TestChanAdmins_GetChannelListByID(t *testing.T) {
-	TestInitDB(t)
+	TestInitChannelConfig(t)
 	adm := NewChanAdminsByID("a-t0FuZY9ySeBlR")
 	adm.GetChanAdmLisByID()
 
 }
 
 func TestNewChanSub(t *testing.T) {
-	TestInitDB(t)
+	TestInitChannelConfig(t)
 	ncs := NewChanSub("a-t0FuZY9ySeBlR", "bob")
 	subscriber, s, err := ncs.NewSubscriber()
 	if err != nil {
@@ -128,7 +130,7 @@ func TestNewChanSub(t *testing.T) {
 }
 
 func TestChanSubs_GetSubscriberByID(t *testing.T) {
-	TestInitDB(t)
+	TestInitChannelConfig(t)
 	ncs := NewChanSubByID("a-t0FuZY9ySeBlR")
 	ncs.GetSubscriberByID()
 }

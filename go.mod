@@ -8,6 +8,7 @@ require (
 	github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/uuid v1.1.2
+	github.com/ipfs/go-ipfs-api v0.2.0
 	github.com/lib/pq v1.10.2
 	github.com/minio/minio-go/v7 v7.0.11
 	github.com/mitchellh/go-homedir v1.1.0
