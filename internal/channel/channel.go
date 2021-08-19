@@ -148,6 +148,7 @@ func (c *ChanAdmins) AddAdmin() (int, string, error) {
 func NewChanAdmins(owner, id, admin string) (*ChanAdmins, error) {
 	// Check if it is a channel manager.
 	dbs := db.GetDB()
+	// TODO = BUG.
 	if r := dbs.Debug().Table("channels").
 		Where("id = ? AND owner = ?", id, owner).First(&Channels{}); r.Error != nil {
 		return nil, errors.Errorf("%s not the owner of the channel.", owner)
