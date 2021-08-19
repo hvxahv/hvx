@@ -57,14 +57,14 @@ func TestNewChannels(t *testing.T) {
 func TestNewChannels2(t *testing.T) {
 	TestInitChannelConfig(t)
 	nc := NewChannels("ALICE HOUSE", "", "avatar", "bio", "alice", true)
-	i, s, _, err := nc.New()
+	code, s, id, err := nc.New()
 	if err != nil {
 		t.Error(err)
 	}
-	fmt.Printf("code: %v; message: %s", i, s)
+	fmt.Printf("code: %v; message: %s; id: %s", code, s, id)
 
 	nc2 := NewChannels("JSUT 4 FUN", "", "avatar", "bio", "hvturingga", false)
-	i2, s2, _, err := nc2.New()
+	i2, s2, _, _ := nc2.New()
 	if err != nil {
 		t.Error(err)
 	}
@@ -83,19 +83,30 @@ func TestNewFindChannelByID(t *testing.T) {
 
 func TestMChannels_AddAdmin(t *testing.T) {
 	TestInitChannelConfig(t)
-	nmc := NewChanAdmins("Ja5QZv-fgxhg182", "bob")
+	nmc, err := NewChanAdmins("hvturingga", "Ja5QZv-fgxhg182", "bob")
 	admin, s, err := nmc.AddAdmin()
 	if err != nil {
 		return
 	}
 	fmt.Printf("code: %v; message: %s", admin, s)
 
-	nmc2 := NewChanAdmins("f6574uSSqGQ7CJX", "hvturingga")
+	nmc2, err := NewChanAdmins("alice", "f6574uSSqGQ7CJX", "hvturingga")
 	admin2, s2, err := nmc2.AddAdmin()
 	if err != nil {
 		return
 	}
 	fmt.Printf("code: %v; message: %s", admin2, s2)
+
+}
+
+func TestNewChanAdmins(t *testing.T) {
+	TestInitChannelConfig(t)
+	nca, err := NewChanAdmins("hvturingga", "yFu90l1tVS1sHtQ", "bob")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(nca)
 
 }
 
