@@ -5,6 +5,7 @@ import (
 	"github.com/disism/hvxahv/internal/accounts"
 	"github.com/disism/hvxahv/pkg/db"
 	"github.com/disism/hvxahv/pkg/security"
+	"github.com/pkg/errors"
 	"gorm.io/gorm"
 	"log"
 )
@@ -144,8 +145,14 @@ func (c *ChanAdmins) AddAdmin() (int, string, error) {
 	return 200, internal.SuccessAddChanAdm, nil
 }
 
-func NewChanAdmins(id string, admin string) *ChanAdmins {
-	return &ChanAdmins{Id: id, Admin: admin}
+func NewChanAdmins(owner, id, admin string) (*ChanAdmins, error) {
+	// Check if it is a channel manager.
+	dbs := db.GetDB()
+	if r := dbs.Debug().Table("channels").
+		Where("id = ? AND owner = ?", id, owner).First(&Channels{}); r.Error != nil {
+		return nil, errors.Errorf("%s not the owner of the channel.", owner)
+	}
+	return &ChanAdmins{Id: id, Admin: admin}, nil
 }
 
 func NewChanAdminsByName(admin string) *ChanAdmins {

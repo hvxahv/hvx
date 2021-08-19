@@ -26,5 +26,7 @@ func APIServer() *gin.Engine {
 
 	v1alpha1.V1Accounts(api)
 
+	v1alpha1.V1Chan(api)
+
 	return api
 }
