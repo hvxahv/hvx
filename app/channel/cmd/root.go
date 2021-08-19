@@ -17,6 +17,8 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/disism/hvxahv/pkg/cache"
+	"github.com/disism/hvxahv/pkg/db"
 	"github.com/spf13/cobra"
 	"os"
 
@@ -82,4 +84,11 @@ func initConfig() {
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
 	}
+	nd :=  db.NewDb()
+	if err := nd.InitDB(); err != nil {
+		return
+	}
+
+	cache.InitRedis(1)
+
 }

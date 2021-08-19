@@ -17,7 +17,7 @@ package cmd
 
 import (
 	"fmt"
-
+	"github.com/disism/hvxahv/internal/channel"
 	"github.com/spf13/cobra"
 )
 
@@ -27,7 +27,10 @@ var runCmd = &cobra.Command{
 	Short: "Run the channel service of hvxahv.",
 	Long: ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("run called")
+		err := channel.Run()
+		if err != nil {
+			fmt.Println(err)
+		}
 	},
 }
 
