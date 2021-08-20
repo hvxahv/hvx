@@ -8,50 +8,50 @@ Preview version: [dev.halfmemories.com](https://dev.halfmemories.com)
 
 ## Introduction
 
-A decentralized social network implementation.
+A fully decentralized social network implementation.
 
-Based on the decentralized activitypub social protocol, the decentralized file system content publishing channel of the ipfs protocol, and the end-to-end encrypted instant messaging of the matrix.org protocol, an open source decentralized social network whose data is truly in your hands.
+Based on the decentralized activitypub decentralized social network protocol, ipfs distributed persistent storage protocol and matrix.org real time communication protocol social platform, an open source decentralized social network where the data is really in your hands.
 
-- Find and add your social network friends like an email address: `name@domain` .
-- Find public channels across servers.
-- Direct end-to-end encrypted instant messaging with your friends.
+- Find and add your social network friends as easy as an email format (`name@domain`) address.
+- Cross-server content publishing channel (channel), the content can not be deleted or modified.
+- End-to-end encrypted instant messaging directly with your friends.
 - They are all decentralized.
 
 ## Build an open source, decentralized open network.
 
-It is a platform that integrates content publishing, social networking, and instant messaging.
+It's a platform for content distribution, social networking, and instant messaging all in one.
 
-Anyone can build their own examples and design their own interface.
+Anyone can build their own instance and design their own interface.
 
-It can communicate socially with all platforms that implement the Activitypub protocol.
+You can communicate socially with each other and all platforms that implement the Activitypub protocol.
 
-Store the channel data in the ipfs file system.
+Store broadcast channel data in the ipfs file system, which is persistent and cannot be deleted or modified.
 
-It can communicate with all end-to-end encryption programs that implement the Matrix protocol.
+Communicate with all platforms that implement Matrix protocol with end-to-end encryption.
 
----
+## Easy to use
 
-## You can use it easily
+Find and add your friends just like email.
 
-#### Find your friends
+### Find friends
 
-Find and add your friends like email.
+You only need to know the ID of the other person, i.e. search for friends like an email format (example: `name@domain`). It is decentralized and you can easily find friends under any instance.
 
-You only need to know the ID of the other party, that is, search for friends like an email format. `name@domain`, it is decentralized, you can find friends in any instance at will.
+### Socializing
 
-#### Find public channels.
+Share your life, interests, and some things between you and your friends.
 
-Find public channels across servers. We focus on freedom of the press.
+### Channels
 
-We provide a decentralized channel function. You can create or find content publishing channels that you are interested in. Its search is as simple as searching for the channel keywords of interest in the index channel. It is based on IPFS. Once After publishing, the content cannot be changed or deleted.
+Find public channels across servers, we focus on freedom of press.
 
-#### End-to-end encrypted communication.
+It provides decentralized channel feature, you can create or find the broadcast channels you are interested in, he search is as easy as just searching the public index or directly for the keywords of the channels you are interested in, it is IPFS based, once published, the content will not be changed and deleted.
 
-Direct end-to-end encrypted communication with your friends. Protect your instant messaging privacy so that your chat information will not be known by a third person.
+### Instant Messaging
 
-We have implemented a simple end-to-end encrypted chat program based on the matrix protocol, which simplifies the search function of other clients of the matrix, because you only need to click the friend chat in your address book, because the background has already done it for you For other necessary things, you can also manually add chat objects in other matrix clients, as long as you use the matrix format `@name:domain` to add friends and talk.
+End-to-end encrypted communication directly with your friends. Protect your instant messaging privacy and keep your chat messages away from third parties.
 
-
+We have implemented a simple end-to-end encrypted chat application based on the matrix protocol, which simplifies the matrix search function, since you can just click on a friend in your address book to start sending messages, since the backend already does the rest of the necessary things for you, and you can manually add other chatters from the matrix client, as long as you pass the matrix format `@name:domain` to add friends and talk to them.
 
 ## For developers
 
@@ -68,13 +68,13 @@ FOR CLIENT DEVELOPERS:
 
 ## Finally
 
-Everyone has the right to control their data and privacy, and choose who to share with.
-
-
+Everyone has the right to control their own data and privacy, and to choose who they share it with.
 
 MIT License: [LISENSE](https://github.com/disism/hvxahv/blob/main/LICENSE).
 
+[disism.com](https://disism.com/) OPEN SOURCE. 
 
 
-[disism.com](https://disism.com/) OPEN SOURCE.
+
+🍬 A love letter to the future~
 
