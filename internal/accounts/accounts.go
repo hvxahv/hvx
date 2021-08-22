@@ -15,6 +15,58 @@ import (
 	"log"
 )
 
+
+
+// Account The interface defines the CRUD function for accounts.
+type Account interface {
+	// New Add a user Instantiate using the NewAccounts function.
+	New() (int32, string)
+
+	// Find This method implements the function of querying accounts.
+	// It needs to accept the username to be queried through the function of the
+	// instantiated object NewAccount,
+	// and then return the query error and the data of the accounts structure.
+	Find() (*Accounts, error)
+
+	// Update Use the NewAccountQUD function to pass the username and
+	// accept the accounts object data to update the accounts data.
+	Update() error
+
+	// Delete Pass the user name through the NewAccountQUD function to delete the user.
+	Delete() error
+
+	// Login to the account and generate token, Return token and custom error message.
+	Login() (string, string, error)
+}
+
+func NewAccounts(username, password, mail string) (Account, error) {
+	privateKey, publicKey, err := security.GenRSA()
+	if err != nil {
+		log.Printf("failed to generate public and private keys: %v", err)
+		return nil, err
+	}
+	id := uuid.New().String()
+	hash := security.GenPassword(password)
+
+	return &Accounts{
+		Uuid:       id,
+		Username:   username,
+		Mail:       mail,
+		Password:   hash,
+		PrivateKey: privateKey,
+		PublicKey:  publicKey,
+	}, nil
+}
+
+func NewAcctByName(name string) Account {
+	return &Accounts{Username: name}
+}
+
+func NewAccountAuth(mail string, password string) Account {
+	return &Accounts{Mail: mail, Password: password}
+}
+
+
 // Accounts The object tops a user’s profile data and is targeted at GORM.
 // Must be a unique key: username, email and phone.
 type Accounts struct {
@@ -186,53 +238,4 @@ func (a *Accounts) Login() (string, string, error) {
 		return "", "", errors.Errorf("Password verification failed.")
 	}
 	return qa.Username, qa.Uuid, nil
-}
-
-// Account The interface defines the CRUD function for accounts.
-type Account interface {
-	// New Add a user Instantiate using the NewAccounts function.
-	New() (int32, string)
-
-	// Find This method implements the function of querying accounts.
-	// It needs to accept the username to be queried through the function of the
-	// instantiated object NewAccount,
-	// and then return the query error and the data of the accounts structure.
-	Find() (*Accounts, error)
-
-	// Update Use the NewAccountQUD function to pass the username and
-	// accept the accounts object data to update the accounts data.
-	Update() error
-
-	// Delete Pass the user name through the NewAccountQUD function to delete the user.
-	Delete() error
-
-	// Login to the account and generate token, Return token and custom error message.
-	Login() (string, string, error)
-}
-
-func NewAccounts(username, password, mail string) (Account, error) {
-	privateKey, publicKey, err := security.GenRSA()
-	if err != nil {
-		log.Printf("failed to generate public and private keys: %v", err)
-		return nil, err
-	}
-	id := uuid.New().String()
-	hash := security.GenPassword(password)
-
-	return &Accounts{
-		Uuid:       id,
-		Username:   username,
-		Mail:       mail,
-		Password:   hash,
-		PrivateKey: privateKey,
-		PublicKey:  publicKey,
-	}, nil
-}
-
-func NewAcctByName(name string) Account {
-	return &Accounts{Username: name}
-}
-
-func NewAccountAuth(mail string, password string) Account {
-	return &Accounts{Mail: mail, Password: password}
 }

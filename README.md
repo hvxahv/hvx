@@ -10,7 +10,7 @@ Preview version: [dev.halfmemories.com](https://dev.halfmemories.com)
 
 A fully decentralized social network implementation.
 
-Based on the decentralized activitypub decentralized social network protocol, ipfs distributed persistent storage protocol and matrix.org real time communication protocol social platform, an open source decentralized social network where the data is really in your hands.
+Based on the decentralized [activitypub](https://www.w3.org/TR/activitypub/) decentralized social network protocol, [ipfs](https://ipfs.io/) distributed persistent storage protocol and [matrix.org](https://matrix.org/) real time communication protocol social platform, an open source decentralized social network where the data is really in your hands.
 
 - Find and add your social network friends as easy as an email format (`name@domain`) address.
 - Cross-server content publishing channel (channel), the content can not be deleted or modified.

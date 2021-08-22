@@ -18,10 +18,14 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ChannelClient interface {
-	// NewChannel Create Channel.
-	NewChannel(ctx context.Context, in *NewChannelData, opts ...grpc.CallOption) (*NewChannelReply, error)
-	// NewChannelAdmin Add Channel Admins.
-	NewChannelAdmin(ctx context.Context, in *NewChanAdmData, opts ...grpc.CallOption) (*NewChanAdmReply, error)
+	// New Create Channel.
+	New(ctx context.Context, in *NewChannelData, opts ...grpc.CallOption) (*NewChannelReply, error)
+	// NewAdmin Add Channel Admins.
+	NewAdmin(ctx context.Context, in *NewAdminData, opts ...grpc.CallOption) (*ChannelReply, error)
+	// NewSubscribers New Subscriber.
+	NewSubscriber(ctx context.Context, in *NewSubscriberData, opts ...grpc.CallOption) (*ChannelReply, error)
+	// GetSubscribers Get channel subscribers.
+	GetSubscribers(ctx context.Context, in *NewChannelByID, opts ...grpc.CallOption) (*GetSubscribersReply, error)
 }
 
 type channelClient struct {
@@ -32,18 +36,36 @@ func NewChannelClient(cc grpc.ClientConnInterface) ChannelClient {
 	return &channelClient{cc}
 }
 
-func (c *channelClient) NewChannel(ctx context.Context, in *NewChannelData, opts ...grpc.CallOption) (*NewChannelReply, error) {
+func (c *channelClient) New(ctx context.Context, in *NewChannelData, opts ...grpc.CallOption) (*NewChannelReply, error) {
 	out := new(NewChannelReply)
-	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Channel/NewChannel", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Channel/New", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *channelClient) NewChannelAdmin(ctx context.Context, in *NewChanAdmData, opts ...grpc.CallOption) (*NewChanAdmReply, error) {
-	out := new(NewChanAdmReply)
-	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Channel/NewChannelAdmin", in, out, opts...)
+func (c *channelClient) NewAdmin(ctx context.Context, in *NewAdminData, opts ...grpc.CallOption) (*ChannelReply, error) {
+	out := new(ChannelReply)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Channel/NewAdmin", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *channelClient) NewSubscriber(ctx context.Context, in *NewSubscriberData, opts ...grpc.CallOption) (*ChannelReply, error) {
+	out := new(ChannelReply)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Channel/NewSubscriber", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *channelClient) GetSubscribers(ctx context.Context, in *NewChannelByID, opts ...grpc.CallOption) (*GetSubscribersReply, error) {
+	out := new(GetSubscribersReply)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Channel/GetSubscribers", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -54,10 +76,14 @@ func (c *channelClient) NewChannelAdmin(ctx context.Context, in *NewChanAdmData,
 // All implementations must embed UnimplementedChannelServer
 // for forward compatibility
 type ChannelServer interface {
-	// NewChannel Create Channel.
-	NewChannel(context.Context, *NewChannelData) (*NewChannelReply, error)
-	// NewChannelAdmin Add Channel Admins.
-	NewChannelAdmin(context.Context, *NewChanAdmData) (*NewChanAdmReply, error)
+	// New Create Channel.
+	New(context.Context, *NewChannelData) (*NewChannelReply, error)
+	// NewAdmin Add Channel Admins.
+	NewAdmin(context.Context, *NewAdminData) (*ChannelReply, error)
+	// NewSubscribers New Subscriber.
+	NewSubscriber(context.Context, *NewSubscriberData) (*ChannelReply, error)
+	// GetSubscribers Get channel subscribers.
+	GetSubscribers(context.Context, *NewChannelByID) (*GetSubscribersReply, error)
 	mustEmbedUnimplementedChannelServer()
 }
 
@@ -65,11 +91,17 @@ type ChannelServer interface {
 type UnimplementedChannelServer struct {
 }
 
-func (UnimplementedChannelServer) NewChannel(context.Context, *NewChannelData) (*NewChannelReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method NewChannel not implemented")
+func (UnimplementedChannelServer) New(context.Context, *NewChannelData) (*NewChannelReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method New not implemented")
 }
-func (UnimplementedChannelServer) NewChannelAdmin(context.Context, *NewChanAdmData) (*NewChanAdmReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method NewChannelAdmin not implemented")
+func (UnimplementedChannelServer) NewAdmin(context.Context, *NewAdminData) (*ChannelReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method NewAdmin not implemented")
+}
+func (UnimplementedChannelServer) NewSubscriber(context.Context, *NewSubscriberData) (*ChannelReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method NewSubscriber not implemented")
+}
+func (UnimplementedChannelServer) GetSubscribers(context.Context, *NewChannelByID) (*GetSubscribersReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetSubscribers not implemented")
 }
 func (UnimplementedChannelServer) mustEmbedUnimplementedChannelServer() {}
 
@@ -84,38 +116,74 @@ func RegisterChannelServer(s grpc.ServiceRegistrar, srv ChannelServer) {
 	s.RegisterService(&Channel_ServiceDesc, srv)
 }
 
-func _Channel_NewChannel_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Channel_New_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(NewChannelData)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ChannelServer).NewChannel(ctx, in)
+		return srv.(ChannelServer).New(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/hvxahv.v1alpha1.proto.Channel/NewChannel",
+		FullMethod: "/hvxahv.v1alpha1.proto.Channel/New",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ChannelServer).NewChannel(ctx, req.(*NewChannelData))
+		return srv.(ChannelServer).New(ctx, req.(*NewChannelData))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Channel_NewChannelAdmin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(NewChanAdmData)
+func _Channel_NewAdmin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NewAdminData)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ChannelServer).NewChannelAdmin(ctx, in)
+		return srv.(ChannelServer).NewAdmin(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/hvxahv.v1alpha1.proto.Channel/NewChannelAdmin",
+		FullMethod: "/hvxahv.v1alpha1.proto.Channel/NewAdmin",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ChannelServer).NewChannelAdmin(ctx, req.(*NewChanAdmData))
+		return srv.(ChannelServer).NewAdmin(ctx, req.(*NewAdminData))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Channel_NewSubscriber_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NewSubscriberData)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChannelServer).NewSubscriber(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/hvxahv.v1alpha1.proto.Channel/NewSubscriber",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChannelServer).NewSubscriber(ctx, req.(*NewSubscriberData))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Channel_GetSubscribers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NewChannelByID)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChannelServer).GetSubscribers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/hvxahv.v1alpha1.proto.Channel/GetSubscribers",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChannelServer).GetSubscribers(ctx, req.(*NewChannelByID))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -128,12 +196,20 @@ var Channel_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*ChannelServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "NewChannel",
-			Handler:    _Channel_NewChannel_Handler,
+			MethodName: "New",
+			Handler:    _Channel_New_Handler,
 		},
 		{
-			MethodName: "NewChannelAdmin",
-			Handler:    _Channel_NewChannelAdmin_Handler,
+			MethodName: "NewAdmin",
+			Handler:    _Channel_NewAdmin_Handler,
+		},
+		{
+			MethodName: "NewSubscriber",
+			Handler:    _Channel_NewSubscriber_Handler,
+		},
+		{
+			MethodName: "GetSubscribers",
+			Handler:    _Channel_GetSubscribers_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

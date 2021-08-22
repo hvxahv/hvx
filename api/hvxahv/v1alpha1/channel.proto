@@ -4,13 +4,27 @@ package hvxahv.v1alpha1.proto;
 option go_package = "github.com/disism/hvxahv/api/hvxahv/v1alpha1/v1alpha1";
 
 service Channel {
-  // NewChannel Create Channel.
-  rpc NewChannel (NewChannelData) returns (NewChannelReply) {}
-  // NewChannelAdmin Add Channel Admins.
-  rpc NewChannelAdmin (NewChanAdmData) returns (NewChanAdmReply) {}
+  // New Create Channel.
+  rpc New (NewChannelData) returns (NewChannelReply) {}
 
+  // NewAdmin Add Channel Admins.
+  rpc NewAdmin (NewAdminData) returns (ChannelReply) {}
+
+  // NewSubscribers New Subscriber.
+  rpc NewSubscriber (NewSubscriberData) returns (ChannelReply) {}
+
+  // GetSubscribers Get channel subscribers.
+  rpc GetSubscribers (NewChannelByID) returns (GetSubscribersReply) {}
 }
 
+message ChannelReply {
+  int32  code    = 1;
+  string message = 2;
+}
+
+/**
+  NEW
+ */
 message NewChannelData {
   string id        = 1;
   string name      = 2;
@@ -26,13 +40,31 @@ message NewChannelReply {
   string id      = 3;
 }
 
-message NewChanAdmData {
+/**
+  NewAdmin
+ */
+message NewAdminData {
   string owner = 1;
   string id    = 2;
-  string admin =3;
+  string admin = 3;
 }
 
-message NewChanAdmReply {
+/**
+  NewSubscribers
+ */
+message NewSubscriberData {
+  string name = 1;
+  string id   = 2;
+}
+
+/**
+  GetSubscribers
+ */
+message NewChannelByID {
+  string id = 1;
+}
+
+message GetSubscribersReply {
   int32  code    = 1;
   string message = 2;
 }
