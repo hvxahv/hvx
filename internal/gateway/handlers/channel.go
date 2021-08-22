@@ -11,13 +11,7 @@ import (
 )
 
 func NewChannelHandler(c *gin.Context) {
-	name, err := middleware.GetUserName(c)
-	if err != nil {
-		c.JSON(500, gin.H{
-			"code":    500,
-			"message": err,
-		})
-	}
+	name := middleware.GetUserName(c)
 
 	id := c.PostForm("id")
 	cn := c.PostForm("name")
@@ -31,7 +25,7 @@ func NewChannelHandler(c *gin.Context) {
 	}
 	defer conn.Close()
 
-	r, err := cli.NewChannel(context.Background(), &pb.NewChannelData{
+	r, err := cli.New(context.Background(), &pb.NewChannelData{
 		Id:        id,
 		Name:      cn,
 		Bio:       bio,
@@ -46,14 +40,16 @@ func NewChannelHandler(c *gin.Context) {
 	})
 }
 
+func UpdateChannelHandler(c *gin.Context) {
+
+}
+
+func DeleteChannelHandler(c *gin.Context) {
+
+}
+
 func NewChannelAdminHandler(c *gin.Context) {
-	name, err := middleware.GetUserName(c)
-	if err != nil {
-		c.JSON(500, gin.H{
-			"code":    500,
-			"message": err,
-		})
-	}
+	name := middleware.GetUserName(c)
 
 	id := c.PostForm("id")
 	admin := c.PostForm("admin")
@@ -64,15 +60,45 @@ func NewChannelAdminHandler(c *gin.Context) {
 	}
 	defer conn.Close()
 
-	r, err := cli.NewChannelAdmin(context.Background(), &pb.NewChanAdmData{
+	r, err := cli.NewAdmin(context.Background(), &pb.NewAdminData{
 		Owner: name,
 		Id:    id,
 		Admin: admin,
 	})
 
-	fmt.Println(r)
 	c.JSON(int(r.Code), gin.H{
 		"code":    r.Code,
 		"message": r.Message,
 	})
+}
+
+func RemoveChannelAdminHandler(c *gin.Context) {
+	name := middleware.GetUserName(c)
+
+	fmt.Println(name)
+}
+
+func NewSubscriberHandler(c *gin.Context) {
+	name := middleware.GetUserName(c)
+	id := c.PostForm("id")
+
+	cli, conn, err := client.Channel()
+	if err != nil {
+		log.Println(err)
+	}
+	defer conn.Close()
+
+	r, err := cli.NewSubscriber(context.Background(), &pb.NewSubscriberData{
+		Id:   id,
+		Name: name,
+	})
+
+	c.JSON(int(r.Code), gin.H{
+		"code":    r.Code,
+		"message": r.Message,
+	})
+}
+
+func GetSubscriberListHandler(c *gin.Context) {
+
 }

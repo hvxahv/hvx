@@ -28,7 +28,7 @@ func NewAccountsHandler(c *gin.Context) {
 	}
 	defer conn.Close()
 
-	r, err := cli.NewAccount(context.Background(), &pb.NewAccountData{
+	r, err := cli.New(context.Background(), &pb.NewAccountData{
 		Username: username,
 		Password: password,
 		Mail:     mail,
@@ -36,7 +36,7 @@ func NewAccountsHandler(c *gin.Context) {
 	if err != nil {
 		log.Printf("failed to send message to accounts server: %v", err)
 	}
-	fmt.Println(r)
+
 	c.JSON(int(r.Code), gin.H{
 		"code":    r.Code,
 		"message": r.Message,
@@ -56,7 +56,7 @@ func LoginHandler(c *gin.Context) {
 		log.Println(err)
 	}
 	defer conn.Close()
-	r, err := cli.LoginAccount(context.Background(), &pb.AuthData{
+	r, err := cli.Login(context.Background(), &pb.AuthData{
 		Mail:     mail,
 		Password: password,
 	})
@@ -114,14 +114,7 @@ func LoginHandler(c *gin.Context) {
 // GetAccountsHandler Obtain personal account information,
 // analyze the user through TOKEN and return user data.
 func GetAccountsHandler(c *gin.Context) {
-	name, err := middleware.GetUserName(c)
-	if err != nil {
-		c.JSON(500, gin.H{
-			"code":     500,
-			"messages": err.Error(),
-		})
-		return
-	}
+	name := middleware.GetUserName(c)
 
 	cli, conn, err := client.Accounts()
 	if err != nil {
@@ -129,7 +122,7 @@ func GetAccountsHandler(c *gin.Context) {
 	}
 	defer conn.Close()
 
-	r, err := cli.FindAccount(context.Background(), &pb.AccountByName{
+	r, err := cli.Find(context.Background(), &pb.NewAccountByName{
 		Username: name,
 	})
 	if err != nil {
@@ -152,14 +145,14 @@ func DeleteAccount(c *gin.Context) {
 	}
 	defer conn.Close()
 
-	r, err := cli.DeleteAccount(context.Background(), &pb.AuthData{
+	r, err := cli.Delete(context.Background(), &pb.AuthData{
 		Mail:     mail,
 		Password: password,
 	})
 	if err != nil {
 		log.Printf("failed to send message to accounts server: %v", err)
 	}
-	fmt.Println(r)
+
 	c.JSON(int(r.Code), gin.H{
 		"code":    r.Code,
 		"message": r.Message,
@@ -168,22 +161,14 @@ func DeleteAccount(c *gin.Context) {
 }
 
 func UpdateAccount(c *gin.Context) {
-	username, err := middleware.GetUserName(c)
-	if err  != nil {
-		c.JSON(500, gin.H{
-			"code":    500,
-			"message": err.Error(),
-		})
-		return
-	}
+	username := middleware.GetUserName(c)
 	password := c.PostForm("password")
 	bio := c.PostForm("bio")
 	name := c.PostForm("name")
 	mail := c.PostForm("mail")
 	phone := c.PostForm("phone")
 	is_private := c.PostForm("is_private")
-	
-	fmt.Println(username, password, bio, name, mail, phone, is_private)
+
 	cli, conn, err := client.Accounts()
 	if err != nil {
 		log.Println(err)
@@ -194,21 +179,21 @@ func UpdateAccount(c *gin.Context) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	
-	r, err := cli.UpdateAccount(context.Background(), &pb.AccountData{
-		Username:   username,
-		Password:   password,
-		Mail:       mail,
-		Bio:        bio,
-		Name:       name,
-		Phone:      phone,
-		IsPrivate:  parseBool,
+
+	r, err := cli.Update(context.Background(), &pb.AccountData{
+		Username:  username,
+		Password:  password,
+		Mail:      mail,
+		Bio:       bio,
+		Name:      name,
+		Phone:     phone,
+		IsPrivate: parseBool,
 	})
 
 	if err != nil {
 		log.Printf("failed to send message to accounts server: %v", err)
 	}
-	fmt.Println(r)
+
 	c.JSON(int(r.Code), gin.H{
 		"code":    r.Code,
 		"message": r.Message,

@@ -5,15 +5,21 @@ option go_package = "github.com/disism/hvxahv/api/hvxahv/v1alpha1/v1alpha1";
 
 // Accounts List of account gRPC service.
 service Accounts {
-  // NewAccount Create an account through the NewAccountData data structure.
-  rpc NewAccount (NewAccountData) returns (AccountsReply) {}
-  // UpdateAccount Update the account through AccountData data.
-  rpc UpdateAccount (AccountData) returns (AccountsReply) {}
-  // DeleteAccount Delete the specified account by user name.
-  rpc DeleteAccount (AuthData) returns (AccountsReply) {}
-  // FindAccount Query specified user data by username.
-  rpc FindAccount (AccountByName) returns (AccountData) {}
-  rpc LoginAccount (AuthData) returns (AuthReply) {}
+  // New Create an account through the NewAccountData data structure.
+  rpc New (NewAccountData) returns (AccountsReply) {}
+
+  // Update Update the account through AccountData data.
+  rpc Update (AccountData) returns (AccountsReply) {}
+
+  // Delete Delete the specified account by user name.
+  rpc Delete (AuthData) returns (AccountsReply) {}
+
+  // Find Query specified user data by username.
+  rpc Find (NewAccountByName) returns (AccountData) {}
+
+  // Login ...
+  rpc Login (AuthData) returns (AuthReply) {}
+
   //  New follower.
   rpc NewFollow (FollowersData) returns (AccountsReply) {}
 }
@@ -44,7 +50,7 @@ message AccountsReply {
 }
 
 // AccountByName Functions operated by username.
-message AccountByName{
+message NewAccountByName{
   string username = 1;
 }
 

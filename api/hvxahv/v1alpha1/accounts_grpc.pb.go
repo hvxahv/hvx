@@ -18,15 +18,16 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AccountsClient interface {
-	// NewAccount Create an account through the NewAccountData data structure.
-	NewAccount(ctx context.Context, in *NewAccountData, opts ...grpc.CallOption) (*AccountsReply, error)
-	// UpdateAccount Update the account through AccountData data.
-	UpdateAccount(ctx context.Context, in *AccountData, opts ...grpc.CallOption) (*AccountsReply, error)
-	// DeleteAccount Delete the specified account by user name.
-	DeleteAccount(ctx context.Context, in *AuthData, opts ...grpc.CallOption) (*AccountsReply, error)
-	// FindAccount Query specified user data by username.
-	FindAccount(ctx context.Context, in *AccountByName, opts ...grpc.CallOption) (*AccountData, error)
-	LoginAccount(ctx context.Context, in *AuthData, opts ...grpc.CallOption) (*AuthReply, error)
+	// New Create an account through the NewAccountData data structure.
+	New(ctx context.Context, in *NewAccountData, opts ...grpc.CallOption) (*AccountsReply, error)
+	// Update Update the account through AccountData data.
+	Update(ctx context.Context, in *AccountData, opts ...grpc.CallOption) (*AccountsReply, error)
+	// Delete Delete the specified account by user name.
+	Delete(ctx context.Context, in *AuthData, opts ...grpc.CallOption) (*AccountsReply, error)
+	// Find Query specified user data by username.
+	Find(ctx context.Context, in *NewAccountByName, opts ...grpc.CallOption) (*AccountData, error)
+	// Login ...
+	Login(ctx context.Context, in *AuthData, opts ...grpc.CallOption) (*AuthReply, error)
 	//  New follower.
 	NewFollow(ctx context.Context, in *FollowersData, opts ...grpc.CallOption) (*AccountsReply, error)
 }
@@ -39,45 +40,45 @@ func NewAccountsClient(cc grpc.ClientConnInterface) AccountsClient {
 	return &accountsClient{cc}
 }
 
-func (c *accountsClient) NewAccount(ctx context.Context, in *NewAccountData, opts ...grpc.CallOption) (*AccountsReply, error) {
+func (c *accountsClient) New(ctx context.Context, in *NewAccountData, opts ...grpc.CallOption) (*AccountsReply, error) {
 	out := new(AccountsReply)
-	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Accounts/NewAccount", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Accounts/New", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *accountsClient) UpdateAccount(ctx context.Context, in *AccountData, opts ...grpc.CallOption) (*AccountsReply, error) {
+func (c *accountsClient) Update(ctx context.Context, in *AccountData, opts ...grpc.CallOption) (*AccountsReply, error) {
 	out := new(AccountsReply)
-	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Accounts/UpdateAccount", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Accounts/Update", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *accountsClient) DeleteAccount(ctx context.Context, in *AuthData, opts ...grpc.CallOption) (*AccountsReply, error) {
+func (c *accountsClient) Delete(ctx context.Context, in *AuthData, opts ...grpc.CallOption) (*AccountsReply, error) {
 	out := new(AccountsReply)
-	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Accounts/DeleteAccount", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Accounts/Delete", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *accountsClient) FindAccount(ctx context.Context, in *AccountByName, opts ...grpc.CallOption) (*AccountData, error) {
+func (c *accountsClient) Find(ctx context.Context, in *NewAccountByName, opts ...grpc.CallOption) (*AccountData, error) {
 	out := new(AccountData)
-	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Accounts/FindAccount", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Accounts/Find", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *accountsClient) LoginAccount(ctx context.Context, in *AuthData, opts ...grpc.CallOption) (*AuthReply, error) {
+func (c *accountsClient) Login(ctx context.Context, in *AuthData, opts ...grpc.CallOption) (*AuthReply, error) {
 	out := new(AuthReply)
-	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Accounts/LoginAccount", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Accounts/Login", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -97,15 +98,16 @@ func (c *accountsClient) NewFollow(ctx context.Context, in *FollowersData, opts 
 // All implementations must embed UnimplementedAccountsServer
 // for forward compatibility
 type AccountsServer interface {
-	// NewAccount Create an account through the NewAccountData data structure.
-	NewAccount(context.Context, *NewAccountData) (*AccountsReply, error)
-	// UpdateAccount Update the account through AccountData data.
-	UpdateAccount(context.Context, *AccountData) (*AccountsReply, error)
-	// DeleteAccount Delete the specified account by user name.
-	DeleteAccount(context.Context, *AuthData) (*AccountsReply, error)
-	// FindAccount Query specified user data by username.
-	FindAccount(context.Context, *AccountByName) (*AccountData, error)
-	LoginAccount(context.Context, *AuthData) (*AuthReply, error)
+	// New Create an account through the NewAccountData data structure.
+	New(context.Context, *NewAccountData) (*AccountsReply, error)
+	// Update Update the account through AccountData data.
+	Update(context.Context, *AccountData) (*AccountsReply, error)
+	// Delete Delete the specified account by user name.
+	Delete(context.Context, *AuthData) (*AccountsReply, error)
+	// Find Query specified user data by username.
+	Find(context.Context, *NewAccountByName) (*AccountData, error)
+	// Login ...
+	Login(context.Context, *AuthData) (*AuthReply, error)
 	//  New follower.
 	NewFollow(context.Context, *FollowersData) (*AccountsReply, error)
 	mustEmbedUnimplementedAccountsServer()
@@ -115,20 +117,20 @@ type AccountsServer interface {
 type UnimplementedAccountsServer struct {
 }
 
-func (UnimplementedAccountsServer) NewAccount(context.Context, *NewAccountData) (*AccountsReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method NewAccount not implemented")
+func (UnimplementedAccountsServer) New(context.Context, *NewAccountData) (*AccountsReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method New not implemented")
 }
-func (UnimplementedAccountsServer) UpdateAccount(context.Context, *AccountData) (*AccountsReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateAccount not implemented")
+func (UnimplementedAccountsServer) Update(context.Context, *AccountData) (*AccountsReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
 }
-func (UnimplementedAccountsServer) DeleteAccount(context.Context, *AuthData) (*AccountsReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteAccount not implemented")
+func (UnimplementedAccountsServer) Delete(context.Context, *AuthData) (*AccountsReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
 }
-func (UnimplementedAccountsServer) FindAccount(context.Context, *AccountByName) (*AccountData, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method FindAccount not implemented")
+func (UnimplementedAccountsServer) Find(context.Context, *NewAccountByName) (*AccountData, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Find not implemented")
 }
-func (UnimplementedAccountsServer) LoginAccount(context.Context, *AuthData) (*AuthReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method LoginAccount not implemented")
+func (UnimplementedAccountsServer) Login(context.Context, *AuthData) (*AuthReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
 }
 func (UnimplementedAccountsServer) NewFollow(context.Context, *FollowersData) (*AccountsReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method NewFollow not implemented")
@@ -146,92 +148,92 @@ func RegisterAccountsServer(s grpc.ServiceRegistrar, srv AccountsServer) {
 	s.RegisterService(&Accounts_ServiceDesc, srv)
 }
 
-func _Accounts_NewAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Accounts_New_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(NewAccountData)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AccountsServer).NewAccount(ctx, in)
+		return srv.(AccountsServer).New(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/hvxahv.v1alpha1.proto.Accounts/NewAccount",
+		FullMethod: "/hvxahv.v1alpha1.proto.Accounts/New",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccountsServer).NewAccount(ctx, req.(*NewAccountData))
+		return srv.(AccountsServer).New(ctx, req.(*NewAccountData))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Accounts_UpdateAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Accounts_Update_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(AccountData)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AccountsServer).UpdateAccount(ctx, in)
+		return srv.(AccountsServer).Update(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/hvxahv.v1alpha1.proto.Accounts/UpdateAccount",
+		FullMethod: "/hvxahv.v1alpha1.proto.Accounts/Update",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccountsServer).UpdateAccount(ctx, req.(*AccountData))
+		return srv.(AccountsServer).Update(ctx, req.(*AccountData))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Accounts_DeleteAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Accounts_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(AuthData)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AccountsServer).DeleteAccount(ctx, in)
+		return srv.(AccountsServer).Delete(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/hvxahv.v1alpha1.proto.Accounts/DeleteAccount",
+		FullMethod: "/hvxahv.v1alpha1.proto.Accounts/Delete",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccountsServer).DeleteAccount(ctx, req.(*AuthData))
+		return srv.(AccountsServer).Delete(ctx, req.(*AuthData))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Accounts_FindAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AccountByName)
+func _Accounts_Find_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NewAccountByName)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AccountsServer).FindAccount(ctx, in)
+		return srv.(AccountsServer).Find(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/hvxahv.v1alpha1.proto.Accounts/FindAccount",
+		FullMethod: "/hvxahv.v1alpha1.proto.Accounts/Find",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccountsServer).FindAccount(ctx, req.(*AccountByName))
+		return srv.(AccountsServer).Find(ctx, req.(*NewAccountByName))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Accounts_LoginAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Accounts_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(AuthData)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AccountsServer).LoginAccount(ctx, in)
+		return srv.(AccountsServer).Login(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/hvxahv.v1alpha1.proto.Accounts/LoginAccount",
+		FullMethod: "/hvxahv.v1alpha1.proto.Accounts/Login",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccountsServer).LoginAccount(ctx, req.(*AuthData))
+		return srv.(AccountsServer).Login(ctx, req.(*AuthData))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -262,24 +264,24 @@ var Accounts_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*AccountsServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "NewAccount",
-			Handler:    _Accounts_NewAccount_Handler,
+			MethodName: "New",
+			Handler:    _Accounts_New_Handler,
 		},
 		{
-			MethodName: "UpdateAccount",
-			Handler:    _Accounts_UpdateAccount_Handler,
+			MethodName: "Update",
+			Handler:    _Accounts_Update_Handler,
 		},
 		{
-			MethodName: "DeleteAccount",
-			Handler:    _Accounts_DeleteAccount_Handler,
+			MethodName: "Delete",
+			Handler:    _Accounts_Delete_Handler,
 		},
 		{
-			MethodName: "FindAccount",
-			Handler:    _Accounts_FindAccount_Handler,
+			MethodName: "Find",
+			Handler:    _Accounts_Find_Handler,
 		},
 		{
-			MethodName: "LoginAccount",
-			Handler:    _Accounts_LoginAccount_Handler,
+			MethodName: "Login",
+			Handler:    _Accounts_Login_Handler,
 		},
 		{
 			MethodName: "NewFollow",

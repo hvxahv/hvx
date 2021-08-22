@@ -7,16 +7,16 @@ import (
 	"log"
 )
 
-// NewAccount Implementation of the method of creating an account.
-func (s *server) NewAccount(ctx context.Context, in *pb.NewAccountData) (*pb.AccountsReply, error) {
+// New Implementation of the method of creating an account.
+func (s *server) New(ctx context.Context, in *pb.NewAccountData) (*pb.AccountsReply, error) {
 	a, _ := NewAccounts(in.Username, in.Password, in.Mail)
 	code, messages := a.New()
 	return &pb.AccountsReply{Code: code, Message: messages}, nil
 }
 
-// LoginAccount The implementation of the login account method returns the user name and token,
+// Login The implementation of the login account method returns the user name and token,
 // and returns a specific error if there is an error.
-func (s *server) LoginAccount(ctx context.Context, in *pb.AuthData) (*pb.AuthReply, error) {
+func (s *server) Login(ctx context.Context, in *pb.AuthData) (*pb.AuthReply, error) {
 	r := NewAccountAuth(in.Mail, in.Password)
 	u, uuid, err := r.Login()
 	if err != nil {
@@ -28,8 +28,8 @@ func (s *server) LoginAccount(ctx context.Context, in *pb.AuthData) (*pb.AuthRep
 	}, nil
 }
 
-// UpdateAccount Implementation of the method to update the account.
-func (s *server) UpdateAccount(ctx context.Context, in *pb.AccountData) (*pb.AccountsReply, error) {
+// Update Implementation of the method to update the account.
+func (s *server) Update(ctx context.Context, in *pb.AccountData) (*pb.AccountsReply, error) {
 	a := Accounts{
 		Username:   in.Username,
 		Password:   in.Password,
@@ -51,7 +51,7 @@ func (s *server) UpdateAccount(ctx context.Context, in *pb.AccountData) (*pb.Acc
 }
 
 // FindAccount Implementation of the method of querying the account.
-func (s *server) FindAccount(ctx context.Context, in *pb.AccountByName) (*pb.AccountData, error) {
+func (s *server) FindAccount(ctx context.Context, in *pb.NewAccountByName) (*pb.AccountData, error) {
 	r := NewAcctByName(in.Username)
 	a, err := r.Find()
 	if err != nil {
