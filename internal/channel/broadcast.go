@@ -2,7 +2,7 @@ package channel
 
 import (
 	"fmt"
-	"github.com/disism/hvxahv/pkg/db"
+	"github.com/disism/hvxahv/pkg/cockroach"
 	"github.com/disism/hvxahv/pkg/ipfs"
 	"log"
 	"strings"
@@ -37,8 +37,8 @@ func (b *Broadcasts) New() {
 	}
 
 	// Save data and cid to database.
-	dbs := db.GetDB()
-	err2 := dbs.AutoMigrate(Broadcasts{})
+	db := cockroach.GetDB()
+	err2 := db.AutoMigrate(Broadcasts{})
 	if err2 != nil {
 		return 
 	}
@@ -49,7 +49,7 @@ func (b *Broadcasts) New() {
 		Cid:     cid,
 	}
 
-	if err1 := dbs.Debug().Table("broadcasts").Create(&data).Error; err1 != nil {
+	if err1 := db.Debug().Table("broadcasts").Create(&data).Error; err1 != nil {
 		log.Printf("an error occurred while creating the broadcasts: %v", err)
 	}
 

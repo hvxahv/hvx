@@ -1,7 +1,7 @@
 package accounts
 
 import (
-	"github.com/disism/hvxahv/pkg/db"
+	"github.com/disism/hvxahv/pkg/cockroach"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
 	"log"
@@ -22,9 +22,9 @@ type Follow interface {
 }
 
 func (f *Followers) New() error {
-	d := db.GetDB()
+	db := cockroach.GetDB()
 
-	if err := d.AutoMigrate(&Followers{}); err != nil {
+	if err := db.AutoMigrate(&Followers{}); err != nil {
 		log.Printf("failed to automatically create database: %v", err)
 	}
 
@@ -33,20 +33,20 @@ func (f *Followers) New() error {
 	// Check the following relationship, If you have followed,
 	// then return to have been followed, if not followed,
 	// insert a piece of following data and update the number of followers of the account.
-	if r := d.Debug().Table("followers").
+	if r := db.Debug().Table("followers").
 		Where("follower = ? AND following = ?", f.Follower, f.Following).First(&Accounts{}); r.Error != nil {
 
 
-			if err := d.Debug().Table("followers").Create(&f).Error; err != nil {
+			if err := db.Debug().Table("followers").Create(&f).Error; err != nil {
 				log.Printf("follow failed: %v", err)
 				return err
 			}
 
-			if err := d.Debug().Table("accounts").Where("username = ?", f.Follower).
+			if err := db.Debug().Table("accounts").Where("username = ?", f.Follower).
 				Update("following", gorm.Expr("following + ?", 1)).Error; err != nil {
 
 			}
-			if err := d.Debug().Table("accounts").Where("username = ?", f.Following).
+			if err := db.Debug().Table("accounts").Where("username = ?", f.Following).
 				Update("follower", gorm.Expr("follower + ?", 1)).Error; err != nil {
 
 			}

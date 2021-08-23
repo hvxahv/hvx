@@ -2,7 +2,7 @@ package channel
 
 import (
 	"github.com/disism/hvxahv/internal"
-	"github.com/disism/hvxahv/pkg/db"
+	"github.com/disism/hvxahv/pkg/cockroach"
 	"github.com/disism/hvxahv/pkg/security"
 	"gorm.io/gorm"
 	"log"
@@ -19,9 +19,9 @@ type Channels struct {
 }
 
 func (c *Channels) Find() Channels {
-	d := db.GetDB()
+	db := cockroach.GetDB()
 
-	if err := d.Debug().Table("channels").Where("id = ?", c.Id).Find(&c).Error; err != nil {
+	if err := db.Debug().Table("channels").Where("id = ?", c.Id).Find(&c).Error; err != nil {
 		log.Println(err)
 	}
 
@@ -37,14 +37,14 @@ func (c *Channels) Update() {
 }
 
 func (c *Channels) New() (int, string, string, error) {
-	d := db.GetDB()
+	db := cockroach.GetDB()
 
-	if err := d.AutoMigrate(&Channels{}); err != nil {
+	if err := db.AutoMigrate(&Channels{}); err != nil {
 		log.Printf("failed to automatically create database: %v", err)
 		return 500, internal.ServerError, "", err
 	}
 
-	if err := d.Debug().Table("channels").Create(&c).Error; err != nil {
+	if err := db.Debug().Table("channels").Create(&c).Error; err != nil {
 		return 500, internal.ServerError, "", err
 	}
 

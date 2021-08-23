@@ -22,6 +22,10 @@ func (r *Client) Get() ([]byte, error){
 	if err != nil {
 		return nil, err
 	}
+
+	req.Header.Add("Content-Type", "application/activity+json; charset=utf-8")
+	req.Header.Add("Accept", "application/ld+json")
+
 	res, err := client.Do(req)
 	if err != nil {
 		return nil, err

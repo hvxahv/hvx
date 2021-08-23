@@ -21,7 +21,7 @@ hvx new -h
 Use `new` to create a database:
 
 ```bash
-hvx new db <name>
+hvx new cockroach <name>
 ```
 
 Use `new` to create a service:
