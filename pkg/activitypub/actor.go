@@ -5,6 +5,7 @@ import (
 	pb "github.com/disism/hvxahv/api/hvxahv/v1alpha1"
 	"github.com/spf13/viper"
 	"strings"
+	"time"
 )
 
 // GetActorName Get the username in the request url such,
@@ -125,4 +126,39 @@ func NewActor(a *pb.AccountData) *actor {
 		Icon:              NewIcon(a.Avatar),
 	}
 	return actor
+}
+
+type Actor struct {
+	Context                   []interface{} `json:"@context"`
+	Id                        string        `json:"id"`
+	Type                      string        `json:"type"`
+	Following                 string        `json:"following"`
+	Followers                 string        `json:"followers"`
+	Inbox                     string        `json:"inbox"`
+	Outbox                    string        `json:"outbox"`
+	Featured                  string        `json:"featured"`
+	FeaturedTags              string        `json:"featuredTags"`
+	PreferredUsername         string        `json:"preferredUsername"`
+	Name                      string        `json:"name"`
+	Summary                   string        `json:"summary"`
+	Url                       string        `json:"url"`
+	ManuallyApprovesFollowers bool          `json:"manuallyApprovesFollowers"`
+	Discoverable              bool          `json:"discoverable"`
+	Published                 time.Time     `json:"published"`
+	Devices                   string        `json:"devices"`
+	PublicKey                 struct {
+		Id           string `json:"id"`
+		Owner        string `json:"owner"`
+		PublicKeyPem string `json:"publicKeyPem"`
+	} `json:"publicKey"`
+	Tag        []interface{} `json:"tag"`
+	Attachment []interface{} `json:"attachment"`
+	Endpoints  struct {
+		SharedInbox string `json:"sharedInbox"`
+	} `json:"endpoints"`
+	Icon struct {
+		Type      string `json:"type"`
+		MediaType string `json:"mediaType"`
+		Url       string `json:"url"`
+	} `json:"icon"`
 }

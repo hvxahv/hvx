@@ -50,8 +50,8 @@ func (s *server) Update(ctx context.Context, in *pb.AccountData) (*pb.AccountsRe
 	return &pb.AccountsReply{Code: 200, Message: "ok!"}, nil
 }
 
-// FindAccount Implementation of the method of querying the account.
-func (s *server) FindAccount(ctx context.Context, in *pb.NewAccountByName) (*pb.AccountData, error) {
+// Find Implementation of the method of querying the account.
+func (s *server) Find(ctx context.Context, in *pb.NewAccountByName) (*pb.AccountData, error) {
 	r := NewAcctByName(in.Username)
 	a, err := r.Find()
 	if err != nil {
@@ -74,8 +74,8 @@ func (s *server) FindAccount(ctx context.Context, in *pb.NewAccountByName) (*pb.
 	}, nil
 }
 
-// DeleteAccount Implementation of delete account method.
-func (s *server) DeleteAccount(ctx context.Context, in *pb.AuthData) (*pb.AccountsReply, error) {
+// Delete Implementation of delete account method.
+func (s *server) Delete(ctx context.Context, in *pb.AuthData) (*pb.AccountsReply, error) {
 	fmt.Println(in.Mail, in.Password)
 	r := NewAccountAuth(in.Mail, in.Password)
 	err := r.Delete()
