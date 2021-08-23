@@ -3,7 +3,7 @@ package channel
 import (
 	"fmt"
 	"github.com/disism/hvxahv/pkg/cache"
-	"github.com/disism/hvxahv/pkg/db"
+	"github.com/disism/hvxahv/pkg/cockroach"
 	"github.com/disism/hvxahv/pkg/ipfs"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
@@ -29,7 +29,7 @@ func TestInitChannelConfig(t *testing.T) {
 	}
 
 	// Initialize the database.
-	nd :=  db.NewDb()
+	nd :=  cockroach.NewDb()
 	if err2 := nd.InitDB(); err2 != nil {
 		return
 	}

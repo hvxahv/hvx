@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/disism/hvxahv/internal"
 	"github.com/disism/hvxahv/pkg/cache"
-	"github.com/disism/hvxahv/pkg/db"
+	"github.com/disism/hvxahv/pkg/cockroach"
 	"github.com/disism/hvxahv/pkg/security"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
@@ -88,9 +88,9 @@ type Accounts struct {
 }
 
 func (a *Accounts) New() (int32, string) {
-	d := db.GetDB()
+	db := cockroach.GetDB()
 
-	if err := d.AutoMigrate(&Accounts{}); err != nil {
+	if err := db.AutoMigrate(&Accounts{}); err != nil {
 		log.Printf("failed to automatically create database: %v", err)
 		return 500, internal.ServerError
 	}
@@ -112,7 +112,7 @@ func (a *Accounts) New() (int32, string) {
 		return 202, r
 	}
 
-	err := d.Debug().
+	err := db.Debug().
 		Table("accounts").
 		Where("username = ? ", a.Username).Or("mail = ?", a.Mail).
 		First(&Accounts{}).Error
@@ -123,10 +123,10 @@ func (a *Accounts) New() (int32, string) {
 
 	// Before creating, first check whether the user exists. If it does not exist, create the user.
 	// If it does, it needs to return an error to the client to explain that the user already exists.
-	if r := d.Debug().Table("accounts").
+	if r := db.Debug().Table("accounts").
 		Where("username = ? ", a.Username).Or("mail = ?", a.Mail).First(&Accounts{}); r.Error != nil {
 		if r.Error == gorm.ErrRecordNotFound {
-			if err1 := d.Debug().Table("accounts").Create(&a).Error; err1 != nil {
+			if err1 := db.Debug().Table("accounts").Create(&a).Error; err1 != nil {
 				log.Printf("an error occurred while creating the account: %v", err)
 				return 500, internal.ErrorNewAccount
 			}
@@ -155,12 +155,12 @@ func (a *Accounts) New() (int32, string) {
 }
 
 func (a *Accounts) Find() (*Accounts, error) {
-	d := db.GetDB()
+	db := cockroach.GetDB()
 
 	result, err := cache.GetRDB().Get(context.Background(), a.Username).Result()
 	if err != nil {
 		// If the cache is not found, the data will be searched from the database.
-		if err := d.Debug().Table("accounts").Where("username = ?", a.Username).First(&a).Error; err != nil {
+		if err := db.Debug().Table("accounts").Where("username = ?", a.Username).First(&a).Error; err != nil {
 			log.Println(gorm.ErrMissingWhereClause)
 			return nil, err
 		}
@@ -173,8 +173,8 @@ func (a *Accounts) Find() (*Accounts, error) {
 		return a, nil
 	}
 	// If the cache is found, the data in the cache will be returned.
-	if sre := json.Unmarshal([]byte(result), a); sre != nil {
-		log.Println("Accounts failed to find user cache and parse json.")
+	if err := json.Unmarshal([]byte(result), a); err != nil {
+		log.Println("accounts failed to find user cache and parse json.")
 	}
 	return a, nil
 
@@ -186,10 +186,10 @@ func (a *Accounts) Update() error {
 		a.Password = security.GenPassword(a.Password)
 	}
 
-	d := db.GetDB()
+	db := cockroach.GetDB()
 	acct := &a
 
-	if err := d.Debug().Table("accounts").Where("username = ?", a.Username).Updates(&acct).First(&acct).Error; err != nil {
+	if err := db.Debug().Table("accounts").Where("username = ?", a.Username).Updates(&acct).First(&acct).Error; err != nil {
 		log.Println(gorm.ErrMissingWhereClause)
 		return err
 	} else {
@@ -210,9 +210,9 @@ func (a *Accounts) Delete() error {
 		return err
 	}
 
-	d := db.GetDB()
+	db := cockroach.GetDB()
 	//  Unscoped() Use gorm's Unscoped method to permanently delete data.
-	if err2 := d.Debug().Table("accounts").Where("username = ?", name).Unscoped().Delete(&Accounts{}).Error; err != nil {
+	if err2 := db.Debug().Table("accounts").Where("username = ?", name).Unscoped().Delete(&Accounts{}).Error; err != nil {
 		log.Println(gorm.ErrMissingWhereClause)
 		return err2
 	}
@@ -226,7 +226,7 @@ func (a *Accounts) Delete() error {
 }
 
 func (a *Accounts) Login() (string, string, error) {
-	d := db.GetDB()
+	d := cockroach.GetDB()
 
 	var qa *Accounts
 	if err := d.Debug().Table("accounts").Where("mail = ?", a.Mail).First(&qa).Error; err != nil {

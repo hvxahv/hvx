@@ -1,4 +1,4 @@
-package db
+package cockroach
 
 import (
 	"fmt"

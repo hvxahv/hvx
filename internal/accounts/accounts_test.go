@@ -3,7 +3,7 @@ package accounts
 import (
 	"fmt"
 	"github.com/disism/hvxahv/pkg/cache"
-	"github.com/disism/hvxahv/pkg/db"
+	"github.com/disism/hvxahv/pkg/cockroach"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -28,7 +28,7 @@ func TestInitDB(t *testing.T) {
 	}
 
 	// Initialize the database.
-	nd :=  db.NewDb()
+	nd :=  cockroach.NewDb()
 	if err := nd.InitDB(); err != nil {
 		return
 	}

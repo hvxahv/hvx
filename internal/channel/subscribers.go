@@ -3,7 +3,7 @@ package channel
 import (
 	"github.com/disism/hvxahv/internal"
 	"github.com/disism/hvxahv/internal/accounts"
-	"github.com/disism/hvxahv/pkg/db"
+	"github.com/disism/hvxahv/pkg/cockroach"
 	"github.com/pkg/errors"
 	"log"
 )
@@ -26,10 +26,10 @@ type Subscribes struct {
 }
 
 func (c *Subscribes) GetSubscriberByID() (int, []accounts.Accounts, error) {
-	d := db.GetDB()
+	db := cockroach.GetDB()
 
 	var lis []Subscribes
-	if err := d.Debug().Table("chan_subs").Where("id = ?", c.Id).Find(&lis).Error; err != nil {
+	if err := db.Debug().Table("chan_subs").Where("id = ?", c.Id).Find(&lis).Error; err != nil {
 		log.Println(err)
 		return 500, nil, err
 	}
@@ -54,20 +54,20 @@ func (c *Subscribes) GetSubscriberList() {
 
 
 func (c *Subscribes) New() (int, string, error) {
-	d := db.GetDB()
+	db := cockroach.GetDB()
 
-	if err := d.Debug().Table("subscribes").Create(&c).Error; err != nil {
+	if err := db.Debug().Table("subscribes").Create(&c).Error; err != nil {
 		return 500, internal.ServerError, err
 	}
 	return 200, internal.SuccessSubscribed, nil
 }
 
 func NewSubscriber(id string, subscriber string) (*Subscribes, error) {
-	dbs := db.GetDB()
+	db := cockroach.GetDB()
 
 	// Find own: Determine whether the subscribed is your own channel
-	fo := dbs.Debug().Table("channels").Where("owner = ?", subscriber).Where("id = ?", id).First(&Channels{})
-	isFO, err := db.IsNotFound(fo.Error)
+	fo := db.Debug().Table("channels").Where("owner = ?", subscriber).Where("id = ?", id).First(&Channels{})
+	isFO, err := cockroach.IsNotFound(fo.Error)
 	if err != nil {
 		log.Printf("channels table database retrieval error: %v", err)
 		return nil, errors.Errorf("error inside the server!")
@@ -78,13 +78,13 @@ func NewSubscriber(id string, subscriber string) (*Subscribes, error) {
 		return nil, errors.Errorf("you can't subscribe to yourself channel.")
 	}
 
-	if err := dbs.AutoMigrate(&Subscribes{}); err != nil {
+	if err := db.AutoMigrate(&Subscribes{}); err != nil {
 		return nil, errors.Errorf("failed to create channel subscribes database automatically: %s", err)
 	}
 
 	// Find subscribes: Find out if a subscribes exists.
-	fs := dbs.Debug().Table("subscribes").Where("id = ?", id).Where("subscriber = ?", subscriber).First(&Subscribes{})
-	noSub, err := db.IsNotFound(fs.Error)
+	fs := db.Debug().Table("subscribes").Where("id = ?", id).Where("subscriber = ?", subscriber).First(&Subscribes{})
+	noSub, err := cockroach.IsNotFound(fs.Error)
 	if err != nil {
 		log.Printf("subscribes table database retrieval error: %v", err)
 		return nil, errors.Errorf("error inside the server!")

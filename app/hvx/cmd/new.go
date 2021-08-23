@@ -28,7 +28,7 @@ var newCmd = &cobra.Command{
 	SuggestFor:             nil,
 	Short:                  "A new function of hvx.",
 	Long:                   `You can use this method to create databases and microservices.`,
-	Example:                "hvx new db <name> or hvx new svc <name>",
+	Example:                "hvx new cockroach <name> or hvx new svc <name>",
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) != 2 {
 			fmt.Println("You must enter 2 parameters. For example, hvx new <parameter> <name> .")
@@ -38,7 +38,7 @@ var newCmd = &cobra.Command{
 		// Parameter name of the creation method.
 		name := args[1]
 		switch args[0] {
-		case "db":
+		case "cockroach":
 			pkg.CreateDB(name)
 		case "svc":
 			pkg.NewServices(name)

@@ -3,7 +3,7 @@ package channel
 import (
 	"github.com/disism/hvxahv/internal"
 	"github.com/disism/hvxahv/internal/accounts"
-	"github.com/disism/hvxahv/pkg/db"
+	"github.com/disism/hvxahv/pkg/cockroach"
 	"github.com/pkg/errors"
 	"log"
 )
@@ -30,21 +30,21 @@ func NewAddAdmins(owner, id, admin string) (*Admins, error) {
 		return nil, errors.Errorf("cannot add yourself as an administrator.")
 	}
 
-	dbs := db.GetDB()
+	db := cockroach.GetDB()
 
-	if err := dbs.AutoMigrate(&Admins{}); err != nil {
+	if err := db.AutoMigrate(&Admins{}); err != nil {
 		return nil, errors.Errorf("failed to create channel admin database automatically: %s", err)
 	}
 
 	// Find owner: check whether the owner is correct by ID.
-	fo := dbs.Debug().Table("channels").Where("owner = ?", owner).Where("id = ?", id).First(&Channels{})
+	fo := db.Debug().Table("channels").Where("owner = ?", owner).Where("id = ?", id).First(&Channels{})
 	if fo.Error != nil {
 		return nil, errors.Errorf("%s not the owner of the channel.", owner)
 	}
 
 	// Find admin: check whether the administrator already exists by ID.
-	fa := dbs.Debug().Table("admins").Where("id = ?", id).Where("admin = ?", admin).First(&Admins{})
-	no, err := db.IsNotFound(fa.Error)
+	fa := db.Debug().Table("admins").Where("id = ?", id).Where("admin = ?", admin).First(&Admins{})
+	no, err := cockroach.IsNotFound(fa.Error)
 	if err != nil {
 		log.Printf("admins table database retrieval error: %v", err)
 		return nil, errors.Errorf("error inside the server!")
@@ -69,14 +69,14 @@ type Admins struct {
 }
 
 func (c *Admins) RemoveAdmin() (int, string, error) {
-	dbs := db.GetDB()
+	db := cockroach.GetDB()
 	// TODO - Delete channel manager.......
-	qa := dbs.Debug().Table("admins").Where("admin = ?", c.Admin).Find(&Admins{})
+	qa := db.Debug().Table("admins").Where("admin = ?", c.Admin).Find(&Admins{})
 	if qa.Error != nil {
 		log.Println(qa.Error)
 	}
 
-	if err := dbs.Debug().Table("admins").Where("admin = ?", c.Admin).Unscoped().Delete(&Admins{}).Error; err != nil {
+	if err := db.Debug().Table("admins").Where("admin = ?", c.Admin).Unscoped().Delete(&Admins{}).Error; err != nil {
 		return 500, "failed to remove administrator", err
 	}
 	if qa.Error != nil {
@@ -86,10 +86,10 @@ func (c *Admins) RemoveAdmin() (int, string, error) {
 }
 
 func (c *Admins) GetListByName() (int, []Channels, error) {
-	d := db.GetDB()
+	db := cockroach.GetDB()
 
 	var lis []Admins
-	if err := d.Debug().Table("admins").Where("admin = ?", c.Admin).Find(&lis).Error; err != nil {
+	if err := db.Debug().Table("admins").Where("admin = ?", c.Admin).Find(&lis).Error; err != nil {
 		log.Println(err)
 		return 500, nil, err
 	}
@@ -104,10 +104,10 @@ func (c *Admins) GetListByName() (int, []Channels, error) {
 }
 
 func (c *Admins) GetAdmLisByID() (int, []accounts.Accounts, error) {
-	d := db.GetDB()
+	db := cockroach.GetDB()
 
 	var lis []Admins
-	if err := d.Debug().Table("admins").Where("id = ?", c.Id).Find(&lis).Error; err != nil {
+	if err := db.Debug().Table("admins").Where("id = ?", c.Id).Find(&lis).Error; err != nil {
 		log.Println(err)
 		return 500, nil, err
 	}
@@ -128,8 +128,8 @@ func (c *Admins) GetAdmLisByID() (int, []accounts.Accounts, error) {
 }
 
 func (c *Admins) AddAdmin() (int, string, error) {
-	d := db.GetDB()
-	if err := d.Debug().Table("admins").Create(&c).Error; err != nil {
+	db := cockroach.GetDB()
+	if err := db.Debug().Table("admins").Create(&c).Error; err != nil {
 		return 500, internal.ServerError, err
 	}
 	return 200, internal.SuccessAddChanAdm, nil

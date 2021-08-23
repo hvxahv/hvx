@@ -31,7 +31,7 @@ func GetActorHandler(c *gin.Context) {
 	if err != nil {
 		c.JSON(200, gin.H{
 			"status":  "600",
-			"message": "No query to the account.",
+			"message": "NO QUERY TO THE ACCOUNT.",
 		})
 	}
 	a := activitypub.NewActor(acct)

@@ -17,7 +17,7 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/disism/hvxahv/pkg/db"
+	"github.com/disism/hvxahv/pkg/cockroach"
 	"github.com/disism/hvxahv/pkg/cache"
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
@@ -84,7 +84,7 @@ func initConfig() {
 		fmt.Fprintln(os.Stderr, "Using configs file:", viper.ConfigFileUsed())
 	}
 
-	nd :=  db.NewDb()
+	nd :=  cockroach.NewDb()
 	if err := nd.InitDB(); err != nil {
 		return
 	}
