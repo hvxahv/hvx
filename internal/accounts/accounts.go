@@ -193,6 +193,7 @@ func (a *Accounts) Update() error {
 		log.Println(gorm.ErrMissingWhereClause)
 		return err
 	} else {
+		// TODO - BUG: DELETE CACHE ACCT_MAIL
 		// update data to the cache server.
 		ad, _ := json.Marshal(&acct)
 		if errs := cache.SETAcct(a.Username, ad, 0); err != nil {

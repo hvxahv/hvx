@@ -16,7 +16,6 @@ require (
 	github.com/spf13/cobra v1.1.3
 	github.com/spf13/viper v1.7.1
 	github.com/technoweenie/multipartstreamer v1.0.1 // indirect
-	go.mongodb.org/mongo-driver v1.5.3
 	golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a
 	golang.org/x/net v0.0.0-20210610132358-84b48f89b13b
 	golang.org/x/sys v0.0.0-20210611083646-a4fc73990273 // indirect

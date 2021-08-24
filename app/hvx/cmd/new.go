@@ -26,24 +26,30 @@ var newCmd = &cobra.Command{
 	Use:                    "new",
 	Aliases:                nil,
 	SuggestFor:             nil,
-	Short:                  "A new function of hvx.",
+	Short:                  "A new method of hvx.",
 	Long:                   `You can use this method to create databases and microservices.`,
-	Example:                "hvx new cockroach <name> or hvx new svc <name>",
+	Example:                "hvx new db <name> or hvx new svc <name>",
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) != 2 {
 			fmt.Println("You must enter 2 parameters. For example, hvx new <parameter> <name> .")
 			return
 		}
 
-		// Parameter name of the creation method.
 		name := args[1]
+
 		switch args[0] {
-		case "cockroach":
-			pkg.CreateDB(name)
+		case "db":
+			err := pkg.NewDB(name)
+			if err != nil {
+				fmt.Println(err)
+			}
 		case "svc":
-			pkg.NewServices(name)
+			err := pkg.NewServices(name)
+			if err != nil {
+				fmt.Println(err)
+			}
 		default:
-			fmt.Println("Execute command error.")
+			fmt.Println("execute command error, please use help to execute the command correctly.")
 			return
 		}
 	},
