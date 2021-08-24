@@ -213,5 +213,5 @@ var Channel_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "api/hvxahv/v1alpha1/channel.proto",
+	Metadata: "api/channel/v1alpha1/channel.proto",
 }

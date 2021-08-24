@@ -1,7 +1,7 @@
 package channel
 
 import (
-	pb "github.com/disism/hvxahv/api/hvxahv/v1alpha1"
+	pb "github.com/disism/hvxahv/api/channel/v1alpha1"
 	"golang.org/x/net/context"
 	"log"
 )

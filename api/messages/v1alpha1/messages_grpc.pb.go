@@ -97,5 +97,5 @@ var Message_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "api/hvxahv/v1alpha1/messages.proto",
+	Metadata: "api/messages/v1alpha1/messages.proto",
 }
