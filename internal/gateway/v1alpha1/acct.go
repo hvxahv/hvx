@@ -45,7 +45,7 @@ func V1Accounts(r *gin.Engine) {
 		//v1alpha1.POST("/account/login", v1alpha1.VerificationHandler)
 
 
-		r.GET("/u/:actor/outbox", handlers.GetActorOutbox)
+		//r.GET("/u/:actor/outbox", handlers.GetActorOutbox)
 		//r.POST("/u/:user/inbox", handlers.InboxHandler)
 
 	}

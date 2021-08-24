@@ -28,13 +28,13 @@ func TestInitDB(t *testing.T) {
 	}
 
 	// Initialize the database.
-	nd :=  cockroach.NewDb()
-	if err := nd.InitDB(); err != nil {
+	n :=  cockroach.NewDBAddr()
+	if err2 := n.InitDB(); err2 != nil {
 		return
 	}
 
 	// If a configs file is found, read it in.
-	if err := viper.ReadInConfig(); err == nil {
+	if err3 := viper.ReadInConfig(); err3 == nil {
 		fmt.Fprintln(os.Stderr, "Using configs file:", viper.ConfigFileUsed())
 	}
 
@@ -62,7 +62,7 @@ func TestAccounts_Update(t *testing.T) {
 
 	a := Accounts{
 		Username:   "hvturingga",
-		Password:   "hvxahv123",
+		Password:   "",
 		Avatar:     "http://stage48.net/wiki/images/5/5b/KobayashiYui8th.jpg",
 		Bio:        "我很开心，现在我在录制视频, 欢迎关注我的 YouTube 频道! AHHHHh.....",
 		Name:       "HVTURINGGA",
