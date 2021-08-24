@@ -2,7 +2,7 @@ package accounts
 
 import (
 	"fmt"
-	pb "github.com/disism/hvxahv/api/hvxahv/v1alpha1"
+	pb "github.com/disism/hvxahv/api/accounts/v1alpha1"
 	"golang.org/x/net/context"
 	"log"
 )

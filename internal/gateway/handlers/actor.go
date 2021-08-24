@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	pb "github.com/disism/hvxahv/api/hvxahv/v1alpha1"
+	pb "github.com/disism/hvxahv/api/accounts/v1alpha1"
 	"github.com/disism/hvxahv/pkg/activitypub"
 	"github.com/disism/hvxahv/pkg/microservices/client"
 	"github.com/gin-gonic/gin"
