@@ -4,22 +4,21 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/disism/hvxahv/internal/gateway/middleware"
-	"io/ioutil"
-
 	"github.com/disism/hvxahv/internal/messages"
 	"github.com/gin-gonic/gin"
+	"io/ioutil"
 )
 
 func InboxHandler(c *gin.Context) {
 	name := c.Param("actor")
-
 	body, _ := ioutil.ReadAll(c.Request.Body)
-	fmt.Println(string(body))
-	inbox := messages.Messages{}
+
+	inbox := messages.Inbox{}
 	err := json.Unmarshal(body, &inbox)
 	if err != nil {
-		return
+		fmt.Println(err)
 	}
+
 	inbox.Inbox(name)
 }
 

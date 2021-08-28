@@ -6,7 +6,9 @@ import (
 	"github.com/disism/hvxahv/internal/gateway/middleware"
 	"github.com/disism/hvxahv/pkg/microservices/client"
 	"github.com/disism/hvxahv/pkg/security"
+	"github.com/disism/hvxahv/pkg/storage"
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 	"golang.org/x/net/context"
 	"log"
 	"strconv"
@@ -73,43 +75,51 @@ func LoginHandler(c *gin.Context) {
 	})
 }
 
-//
-//// UploadAvatar Interface for users to upload avatars.
-//func UploadAvatar(c *gin.Context) {
-//	file, err := c.FormFile("file")
-//	if err != nil {
-//		fmt.Println("File read failed！" + err.Error())
-//		c.JSON(500, gin.H{
-//			"status":  500,
-//			"message": "File read failed！",
-//		})
-//		return
-//	}
-//
-//	bucket := "accounts"
-//	m := storage.NewMin(file, "avatar", bucket, "")
-//	url, err := m.FileUploader()
-//	if err != nil {
-//		log.Println(err)
-//		c.JSON(500, gin.H{
-//			"status":  500,
-//			"message": "Server receiving file error!",
-//		})
-//		return
-//	}
-//	var link string
-//	if viper.GetBool("storage.minio.useSSL") {
-//		link = fmt.Sprintf("https://%s/%s/%s", viper.GetString("storage.minio.addr"), bucket, url)
-//	} else {
-//		link = fmt.Sprintf("http://%s/%s/%s", viper.GetString("storage.minio.addr"), bucket, url)
-//	}
-//	c.JSON(200, gin.H{
-//		"status":  200,
-//		"message": "Avatar uploaded successfully.",
-//		"url":     link,
-//	})
-//}
-//
+// UploadAvatar Interface for users to upload avatars.
+func UploadAvatar(c *gin.Context) {
+	file, err := c.FormFile("file")
+	if err != nil {
+		fmt.Println("File read failed！" + err.Error())
+		c.JSON(500, gin.H{
+			"status":  500,
+			"message": "file read failed！",
+		})
+		return
+	}
+
+	fileType := file.Header.Get("Content-Type")
+	if fileType != "image/jpeg" && fileType != "image/png" {
+		c.JSON(500, gin.H{
+			"status":  500,
+			"message": "unsupported image format!",
+		})
+		return
+	}
+
+	bucket := "avatar"
+	m := storage.NewMinio(file, bucket, viper.GetString("minio.location"), fileType)
+	url, err := m.Uploader()
+	if err != nil {
+		log.Println(err)
+		c.JSON(500, gin.H{
+			"status":  500,
+			"message": "server receiving file error!",
+		})
+		return
+	}
+
+	var link string
+	if viper.GetBool("storage.minio.useSSL") {
+		link = fmt.Sprintf("https://%s/%s/%s", viper.GetString("minio.addr"), bucket, url)
+	} else {
+		link = fmt.Sprintf("http://%s/%s/%s", viper.GetString("minio.addr"), bucket, url)
+	}
+	c.JSON(200, gin.H{
+		"status":  200,
+		"message": "avatar uploaded successfully.",
+		"url":     link,
+	})
+}
 
 // GetAccountsHandler Obtain personal account information,
 // analyze the user through TOKEN and return user data.
@@ -177,7 +187,7 @@ func UpdateAccount(c *gin.Context) {
 
 	parseBool, err := strconv.ParseBool(is_private)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 
 	r, err := cli.Update(context.Background(), &pb.AccountData{

@@ -4,9 +4,11 @@ import (
 	"fmt"
 	"github.com/disism/hvxahv/pkg/cache"
 	"github.com/disism/hvxahv/pkg/cockroach"
+	"github.com/disism/hvxahv/pkg/security"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"log"
 	"os"
 	"testing"
 )
@@ -45,12 +47,16 @@ func TestInitDB(t *testing.T) {
 
 func TestNewAccounts(t *testing.T) {
 	TestInitDB(t)
-	na, _ := NewAccounts(
-		"hvturingga",
-		"hvxahv",
-		"x@disism.com",
+	na, err := NewAccounts(
+		"hvt",
+		"hvx",
+		"hvx@disism.com",
 		)
-
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+	fmt.Println(na)
 	code, message := na.New()
 
 	t.Log(code, message)
@@ -71,6 +77,24 @@ func TestAccounts_Update(t *testing.T) {
 		IsPrivate:    false,
 		PrivateKey: "",
 		PublicKey:  "",
+	}
+
+	if err := a.Update(); err != nil {
+		t.Errorf("%v",err)
+	}
+}
+
+func TestAccounts_UpdateKEY(t *testing.T) {
+	TestInitDB(t)
+	privateKey, publicKey, err := security.GenRSA()
+	if err != nil {
+		log.Printf("failed to generate public and private keys: %v", err)
+	}
+
+	a := Accounts{
+		Username:   "hvturingga",
+		PrivateKey: privateKey,
+		PublicKey:  publicKey,
 	}
 
 	if err := a.Update(); err != nil {
