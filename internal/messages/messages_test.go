@@ -39,11 +39,11 @@ func IniTestConfig(t *testing.T) {
 
 func TestNewMessages(t *testing.T) {
 	IniTestConfig(t)
-	NewMessages("", "hvturingga", "")
+	//NewFollow("", "hvturingga")
 }
 
 func TestMessages_Outbox(t *testing.T) {
 	IniTestConfig(t)
-	nm := NewMessages("Follow", "hvturingga", "https://mas.to/users/hvturingga/inbox")
-	nm.Outbox()
+	//nm := NewFollow("Follow", "hvturingga")
+	//nm.Outbox()
 }

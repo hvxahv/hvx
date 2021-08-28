@@ -108,7 +108,7 @@ func NewActor(a *pb.AccountData) *actor {
 	box := fmt.Sprintf("https://%s/u/%s/", addr, a.Username)
 
 	publicKey := map[string]string{
-		"id":           a.Uuid,
+		"id":           fmt.Sprintf("https://%s/u/%s#main-key", addr, a.Username),
 		"owner":        act,
 		"publicKeyPem": a.PublicKey,
 	}

@@ -15,12 +15,12 @@ import (
 func GenRSA() (string, string, error) {
 	privateKey, publicKey, err := generateKey(2048)
 	if err != nil {
-		return "", "", errors.Errorf("Generate key is error: %v", err)
+		return "", "", errors.Errorf("generate key is error: %v", err)
 	}
 	private := encodePrivateKey(privateKey)
 	public, err := encodePublicKey(publicKey)
 	if err != nil {
-		return "", "", errors.Errorf("Encode Public Key is error: %v", err)
+		return "", "", errors.Errorf("encode public key is error: %v", err)
 	}
 
 	return string(private), string(public), err

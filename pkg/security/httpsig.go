@@ -3,15 +3,15 @@ package security
 import (
 	"bytes"
 	"crypto"
-	"crypto/ed25519"
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/sha256"
 	"crypto/x509"
 	"encoding/base64"
 	"encoding/pem"
-	"errors"
 	"fmt"
+	"github.com/pkg/errors"
+	"golang.org/x/crypto/ed25519"
 	"io"
 	"log"
 	"net/http"
@@ -64,7 +64,7 @@ func (privkey PrivateKey) Sign(msg []byte) []byte {
 	}
 	sig, err := rsa.SignPKCS1v15(rand.Reader, privateKey, crypto.SHA256, msg)
 	if err != nil {
-		log.Printf("error signing msg: %v", err)
+		log.Panic("error signing msg: %s", err)
 	}
 	return sig
 
@@ -125,13 +125,16 @@ func SignRequest(keyname string, key PrivateKey, req *http.Request, content []by
 	}
 
 	h := sha256.New()
+	fmt.Println(stuff)
 	h.Write([]byte(strings.Join(stuff, "\n")))
+	fmt.Println(h.Sum(nil))
 	sig := key.Sign(h.Sum(nil))
 	bsig := sb64(sig)
 
 	sighdr := fmt.Sprintf(`keyId="%s",algorithm="%s",headers="%s",signature="%s"`,
 		keyname, "rsa-sha256", strings.Join(headers, " "), bsig)
 	req.Header.Set("Signature", sighdr)
+	fmt.Println(req.Header)
 }
 
 var re_sighdrval = regexp.MustCompile(`(.*)="(.*)"`)
@@ -275,6 +278,10 @@ func DecodeKey(s string) (pri PrivateKey, pub PublicKey, err error) {
 		rsakey, err = x509.ParsePKCS1PrivateKey(block.Bytes)
 		if err == nil {
 
+
+
+
+
 			pri.Type = RSA
 			pub.Key = &rsakey.PublicKey
 			pub.Type = RSA
@@ -310,3 +317,4 @@ func EncodeKey(i interface{}) (string, error) {
 	}
 	return string(pem.EncodeToMemory(&b)), nil
 }
+
