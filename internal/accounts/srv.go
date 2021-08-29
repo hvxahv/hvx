@@ -31,10 +31,13 @@ func Run() error {
 		return err
 	}
 
-	log.Printf("Port: %s, The %s gRPC service is running...", port, name)
-	if err2 := s.Serve(lis); err2 != nil {
-		return err2
-	}
+	go func() {
+		err2 := s.Serve(lis)
+		if err2 != nil {
+			log.Println(err2)
+			return
+		}
+	}()
 
 	return nil
 }

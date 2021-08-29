@@ -18,10 +18,13 @@ package cmd
 import (
 	"fmt"
 	"github.com/disism/hvxahv/internal/gateway"
+	"github.com/disism/hvxahv/pkg/microservices/consul"
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"log"
-
-	"github.com/spf13/cobra"
+	"os"
+	"os/signal"
+	"syscall"
 )
 
 // runCmd represents the run command
@@ -30,10 +33,36 @@ var runCmd = &cobra.Command{
 	Short: "Run http server of hvxahv.",
 	Long: ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		api := gateway.APIServer()
-		if err := api.Run(fmt.Sprintf(":%s", viper.GetString("microservices.gateway.port"))); err != nil {
-			log.Println(err)
+		p := viper.GetString("microservices.gateway.port")
+
+		tags := []string{"gateway", "http", "RESTFul"}
+		nr := consul.NewRegister("gateway", p, tags, "localhost")
+		err := nr.Register()
+		if err != nil {
+			fmt.Println(err)
 			return
+		}
+
+		c := make(chan os.Signal, 1)
+		signal.Notify(c, syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT)
+
+		api := gateway.APIServer()
+		go func() {
+			if err := api.Run(fmt.Sprintf(":%s", p)); err != nil {
+				fmt.Println(err)
+				return
+			}
+		}()
+
+		s := <-c
+		switch s {
+		case syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT:
+			err := consul.Deregister(nr.ID)
+			if err != nil {
+				log.Println(err)
+			}
+			return
+		default:
 		}
 	},
 }

@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	pb "github.com/disism/hvxahv/api/accounts/v1alpha1"
 	"github.com/disism/hvxahv/internal/gateway/middleware"
 	"github.com/disism/hvxahv/pkg/microservices/client"
@@ -177,7 +176,7 @@ func UpdateAccount(c *gin.Context) {
 
 	parseBool, err := strconv.ParseBool(is_private)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 
 	r, err := cli.Update(context.Background(), &pb.AccountData{
