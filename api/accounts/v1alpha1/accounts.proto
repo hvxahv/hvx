@@ -1,0 +1,79 @@
+syntax = "proto3";
+
+package hvxahv.v1alpha1.proto;
+option go_package = "github.com/disism/hvxahv/api/accounts/v1alpha1";
+
+// Accounts List of account gRPC service.
+service Accounts {
+  // New Create an account through the NewAccountData data structure.
+  rpc New (NewAccountData) returns (AccountsReply) {}
+
+  // Update Update the account through AccountData data.
+  rpc Update (AccountData) returns (AccountsReply) {}
+
+  // Delete Delete the specified account by user name.
+  rpc Delete (AuthData) returns (AccountsReply) {}
+
+  // Find Query specified user data by username.
+  rpc Find (NewAccountByName) returns (AccountData) {}
+
+  // Login ...
+  rpc Login (AuthData) returns (AuthReply) {}
+
+  //  New follower.
+  rpc NewFollow (FollowersData) returns (AccountsReply) {}
+}
+
+
+// AccountsData List of all data of the account service
+message AccountData {
+  string uuid       = 1;
+  string username   = 2;
+  string password   = 3;
+  string mail       = 4;
+  string avatar     = 5;
+  string bio        = 6;
+  string name       = 7;
+  string phone      = 8;
+  bool   isPrivate  = 9;
+  int32  follower   = 10;
+  int32  following  = 11;
+  int32  friend     = 12;
+  string privateKey = 13;
+  string publicKey  = 14;
+}
+
+// AccountsReply The return value, code and message of the Accounts operation.
+message AccountsReply {
+  int32  code    = 1;
+  string message = 2;
+}
+
+// AccountByName Functions operated by username.
+message NewAccountByName{
+  string username = 1;
+}
+
+// NewAccountData Data needed to create a new account.
+message NewAccountData {
+  string username   = 1;
+  string password   = 2;
+  string mail       = 3;
+}
+
+// AuthReply Account login, use email and password.
+message AuthData {
+  string mail     = 1;
+  string password = 2;
+}
+
+// AuthReply The data returned by the login account needs to return a token.
+message AuthReply {
+  string username = 1;
+  string uuid    = 2;
+}
+
+message FollowersData {
+  string follower   = 1;
+  string following   = 2;
+}

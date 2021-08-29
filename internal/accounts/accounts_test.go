@@ -2,10 +2,13 @@ package accounts
 
 import (
 	"fmt"
+	"github.com/disism/hvxahv/pkg/cache"
+	"github.com/disism/hvxahv/pkg/cockroach"
+	"github.com/disism/hvxahv/pkg/security"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"hvxahv/pkg/db"
+	"log"
 	"os"
 	"testing"
 )
@@ -27,36 +30,69 @@ func TestInitDB(t *testing.T) {
 	}
 
 	// Initialize the database.
-	nd :=  db.NewDb()
-	if err := nd.InitDB(); err != nil {
+	n :=  cockroach.NewDBAddr()
+	if err2 := n.InitDB(); err2 != nil {
 		return
 	}
+
+	// If a configs file is found, read it in.
+	if err3 := viper.ReadInConfig(); err3 == nil {
+		fmt.Fprintln(os.Stderr, "Using configs file:", viper.ConfigFileUsed())
+	}
+
+
+	cache.InitRedis(1)
 
 }
 
 func TestNewAccounts(t *testing.T) {
 	TestInitDB(t)
-
-	na := NewAccounts(
+	na, _ := NewAccounts(
 		"hvturingga",
 		"hvxahv",
-		"https://cdn.keyakizaka46.com/images/14/103/4f2a17f7f544a1635c244502dc8ea/400_320_102400.jpg",
-		"HVTURINGGA" ,
 		"x@disism.com",
-		0,
 		)
 
-	if _, err := na.New(); err != nil {
-		t.Error(err)
-	}
+	code, message := na.New()
+
+	t.Log(code, message)
 }
+
 
 func TestAccounts_Update(t *testing.T) {
 	TestInitDB(t)
 
-	a := NewUpdateAcct()
-	a.Username = "hvturingga"
-	a.Bio = "我很开心，现在我在录制视频, 欢迎关注我的频道!"
+	a := Accounts{
+		Username:   "hvturingga",
+		Password:   "",
+		Avatar:     "http://stage48.net/wiki/images/5/5b/KobayashiYui8th.jpg",
+		Bio:        "我很开心，现在我在录制视频, 欢迎关注我的 YouTube 频道! AHHHHh.....",
+		Name:       "HVTURINGGA",
+		Mail:       "",
+		Phone:      "",
+		IsPrivate:    false,
+		PrivateKey: "",
+		PublicKey:  "",
+	}
+
+	if err := a.Update(); err != nil {
+		t.Errorf("%v",err)
+	}
+}
+
+func TestAccounts_UpdateKEY(t *testing.T) {
+	TestInitDB(t)
+	privateKey, publicKey, err := security.GenRSA()
+	if err != nil {
+		log.Printf("failed to generate public and private keys: %v", err)
+	}
+
+	a := Accounts{
+		Username:   "hvturingga",
+		PrivateKey: privateKey,
+		PublicKey:  publicKey,
+	}
+
 	if err := a.Update(); err != nil {
 		t.Errorf("%v",err)
 	}
@@ -65,8 +101,8 @@ func TestAccounts_Update(t *testing.T) {
 func TestAccounts_Query(t *testing.T) {
 	TestInitDB(t)
 
-	a := NewQueryAcctByName("hvturingga")
-	r, err := a.Query()
+	a := NewAcctByName("hvturingga")
+	r, err := a.Find()
 	if err != nil {
 		return
 	}
@@ -76,25 +112,23 @@ func TestAccounts_Query(t *testing.T) {
 func TestAccounts_Delete(t *testing.T) {
 	TestInitDB(t)
 
-	a := NewDelAcctByName("hvturingga")
+	a := NewAccountAuth("xxs@disism.com", "hvxahv123")
 	if err := a.Delete(); err != nil {
 		t.Log(err)
 		return
 	}
 	t.Log("Delete account successfully.")
-
-
 }
 
 func TestAccounts_Login(t *testing.T) {
 	TestInitDB(t)
 
-	a := NewAccountLogin("hvturingga", "hvxahv")
+	a := NewAccountAuth("xxs@disism.com", "hvxahv123")
 
-	r, err := a.Login()
+	r, s, err := a.Login()
  	if err != nil {
 		t.Error(err)
 	}
-	t.Log(r)
+	t.Log(r, s)
 
 }

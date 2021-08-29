@@ -1,32 +1,80 @@
 package channel
 
-import "gorm.io/gorm"
+import (
+	"github.com/disism/hvxahv/internal"
+	"github.com/disism/hvxahv/pkg/cockroach"
+	"github.com/disism/hvxahv/pkg/security"
+	"gorm.io/gorm"
+	"log"
+)
 
-type channel struct {
+type Channels struct {
 	gorm.Model
-	name  string   `gorm:"name"`
-	owner string   `gorm:"owner"`
-	admin []string `gorm:"admin"`
+	Name      string `gorm:"type:varchar(100);name"`
+	Id        string `gorm:"primaryKey;type:varchar(100);id;unique"`
+	Avatar    string `gorm:"type:varchar(999);avatar"`
+	Bio       string `gorm:"type:varchar(999);bio"`
+	Owner     string `gorm:"primaryKey;type:varchar(100);owner"`
+	IsPrivate bool   `gorm:"type:boolean;is_private"`
+}
+
+func (c *Channels) Find() Channels {
+	db := cockroach.GetDB()
+
+	if err := db.Debug().Table("channels").Where("id = ?", c.Id).Find(&c).Error; err != nil {
+		log.Println(err)
+	}
+
+	return *c
+}
+
+func (c *Channels) GetMyChanByName() {
+	panic("implement me")
+}
+
+func (c *Channels) Update() {
+	panic("implement me")
+}
+
+func (c *Channels) New() (int, string, string, error) {
+	db := cockroach.GetDB()
+
+	if err := db.AutoMigrate(&Channels{}); err != nil {
+		log.Printf("failed to automatically create database: %v", err)
+		return 500, internal.ServerError, "", err
+	}
+
+	if err := db.Debug().Table("channels").Create(&c).Error; err != nil {
+		return 500, internal.ServerError, "", err
+	}
+
+	return 200, internal.SuccessNewChannel, c.Id, nil
 }
 
 type Channel interface {
-	New()
-	AddAdmin()
+	// New  Create a channel and return status code, information, id,  and errors.
+	New() (int, string, string, error)
+
+	// Find channel by ID.
+	Find() Channels
+	// Update channel information.
 	Update()
+
+	GetMyChanByName()
 }
 
-func newChannel(model gorm.Model, name string, owner string, admin []string) Channel {
-	return &channel{Model: model, name: name, owner: owner, admin: admin}
+func NewChannels(name, id, avatar, bio, owner string, isPrivate bool) *Channels {
+	if isPrivate || id == "" {
+		random, err := security.GenerateRandomString(15)
+		if err != nil {
+			log.Println(err)
+		}
+		id = random
+	}
+
+	return &Channels{Name: name, Id: id, Avatar: avatar, Bio: bio, Owner: owner, IsPrivate: isPrivate}
 }
 
-func (c *channel) New() {
-	panic("implement me")
-}
-
-func (c *channel) AddAdmin() {
-	panic("implement me")
-}
-
-func (c *channel) Update() {
-	panic("implement me")
+func NewChannelsByID(id string) *Channels {
+	return &Channels{Id: id}
 }
