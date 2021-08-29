@@ -29,8 +29,8 @@ func TestInitChannelConfig(t *testing.T) {
 	}
 
 	// Initialize the database.
-	nd :=  cockroach.NewDb()
-	if err2 := nd.InitDB(); err2 != nil {
+	n :=  cockroach.NewDBAddr()
+	if err2 := n.InitDB(); err2 != nil {
 		return
 	}
 

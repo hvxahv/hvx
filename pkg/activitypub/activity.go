@@ -1,6 +1,8 @@
 package activitypub
 
-import "time"
+import (
+	"time"
+)
 
 // Create Activity.
 // https://www.w3.org/TR/activitypub/#create-activity-outbox
@@ -66,4 +68,49 @@ type ActivityDel struct {
 	Published time.Time `json:"published"`
 	Updated   time.Time `json:"updated"`
 	Deleted   time.Time `json:"deleted"`
+}
+
+// Follow
+//{
+//	"@context":"https://www.w3.org/ns/activitystreams",
+//	"id":"https://mas.to/e27a4e0e-a0a0-400e-a395-6b0e60f08291",
+//	"type":"Follow",
+//	"actor":"https://mas.to/users/hvturingga",
+//	"object":"https://07ee-2408-832f-20b2-be60-7c3c-bb0d-7b8b-bb20.ngrok.io/u/hvturingga"
+//}
+
+type Follow struct {
+	Context string `json:"@context"`
+	Id      string `json:"id"`
+	Type    string `json:"type"`
+	Actor   string `json:"actor"`
+	Object  string `json:"object"`
+}
+
+
+
+// Reply
+//{
+//	"@context":"https://www.w3.org/ns/activitystreams",
+//	"id":"https://mas.to/users/hvturingga#follows/113972/undo",
+//	"type":"Undo",
+//	"actor":"https://mas.to/users/hvturingga",
+//	"object":{
+//		"id":"https://mas.to/30ff54b1-c2dd-482c-ad70-43a775476584",
+//		"type":"Follow","actor":"https://mas.to/users/hvturingga",
+//		"object":"https://07ee-2408-832f-20b2-be60-7c3c-bb0d-7b8b-bb20.ngrok.io/u/hvturingga"
+//	}
+//}
+
+type Reply struct {
+	Context string `json:"@context"`
+	Id      string `json:"id"`
+	Type    string `json:"type"`
+	Actor   string `json:"actor"`
+	Object  struct {
+		Id     string `json:"id"`
+		Type   string `json:"type"`
+		Actor  string `json:"actor"`
+		Object string `json:"object"`
+	} `json:"object"`
 }

@@ -8,7 +8,7 @@ Preview version: [dev.halfmemories.com](https://dev.halfmemories.com)
 
 ## Introduction
 
-A fully decentralized social network implementation.
+A completely decentralized social network implementation.
 
 Based on the decentralized [activitypub](https://www.w3.org/TR/activitypub/) decentralized social network protocol, [ipfs](https://ipfs.io/) distributed persistent storage protocol and [matrix.org](https://matrix.org/) real time communication protocol social platform, an open source decentralized social network where the data is really in your hands.
 
@@ -43,7 +43,7 @@ Share your life, interests, and some things between you and your friends.
 
 ### Channels
 
-Find public channels across servers, we focus on freedom of press.
+Find public channels across servers.
 
 It provides decentralized channel feature, you can create or find the broadcast channels you are interested in, he search is as easy as just searching the public index or directly for the keywords of the channels you are interested in, it is IPFS based, once published, the content will not be changed and deleted.
 

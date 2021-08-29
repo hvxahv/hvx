@@ -16,6 +16,7 @@ limitations under the License.
 package cmd
 
 import (
+	"fmt"
 	"github.com/disism/hvxahv/internal/accounts"
 	"github.com/spf13/cobra"
 )
@@ -27,7 +28,7 @@ var runCmd = &cobra.Command{
 	Long: ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		if err := accounts.Run(); err != nil {
-			return 
+			_ = fmt.Errorf("failed to start accounts gRPC service: %v", err)
 		}
 	},
 }

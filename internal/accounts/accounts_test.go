@@ -4,9 +4,11 @@ import (
 	"fmt"
 	"github.com/disism/hvxahv/pkg/cache"
 	"github.com/disism/hvxahv/pkg/cockroach"
+	"github.com/disism/hvxahv/pkg/security"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"log"
 	"os"
 	"testing"
 )
@@ -28,13 +30,13 @@ func TestInitDB(t *testing.T) {
 	}
 
 	// Initialize the database.
-	nd :=  cockroach.NewDb()
-	if err := nd.InitDB(); err != nil {
+	n :=  cockroach.NewDBAddr()
+	if err2 := n.InitDB(); err2 != nil {
 		return
 	}
 
 	// If a configs file is found, read it in.
-	if err := viper.ReadInConfig(); err == nil {
+	if err3 := viper.ReadInConfig(); err3 == nil {
 		fmt.Fprintln(os.Stderr, "Using configs file:", viper.ConfigFileUsed())
 	}
 
@@ -62,7 +64,7 @@ func TestAccounts_Update(t *testing.T) {
 
 	a := Accounts{
 		Username:   "hvturingga",
-		Password:   "hvxahv123",
+		Password:   "",
 		Avatar:     "http://stage48.net/wiki/images/5/5b/KobayashiYui8th.jpg",
 		Bio:        "我很开心，现在我在录制视频, 欢迎关注我的 YouTube 频道! AHHHHh.....",
 		Name:       "HVTURINGGA",
@@ -71,6 +73,24 @@ func TestAccounts_Update(t *testing.T) {
 		IsPrivate:    false,
 		PrivateKey: "",
 		PublicKey:  "",
+	}
+
+	if err := a.Update(); err != nil {
+		t.Errorf("%v",err)
+	}
+}
+
+func TestAccounts_UpdateKEY(t *testing.T) {
+	TestInitDB(t)
+	privateKey, publicKey, err := security.GenRSA()
+	if err != nil {
+		log.Printf("failed to generate public and private keys: %v", err)
+	}
+
+	a := Accounts{
+		Username:   "hvturingga",
+		PrivateKey: privateKey,
+		PublicKey:  publicKey,
 	}
 
 	if err := a.Update(); err != nil {

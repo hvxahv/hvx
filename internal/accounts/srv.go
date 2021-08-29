@@ -2,7 +2,7 @@ package accounts
 
 import (
 	"fmt"
-	pb "github.com/disism/hvxahv/api/hvxahv/v1alpha1"
+	pb "github.com/disism/hvxahv/api/accounts/v1alpha1"
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -31,10 +31,9 @@ func Run() error {
 		return err
 	}
 
-	log.Printf("%s gRPC Services is running.., Port: %s.", name, port)
-
-	if err := s.Serve(lis); err != nil {
-		return err
+	log.Printf("Port: %s, The %s gRPC service is running...", port, name)
+	if err2 := s.Serve(lis); err2 != nil {
+		return err2
 	}
 
 	return nil

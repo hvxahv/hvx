@@ -28,5 +28,8 @@ func APIServer() *gin.Engine {
 
 	v1alpha1.V1Chan(api)
 
+	v1alpha1.V1Messages(api)
+
+
 	return api
 }

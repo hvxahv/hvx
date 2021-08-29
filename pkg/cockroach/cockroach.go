@@ -16,50 +16,46 @@ import (
 type DB interface {
 	// InitDB Initialize the PostgreSQL database.
 	InitDB() error
-	// Create database
-	Create(name string) error
+
+	// New a database, receive the name and return an error.
+	New(name string) error
 }
 
-type db struct {
-	host     string
-	port     string
-	user     string
-	password string
-	dbName   string
-	sslMode  string
-}
-
-type Config struct {
-	Conn *viper.Viper
-}
-
-func NewDb() *db {
-	host := viper.GetString("cockroach.host")
-	port := viper.GetString("cockroach.port")
-	user := viper.GetString("cockroach.user")
-	password := viper.GetString("cockroach.password")
-	dbName := viper.GetString("cockroach.dbName")
-	sslMode := viper.GetString("cockroach.sslMode")
-
-	return &db{host: host, port: port, user: user, password: password, dbName: dbName, sslMode: sslMode}
-}
-
-var sdb *gorm.DB
+var db *gorm.DB
 
 func GetDB() *gorm.DB {
-	return sdb
+	return db
 }
 
-func (d *db) InitDB() error {
-	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=%s TimeZone=Asia/Shanghai",
-		d.host,
-		d.user,
-		d.password,
-		d.dbName,
-		d.port,
-		d.sslMode,
+// DBAddr ...
+type DBAddr struct {
+	Addr string
+}
+
+func NewDBAddr() *DBAddr {
+	var (
+		host     = viper.GetString("cockroach.host")
+		port     = viper.GetString("cockroach.port")
+		user     = viper.GetString("cockroach.user")
+		password = viper.GetString("cockroach.password")
+		dbName   = viper.GetString("cockroach.dbName")
+		sslMode  = viper.GetString("cockroach.sslMode")
+		timeZone = viper.GetString("cockroach.timeZone")
 	)
 
+	addr := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=%s TimeZone=%s",
+		host,
+		user,
+		password,
+		dbName,
+		port,
+		sslMode,
+		timeZone,
+	)
+	return &DBAddr{Addr: addr}
+}
+
+func (d *DBAddr) InitDB() error {
 	var initError error
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
@@ -69,34 +65,29 @@ func (d *db) InitDB() error {
 		case <-ctx.Done():
 			return errors.Errorf("init db error: %v", initError)
 		default:
-			dbs, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+			dbs, err := gorm.Open(postgres.Open(d.Addr), &gorm.Config{})
 			if err != nil {
 				initError = err
 			} else {
 				log.Println("initialize the database successfully.")
-				sdb = dbs
+				db = dbs
 				return nil
 			}
 		}
 	}
 }
 
-func (d *db) Create(name string) error {
-	addr := fmt.Sprintf("port=%s user=%s password=%s host=%s sslmode=%s",
-		d.port,
-		d.user,
-		d.password,
-		d.host,
-		d.sslMode)
+func (d *DBAddr) New(name string) error {
 
-	cdb, err := sql.Open("postgres", addr)
+	c, err := sql.Open("postgres", d.Addr)
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	if _, err := cdb.Exec("CREATE DATABASE " + name); err != nil {
-		panic(err)
-		return err
+	if _, err2 := c.Exec("CREATE DATABASE " + name); err2 != nil {
+		panic(err2)
+		return err2
 	}
 	return nil
 }
+

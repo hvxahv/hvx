@@ -14,4 +14,8 @@ func V1ActivityPub(r *gin.Engine) {
 	// Get the actors in the activityPub protocol.
 	r.GET("/u/:actor", handlers.GetActorHandler)
 
+	// https://www.w3.org/TR/activitypub/#inbox
+	// Inbox
+	r.POST("/u/:actor/inbox", handlers.InboxHandler)
+
 }

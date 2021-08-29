@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
-	pb "github.com/disism/hvxahv/api/hvxahv/v1alpha1"
+	pb "github.com/disism/hvxahv/api/accounts/v1alpha1"
 	"github.com/disism/hvxahv/pkg/activitypub"
 	"github.com/disism/hvxahv/pkg/microservices/client"
 	"github.com/disism/hvxahv/pkg/remote"
@@ -21,17 +21,18 @@ func WebFingerHandler(c *gin.Context) {
 		if err != nil {
 			log.Println(err)
 		}
-		var wfr activitypub.WebFingerData
-		_ = json.Unmarshal(wf, &wfr)
+		var wfd activitypub.WebFingerData
+		_ = json.Unmarshal(wf, &wfd)
 
-		var r activitypub.Actor
-		actor, err := remote.NewClient("GET", wfr.Links[0].Href).Get()
+
+		var ar activitypub.Actor
+		actor, err := remote.NewClient("GET", wfd.Links[0].Href).Get()
 		if err != nil {
 			log.Println(err)
 		}
-		_ = json.Unmarshal(actor, &r)
+		_ = json.Unmarshal(actor, &ar)
 
-		c.JSON(200, r)
+		c.JSON(200, ar)
 		return
 	}
 
@@ -51,6 +52,6 @@ func WebFingerHandler(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, activitypub.NewActor(accounts))
+	c.JSON(200, activitypub.NewWebFinger(accounts.Username))
 
 }

@@ -26,8 +26,8 @@ func TestInitDB(t *testing.T) {
 	}
 
 
-	nd := NewDb()
-	if err := nd.InitDB(); err != nil {
+	n := NewDBAddr()
+	if err := n.InitDB(); err != nil {
 		t.Errorf("Failed to initialize PostgreSQL : %s", err)
 	} else {
 		t.Logf("Initialize PostgreSQL success.")
@@ -36,9 +36,9 @@ func TestInitDB(t *testing.T) {
 
 func TestCreateDB(t *testing.T) {
 
-	nd := NewDb()
+	n := NewDBAddr()
 	name := "hvxahv"
-	if err := nd.Create(name); err != nil {
+	if err := n.New(name); err != nil {
 		t.Errorf("Failed to initialize PostgreSQL : %s", err)
 	} else {
 		t.Logf("Initialize PostgreSQL success.")
