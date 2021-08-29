@@ -41,9 +41,3 @@ func TestNewMessages(t *testing.T) {
 	IniTestConfig(t)
 	//NewFollow("", "hvturingga")
 }
-
-func TestMessages_Outbox(t *testing.T) {
-	IniTestConfig(t)
-	//nm := NewFollow("Follow", "hvturingga")
-	//nm.Outbox()
-}

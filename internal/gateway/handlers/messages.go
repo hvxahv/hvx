@@ -11,18 +11,15 @@ import (
 
 func InboxHandler(c *gin.Context) {
 	name := c.Param("actor")
-	fmt.Println(c.Request)
 	body, _ := ioutil.ReadAll(c.Request.Body)
-	fmt.Println(string(body))
-	inbox := messages.Messages{}
+
+	inbox := messages.Inbox{}
 	err := json.Unmarshal(body, &inbox)
 	if err != nil {
-		return
+		fmt.Println(err)
 	}
+
 	inbox.Inbox(name)
-
-
-
 }
 
 func OutboxHandler(c *gin.Context) {

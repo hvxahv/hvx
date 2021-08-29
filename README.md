@@ -8,7 +8,7 @@ Preview version: [dev.halfmemories.com](https://dev.halfmemories.com)
 
 ## Introduction
 
-A fully decentralized social network implementation.
+A completely decentralized social network implementation.
 
 Based on the decentralized [activitypub](https://www.w3.org/TR/activitypub/) decentralized social network protocol, [ipfs](https://ipfs.io/) distributed persistent storage protocol and [matrix.org](https://matrix.org/) real time communication protocol social platform, an open source decentralized social network where the data is really in your hands.
 
