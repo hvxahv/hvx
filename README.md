@@ -6,13 +6,15 @@ Instance: [halfmemories.com](https://halfmemories.com)
 
 Preview version: [dev.halfmemories.com](https://dev.halfmemories.com)
 
+#### !Now that the project is under active development, you can read the document below to get an introduction to the project or visit disism.com to contact the developer for details.
+
 ## Introduction
 
 A completely decentralized social network implementation.
 
 Based on the decentralized [activitypub](https://www.w3.org/TR/activitypub/) decentralized social network protocol, [ipfs](https://ipfs.io/) distributed persistent storage protocol and [matrix.org](https://matrix.org/) real time communication protocol social platform, an open source decentralized social network where the data is really in your hands.
 
-- Find and add your social network friends as easy as an email format (`name@domain`) address.
+- Find and add your social network friends as easily as an email format (`name@domain`) address.
 - Cross-server content publishing channel (channel), the content can not be deleted or modified.
 - End-to-end encrypted instant messaging directly with your friends.
 - They are all decentralized.
@@ -45,13 +47,13 @@ Share your life, interests, and some things between you and your friends.
 
 Find public channels across servers.
 
-It provides decentralized channel feature, you can create or find the broadcast channels you are interested in, he search is as easy as just searching the public index or directly for the keywords of the channels you are interested in, it is IPFS based, once published, the content will not be changed and deleted.
+It provides a decentralized channel feature, you can create or find the broadcast channels you are interested in, the search is as easy as just searching the public index or directly for the keywords of the channels you are interested in, it is IPFS based, once published, the content will not be changed and deleted.
 
 ### Instant Messaging
 
 End-to-end encrypted communication directly with your friends. Protect your instant messaging privacy and keep your chat messages away from third parties.
 
-We have implemented a simple end-to-end encrypted chat application based on the matrix protocol, which simplifies the matrix search function, since you can just click on a friend in your address book to start sending messages, since the backend already does the rest of the necessary things for you, and you can manually add other chatters from the matrix client, as long as you pass the matrix format `@name:domain` to add friends and talk to them.
+We have implemented a simple end-to-end encrypted chat application based on the matrix protocol, which simplifies the matrix search function, since you can just click on a friend in your address book to start sending messages since the backend already does the rest of the necessary things for you, and you can manually add other chatters from the matrix client, as long as you pass the matrix format `@name:domain` to add friends and talk to them.
 
 ## For developers
 
@@ -68,7 +70,7 @@ FOR CLIENT DEVELOPERS:
 
 ## Finally
 
-Everyone has the right to control their own data and privacy, and to choose who they share it with.
+Everyone has the right to control their own data and privacy and to choose who they share it with.
 
 MIT License: [LISENSE](https://github.com/disism/hvxahv/blob/main/LICENSE).
 

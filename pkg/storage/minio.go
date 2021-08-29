@@ -20,7 +20,7 @@ type min struct {
 	fileType string
 }
 
-func (m *min) MakeBucket() error {
+func (m *min) NewBucket() error {
 	cli := m.client
 
 	if err := cli.MakeBucket(m.ctx, m.bucket, minio.MakeBucketOptions{Region: m.location}); err != nil {
@@ -62,8 +62,8 @@ func (m *min) MakeBucket() error {
 	return nil
 }
 
-func (m *min) FileUploader() (string, error) {
-	err := m.MakeBucket()
+func (m *min) Uploader() (string, error) {
+	err := m.NewBucket()
 	if err != nil {
 		log.Println("Error in MakeBucket:", err)
 		return "", err
@@ -90,27 +90,27 @@ func (m *min) FileUploader() (string, error) {
 }
 
 type Min interface {
-	// MakeBucket Make a new bucket
-	MakeBucket() error
-	// FileUploader // Upload file
-	FileUploader() (string, error)
+	// NewBucket Make a new bucket
+	NewBucket() error
+	// Uploader // Upload file
+	Uploader() (string, error)
 }
 
 func NewMin(file *multipart.FileHeader, fileType string, bucket string, location string) Min {
 	ctx := context.Background()
-	client, err := initMinio()
+	client, err := Minio()
 	if err != nil {
 		return nil
 	}
 	return &min{ctx: ctx, client: client, file: file, fileType: fileType, bucket: bucket, location: location}
 }
 
-// initMinio Initialize minio and return to client.
-func initMinio() (*minio.Client, error) {
-	endpoint := viper.GetString("storage.minio.addr")
-	accessKeyID := viper.GetString("storage.minio.accessKeyID")
-	secretAccessKey := viper.GetString("storage.minio.secretAccessKey")
-	useSSL := viper.GetBool("storage.minio.useSSL")
+// Minio Initialize minio and return to client.
+func Minio() (*minio.Client, error) {
+	endpoint := viper.GetString("minio.addr")
+	accessKeyID := viper.GetString("minio.accessKeyID")
+	secretAccessKey := viper.GetString("minio.secretAccessKey")
+	useSSL := viper.GetBool("minio.useSSL")
 
 	cli, err := minio.New(endpoint, &minio.Options{
 		Creds:  credentials.NewStaticV4(accessKeyID, secretAccessKey, ""),
@@ -118,6 +118,7 @@ func initMinio() (*minio.Client, error) {
 	})
 
 	if err != nil {
+		_ = fmt.Errorf("failed to connect to minio: %v", err)
 		return nil, err
 	}
 	return cli, nil
