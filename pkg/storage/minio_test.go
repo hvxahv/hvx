@@ -27,5 +27,6 @@ func TestGetConfig(t *testing.T) {
 }
 func TestInitMinio(t *testing.T) {
 	TestGetConfig(t)
-	Minio()
+	InitMinio()
 }
+
