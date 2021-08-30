@@ -26,7 +26,7 @@ func V1Accounts(r *gin.Engine) {
 		v1.POST("/accounts/delete", handlers.DeleteAccount)
 		v1.POST("/accounts/update", handlers.UpdateAccount)
 
-		//v1alpha1.POST("/upload/avatar", handlers.UploadAvatar)
+		v1.POST("/upload/avatar", handlers.UploadAvatar)
 
 		//v1alpha1.GET("/u/:user", v1alpha1.GetActorHandler)
 		//v1alpha1.GET("/u/:user/outbox", v1alpha1.GetActorOutbox)
@@ -41,9 +41,7 @@ func V1Accounts(r *gin.Engine) {
 
 		// Default account login and registration system
 
-
 		//v1alpha1.POST("/account/login", v1alpha1.VerificationHandler)
-
 
 		//r.GET("/u/:actor/outbox", handlers.GetActorOutbox)
 		//r.POST("/u/:user/inbox", handlers.InboxHandler)

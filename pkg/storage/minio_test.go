@@ -29,3 +29,4 @@ func TestInitMinio(t *testing.T) {
 	TestGetConfig(t)
 	InitMinio()
 }
+
