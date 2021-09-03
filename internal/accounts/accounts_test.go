@@ -47,12 +47,16 @@ func TestInitDB(t *testing.T) {
 
 func TestNewAccounts(t *testing.T) {
 	TestInitDB(t)
-	na, _ := NewAccounts(
-		"hvturingga",
-		"hvxahv",
-		"x@disism.com",
+	na, err := NewAccounts(
+		"hvt",
+		"hvx",
+		"hvx@disism.com",
 		)
-
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+	fmt.Println(na)
 	code, message := na.New()
 
 	t.Log(code, message)

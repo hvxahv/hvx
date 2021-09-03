@@ -8,6 +8,7 @@ import (
 	"github.com/disism/hvxahv/pkg/cache"
 	"github.com/disism/hvxahv/pkg/cockroach"
 	"github.com/disism/hvxahv/pkg/security"
+	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
@@ -15,7 +16,25 @@ import (
 	"log"
 )
 
-
+// Accounts The object tops a user’s profile data and is targeted at GORM.
+// Must be a unique key: username, email and phone.
+type Accounts struct {
+	gorm.Model
+	Uuid       string `json:"uuid" gorm:"type:varchar(100);uuid;unique"`
+	Username   string `validate:"required,min=10,max=16" gorm:"primaryKey;type:varchar(100);username;unique"`
+	Password   string `validate:"required,min=10,max=16" gorm:"type:varchar(100);password"`
+	Avatar     string `gorm:"type:varchar(999);avatar"`
+	Bio        string `validate:"max=650" gorm:"type:varchar(999);bio"`
+	Name       string `validate:"max=16" gorm:"type:varchar(100);name"`
+	Mail       string `validate:"required,email" gorm:"primaryKey;type:varchar(100);mail;unique"`
+	Phone      string `gorm:"type:varchar(100);phone"`
+	IsPrivate  bool   `gorm:"type:boolean;is_private"`
+	Follower   int    `gorm:"type:int;follower"`
+	Following  int    `gorm:"type:int;following"`
+	Friend     int    `gorm:"type:int;friend"`
+	PrivateKey string `gorm:"type:varchar(3000);private_key"`
+	PublicKey  string `gorm:"type:varchar(3000);public_key"`
+}
 
 // Account The interface defines the CRUD function for accounts.
 type Account interface {
@@ -48,14 +67,20 @@ func NewAccounts(username, password, mail string) (Account, error) {
 	id := uuid.New().String()
 	hash := security.GenPassword(password)
 
-	return &Accounts{
+	acct := &Accounts{
 		Uuid:       id,
 		Username:   username,
 		Mail:       mail,
 		Password:   hash,
 		PrivateKey: privateKey,
 		PublicKey:  publicKey,
-	}, nil
+	}
+
+	v := validator.New()
+	if err2 := v.Struct(*acct); err2 != nil {
+		return nil, err2
+	}
+	return acct, nil
 }
 
 func NewAcctByName(name string) Account {
@@ -66,26 +91,6 @@ func NewAccountAuth(mail string, password string) Account {
 	return &Accounts{Mail: mail, Password: password}
 }
 
-
-// Accounts The object tops a user’s profile data and is targeted at GORM.
-// Must be a unique key: username, email and phone.
-type Accounts struct {
-	gorm.Model
-	Uuid       string `gorm:"type:varchar(100);uuid;unique"`
-	Username   string `gorm:"primaryKey;type:varchar(100);username;unique"`
-	Password   string `gorm:"type:varchar(100);password"`
-	Avatar     string `gorm:"type:varchar(999);avatar"`
-	Bio        string `gorm:"type:varchar(999);bio"`
-	Name       string `gorm:"type:varchar(100);name"`
-	Mail       string `gorm:"primaryKey;type:varchar(100);mail;unique"`
-	Phone      string `gorm:"type:varchar(100);phone"`
-	IsPrivate  bool   `gorm:"type:boolean;is_private"`
-	Follower   int    `gorm:"type:int;follower"`
-	Following  int    `gorm:"type:int;following"`
-	Friend     int    `gorm:"type:int;friend"`
-	PrivateKey string `gorm:"type:varchar(3000);private_key"`
-	PublicKey  string `gorm:"type:varchar(3000);public_key"`
-}
 
 func (a *Accounts) New() (int32, string) {
 	db := cockroach.GetDB()
