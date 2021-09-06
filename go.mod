@@ -4,7 +4,7 @@ go 1.16
 
 require (
 	github.com/gin-gonic/gin v1.7.2
-	github.com/go-playground/validator/v10 v10.4.1 // indirect
+	github.com/go-playground/validator/v10 v10.4.1
 	github.com/go-redis/redis/v8 v8.10.0
 	github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible
 	github.com/golang-jwt/jwt v3.2.2+incompatible

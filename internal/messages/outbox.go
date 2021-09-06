@@ -30,6 +30,7 @@ func NewFollow(actor, object string) *activitypub.Follow {
 	}
 }
 
+
 func (a *ActivityRequest) Send() {
 	h, err := url.Parse(a.TargetURL)
 	if err != nil {

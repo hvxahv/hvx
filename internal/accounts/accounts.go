@@ -9,7 +9,6 @@ import (
 	"github.com/disism/hvxahv/pkg/cockroach"
 	"github.com/disism/hvxahv/pkg/security"
 	"github.com/go-playground/validator/v10"
-	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
@@ -20,7 +19,6 @@ import (
 // Must be a unique key: username, email and phone.
 type Accounts struct {
 	gorm.Model
-	Uuid       string `json:"uuid" gorm:"type:varchar(100);uuid;unique"`
 	Username   string `validate:"required,min=10,max=16" gorm:"primaryKey;type:varchar(100);username;unique"`
 	Password   string `validate:"required,min=10,max=16" gorm:"type:varchar(100);password"`
 	Avatar     string `gorm:"type:varchar(999);avatar"`
@@ -55,7 +53,7 @@ type Account interface {
 	Delete() error
 
 	// Login to the account and generate token, Return token and custom error message.
-	Login() (string, string, error)
+	Login() (string, error)
 }
 
 func NewAccounts(username, password, mail string) (Account, error) {
@@ -64,11 +62,10 @@ func NewAccounts(username, password, mail string) (Account, error) {
 		log.Printf("failed to generate public and private keys: %v", err)
 		return nil, err
 	}
-	id := uuid.New().String()
+
 	hash := security.GenPassword(password)
 
 	acct := &Accounts{
-		Uuid:       id,
 		Username:   username,
 		Mail:       mail,
 		Password:   hash,
@@ -90,7 +87,6 @@ func NewAcctByName(name string) Account {
 func NewAccountAuth(mail string, password string) Account {
 	return &Accounts{Mail: mail, Password: password}
 }
-
 
 func (a *Accounts) New() (int32, string) {
 	db := cockroach.GetDB()
@@ -211,7 +207,7 @@ func (a *Accounts) Update() error {
 
 func (a *Accounts) Delete() error {
 	au := NewAccountAuth(a.Mail, a.Password)
-	name, _, err := au.Login()
+	name, err := au.Login()
 	if err != nil {
 		return err
 	}
@@ -231,17 +227,17 @@ func (a *Accounts) Delete() error {
 	return nil
 }
 
-func (a *Accounts) Login() (string, string, error) {
+func (a *Accounts) Login() (string, error) {
 	d := cockroach.GetDB()
 
 	var qa *Accounts
 	if err := d.Debug().Table("accounts").Where("mail = ?", a.Mail).First(&qa).Error; err != nil {
 		log.Println(gorm.ErrMissingWhereClause)
-		return "", "", err
+		return "", err
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(qa.Password), []byte(a.Password)); err != nil {
-		return "", "", errors.Errorf("Password verification failed.")
+		return "", errors.Errorf("Password verification failed.")
 	}
-	return qa.Username, qa.Uuid, nil
+	return qa.Username, nil
 }

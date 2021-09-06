@@ -1,81 +1,35 @@
 package messages
 
 import (
-	"fmt"
-	"github.com/disism/hvxahv/internal/accounts"
 	"github.com/disism/hvxahv/pkg/cockroach"
-	"github.com/spf13/viper"
 	"gorm.io/gorm"
 	"log"
-	"net/url"
 )
 
-type ActivityRequest struct {
-	KeyID     string
-	TargetURL string
-	Local     string
-	Data      []byte
-	Key       []byte
+type Messages struct {
+	gorm.Model
+	Actor     string `gorm:"type:varchar(999);actor"`
+	EventType string `gorm:"type:varchar(999);event_type"`
+	ID        string `gorm:"type:varchar(999);id"`
+	Username  string `gorm:"primaryKey;type:varchar(999);username"`
 }
 
-type Request interface {
-	// Send request to remote server.
-	Send()
-	// Follow ActivityPub follow method.
-	Follow()
-}
+func (m *Messages) New() {
+	db := cockroach.GetDB()
 
-type Inbox struct {
-	Context string      `json:"@context"`
-	Id      string      `json:"id"`
-	Type    string      `json:"type"`
-	Actor   string      `json:"actor"`
-	Object  interface{} `json:"object"`
-}
-
-type InboxWithCtx struct {
-	Id     string `json:"id"`
-	Type   string `json:"type"`
-	Actor  string `json:"actor"`
-	Object string `json:"object"`
-}
-type Receive interface {
-	Inbox(name string)
-}
-
-func getPrivk() string {
-	acct := &accounts.Accounts{}
-	if err2 := cockroach.GetDB().
-		Debug().
-		Table("accounts").
-		Where("username = ?", "hvturingga").
-		First(acct).Error; err2 != nil {
-		log.Println(gorm.ErrMissingWhereClause)
-	}
-	return acct.PrivateKey
-}
-
-// NewActivityRequest Receive the current actor name,
-// the other party's URL,
-// the requested data and the current user's private key.
-func NewActivityRequest(actor string, object string, data []byte, key []byte) *ActivityRequest {
-	h, err := url.Parse(object)
-	if err != nil {
-		log.Fatal(err)
+	if err := db.AutoMigrate(&Messages{}); err != nil {
+		log.Printf("failed to automatically create database: %v", err)
 	}
 
-	targetURL := fmt.Sprintf("https://%s/inbox", h.Hostname())
-	keyID := fmt.Sprintf("%s#main-key", actor)
-
-	return &ActivityRequest{
-		KeyID:     keyID,
-		TargetURL: targetURL,
-		Local:     fmt.Sprintf(viper.GetString("localhost")),
-		Data:      data,
-		Key:       key,
+	if err1 := db.Debug().Table("messages").Create(&m).Error; err1 != nil {
+		log.Printf("an error occurred while creating the messages: %v", err1)
 	}
 }
 
-func (a *ActivityRequest) Follow() {
-	a.Send()
+func NewMessages(actor string, types string, ID string, username string) *Messages {
+	return &Messages{Actor: actor, EventType: types, ID: ID, Username: username}
+}
+
+type Message interface {
+	New()
 }

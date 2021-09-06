@@ -18,13 +18,12 @@ func (s *server) New(ctx context.Context, in *pb.NewAccountData) (*pb.AccountsRe
 // and returns a specific error if there is an error.
 func (s *server) Login(ctx context.Context, in *pb.AuthData) (*pb.AuthReply, error) {
 	r := NewAccountAuth(in.Mail, in.Password)
-	u, uuid, err := r.Login()
+	u, err := r.Login()
 	if err != nil {
 		return nil, err
 	}
 	return &pb.AuthReply{
 		Username: u,
-		Uuid:     uuid,
 	}, nil
 }
 
@@ -59,7 +58,6 @@ func (s *server) Find(ctx context.Context, in *pb.NewAccountByName) (*pb.Account
 	}
 
 	return &pb.AccountData{
-		Uuid:      a.Uuid,
 		Username:  a.Username,
 		Mail:      a.Mail,
 		Avatar:    a.Avatar,
@@ -87,7 +85,7 @@ func (s *server) Delete(ctx context.Context, in *pb.AuthData) (*pb.AccountsReply
 
 // NewFollow Implementation of the method of querying the account.
 func (s *server) NewFollow(ctx context.Context, in *pb.FollowersData) (*pb.AccountsReply, error) {
-	nf := NewFollowers(in.Follower, in.Following)
+	nf := NewFollow(in.Follower, in.Following)
 	if err := nf.New(); err != nil {
 		log.Println(err)
 		return &pb.AccountsReply{

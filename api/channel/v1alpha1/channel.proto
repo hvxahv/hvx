@@ -18,7 +18,7 @@ service Channel {
 }
 
 message ChannelReply {
-  int32  code    = 1;
+  int32  code = 1;
   string message = 2;
 }
 
@@ -26,18 +26,18 @@ message ChannelReply {
   NEW
  */
 message NewChannelData {
-  string id        = 1;
-  string name      = 2;
-  string bio       = 3;
-  string avatar    = 4;
-  string owner     = 5;
+  string id = 1;
+  string name = 2;
+  string bio = 3;
+  string avatar = 4;
+  string owner = 5;
   bool   isPrivate = 6;
 }
 
 message NewChannelReply {
-  int32  code    = 1;
+  int32  code = 1;
   string message = 2;
-  string id      = 3;
+  string id = 3;
 }
 
 /**
@@ -45,7 +45,7 @@ message NewChannelReply {
  */
 message NewAdminData {
   string owner = 1;
-  string id    = 2;
+  string id = 2;
   string admin = 3;
 }
 
@@ -54,7 +54,7 @@ message NewAdminData {
  */
 message NewSubscriberData {
   string name = 1;
-  string id   = 2;
+  string id = 2;
 }
 
 /**
@@ -65,6 +65,6 @@ message NewChannelByID {
 }
 
 message GetSubscribersReply {
-  int32  code    = 1;
+  int32  code = 1;
   string message = 2;
 }

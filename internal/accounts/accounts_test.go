@@ -129,10 +129,10 @@ func TestAccounts_Login(t *testing.T) {
 
 	a := NewAccountAuth("xxs@disism.com", "hvxahv123")
 
-	r, s, err := a.Login()
+	r, err := a.Login()
  	if err != nil {
 		t.Error(err)
 	}
-	t.Log(r, s)
+	t.Log(r)
 
 }
