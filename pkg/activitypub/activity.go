@@ -27,7 +27,6 @@ import (
 //         "https://www.w3.org/ns/activitystreams#Public"]
 // }
 
-
 // Activity ...
 type Activity struct {
 	Context string `json:"@context"`
@@ -47,7 +46,6 @@ type Activity struct {
 	To        []string  `json:"to"`
 	Cc        []string  `json:"cc"`
 }
-
 
 // Delete Activity.
 // {
@@ -87,8 +85,6 @@ type Follow struct {
 	Object  string `json:"object"`
 }
 
-
-
 // Reply
 //{
 //	"@context":"https://www.w3.org/ns/activitystreams",
@@ -113,4 +109,11 @@ type Reply struct {
 		Actor  string `json:"actor"`
 		Object string `json:"object"`
 	} `json:"object"`
+}
+
+type Object struct {
+	Id     string `json:"id"`
+	Type   string `json:"type"`
+	Actor  string `json:"actor"`
+	Object string `json:"object"`
 }

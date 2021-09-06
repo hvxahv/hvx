@@ -27,25 +27,24 @@ service Accounts {
 
 // AccountsData List of all data of the account service
 message AccountData {
-  string uuid       = 1;
-  string username   = 2;
-  string password   = 3;
-  string mail       = 4;
-  string avatar     = 5;
-  string bio        = 6;
-  string name       = 7;
-  string phone      = 8;
-  bool   isPrivate  = 9;
-  int32  follower   = 10;
-  int32  following  = 11;
-  int32  friend     = 12;
-  string privateKey = 13;
-  string publicKey  = 14;
+  string username = 1;
+  string password = 2;
+  string mail = 3;
+  string avatar = 4;
+  string bio = 5;
+  string name = 6;
+  string phone = 7;
+  bool   isPrivate = 8;
+  int32  follower = 9;
+  int32  following = 10;
+  int32  friend = 11;
+  string privateKey = 12;
+  string publicKey = 13;
 }
 
 // AccountsReply The return value, code and message of the Accounts operation.
 message AccountsReply {
-  int32  code    = 1;
+  int32  code = 1;
   string message = 2;
 }
 
@@ -56,24 +55,24 @@ message NewAccountByName{
 
 // NewAccountData Data needed to create a new account.
 message NewAccountData {
-  string username   = 1;
-  string password   = 2;
-  string mail       = 3;
+  string username = 1;
+  string password = 2;
+  string mail = 3;
 }
 
 // AuthReply Account login, use email and password.
 message AuthData {
-  string mail     = 1;
+  string mail = 1;
   string password = 2;
 }
 
 // AuthReply The data returned by the login account needs to return a token.
 message AuthReply {
   string username = 1;
-  string uuid    = 2;
+  string uuid = 2;
 }
 
 message FollowersData {
-  string follower   = 1;
-  string following   = 2;
+  string follower = 1;
+  string following = 2;
 }
