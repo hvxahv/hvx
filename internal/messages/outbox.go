@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/disism/hvxahv/pkg/activitypub"
-	"github.com/disism/hvxahv/pkg/httpsig"
+	"github.com/disism/hvxahv/pkg/security"
 	"github.com/google/uuid"
 	"github.com/spf13/viper"
 	"golang.org/x/net/context"
@@ -17,10 +17,10 @@ import (
 func NewFollow(actor, object string) *activitypub.Follow {
 	var (
 		ctx = "https://www.w3.org/ns/activitystreams"
-		id = fmt.Sprintf("https://%s/%s", viper.GetString("localhost"), uuid.New().String())
-		a = fmt.Sprintf("https://%s/u/%s", viper.GetString("localhost"), actor)
+		id  = fmt.Sprintf("https://%s/%s", viper.GetString("localhost"), uuid.New().String())
+		a   = fmt.Sprintf("https://%s/u/%s", viper.GetString("localhost"), actor)
 	)
-	
+
 	return &activitypub.Follow{
 		Context: ctx,
 		Id:      id,
@@ -30,6 +30,36 @@ func NewFollow(actor, object string) *activitypub.Follow {
 	}
 }
 
+// NewAccept
+// name: LOCAL ACTOR NAME,
+// actor: REMOTE ACTOR LINK,
+// oid: CONTEXT ID,
+// object: LOCAL ACTOR LINK.
+func NewAccept(name, actor, oid, object string) *activitypub.Accept {
+	var (
+		ctx = "https://www.w3.org/ns/activitystreams"
+		id  = fmt.Sprintf("https://%s/u/%s#accepts/follows/%s", viper.GetString("localhost"), name, uuid.New().String())
+		a   = fmt.Sprintf("https://%s/u/%s", viper.GetString("localhost"), name)
+	)
+
+	return &activitypub.Accept{
+		Context: ctx,
+		Id:      id,
+		Type:    "Accept",
+		Actor:   a,
+		Object: struct {
+			Id     string `json:"id"`
+			Type   string `json:"type"`
+			Actor  string `json:"actor"`
+			Object string `json:"object"`
+		}{
+			Id:     oid,
+			Type:   "Follow",
+			Actor:  actor,
+			Object: a,
+		},
+	}
+}
 
 func (a *ActivityRequest) Send() {
 	h, err := url.Parse(a.TargetURL)
@@ -52,14 +82,13 @@ func (a *ActivityRequest) Send() {
 	req.Header.Set("User-Agent", fmt.Sprintf("hvxahv/%s; %s", viper.GetString("version"), a.Local))
 	req.Header.Set("Content-Type", "application/activity+json")
 
-	block := httpsig.PriKEY{
-		Type: httpsig.RSA,
-		Key: a.Key,
+	block := security.PriKEY{
+		Type: security.RSA,
+		Key:  a.Key,
 	}
 
-	ns := httpsig.NewSign(a.KeyID, block, req, a.Data)
+	ns := security.NewSign(a.KeyID, block, req, a.Data)
 	ns.SignRequest()
-
 
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()

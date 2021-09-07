@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/disism/hvxahv/internal/gateway/middleware"
 	"github.com/disism/hvxahv/internal/messages"
@@ -13,13 +12,7 @@ func InboxHandler(c *gin.Context) {
 	name := c.Param("actor")
 	body, _ := ioutil.ReadAll(c.Request.Body)
 
-	inbox := messages.Inbox{}
-	err := json.Unmarshal(body, &inbox)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	inbox.Inbox(name)
+	messages.InboxEventHandler(name, body)
 }
 
 func OutboxHandler(c *gin.Context) {

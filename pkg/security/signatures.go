@@ -1,18 +1,94 @@
-package httpsig
+package security
 
 import (
+	"bytes"
 	"crypto"
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/sha256"
 	"crypto/x509"
+	"encoding/base64"
 	"encoding/pem"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"strings"
 	"time"
 )
+
+// Signing requests using HTTP Signatures.
+// https://www.w3.org/wiki/SocialCG/ActivityPub/Authentication_Authorization
+
+// When communicating over the Internet using the HTTP protocol, it can
+// be desirable for a server or client to authenticate the sender of a
+// particular message.  It can also be desirable to ensure that the
+// message was not tampered with during transit.  This document
+// describes a way for servers and clients to simultaneously add
+// authentication and message integrity to HTTP messages by using a
+// digital signature.
+//https://datatracker.ietf.org/doc/html/draft-cavage-http-signatures-08
+
+type KeyType int
+
+const (
+	None KeyType = iota
+	RSA
+	Ed25519
+)
+
+type PublicKey struct {
+	Type KeyType
+	Key  interface{}
+}
+
+type PriKEY struct {
+	Type KeyType
+	Key  []byte
+}
+
+type sign struct {
+	KeyID string
+	Key   PriKEY
+	Req   *http.Request
+	Data  []byte
+}
+
+type verify struct {
+	Req  *http.Request
+	Data []byte
+	Key  PublicKey
+}
+
+func NewVerify(req *http.Request, data []byte, key PublicKey) *verify {
+	return &verify{Req: req, Data: data, Key: key}
+}
+
+func NewSign(keyName string, key PriKEY, request *http.Request, data []byte) *sign {
+	return &sign{KeyID: keyName, Key: key, Req: request, Data: data}
+}
+
+func BS642BYTE(s string) []byte {
+	var buf bytes.Buffer
+	b64 := base64.NewDecoder(base64.StdEncoding, strings.NewReader(s))
+	io.Copy(&buf, b64)
+	return buf.Bytes()
+}
+
+func BS64(data []byte) string {
+	var builder strings.Builder
+	b64 := base64.NewEncoder(base64.StdEncoding, &builder)
+	b64.Write(data)
+	b64.Close()
+	return builder.String()
+}
+
+func BS642SHA256(data []byte) string {
+	h := sha256.New()
+	h.Write(data)
+	return BS64(h.Sum(nil))
+}
+
 
 func (key *PriKEY) Sign(msg []byte) []byte {
 	block, _ := pem.Decode(key.Key)
