@@ -10,7 +10,7 @@ type Messages struct {
 	gorm.Model
 	Actor     string `gorm:"type:varchar(999);actor"`
 	EventType string `gorm:"type:varchar(999);event_type"`
-	ID        string `gorm:"type:varchar(999);id"`
+	EventID   string `gorm:"type:varchar(999);event_id"`
 	Username  string `gorm:"primaryKey;type:varchar(999);username"`
 }
 
@@ -26,8 +26,8 @@ func (m *Messages) New() {
 	}
 }
 
-func NewMessages(actor string, types string, ID string, username string) *Messages {
-	return &Messages{Actor: actor, EventType: types, ID: ID, Username: username}
+func NewMessages(actor string, types string, eventID string, username string) *Messages {
+	return &Messages{Actor: actor, EventType: types, EventID: eventID, Username: username}
 }
 
 type Message interface {
