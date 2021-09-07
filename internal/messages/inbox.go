@@ -1,6 +1,7 @@
 package messages
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/disism/hvxahv/internal/accounts"
 	"github.com/disism/hvxahv/pkg/activitypub"
@@ -8,21 +9,34 @@ import (
 )
 
 type Inbox struct {
-	Context string             `json:"@context"`
-	Id      string             `json:"id"`
-	Type    string             `json:"type"`
-	Actor   string             `json:"actor"`
-	Object  activitypub.Object `json:"object"`
+	Context string `json:"@context"`
+	Id      string `json:"id"`
+	Type    string `json:"type"`
+	Actor   string `json:"actor"`
+	Object  string `json:"object"`
 }
 
-func (i *Inbox) Inbox(name string) {
-	// TODO - INBOX DATA
+func InboxEventHandler(name string, body []byte) {
+	i := Inbox{}
+	err := json.Unmarshal(body, &i)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(string(body))
 	fmt.Printf("%s 给 %s 发送了请求; 请求 ID : %s", i.Actor, name, i.Id)
+
 	switch i.Type {
 	case "Follow":
-		fmt.Println("请求关注你")
-		// Check if there is this actor
-		nm := NewMessages(i.Actor, i.Type, i.Id, name)
+		f := activitypub.Follow{}
+		err2 := json.Unmarshal(body, &f)
+		if err2 != nil {
+			fmt.Println(err2)
+		}
+
+		fmt.Println(f)
+		fmt.Printf("%s 请求关注你", f.Actor)
+
+		nm := NewMessages(f.Actor, f.Type, f.Id, name)
 		nm.New()
 
 	case "Undo":
@@ -38,14 +52,24 @@ func (i *Inbox) Inbox(name string) {
 		nm.New()
 
 	case "Accept":
-		fmt.Println("接收了你的请求:", i.Object)
-		nm := NewMessages(i.Actor, i.Type, i.Id, name)
-		nm.New()
+		fmt.Println("接受了你的请求:", i.Object)
+		a := activitypub.Accept{}
+		err2 := json.Unmarshal(body, &a)
+		if err2 != nil {
+			fmt.Println(err2)
+		}
+		fmt.Println(a)
 
-		nf := accounts.NewFollow(i.Actor, name)
-		err := nf.New()
-		if err != nil {
-			log.Println(err)
+		nm := NewMessages(a.Actor, a.Type, a.Id, name)
+		nm.New()
+		
+		nf := accounts.NewFollow(name, i.Actor)
+		err3 := nf.New()
+		if err3 != nil {
+			log.Println(err3)
 		}
 	}
+}
+func (i *Inbox) Inbox(name string) {
+
 }

@@ -27,6 +27,8 @@ import (
 //         "https://www.w3.org/ns/activitystreams#Public"]
 // }
 
+// https://www.w3.org/TR/activitypub/#create-activity-outbox
+
 // Activity ...
 type Activity struct {
 	Context string `json:"@context"`
@@ -115,5 +117,217 @@ type Object struct {
 	Id     string `json:"id"`
 	Type   string `json:"type"`
 	Actor  string `json:"actor"`
+	Object string `json:"object"`
+}
+
+/**
+
+
+ */
+
+// Accept Indicates that the actor accepts the object.
+// The target property can be used in certain circumstances to indicate the context into which the object
+// has been accepted.
+// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-accept
+type Accept struct {
+	Context string `json:"@context"`
+	Id      string `json:"id"`
+	Type    string `json:"type"`
+	Actor   string `json:"actor"`
+	Object  struct {
+		Id     string `json:"id"`
+		Type   string `json:"type"`
+		Actor  string `json:"actor"`
+		Object string `json:"object"`
+	} `json:"object"`
+}
+
+// Add Indicates that the actor has added the object to the target.
+// If the target property is not explicitly specified, the target would need to be determined implicitly by context.
+// The origin can be used to identify the context from which the object originated.
+// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-add
+type Add struct {
+	Context string `json:"@context"`
+	Summary string `json:"summary"`
+	Type    string `json:"type"`
+	Actor   struct {
+		Type string `json:"type"`
+		Name string `json:"name"`
+	} `json:"actor"`
+	Object string `json:"object"`
+}
+
+// Announce Indicates that the actor is calling the target's attention the object.
+// The origin typically has no defined meaning.
+// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-announce
+type Announce struct {
+	Context string `json:"@context"`
+	Summary string `json:"summary"`
+	Type    string `json:"type"`
+	Actor   struct {
+		Type string `json:"type"`
+		Id   string `json:"id"`
+		Name string `json:"name"`
+	} `json:"actor"`
+	Object struct {
+		Type     string `json:"type"`
+		Actor    string `json:"actor"`
+		Location struct {
+			Type string `json:"type"`
+			Name string `json:"name"`
+		} `json:"location"`
+	} `json:"object"`
+}
+
+// Block Indicates that the actor is blocking the object.
+// Blocking is a stronger form of Ignore.
+// The typical use is to support social systems that allow one user to block activities or content of other users.
+// The target and origin typically have no defined meaning.
+// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-block
+type Block struct {
+	Context string `json:"@context"`
+	Summary string `json:"summary"`
+	Type    string `json:"type"`
+	Actor   string `json:"actor"`
+	Object  string `json:"object"`
+}
+
+// Create Indicates that the actor has created the object.
+// Object creation without a Create Activity
+// https://www.w3.org/TR/activitypub/#create-activity-outbox
+type Create struct {
+	Context string `json:"@context"`
+	Type    string `json:"type"`
+	Id      string `json:"id"`
+	Actor   string `json:"actor"`
+	Object  struct {
+		Id           string    `json:"id"`
+		Type         string    `json:"type"`
+		AttributedTo string    `json:"attributedTo"`
+		Content      string    `json:"content"`
+		Published    time.Time `json:"published"`
+		To           []string  `json:"to"`
+		Cc           []string  `json:"cc"`
+	} `json:"object"`
+	Published time.Time `json:"published"`
+	To        []string  `json:"to"`
+	Cc        []string  `json:"cc"`
+}
+
+// Delete Indicates that the actor has deleted the object.
+// If specified, the origin indicates the context from which the object was deleted.
+// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-delete
+type Delete struct {
+	Context string `json:"@context"`
+	Summary string `json:"summary"`
+	Type    string `json:"type"`
+	Actor   struct {
+		Type string `json:"type"`
+		Name string `json:"name"`
+	} `json:"actor"`
+	Object string `json:"object"`
+	Origin struct {
+		Type string `json:"type"`
+		Name string `json:"name"`
+	} `json:"origin"`
+}
+
+// Follow Indicates that the actor is "following" the object.
+// Following is defined in the sense typically used within Social systems in which the actor is interested in any activity performed by or on the object.
+// The target and origin typically have no defined meaning.
+// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-follow
+//type Follow struct {
+//	Context string `json:"@context"`
+//	Summary string `json:"summary"`
+//	Type    string `json:"type"`
+//	Actor   struct {
+//		Type string `json:"type"`
+//		Name string `json:"name"`
+//	} `json:"actor"`
+//	Object struct {
+//		Type string `json:"type"`
+//		Name string `json:"name"`
+//	} `json:"object"`
+//}
+
+// Flag Indicates that the actor is "flagging" the object.
+// Flagging is defined in the sense common to many social platforms as reporting content as being inappropriate for any number of reasons.
+// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-flag
+type Flag struct {
+	Context string `json:"@context"`
+	Summary string `json:"summary"`
+	Type    string `json:"type"`
+	Actor   string `json:"actor"`
+	Object  struct {
+		Type    string `json:"type"`
+		Content string `json:"content"`
+	} `json:"object"`
+}
+
+// Ignore Indicates that the actor is ignoring the object.
+// The target and origin typically have no defined meaning.
+// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-ignore
+type Ignore struct {
+	Context string `json:"@context"`
+	Summary string `json:"summary"`
+	Type    string `json:"type"`
+	Actor   struct {
+		Type string `json:"type"`
+		Name string `json:"name"`
+	} `json:"actor"`
+	Object string `json:"object"`
+}
+
+// Reject Indicates that the actor is rejecting the object.
+// The target and origin typically have no defined meaning.
+// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-reject
+type Reject struct {
+	Context string `json:"@context"`
+	Summary string `json:"summary"`
+	Type    string `json:"type"`
+	Actor   struct {
+		Type string `json:"type"`
+		Name string `json:"name"`
+	} `json:"actor"`
+	Object struct {
+		Type   string `json:"type"`
+		Actor  string `json:"actor"`
+		Object struct {
+			Type string `json:"type"`
+			Name string `json:"name"`
+		} `json:"object"`
+	} `json:"object"`
+}
+
+// Undo  Indicates that the actor is undoing the object.
+// In most cases, the object will be an Activity describing some previously performed action (for instance, a person may have previously "liked" an article but,
+// for whatever reason, might choose to undo that like at some later point in time).
+// The target and origin typically have no defined meaning.
+// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-undo
+type Undo struct {
+	Context string `json:"@context"`
+	Summary string `json:"summary"`
+	Type    string `json:"type"`
+	Actor   string `json:"actor"`
+	Object  struct {
+		Type   string `json:"type"`
+		Actor  string `json:"actor"`
+		Object string `json:"object"`
+		Target string `json:"target"`
+	} `json:"object"`
+}
+
+// Update Indicates that the actor has updated the object.
+// Note, however, that this vocabulary does not define a mechanism for describing the actual set of modifications made to object.
+// The target and origin typically have no defined meaning.
+// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-update
+type Update struct {
+	Context string `json:"@context"`
+	Summary string `json:"summary"`
+	Type    string `json:"type"`
+	Actor   struct {
+		Type string `json:"type"`
+		Name string `json:"name"`
+	} `json:"actor"`
 	Object string `json:"object"`
 }
