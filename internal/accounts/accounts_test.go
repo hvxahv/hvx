@@ -47,18 +47,17 @@ func TestInitDB(t *testing.T) {
 
 func TestNewAccounts(t *testing.T) {
 	TestInitDB(t)
+
 	na, err := NewAccounts(
-		"hvt",
-		"hvx",
-		"hvx@disism.com",
+		"hvturingga",
+		"hvturingga",
+		"x@disism.com",
 		)
 	if err != nil {
 		fmt.Println(err.Error())
 		return
 	}
-	fmt.Println(na)
 	code, message := na.New()
-
 	t.Log(code, message)
 }
 
@@ -115,19 +114,19 @@ func TestAccounts_Query(t *testing.T) {
 
 func TestAccounts_Delete(t *testing.T) {
 	TestInitDB(t)
-
-	a := NewAccountAuth("xxs@disism.com", "hvxahv123")
-	if err := a.Delete(); err != nil {
-		t.Log(err)
-		return
-	}
-	t.Log("Delete account successfully.")
+	//
+	//a := NewAccountAuth("xxs@disism.com", "hvxahv123")
+	//if err := a.Delete(); err != nil {
+	//	t.Log(err)
+	//	return
+	//}
+	//t.Log("Delete account successfully.")
 }
 
 func TestAccounts_Login(t *testing.T) {
 	TestInitDB(t)
 
-	a := NewAccountAuth("xxs@disism.com", "hvxahv123")
+	a := NewAccountAuth("x@disism.com", "hvturingga")
 
 	r, err := a.Login()
  	if err != nil {

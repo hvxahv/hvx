@@ -63,7 +63,7 @@ func (d *DBAddr) InitDB() error {
 	for {
 		select {
 		case <-ctx.Done():
-			return errors.Errorf("init db error: %v", initError)
+			return errors.Errorf("init database error: %v", initError)
 		default:
 			dbs, err := gorm.Open(postgres.Open(d.Addr), &gorm.Config{})
 			if err != nil {
