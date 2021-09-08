@@ -1,7 +1,6 @@
 package accounts
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/disism/hvxahv/internal"
@@ -10,7 +9,6 @@ import (
 	"github.com/disism/hvxahv/pkg/security"
 	"github.com/go-playground/validator/v10"
 	"github.com/pkg/errors"
-	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 	"log"
 )
@@ -19,42 +17,21 @@ import (
 // Must be a unique key: username, email and phone.
 type Accounts struct {
 	gorm.Model
-	Username   string `validate:"required,min=10,max=16" gorm:"primaryKey;type:varchar(100);username;unique"`
-	Password   string `validate:"required,min=10,max=16" gorm:"type:varchar(100);password"`
+	Username   string `gorm:"index;type:varchar(100);username;unique" validate:"required,min=10,max=16"`
+	Password   string `gorm:"type:varchar(100);password" validate:"required,min=8,max=100"`
 	Avatar     string `gorm:"type:varchar(999);avatar"`
-	Bio        string `validate:"max=650" gorm:"type:varchar(999);bio"`
-	Name       string `validate:"max=16" gorm:"type:varchar(100);name"`
-	Mail       string `validate:"required,email" gorm:"primaryKey;type:varchar(100);mail;unique"`
+	Bio        string `gorm:"type:varchar(999);bio" validate:"max=650"`
+	Name       string `gorm:"type:varchar(100);name" validate:"max=16"`
+	Mail       string `gorm:"index;type:varchar(100);mail;unique" validate:"required,email"`
 	Phone      string `gorm:"type:varchar(100);phone"`
 	IsPrivate  bool   `gorm:"type:boolean;is_private"`
-	Follower   int    `gorm:"type:int;follower"`
-	Following  int    `gorm:"type:int;following"`
-	Friend     int    `gorm:"type:int;friend"`
+	Follower   int    `gorm:"type:bigint;follower"`
+	Following  int    `gorm:"type:bigint;following"`
+	Friend     int    `gorm:"type:bigint;friend"`
 	PrivateKey string `gorm:"type:varchar(3000);private_key"`
 	PublicKey  string `gorm:"type:varchar(3000);public_key"`
 }
 
-// Account The interface defines the CRUD function for accounts.
-type Account interface {
-	// New Add a user Instantiate using the NewAccounts function.
-	New() (int32, string)
-
-	// Find This method implements the function of querying accounts.
-	// It needs to accept the username to be queried through the function of the
-	// instantiated object NewAccount,
-	// and then return the query error and the data of the accounts structure.
-	Find() (*Accounts, error)
-
-	// Update Use the NewAccountQUD function to pass the username and
-	// accept the accounts object data to update the accounts data.
-	Update() error
-
-	// Delete Pass the user name through the NewAccountQUD function to delete the user.
-	Delete() error
-
-	// Login to the account and generate token, Return token and custom error message.
-	Login() (string, error)
-}
 
 func NewAccounts(username, password, mail string) (Account, error) {
 	privateKey, publicKey, err := security.GenRSA()
@@ -84,18 +61,7 @@ func NewAcctByName(name string) Account {
 	return &Accounts{Username: name}
 }
 
-func NewAccountAuth(mail string, password string) Account {
-	return &Accounts{Mail: mail, Password: password}
-}
-
 func (a *Accounts) New() (int32, string) {
-	db := cockroach.GetDB()
-
-	if err := db.AutoMigrate(&Accounts{}); err != nil {
-		log.Printf("failed to automatically create database: %v", err)
-		return 500, internal.ServerError
-	}
-
 	// Check if the username and mail exist from the cache.
 	mail := cache.SISAcctMail(a.Mail)
 	user := cache.SISAcct(a.Username)
@@ -113,68 +79,50 @@ func (a *Accounts) New() (int32, string) {
 		return 202, r
 	}
 
-	err := db.Debug().
-		Table("accounts").
-		Where("username = ? ", a.Username).Or("mail = ?", a.Mail).
-		First(&Accounts{}).Error
-
-	if err != nil {
-		fmt.Println("CREATE ACCOUNTS")
+	// Before creating, first, check whether the user exists. If it does not exist, create the user.
+	// If the account is found, it returns the user has created.
+	// It will not be judged so detailed in the database. It only returns the information created by the user.
+	// If more processing is required, detailed operations need to be done in the cache.
+	ok := AccountIsNotFound(a.Username, a.Mail)
+	if !ok {
+		return 400, internal.ExistsAccounts
 	}
 
-	// Before creating, first check whether the user exists. If it does not exist, create the user.
-	// If it does, it needs to return an error to the client to explain that the user already exists.
-	if r := db.Debug().Table("accounts").
-		Where("username = ? ", a.Username).Or("mail = ?", a.Mail).First(&Accounts{}); r.Error != nil {
-		if r.Error == gorm.ErrRecordNotFound {
-			if err1 := db.Debug().Table("accounts").Create(&a).Error; err1 != nil {
-				log.Printf("an error occurred while creating the account: %v", err)
-				return 500, internal.ErrorNewAccount
-			}
-
-			// After the user is successfully created,
-			// the data encoded by the user's json is stored in the cache,
-			// and the cache will never expire.
-			ad, _ := json.Marshal(&a)
-			if err2 := cache.SETAcct(a.Username, ad, 0); err2 != nil {
-				log.Println(err)
-			}
-
-			if err := cache.SETAcctMail(a.Mail); err != nil {
-				log.Println(err)
-			}
-
-			// TODO - Hand over to the notification server.
-
-			// 201 The request is successful and the server has created a new resource.
-			return 201, internal.SuccessNewAccount
-		}
+	if err := NewAccount(a); err != nil {
+		return 500, err.Error()
 	}
-	// It will not be judged so detailed in the database,
-	// it just returns the error that the user has created.
-	return 202, internal.ExistsAccounts
+
+	// When the user is successfully created, the data needs to be synchronized to the cache,
+	// Use JSON encoding, and the cache will never expire.
+	m, _ := json.Marshal(&a)
+	if err := cache.SETAcct(a.Username, m, 0); err != nil {
+		return 500, "SYNC TO CACHE FAILED"
+	}
+	if err := cache.SETAcctMail(a.Mail); err != nil {
+		return 500, "SYNC TO CACHE FAILED"
+	}
+
+	return 201, internal.SuccessNewAccount
 }
 
 func (a *Accounts) Find() (*Accounts, error) {
-	db := cockroach.GetDB()
-
-	result, err := cache.GetRDB().Get(context.Background(), a.Username).Result()
+	r, err := cache.GetAccount(a.Username)
 	if err != nil {
 		// If the cache is not found, the data will be searched from the database.
-		if err := db.Debug().Table("accounts").Where("username = ?", a.Username).First(&a).Error; err != nil {
-			log.Println(gorm.ErrMissingWhereClause)
-			return nil, err
+		acct, ok := AccountUserIsNotFound(a.Username)
+		if !ok {
+			// The data obtained from the database is stored in the cache again.
+			ad, _ := json.Marshal(&acct)
+			if sce := cache.SETAcct(a.Username, ad, 0); sce != nil {
+				return nil, err
+			}
+			return acct, nil
 		}
-		// The data obtained from the database is stored in the cache again.
-		ad, _ := json.Marshal(&a)
-		if sce := cache.SETAcct(a.Username, ad, 0); sce != nil {
-			return nil, err
-		}
-
-		return a, nil
+		return nil, errors.Errorf("THE CURRENT USER DOES NOT EXIST.")
 	}
+
 	// If the cache is found, the data in the cache will be returned.
-	if err := json.Unmarshal([]byte(result), a); err != nil {
+	if err := json.Unmarshal([]byte(r), a); err != nil {
 		log.Println("accounts failed to find user cache and parse json.")
 	}
 	return a, nil
@@ -187,27 +135,29 @@ func (a *Accounts) Update() error {
 		a.Password = security.GenPassword(a.Password)
 	}
 
-	db := cockroach.GetDB()
-	acct := &a
-
-	if err := db.Debug().Table("accounts").Where("username = ?", a.Username).Updates(&acct).First(&acct).Error; err != nil {
-		log.Println(gorm.ErrMissingWhereClause)
+	acct, err := NewAccountUpdate(a)
+	if err != nil {
 		return err
-	} else {
-		// TODO - BUG: DELETE CACHE ACCT_MAIL
-		// update data to the cache server.
-		ad, _ := json.Marshal(&acct)
-		if errs := cache.SETAcct(a.Username, ad, 0); err != nil {
-			log.Println(errs)
-		}
-
 	}
+
+	// update data to the cache server.
+	data, _ := json.Marshal(&acct)
+	if err := cache.UPDATEAcct(a.Username, data); err != nil {
+		return err
+	}
+
+	if a.Mail != "" {
+		if err := cache.UPDATEMail(a.Mail, acct.Mail); err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
 func (a *Accounts) Delete() error {
-	au := NewAccountAuth(a.Mail, a.Password)
-	name, err := au.Login()
+	auth := NewAccountAuth(a.Mail, a.Password)
+	name, err := auth.Login()
 	if err != nil {
 		return err
 	}
@@ -227,17 +177,21 @@ func (a *Accounts) Delete() error {
 	return nil
 }
 
-func (a *Accounts) Login() (string, error) {
-	d := cockroach.GetDB()
+// Account The interface defines the CRUD function for accounts.
+type Account interface {
+	// New Add a user Instantiate using the NewAccounts function.
+	New() (int32, string)
 
-	var qa *Accounts
-	if err := d.Debug().Table("accounts").Where("mail = ?", a.Mail).First(&qa).Error; err != nil {
-		log.Println(gorm.ErrMissingWhereClause)
-		return "", err
-	}
+	// Find This method implements the function of querying accounts.
+	// It needs to accept the username to be queried through the function of the
+	// instantiated object NewAccount,
+	// and then return the query error and the data of the accounts structure.
+	Find() (*Accounts, error)
 
-	if err := bcrypt.CompareHashAndPassword([]byte(qa.Password), []byte(a.Password)); err != nil {
-		return "", errors.Errorf("Password verification failed.")
-	}
-	return qa.Username, nil
+	// Update Use the NewAccountQUD function to pass the username and
+	// accept the accounts object data to update the accounts data.
+	Update() error
+
+	// Delete Pass the user name through the NewAccountQUD function to delete the user.
+	Delete() error
 }

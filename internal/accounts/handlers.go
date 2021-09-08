@@ -75,11 +75,11 @@ func (s *server) Find(ctx context.Context, in *pb.NewAccountByName) (*pb.Account
 // Delete Implementation of delete account method.
 func (s *server) Delete(ctx context.Context, in *pb.AuthData) (*pb.AccountsReply, error) {
 	fmt.Println(in.Mail, in.Password)
-	r := NewAccountAuth(in.Mail, in.Password)
-	err := r.Delete()
-	if err != nil {
-		return &pb.AccountsReply{Code: 500, Message: "delete error!"}, nil
-	}
+	//r := NewAccountAuth(in.Mail, in.Password)
+	//err := r.Login()
+	//if err != nil {
+	//	return &pb.AccountsReply{Code: 500, Message: "delete error!"}, nil
+	//}
 	return &pb.AccountsReply{Code: 200, Message: "ok!"}, nil
 }
 
