@@ -2,23 +2,11 @@ package v1alpha1
 
 import (
 	"github.com/disism/hvxahv/internal/gateway/handlers"
-	"github.com/disism/hvxahv/internal/gateway/middleware"
 	"github.com/gin-gonic/gin"
 )
 
-func V1Accounts(r *gin.Engine) {
+func V1Accounts(v1 *gin.RouterGroup) {
 
-	// The internal open API service provided by hvxahv usually does not require Token authentication,
-	// as login and registration.
-	r.POST("/accounts/new", handlers.NewAccountsHandler)
-	r.POST("/accounts/login", handlers.LoginHandler)
-
-	// The v1alpha1 version of the API service used in the application
-	// is usually allowed to be accessed through Token authentication.
-	v1 := r.Group("/api/v1")
-	// Load verification token middleware.
-	v1.Use(middleware.Auth)
-	{
 		v1.GET("/accounts/i", handlers.GetAccountsHandler)
 		v1.POST("/accounts/follow", handlers.FollowHandler)
 
@@ -46,5 +34,5 @@ func V1Accounts(r *gin.Engine) {
 		//r.GET("/u/:actor/outbox", handlers.GetActorOutbox)
 		//r.POST("/u/:user/inbox", handlers.InboxHandler)
 
-	}
+
 }
