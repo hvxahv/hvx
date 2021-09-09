@@ -1,6 +1,7 @@
 package gateway
 
 import (
+	"github.com/disism/hvxahv/internal/gateway/handlers"
 	"github.com/disism/hvxahv/internal/gateway/middleware"
 	"github.com/disism/hvxahv/internal/gateway/v1alpha1"
 	"github.com/gin-gonic/gin"
@@ -20,16 +21,36 @@ func APIServer() *gin.Engine {
 		})
 	})
 
+	// The v1alpha1 version of the API service used in the application
+	// is usually allowed to be accessed through Token authentication.
+	v1 := api.Group("/api/v1")
+	v1.Use(middleware.Auth)
+
 	// Open API routing for the ActivityPub protocol.
 	// ActivityPub https://www.w3.org/TR/activitypub/
-	v1alpha1.V1ActivityPub(api)
+	// HTTP API for public query of ActivityPub.
+	// ActivityPub WebFinger https://github.com/w3c/activitypub/issues/194 .
+	api.GET("/.well-known/webfinger", handlers.WebFingerHandler)
 
-	v1alpha1.V1Accounts(api)
+	// https://www.w3.org/TR/activitypub/#actor-objects
+	// Get the actors in the activityPub protocol.
+	api.GET("/u/:actor", handlers.GetActorHandler)
 
-	v1alpha1.V1Chan(api)
+	// https://www.w3.org/TR/activitypub/#inbox
+	// Inbox
+	api.POST("/u/:actor/inbox", handlers.InboxHandler)
 
-	v1alpha1.V1Messages(api)
+	// The internal open API service provided by hvxahv usually does not require Token authentication,
+	// as login and registration.
+	api.POST("/accounts/new", handlers.NewAccountsHandler)
+	api.POST("/accounts/login", handlers.LoginHandler)
 
+	// INTERNAL API GROUP.
+	v1alpha1.V1Accounts(v1)
+
+	v1alpha1.V1Chan(v1)
+
+	v1alpha1.V1Messages(v1)
 
 	return api
 }
