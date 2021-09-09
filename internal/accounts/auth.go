@@ -10,7 +10,7 @@ func NewAccountAuth(mail string, password string) AccountAuth {
 }
 
 func (a *Accounts) Login() (string, error) {
-	name, err := NewAccountLogin(a.Mail, a.Password)
+	name, err := AccountLogin(a.Mail, a.Password)
 	if err != nil {
 		return "", err
 	}

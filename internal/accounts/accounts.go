@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/disism/hvxahv/internal"
 	"github.com/disism/hvxahv/pkg/cache"
-	"github.com/disism/hvxahv/pkg/cockroach"
 	"github.com/disism/hvxahv/pkg/security"
 	"github.com/go-playground/validator/v10"
 	"github.com/pkg/errors"
@@ -57,8 +56,12 @@ func NewAccounts(username, password, mail string) (Account, error) {
 	return acct, nil
 }
 
-func NewAcctByName(name string) Account {
+func NewByName(name string) Account {
 	return &Accounts{Username: name}
+}
+
+func NewDelete(mail, password, username string) Account {
+	return &Accounts{Username: username, Mail: mail, Password: password}
 }
 
 func (a *Accounts) New() (int32, string) {
@@ -135,7 +138,7 @@ func (a *Accounts) Update() error {
 		a.Password = security.GenPassword(a.Password)
 	}
 
-	acct, err := NewAccountUpdate(a)
+	acct, err := AccountUpdate(a)
 	if err != nil {
 		return err
 	}
@@ -161,19 +164,17 @@ func (a *Accounts) Delete() error {
 	if err != nil {
 		return err
 	}
+	if err := DeleteAccount(a.Username); err != nil {
+		return err
+	}
 
-	db := cockroach.GetDB()
-	//  Unscoped() Use gorm's Unscoped method to permanently delete data.
-	if err2 := db.Debug().Table("accounts").Where("username = ?", name).Unscoped().Delete(&Accounts{}).Error; err != nil {
-		log.Println(gorm.ErrMissingWhereClause)
-		return err2
+	if err := cache.DELKey(name); err != nil {
+		return err
 	}
-	if err3 := cache.DELKey(name); err3 != nil {
-		return err3
+	if err := cache.DELAcctMail(a.Mail); err != nil {
+		return err
 	}
-	if err4 := cache.DELAcctMail(a.Mail); err4 != nil {
-		return err4
-	}
+
 	return nil
 }
 
