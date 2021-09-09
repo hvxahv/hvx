@@ -51,7 +51,7 @@ func (s *server) Update(ctx context.Context, in *pb.AccountData) (*pb.AccountsRe
 
 // Find Implementation of the method of querying the account.
 func (s *server) Find(ctx context.Context, in *pb.NewAccountByName) (*pb.AccountData, error) {
-	r := NewAcctByName(in.Username)
+	r := NewByName(in.Username)
 	a, err := r.Find()
 	if err != nil {
 		return nil, err

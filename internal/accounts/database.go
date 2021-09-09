@@ -82,8 +82,8 @@ func NewAccount(acct *Accounts) error {
 	return nil
 }
 
-// NewAccountLogin Log in to the account and return the account name.
-func NewAccountLogin(mail, password string) (string, error) {
+// AccountLogin Log in to the account and return the account name.
+func AccountLogin(mail, password string) (string, error) {
 	db := cockroach.GetDB()
 	var a *Accounts
 	if err := db.Debug().Table("accounts").Where("mail = ?", mail).First(&a).Error; err != nil {
@@ -97,12 +97,21 @@ func NewAccountLogin(mail, password string) (string, error) {
 	return a.Username, nil
 }
 
-// NewAccountUpdate ...
-func NewAccountUpdate(a *Accounts) (*Accounts, error) {
+// AccountUpdate ...
+func AccountUpdate(a *Accounts) (*Accounts, error) {
 	db := cockroach.GetDB()
 	acct := a
 	if err := db.Debug().Table("accounts").Where("username = ?", a.Username).Updates(&acct).First(&a).Error; err != nil {
 		return nil, errors.Errorf("failed to update user: %v", err)
 	}
 	return acct, nil
+}
+
+// DeleteAccount Unscoped() Use gorm's Unscoped method to permanently delete data.
+func DeleteAccount(name string) error {
+	db := cockroach.GetDB()
+	if err := db.Debug().Table("accounts").Where("username = ?", name).Unscoped().Delete(&Accounts{}).Error; err != nil {
+		return errors.Errorf("failed to delete accounts: %v", err)
+	}
+	return nil
 }

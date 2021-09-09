@@ -104,7 +104,7 @@ func TestAccounts_UpdateKEY(t *testing.T) {
 func TestAccounts_Query(t *testing.T) {
 	TestInitDB(t)
 
-	a := NewAcctByName("hvturingga")
+	a := NewByName("hvturingga")
 	r, err := a.Find()
 	if err != nil {
 		return
@@ -114,13 +114,14 @@ func TestAccounts_Query(t *testing.T) {
 
 func TestAccounts_Delete(t *testing.T) {
 	TestInitDB(t)
-	//
-	//a := NewAccountAuth("xxs@disism.com", "hvxahv123")
-	//if err := a.Delete(); err != nil {
-	//	t.Log(err)
-	//	return
-	//}
-	//t.Log("Delete account successfully.")
+
+	a := NewDelete("x@disism.com", "hvturingga", "hvturingga")
+
+	if err := a.Delete(); err != nil {
+		t.Log(err)
+		return
+	}
+	t.Log("Delete account successfully.")
 }
 
 func TestAccounts_Login(t *testing.T) {
