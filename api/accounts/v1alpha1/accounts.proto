@@ -19,9 +19,6 @@ service Accounts {
 
   // Login ...
   rpc Login (AuthData) returns (AuthReply) {}
-
-  //  New follower.
-  rpc NewFollow (FollowersData) returns (AccountsReply) {}
 }
 
 
@@ -70,9 +67,4 @@ message AuthData {
 message AuthReply {
   string username = 1;
   string uuid = 2;
-}
-
-message FollowersData {
-  string follower = 1;
-  string following = 2;
 }

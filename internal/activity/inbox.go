@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"github.com/disism/hvxahv/internal/accounts"
 	"github.com/disism/hvxahv/pkg/activitypub"
+	"gorm.io/gorm"
 	"log"
 )
 
-type Inbox struct {
+type InboxData struct {
 	Context string `json:"@context"`
 	Id      string `json:"id"`
 	Type    string `json:"type"`
@@ -16,8 +17,32 @@ type Inbox struct {
 	Object  string `json:"object"`
 }
 
+type Inbox struct {
+	gorm.Model
+	Actor     string `gorm:"type:varchar(999);actor"`
+	EventType string `gorm:"type:varchar(999);event_type"`
+	EventID   string `gorm:"type:varchar(999);event_id"`
+	Username  string `gorm:"primaryKey;type:varchar(999);username"`
+}
+
+func (i *Inbox) New() {
+	if err := NewInboxToDB(i); err != nil {
+		return 
+	}
+}
+
+func NewInbox(actor string, types string, eventID string, username string) *Inbox {
+	return &Inbox{Actor: actor, EventType: types, EventID: eventID, Username: username}
+}
+
+type INBOX interface {
+	New()
+}
+
+
 func InboxEventHandler(name string, body []byte) {
-	i := Inbox{}
+	i := InboxData{}
+
 	err := json.Unmarshal(body, &i)
 	if err != nil {
 		fmt.Println(err)
@@ -36,19 +61,19 @@ func InboxEventHandler(name string, body []byte) {
 		fmt.Println(f)
 		fmt.Printf("%s 请求关注你", f.Actor)
 
-		nm := NewMessages(f.Actor, f.Type, f.Id, name)
+		nm := NewInbox(f.Actor, f.Type, f.Id, name)
 		nm.New()
 
 	case "Undo":
 		fmt.Printf("取消了请求")
 		fmt.Println("得到的接口数据:", i.Object)
-		nm := NewMessages(i.Actor, i.Type, i.Id, name)
+		nm := NewInbox(i.Actor, i.Type, i.Id, name)
 		nm.New()
 
 	case "Reject":
 		fmt.Printf("拒绝了你的请求")
 		fmt.Println("接收了你的请求:", i.Object)
-		nm := NewMessages(i.Actor, i.Type, i.Id, name)
+		nm := NewInbox(i.Actor, i.Type, i.Id, name)
 		nm.New()
 
 	case "Accept":
@@ -60,7 +85,7 @@ func InboxEventHandler(name string, body []byte) {
 		}
 		fmt.Println(a)
 
-		nm := NewMessages(a.Actor, a.Type, a.Id, name)
+		nm := NewInbox(a.Actor, a.Type, a.Id, name)
 		nm.New()
 		
 		nf := accounts.NewFollow(name, i.Actor)
@@ -69,7 +94,4 @@ func InboxEventHandler(name string, body []byte) {
 			log.Println(err3)
 		}
 	}
-}
-func (i *Inbox) Inbox(name string) {
-
 }

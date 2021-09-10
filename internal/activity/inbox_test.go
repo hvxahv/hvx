@@ -39,6 +39,6 @@ func IniTestConfig(t *testing.T) {
 
 func TestNewMessages(t *testing.T) {
 	IniTestConfig(t)
-	nm := NewMessages("https://mas.to/users/hvturingga", "Follow", "https://mas.to/9dc74aa1-9f24-4514-b6e4-00ebd6be012f", "hvturingga")
+	nm := NewInbox("https://mas.to/users/hvturingga", "Follow", "https://mas.to/9dc74aa1-9f24-4514-b6e4-00ebd6be012f", "hvturingga")
 	nm.New()
 }

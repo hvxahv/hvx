@@ -21,12 +21,12 @@ func NewAliases(username string) (*Aliases, error) {
 	return aa, nil
 }
 
-type Index interface {
-	// GetAcctAliases Get user ID by username.
-	GetAcctAliases() (uint, error)
+type Alias interface {
+	// GetAliases Get user ID by username.
+	GetAliases() (uint, error)
 }
 
-func (a *Aliases) GetAcctAliases() (uint, error) {
+func (a *Aliases) GetAliases() (uint, error) {
 	id, err := FindAliases(a.Username)
 	if err != nil {
 		return 0, err

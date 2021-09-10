@@ -24,6 +24,8 @@ func APIServer() *gin.Engine {
 	// The v1alpha1 version of the API service used in the application
 	// is usually allowed to be accessed through Token authentication.
 	v1 := api.Group("/api/v1")
+
+	// USE AUTH MIDDLEWARE.
 	v1.Use(middleware.Auth)
 
 	// Open API routing for the ActivityPub protocol.
@@ -32,12 +34,12 @@ func APIServer() *gin.Engine {
 	// ActivityPub WebFinger https://github.com/w3c/activitypub/issues/194 .
 	api.GET("/.well-known/webfinger", handlers.WebFingerHandler)
 
-	// https://www.w3.org/TR/activitypub/#actor-objects
 	// Get the actors in the activityPub protocol.
+	// https://www.w3.org/TR/activitypub/#actor-objects
 	api.GET("/u/:actor", handlers.GetActorHandler)
 
-	// https://www.w3.org/TR/activitypub/#inbox
 	// Inbox
+	// https://www.w3.org/TR/activitypub/#inbox
 	api.POST("/u/:actor/inbox", handlers.InboxHandler)
 
 	// The internal open API service provided by hvxahv usually does not require Token authentication,
@@ -48,9 +50,11 @@ func APIServer() *gin.Engine {
 	// INTERNAL API GROUP.
 	v1alpha1.V1Accounts(v1)
 
-	v1alpha1.V1Chan(v1)
+	v1alpha1.V1Channels(v1)
 
-	v1alpha1.V1Messages(v1)
+	v1alpha1.V1Accounts(v1)
+
+	v1alpha1.V1Articles(v1)
 
 	return api
 }

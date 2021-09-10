@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package hvxahv.v1alpha1.proto;
+option go_package = "github.com/disism/hvxahv/api/activity/v1alpha1";
+
+service Activity {
+  rpc NewMessage (ActivityData) returns (NewActivityReply) {}
+}
+
+message ActivityData {
+  string message = 1;
+}
+
+message NewActivityReply {
+  int32  code    = 1;
+  string message = 2;
+}
+
+message FollowersData {
+  string follower = 1;
+  string following = 2;
+}
