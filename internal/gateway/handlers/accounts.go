@@ -141,7 +141,7 @@ func GetAccountsHandler(c *gin.Context) {
 
 	c.JSON(200, gin.H{
 		"code":     200,
-		"messages": r,
+		"activity": r,
 	})
 }
 

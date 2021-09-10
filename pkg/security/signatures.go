@@ -25,7 +25,7 @@ import (
 // particular message.  It can also be desirable to ensure that the
 // message was not tampered with during transit.  This document
 // describes a way for servers and clients to simultaneously add
-// authentication and message integrity to HTTP messages by using a
+// authentication and message integrity to HTTP activity by using a
 // digital signature.
 //https://datatracker.ietf.org/doc/html/draft-cavage-http-signatures-08
 

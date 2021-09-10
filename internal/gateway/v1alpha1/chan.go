@@ -5,7 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func V1Chan(v1 *gin.RouterGroup) {
+func V1Channels(v1 *gin.RouterGroup) {
 
 	v1.POST("/channel/new", handlers.NewChannelHandler)
 	v1.POST("/channel/update", handlers.UpdateChannelHandler)

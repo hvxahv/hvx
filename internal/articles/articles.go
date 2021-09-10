@@ -57,7 +57,7 @@ func Activity() {
 	to := []string{"", "", ""}
 	cc := []string{"gateway://www.w3.org/ns/activitystreams#Public"}
 
-	obj := gin.H{
+	activity := gin.H{
 		"id":           articleId,
 		"type":         "Note",
 		"attributedTo": authorUrl,
@@ -66,12 +66,13 @@ func Activity() {
 		"to":           to,
 		"cc":           cc,
 	}
+
 	hd := gin.H{
 		"@context":  "gateway://www.w3.org/ns/activitystreams",
 		"type":      "Create",
 		"id":        activityId,
 		"actor":     authorUrl,
-		"object":    obj,
+		"object":    activity,
 		"published": date,
 		"to":        to,
 		"cc":        cc,

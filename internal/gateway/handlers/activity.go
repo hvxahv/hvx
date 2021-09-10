@@ -2,8 +2,9 @@ package handlers
 
 import (
 	"fmt"
+	"github.com/disism/hvxahv/internal/activity"
+
 	"github.com/disism/hvxahv/internal/gateway/middleware"
-	"github.com/disism/hvxahv/internal/messages"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 )
@@ -11,8 +12,7 @@ import (
 func InboxHandler(c *gin.Context) {
 	name := c.Param("actor")
 	body, _ := ioutil.ReadAll(c.Request.Body)
-
-	messages.InboxEventHandler(name, body)
+	activity.InboxEventHandler(name, body)
 }
 
 func OutboxHandler(c *gin.Context) {

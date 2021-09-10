@@ -5,4 +5,4 @@ gen proto:
 	$(protocGoOut) $(protocGoGRPCOut) ./api/accounts/v1alpha1/*.proto && \
 $(protocGoOut) $(protocGoGRPCOut) ./api/articles/v1alpha1/*.proto && \
 $(protocGoOut) $(protocGoGRPCOut) ./api/channel/v1alpha1/*.proto && \
-$(protocGoOut) $(protocGoGRPCOut) ./api/messages/v1alpha1/*.proto
+$(protocGoOut) $(protocGoGRPCOut) ./api/activity/v1alpha1/*.proto
