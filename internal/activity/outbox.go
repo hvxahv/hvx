@@ -1,4 +1,4 @@
-package messages
+package activity
 
 import (
 	"bytes"

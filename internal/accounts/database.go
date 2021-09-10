@@ -1,6 +1,7 @@
 package accounts
 
 import (
+	"fmt"
 	"github.com/disism/hvxahv/pkg/cockroach"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
@@ -20,6 +21,10 @@ func IsNotFound(err error) bool {
 // AccountIsNotFound Determine whether the user exists in the database.
 func AccountIsNotFound(username, mail string) bool {
 	db := cockroach.GetDB()
+	if err := db.AutoMigrate(&Accounts{}); err != nil {
+		fmt.Printf("failed to automatically create database: %v", err)
+	}
+
 	err := db.Debug().Table("accounts").Where("username = ? ", username).Or("mail = ?", mail).First(&Accounts{})
 	if err != nil {
 		ok := IsNotFound(err.Error)
@@ -40,8 +45,8 @@ func AccountUserIsNotFound(username string) (*Accounts, bool) {
 	return acct, false
 }
 
-// FindAccountID Find the user ID of an account by username.
-func FindAccountID(username string) (uint, error) {
+// FindAliases Find the user ID of an account by username.
+func FindAliases(username string) (uint, error) {
 	db := cockroach.GetDB()
 
 	var acct *Accounts
@@ -55,27 +60,23 @@ func FindAccountID(username string) (uint, error) {
 func NewAccount(acct *Accounts) error {
 	db := cockroach.GetDB()
 
-	if err := db.AutoMigrate(&acct); err != nil {
-		return errors.Errorf("failed to automatically create database: %v", err)
-	}
-
 	if err := db.Debug().Table("accounts").Create(&acct).Error; err != nil {
 		return errors.Errorf("An error occurred while creating the account: %v", err)
 	}
 
-	var aa *AccountAliases
+	var aa *Aliases
 	if err := db.AutoMigrate(&aa); err != nil {
 		return errors.Errorf("failed to automatically create database: %v", err)
 	}
 
-	c := &AccountAliases{
+	c := &Aliases{
 		Model:    gorm.Model{
 			ID:        acct.ID,
 		},
 		Username: acct.Username,
 	}
 
-	if err := db.Debug().Table("account_aliases").Create(&c).Error; err != nil {
+	if err := db.Debug().Table("aliases").Create(&c).Error; err != nil {
 		return errors.Errorf("An error occurred while creating the account: %v", err)
 	}
 

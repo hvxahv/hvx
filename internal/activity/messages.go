@@ -1,4 +1,4 @@
-package messages
+package activity
 
 import (
 	"github.com/disism/hvxahv/pkg/cockroach"
