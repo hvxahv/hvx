@@ -4,7 +4,6 @@ import (
 	"fmt"
 	pb "github.com/disism/hvxahv/api/accounts/v1alpha1"
 	"golang.org/x/net/context"
-	"log"
 )
 
 // New Implementation of the method of creating an account.
@@ -51,7 +50,7 @@ func (s *server) Update(ctx context.Context, in *pb.AccountData) (*pb.AccountsRe
 
 // Find Implementation of the method of querying the account.
 func (s *server) Find(ctx context.Context, in *pb.NewAccountByName) (*pb.AccountData, error) {
-	r := NewByName(in.Username)
+	r := NewAccountByName(in.Username)
 	a, err := r.Find()
 	if err != nil {
 		return nil, err
@@ -84,17 +83,17 @@ func (s *server) Delete(ctx context.Context, in *pb.AuthData) (*pb.AccountsReply
 }
 
 // NewFollow Implementation of the method of querying the account.
-func (s *server) NewFollow(ctx context.Context, in *pb.FollowersData) (*pb.AccountsReply, error) {
-	nf := NewFollow(in.Follower, in.Following)
-	if err := nf.New(); err != nil {
-		log.Println(err)
-		return &pb.AccountsReply{
-			Code:    202,
-			Message: "Follow failed!",
-		}, nil
-	}
-	return &pb.AccountsReply{
-		Code:    200,
-		Message: "Followed!",
-	}, nil
-}
+//func (s *server) NewFollow(ctx context.Context, in *pb.FollowersData) (*pb.AccountsReply, error) {
+//	nf := NewFos(in.Follower, in.Following)
+//	if err := nf.New(); err != nil {
+//		log.Println(err)
+//		return &pb.AccountsReply{
+//			Code:    202,
+//			Message: "Follow failed!",
+//		}, nil
+//	}
+//	return &pb.AccountsReply{
+//		Code:    200,
+//		Message: "Followed!",
+//	}, nil
+//}

@@ -25,20 +25,37 @@ type Inbox struct {
 	Username  string `gorm:"primaryKey;type:varchar(999);username"`
 }
 
-func (i *Inbox) New() {
+func (i *Inbox) FetchInbox() {
+	inbox, err := FetchInboxCollectionByName(i.Username)
+	if err != nil {
+		return 
+	}
+	fmt.Println(inbox)
+
+}
+
+func (i *Inbox) NewInbox() {
 	if err := NewInboxToDB(i); err != nil {
 		return 
 	}
+}
+
+type INBOX interface {
+	// NewInbox inbox data.
+	NewInbox()
+
+	// FetchInbox The inbox is discovered through the property of an actor's profile.
+	// The MUST be an OrderedCollection.
+	FetchInbox()
 }
 
 func NewInbox(actor string, types string, eventID string, username string) *Inbox {
 	return &Inbox{Actor: actor, EventType: types, EventID: eventID, Username: username}
 }
 
-type INBOX interface {
-	New()
+func NewInboxByName(username string) *Inbox {
+	return &Inbox{Username: username}
 }
-
 
 func InboxEventHandler(name string, body []byte) {
 	i := InboxData{}
@@ -62,19 +79,19 @@ func InboxEventHandler(name string, body []byte) {
 		fmt.Printf("%s 请求关注你", f.Actor)
 
 		nm := NewInbox(f.Actor, f.Type, f.Id, name)
-		nm.New()
+		nm.NewInbox()
 
 	case "Undo":
 		fmt.Printf("取消了请求")
 		fmt.Println("得到的接口数据:", i.Object)
 		nm := NewInbox(i.Actor, i.Type, i.Id, name)
-		nm.New()
+		nm.NewInbox()
 
 	case "Reject":
 		fmt.Printf("拒绝了你的请求")
 		fmt.Println("接收了你的请求:", i.Object)
 		nm := NewInbox(i.Actor, i.Type, i.Id, name)
-		nm.New()
+		nm.NewInbox()
 
 	case "Accept":
 		fmt.Println("接受了你的请求:", i.Object)
@@ -86,9 +103,9 @@ func InboxEventHandler(name string, body []byte) {
 		fmt.Println(a)
 
 		nm := NewInbox(a.Actor, a.Type, a.Id, name)
-		nm.New()
+		nm.NewInbox()
 		
-		nf := accounts.NewFollow(name, i.Actor)
+		nf := accounts.NewFollows(name, i.Actor)
 		err3 := nf.New()
 		if err3 != nil {
 			log.Println(err3)

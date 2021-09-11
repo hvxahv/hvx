@@ -1,6 +1,6 @@
 # hvxahv
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/disism/hvxahv)](https://goreportcard.com/report/github.com/disism/hvxahv)
+[![Go Report Card](https://goreportcard.com/badge/github.com/disism/hvxahv)](https://goreportcard.com/report/github.com/disism/hvxahv) [![Go](https://github.com/disism/hvxahv/actions/workflows/hvxahv.yml/badge.svg)](https://github.com/disism/hvxahv/actions/workflows/hvxahv.yml)
 
 Instance: [halfmemories.com](https://halfmemories.com)
 

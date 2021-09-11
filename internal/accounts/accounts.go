@@ -16,7 +16,7 @@ import (
 // Must be a unique key: username, email and phone.
 type Accounts struct {
 	gorm.Model
-	Username   string `gorm:"index;type:varchar(100);username;unique" validate:"required,min=10,max=16"`
+	Username   string `gorm:"primaryKey;type:varchar(100);username;unique" validate:"required,min=10,max=16"`
 	Password   string `gorm:"type:varchar(100);password" validate:"required,min=8,max=100"`
 	Avatar     string `gorm:"type:varchar(999);avatar"`
 	Bio        string `gorm:"type:varchar(999);bio" validate:"max=650"`
@@ -56,7 +56,7 @@ func NewAccounts(username, password, mail string) (Account, error) {
 	return acct, nil
 }
 
-func NewByName(name string) Account {
+func NewAccountByName(name string) Account {
 	return &Accounts{Username: name}
 }
 
@@ -86,7 +86,7 @@ func (a *Accounts) New() (int32, string) {
 	// If the account is found, it returns the user has created.
 	// It will not be judged so detailed in the database. It only returns the information created by the user.
 	// If more processing is required, detailed operations need to be done in the cache.
-	ok := AccountIsNotFound(a.Username, a.Mail)
+	ok := FoundAccount(a.Username, a.Mail)
 	if !ok {
 		return 400, internal.ExistsAccounts
 	}
@@ -109,25 +109,25 @@ func (a *Accounts) New() (int32, string) {
 }
 
 func (a *Accounts) Find() (*Accounts, error) {
-	r, err := cache.GetAccount(a.Username)
-	if err != nil {
+	//r, err := cache.GetAccount(a.Username)
+	//if err != nil {
 		// If the cache is not found, the data will be searched from the database.
-		acct, ok := AccountUserIsNotFound(a.Username)
+		acct, ok := AccountIsNotFound(a.Username)
 		if !ok {
 			// The data obtained from the database is stored in the cache again.
-			ad, _ := json.Marshal(&acct)
-			if sce := cache.SETAcct(a.Username, ad, 0); sce != nil {
-				return nil, err
-			}
+			//ad, _ := json.Marshal(&acct)
+			//if sce := cache.SETAcct(a.Username, ad, 0); sce != nil {
+			//	return nil, err
+			//}
 			return acct, nil
-		}
+		//}
 		return nil, errors.Errorf("THE CURRENT USER DOES NOT EXIST.")
 	}
 
 	// If the cache is found, the data in the cache will be returned.
-	if err := json.Unmarshal([]byte(r), a); err != nil {
-		log.Println("accounts failed to find user cache and parse json.")
-	}
+	//if err := json.Unmarshal([]byte(r), a); err != nil {
+	//	log.Println("accounts failed to find user cache and parse json.")
+	//}
 	return a, nil
 
 }
