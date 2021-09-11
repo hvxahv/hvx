@@ -1,8 +1,11 @@
 package accounts
 
+// AccountAuth The interface for account authorization,
+// including method interfaces for login or developer API permissions.
 type AccountAuth interface {
 	// Login to the account and generate token, Return token and custom error message.
 	Login() (string, error)
+
 }
 
 func NewAccountAuth(mail string, password string) AccountAuth {

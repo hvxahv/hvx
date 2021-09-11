@@ -90,7 +90,7 @@ func TestAccounts_UpdateKEY(t *testing.T) {
 		log.Printf("failed to generate public and private keys: %v", err)
 	}
 
-	a := Accounts{
+	a := &Accounts{
 		Username:   "hvturingga",
 		PrivateKey: privateKey,
 		PublicKey:  publicKey,
@@ -104,7 +104,7 @@ func TestAccounts_UpdateKEY(t *testing.T) {
 func TestAccounts_Query(t *testing.T) {
 	TestInitDB(t)
 
-	a := NewByName("hvturingga")
+	a := NewAccountByName("hvturingga")
 	r, err := a.Find()
 	if err != nil {
 		return

@@ -3,6 +3,7 @@ package activity
 import (
 	"bytes"
 	"fmt"
+	"github.com/disism/hvxahv/internal/accounts"
 	"github.com/disism/hvxahv/pkg/activitypub"
 	"github.com/disism/hvxahv/pkg/security"
 	"github.com/google/uuid"
@@ -14,7 +15,7 @@ import (
 	"time"
 )
 
-func NewFollow(actor, object string) *activitypub.Follow {
+func NewFollowRequest(actor, object string) *activitypub.Follow {
 	var (
 		ctx = "https://www.w3.org/ns/activitystreams"
 		id  = fmt.Sprintf("https://%s/%s", viper.GetString("localhost"), uuid.New().String())
@@ -30,17 +31,23 @@ func NewFollow(actor, object string) *activitypub.Follow {
 	}
 }
 
-// NewAccept
+// NewFollowAccept
 // name: LOCAL ACTOR NAME,
 // actor: REMOTE ACTOR LINK,
 // oid: CONTEXT ID,
 // object: LOCAL ACTOR LINK.
-func NewAccept(name, actor, oid, object string) *activitypub.Accept {
+func NewFollowAccept(name, actor, oid string) *activitypub.Accept {
 	var (
 		ctx = "https://www.w3.org/ns/activitystreams"
 		id  = fmt.Sprintf("https://%s/u/%s#accepts/follows/%s", viper.GetString("localhost"), name, uuid.New().String())
 		a   = fmt.Sprintf("https://%s/u/%s", viper.GetString("localhost"), name)
 	)
+
+	nf := accounts.NewFollows(actor, name)
+	err := nf.New()
+	if err != nil {
+		return nil
+	}
 
 	return &activitypub.Accept{
 		Context: ctx,

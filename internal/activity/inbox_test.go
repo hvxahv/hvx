@@ -25,13 +25,12 @@ func IniTestConfig(t *testing.T) {
 		fmt.Fprintln(os.Stderr, "Using configs file:", viper.ConfigFileUsed())
 	}
 
-
 	// If a configs file is found, read it in.
 	if err3 := viper.ReadInConfig(); err3 == nil {
 		fmt.Fprintln(os.Stderr, "Using configs file:", viper.ConfigFileUsed())
 	}
 
-	n :=  cockroach.NewDBAddr()
+	n := cockroach.NewDBAddr()
 	if err2 := n.InitDB(); err2 != nil {
 		return
 	}
@@ -40,5 +39,13 @@ func IniTestConfig(t *testing.T) {
 func TestNewMessages(t *testing.T) {
 	IniTestConfig(t)
 	nm := NewInbox("https://mas.to/users/hvturingga", "Follow", "https://mas.to/9dc74aa1-9f24-4514-b6e4-00ebd6be012f", "hvturingga")
-	nm.New()
+	nm.NewInbox()
+}
+
+func TestInbox_FetchInbox(t *testing.T) {
+	IniTestConfig(t)
+
+	nib := NewInboxByName("hvturingga")
+
+	nib.FetchInbox()
 }
