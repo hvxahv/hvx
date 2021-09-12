@@ -31,7 +31,6 @@ type Accounts struct {
 	PublicKey  string `gorm:"type:varchar(3000);public_key"`
 }
 
-
 func NewAccounts(username, password, mail string) (Account, error) {
 	privateKey, publicKey, err := security.GenRSA()
 	if err != nil {
@@ -108,7 +107,7 @@ func (a *Accounts) New() (int32, string) {
 	return 201, internal.SuccessNewAccount
 }
 
-func (a *Accounts) Find() (*Accounts, error) {
+func (a *Accounts) Fetch() (*Accounts, error) {
 	//r, err := cache.GetAccount(a.Username)
 	//if err != nil {
 		// If the cache is not found, the data will be searched from the database.
@@ -183,11 +182,11 @@ type Account interface {
 	// New Add a user Instantiate using the NewAccounts function.
 	New() (int32, string)
 
-	// Find This method implements the function of querying accounts.
+	// Fetch This method implements the function of querying accounts.
 	// It needs to accept the username to be queried through the function of the
 	// instantiated object NewAccount,
 	// and then return the query error and the data of the accounts structure.
-	Find() (*Accounts, error)
+	Fetch() (*Accounts, error)
 
 	// Update Use the NewAccountQUD function to pass the username and
 	// accept the accounts object data to update the accounts data.

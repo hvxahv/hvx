@@ -105,7 +105,7 @@ func TestAccounts_Query(t *testing.T) {
 	TestInitDB(t)
 
 	a := NewAccountByName("hvturingga")
-	r, err := a.Find()
+	r, err := a.Fetch()
 	if err != nil {
 		return
 	}

@@ -1,9 +1,10 @@
 package channel
 
 import (
-	"github.com/disism/hvxahv/internal"
-	"github.com/disism/hvxahv/pkg/cockroach"
+	pb "github.com/disism/hvxahv/api/accounts/v1alpha1"
+	"github.com/disism/hvxahv/pkg/microservices/client"
 	"github.com/disism/hvxahv/pkg/security"
+	"golang.org/x/net/context"
 	"gorm.io/gorm"
 	"log"
 )
@@ -14,11 +15,33 @@ type Channels struct {
 	Id        string `gorm:"primaryKey;type:varchar(100);id;unique"`
 	Avatar    string `gorm:"type:varchar(999);avatar"`
 	Bio       string `gorm:"type:varchar(999);bio"`
-	Owner     string `gorm:"primaryKey;type:varchar(100);owner"`
+	OwnerID   uint   `gorm:"primaryKey;owner_id"`
 	IsPrivate bool   `gorm:"type:boolean;is_private"`
 }
 
-func (c *Channels) Find() Channels {
+func (c *Channels) New() error {
+
+	err := NewChannel(c)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+type Channel interface {
+	// New  Create a channel and return status code, information, id,  and errors.
+	New() error
+
+	// Find channel by ID.
+	//Find() Channels
+
+	// U　　pdate channel information.
+	//Update()
+
+	//GetMyChanByName()
+}
+
+/*func (c *Channels) Find() Channels {
 	db := cockroach.GetDB()
 
 	if err := db.Debug().Table("channels").Where("id = ?", c.Id).Find(&c).Error; err != nil {
@@ -63,6 +86,12 @@ type Channel interface {
 	GetMyChanByName()
 }
 
+
+func NewChannelsByID(id string) *Channels {
+	return &Channels{Id: id}
+}
+*/
+
 func NewChannels(name, id, avatar, bio, owner string, isPrivate bool) *Channels {
 	if isPrivate || id == "" {
 		random, err := security.GenerateRandomString(15)
@@ -72,9 +101,18 @@ func NewChannels(name, id, avatar, bio, owner string, isPrivate bool) *Channels 
 		id = random
 	}
 
-	return &Channels{Name: name, Id: id, Avatar: avatar, Bio: bio, Owner: owner, IsPrivate: isPrivate}
-}
+	cli, conn, err := client.Accounts()
+	if err != nil {
+		log.Println(err)
+	}
+	defer conn.Close()
 
-func NewChannelsByID(id string) *Channels {
-	return &Channels{Id: id}
+	acct, err := cli.Find(context.Background(), &pb.NewAccountByName{
+		Username: owner,
+	})
+	if err != nil {
+		log.Printf("failed to send message to accounts server: %v", err)
+	}
+
+	return &Channels{Name: name, Id: id, Avatar: avatar, Bio: bio, OwnerID: uint(acct.Id), IsPrivate: isPrivate}
 }
