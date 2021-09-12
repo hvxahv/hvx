@@ -5,7 +5,7 @@ import (
 	pb "github.com/disism/hvxahv/api/accounts/v1alpha1"
 	"github.com/disism/hvxahv/pkg/activitypub"
 	"github.com/disism/hvxahv/pkg/microservices/client"
-	"github.com/disism/hvxahv/pkg/remote"
+	"github.com/disism/hvxahv/pkg/streams"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/net/context"
 	"log"
@@ -17,7 +17,7 @@ func WebFingerHandler(c *gin.Context) {
 	ok := activitypub.IsRemote(resource)
 	if ok {
 		// If you are not searching for the user of this instance, go to the remote request.
-		wf, err := remote.NewClient("GET", activitypub.NewWebFingerUrl(activitypub.GetHost(resource), resource)).Get()
+		wf, err := streams.NewClient("GET", activitypub.NewWebFingerUrl(activitypub.GetHost(resource), resource)).Get()
 		if err != nil {
 			log.Println(err)
 		}
@@ -26,7 +26,7 @@ func WebFingerHandler(c *gin.Context) {
 
 
 		var ar activitypub.Actor
-		actor, err := remote.NewClient("GET", wfd.Links[0].Href).Get()
+		actor, err := streams.NewClient("GET", wfd.Links[0].Href).Get()
 		if err != nil {
 			log.Println(err)
 		}
@@ -47,7 +47,7 @@ func WebFingerHandler(c *gin.Context) {
 	}
 	defer conn.Close()
 
-	accounts, err := cli.Find(context.Background(), &pb.NewAccountByName{Username: activitypub.GetActorName(resource)})
+	accounts, err := cli.QueryByName(context.Background(), &pb.NewAccountByName{Username: activitypub.GetActorName(resource)})
 	if err != nil {
 		return
 	}

@@ -6,43 +6,30 @@
 package articles
 
 import (
-	"fmt"
-	pb "github.com/disism/hvxahv/api/accounts/v1alpha1"
+	"github.com/disism/hvxahv/pkg/cockroach"
 	"github.com/disism/hvxahv/pkg/microservices/client"
-	"golang.org/x/net/context"
+	"github.com/pkg/errors"
 	"gorm.io/gorm"
-	"log"
 )
 
 type Articles struct {
 	gorm.Model
 	AuthorID uint   `gorm:"primaryKey;author_id"`
 	Title    string `gorm:"type:varchar(600);title"`
-	Article  string `gorm:"type:varchar(600);article"`
-}
-
-func NewArticles(name, title, article string) *Articles {
-	cli, conn, err := client.Accounts()
-	if err != nil {
-		log.Println(err)
-	}
-	defer conn.Close()
-
-	acct, err := cli.Find(context.Background(), &pb.NewAccountByName{
-		Username: name,
-	})
-	if err != nil {
-		log.Printf("failed to send message to accounts server: %v", err)
-	}
-	fmt.Println(acct.Id)
-	return &Articles{AuthorID: uint(acct.Id), Title: title, Article: article}
+	Article  string `gorm:"type:varchar(3000);article"`
 }
 
 func (a *Articles) New() error {
-	err := NewArticle(a)
-	if err != nil {
-		return err
+	db := cockroach.GetDB()
+
+	if err := db.AutoMigrate(&Articles{}); err != nil {
+		return errors.Errorf("failed to automatically create database: %v", err)
 	}
+
+	if err := db.Debug().Table("articles").Create(&a); err != nil {
+		return errors.Errorf("failed to create article: %v", err)
+	}
+
 	return nil
 }
 
@@ -75,9 +62,17 @@ type Article interface {
 	// FetchArticleByID Get article or status by ID.
 	FetchArticleByID()
 
-	// FetchArticlesByName Get the article or status by the username.
+	// FetchLisByName Get the article or status by the username.
 	// The article retrieved by this method is a collection instead of a certain article.
 	// This collection will return all the articles under this user.
 	// You need to set the number of articles obtained by default.
-	FetchArticlesByName()
+	FetchLisByName()
+}
+
+func NewArticles(name, title, article string) *Articles {
+	return &Articles{
+		AuthorID: client.FetchAccountIdByName(name),
+		Title:    title,
+		Article:  article,
+	}
 }

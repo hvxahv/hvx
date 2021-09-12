@@ -14,8 +14,11 @@ service Accounts {
   // Delete Delete the specified account by user name.
   rpc Delete (AuthData) returns (AccountsReply) {}
 
-  // Find Query specified user data by username.
-  rpc Find (NewAccountByName) returns (AccountData) {}
+  // Query account specified user data by username.
+  rpc QueryByName (NewAccountByName) returns (AccountData) {}
+
+  // Query account specified user data by id.
+  rpc QueryByID (NewAccountByID) returns (AccountData) {}
 
   // Login ...
   rpc Login (AuthData) returns (AuthReply) {}
@@ -49,6 +52,10 @@ message AccountsReply {
 // AccountByName Functions operated by username.
 message NewAccountByName{
   string username = 1;
+}
+
+message NewAccountByID {
+  uint64 id = 1;
 }
 
 // NewAccountData Data needed to create a new account.

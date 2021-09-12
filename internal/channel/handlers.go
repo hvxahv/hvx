@@ -1,6 +1,6 @@
 package channel
 
-// New Implementation of the method of new channel.
+//New Implementation of the method of new channel.
 //func (s *server) New(ctx context.Context, in *pb.NewChannelData) (*pb.NewChannelReply, error) {
 //	nc := NewChannels(in.Name, in.Id, in.Avatar, in.Bio, in.Owner, in.IsPrivate)
 //	code, res, id, err := nc.New()

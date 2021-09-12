@@ -49,9 +49,9 @@ func TestNewAccounts(t *testing.T) {
 	TestInitDB(t)
 
 	na, err := NewAccounts(
+		"alyosha",
 		"hvturingga",
-		"hvturingga",
-		"x@disism.com",
+		"alyosha@disism.com",
 		)
 	if err != nil {
 		fmt.Println(err.Error())
@@ -101,16 +101,28 @@ func TestAccounts_UpdateKEY(t *testing.T) {
 	}
 }
 
-func TestAccounts_Query(t *testing.T) {
+func TestAccounts_QueryByName(t *testing.T) {
 	TestInitDB(t)
 
 	a := NewAccountByName("hvturingga")
-	r, err := a.Fetch()
+	r, err := a.QueryByName()
 	if err != nil {
 		return
 	}
 	t.Log(r)
 }
+
+func TestAccounts_QueryByID(t *testing.T) {
+	TestInitDB(t)
+
+	a := NewAccountByID(692283236803346433)
+	r, err := a.QueryByID()
+	if err != nil {
+		return
+	}
+	t.Log(r)
+}
+
 
 func TestAccounts_Delete(t *testing.T) {
 	TestInitDB(t)
