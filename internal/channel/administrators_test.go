@@ -5,70 +5,39 @@ import (
 	"testing"
 )
 
-func TestAddAdmin(t *testing.T) {
+func TestNewAddAdmins(t *testing.T) {
 	TestInitChannelConfig(t)
-	nmc, err := NewAddAdmins("hvturingga", "Ja5QZv-fgxhg182", "alice")
+
+	na, err := NewAddAdmins(692668434193383425, 692283236803346433,  692635608323948545)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	admin, s, err := nmc.AddAdmin()
+	if err := na.Add(); err != nil {
+		fmt.Println(err)
+	}
+}
+
+func TestNewRemoveAdmByName(t *testing.T) {
+	TestInitChannelConfig(t)
+
+	nra, err := NewAddAdmins(692547656905850881, 692283236803346433, 692635286453518337)
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Printf("code: %v; message: %s", admin, s)
-
-	nmc2, err := NewAddAdmins("alice", "f6574uSSqGQ7CJX", "hvturingga")
-	admin2, s2, err := nmc2.AddAdmin()
-	if err != nil {
-		return
+	if err := nra.Remove(); err != nil {
+		fmt.Println(err)
 	}
-	fmt.Printf("code: %v; message: %s", admin2, s2)
-
 }
 
-func TestNewAdmins(t *testing.T) {
+func TestAdministrators_QueryAdmLisByID(t *testing.T) {
 	TestInitChannelConfig(t)
-	nca, err := NewAddAdmins("alice", "f6574uSSqGQ7CJX", "bob")
+
+	na := NewAdminsByID(692668434193383425, 692283236803346433)
+	id, err := na.QueryAdmLisByCID()
 	if err != nil {
 		fmt.Println(err)
-		return
-	}
-	fmt.Println(nca)
-
-}
-
-func TestGetListByName(t *testing.T) {
-	TestInitChannelConfig(t)
-	name := NewAdminsByName("hvturingga")
-	_, cls, _ := name.GetListByName()
-	fmt.Println(cls)
-
-	for _, i := range cls {
-		fmt.Println(i.Name)
-	}
-
-}
-
-func TestGetAdmListByID(t *testing.T) {
-	TestInitChannelConfig(t)
-	adm := NewAdminsByID("hvturingga_chan")
-	code, accounts, err := adm.GetAdmLisByID()
-	if err != nil {
 		return 
 	}
-
-	fmt.Println(code, accounts)
-
-}
-
-func TestAdmins_RemoveAdmin(t *testing.T) {
-	TestInitChannelConfig(t)
-	na := NewAdminsByName("bob")
-	code, res, err := na.RemoveAdmin()
-	if err != nil {
-		return 
-	}
-
-	fmt.Println(code, res)
+	fmt.Println(id)
 }

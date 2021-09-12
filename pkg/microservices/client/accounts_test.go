@@ -1,6 +1,8 @@
 package client
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestAccounts(t *testing.T) {
 	_, err, accounts := Accounts()

@@ -48,15 +48,40 @@ func (s *server) Update(ctx context.Context, in *pb.AccountData) (*pb.AccountsRe
 	return &pb.AccountsReply{Code: 200, Message: "ok!"}, nil
 }
 
-// Find Implementation of the method of querying the account.
-func (s *server) Find(ctx context.Context, in *pb.NewAccountByName) (*pb.AccountData, error) {
+// QueryByName Implementation of the method of querying the account.
+func (s *server) QueryByName(ctx context.Context, in *pb.NewAccountByName) (*pb.AccountData, error) {
 	r := NewAccountByName(in.Username)
-	a, err := r.Find()
+	a, err := r.QueryByName()
 	if err != nil {
 		return nil, err
 	}
 
 	return &pb.AccountData{
+		Id:        uint64(a.ID),
+		Username:  a.Username,
+		Mail:      a.Mail,
+		Avatar:    a.Avatar,
+		Bio:       a.Bio,
+		Name:      a.Name,
+		Phone:     a.Phone,
+		IsPrivate: a.IsPrivate,
+		Follower:  int32(a.Follower),
+		Following: int32(a.Following),
+		Friend:    int32(a.Friend),
+		PublicKey: a.PublicKey,
+	}, nil
+}
+
+// QueryByID Implementation of the method of querying the account.
+func (s *server) QueryByID(ctx context.Context, in *pb.NewAccountByID) (*pb.AccountData, error) {
+	r := NewAccountByID(uint(in.Id))
+	a, err := r.QueryByID()
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.AccountData{
+		Id:        uint64(a.ID),
 		Username:  a.Username,
 		Mail:      a.Mail,
 		Avatar:    a.Avatar,

@@ -1,4 +1,4 @@
-package remote
+package streams
 
 import (
 	"io/ioutil"
@@ -41,5 +41,6 @@ func (r *Client) Get() ([]byte, error){
 }
 
 type Request interface {
-	Get()  ([]byte, error)
+	Get() ([]byte, error)
 }
+

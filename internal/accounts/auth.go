@@ -1,5 +1,13 @@
 package accounts
 
+import (
+	"github.com/disism/hvxahv/pkg/cockroach"
+	"github.com/pkg/errors"
+	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
+	"log"
+)
+
 // AccountAuth The interface for account authorization,
 // including method interfaces for login or developer API permissions.
 type AccountAuth interface {
@@ -13,9 +21,17 @@ func NewAccountAuth(mail string, password string) AccountAuth {
 }
 
 func (a *Accounts) Login() (string, error) {
-	name, err := AccountLogin(a.Mail, a.Password)
-	if err != nil {
+	db := cockroach.GetDB()
+
+	var acct *Accounts
+	if err := db.Debug().Table("accounts").Where("mail = ?", a.Mail).First(&acct).Error; err != nil {
+		log.Println(gorm.ErrMissingWhereClause)
 		return "", err
 	}
-	return name, nil
+
+	if err := bcrypt.CompareHashAndPassword([]byte(a.Password), []byte(a.Password)); err != nil {
+		return "", errors.Errorf("Password verification failed.")
+	}
+
+	return acct.Name, nil
 }

@@ -29,7 +29,7 @@ func TestInitChannelConfig(t *testing.T) {
 	}
 
 	// Initialize the database.
-	n :=  cockroach.NewDBAddr()
+	n := cockroach.NewDBAddr()
 	if err2 := n.InitDB(); err2 != nil {
 		return
 	}
@@ -46,36 +46,31 @@ func TestInitChannelConfig(t *testing.T) {
 }
 
 func TestNewChannels(t *testing.T) {
-	nc := NewChannels("ALICE HOUSE", "", "avatar", "bio", "alice", true)
-	fmt.Println(nc.Id)
+	TestInitChannelConfig(t)
 
-
-	nc1 := NewChannels("Hvxahv Chan", "", "avatar", "bio", "hvturingga",false)
+	nc1 := NewChannels("Hvxahv", "", "avatar", "bio", "hvturingga", false)
 	fmt.Println(nc1)
+	err := nc1.New()
+	if err != nil {
+		return
+	}
+
+	//nc1 := NewChannels("disism", "", "avatar", "bio", "hvturingga", false)
+	//fmt.Println(nc1)
+	//err := nc1.New()
+	//if err != nil {
+	//	return
+	//}
 }
 
-func TestNewChannels2(t *testing.T) {
+func TestChannels_FetchByLink(t *testing.T) {
 	TestInitChannelConfig(t)
-	nc := NewChannels("ALICE HOUSE", "", "avatar", "bio", "alice", true)
-	code, s, id, err := nc.New()
+
+	n := NewChannelsByLink("y2yrpHc0TTK-4AB")
+	data, err := n.QueryByLink()
 	if err != nil {
-		t.Error(err)
+		return
 	}
-	fmt.Printf("code: %v; message: %s; id: %s", code, s, id)
 
-	nc2 := NewChannels("JSUT 4 FUN", "", "avatar", "bio", "hvturingga", false)
-	i2, s2, _, _ := nc2.New()
-	if err != nil {
-		t.Error(err)
-	}
-	fmt.Printf("code: %v; message: %s", i2, s2)
-
-}
-
-
-func TestNewFindChannelByID(t *testing.T) {
-	TestInitChannelConfig(t)
-	nfc := NewChannelsByID("f6574uSSqGQ7CJX")
-	ch := nfc.Find()
-	fmt.Println(ch.Name)
+	fmt.Println(data.Name)
 }

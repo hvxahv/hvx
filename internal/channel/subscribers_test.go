@@ -8,23 +8,31 @@ import (
 func TestNewSubscriber(t *testing.T) {
 	TestInitChannelConfig(t)
 
-	// New subscribers
-	ncs, err := NewSubscriber("f6574uSSqGQ7CJX", "hvturingga")
+	ns, err := NewSubscribes(692668434193383425, "alice")
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	fmt.Println(ncs)
-	subscriber, s, err := ncs.New()
-	if err != nil {
-		t.Error(err)
+	if err := ns.New(); err != nil {
+		fmt.Println(err)
 	}
 
-	fmt.Println(subscriber, s)
 }
 
-func TestChanSubs_GetSubscriberByID(t *testing.T) {
+func TestSubscribes_GetLisByID(t *testing.T) {
 	TestInitChannelConfig(t)
-	ncs := NewSubscriberByID("a-t0FuZY9ySeBlR")
-	ncs.GetSubscriberByID()
+
+	ns, err := NewSubLisByID(692668434193383425, 692283236803346433)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(ns)
+
+	r, err := ns.QueryLisByID()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(r)
 }
