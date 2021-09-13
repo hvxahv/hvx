@@ -51,7 +51,7 @@ func TestNew(t *testing.T) {
 一人きりで角を曲がる
 Ah, ah, ah, ah
 `
-	nb, err := NewBroadcast(title, article, 692668434193383425, 692635608323948545)
+	nb, err := NewBroadcast(title, article, 692910076694757377, 692635608323948545)
 	if err != nil {
 		fmt.Println(err)
 		return

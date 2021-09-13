@@ -8,7 +8,8 @@ import (
 func TestNewSubscriber(t *testing.T) {
 	TestInitChannelConfig(t)
 
-	ns, err := NewSubscribes(692668434193383425, "alice")
+	sub := "https://halfmemories.com/u/alice/inbox"
+	ns, err := NewSubscribes(692910076694757377, "alice", sub)
 	if err != nil {
 		fmt.Println(err)
 		return

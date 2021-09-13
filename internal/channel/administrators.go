@@ -10,14 +10,14 @@ import (
 
 type Administrators struct {
 	gorm.Model
-	CID uint `gorm:"primaryKey;c_id"`
-	AID uint `gorm:"primaryKey;a_id"`
+	ChannelID uint `gorm:"primaryKey;channel_id"`
+	AccountID uint `gorm:"primaryKey;account_id"`
 }
 
 func (c *Administrators) Add() error {
 	db := cockroach.GetDB()
 
-	if err := db.Debug().Table("administrators").Where("c_id = ?", c.CID).Where("a_id", c.AID).First(&Administrators{}); err != nil {
+	if err := db.Debug().Table("administrators").Where("channel_id = ?", c.ChannelID).Where("account_id", c.AccountID).First(&Administrators{}); err != nil {
 		fmt.Println(err.Error)
 		ok := cockroach.IsNotFound(err.Error)
 		if !ok {
@@ -35,14 +35,14 @@ func (c *Administrators) Add() error {
 func (c *Administrators) Remove() error {
 	db := cockroach.GetDB()
 
-	if err := db.Debug().Table("administrators").Where("c_id = ?", c.CID).Where("a_id = ?", c.AID).First(&Administrators{}); err != nil {
+	if err := db.Debug().Table("administrators").Where("channel_id = ?", c.ChannelID).Where("accounts_id = ?", c.AccountID).First(&Administrators{}); err != nil {
 		ok := cockroach.IsNotFound(err.Error)
 		if ok {
 			return errors.Errorf("the administrator does not exist: %v", err.Error)
 		}
 	}
 
-	if err := db.Debug().Table("administrators").Where("a_id = ?", c.AID).Unscoped().Delete(&Administrators{}); err != nil {
+	if err := db.Debug().Table("administrators").Where("account_id = ?", c.AccountID).Unscoped().Delete(&Administrators{}); err != nil {
 		return err.Error
 	}
 
@@ -52,13 +52,13 @@ func (c *Administrators) Remove() error {
 func (c *Administrators) QueryAdmLisByCID() (*[]Administrators, error) {
 	db := cockroach.GetDB()
 
-	err := db.Debug().Table("administrators").Where("a_id = ?", c.AID).Where("c_id = ?", c.CID).First(&Channels{})
+	err := db.Debug().Table("administrators").Where("account_id = ?", c.AccountID).Where("channel_id = ?", c.ChannelID).First(&Channels{})
 	if err.Error != nil {
 		return nil, errors.Errorf("You are not the administrators of the channel")
 	}
 
 	var ch []Administrators
-	if err := db.Debug().Table("administrators").Where("c_id = ?", c.CID).Find(&ch); err != nil {
+	if err := db.Debug().Table("administrators").Where("channel_id = ?", c.ChannelID).Find(&ch); err != nil {
 		ok := cockroach.IsNotFound(err.Error)
 		if ok {
 			return nil, errors.Errorf("the administrator does not exist: %v", err.Error)
@@ -82,15 +82,15 @@ type Admin interface {
 }
 
 // NewAddAdmins constructor for a new administrator.
-func NewAddAdmins(cid, oid, aid uint) (*Administrators, error) {
+func NewAddAdmins(channelId, ownerId, accountId uint) (*Administrators, error) {
 	db := cockroach.GetDB()
 
-	owner, err := client.FetchAccountNameByID(oid)
+	owner, err := client.FetchAccountNameByID(ownerId)
 	if err != nil {
 		return nil, err
 	}
 
-	admin, err := client.FetchAccountNameByID(aid)
+	admin, err := client.FetchAccountNameByID(accountId)
 	if err != nil {
 		return nil, err
 	}
@@ -99,14 +99,14 @@ func NewAddAdmins(cid, oid, aid uint) (*Administrators, error) {
 		return nil, errors.Errorf("Cannot add yourself as an administrator.")
 	}
 
-	fo := db.Debug().Table("channels").Where("id = ?", cid).Where("owner_id = ?", oid).First(&Channels{})
+	fo := db.Debug().Table("channels").Where("id = ?", channelId).Where("owner_id = ?", ownerId).First(&Channels{})
 	if fo.Error != nil {
 		return nil, errors.Errorf("%s not the owner of the channel.", owner)
 	}
 
-	return &Administrators{CID: cid, AID: aid}, nil
+	return &Administrators{ChannelID: channelId, AccountID: accountId}, nil
 }
 
-func NewAdminsByID(cid, aid uint) *Administrators{
-	return &Administrators{AID: aid,CID: cid}
+func NewAdminsByID(channelId, accountId uint) *Administrators {
+	return &Administrators{AccountID: accountId, ChannelID: channelId}
 }
