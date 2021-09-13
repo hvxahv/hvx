@@ -8,8 +8,9 @@ import (
 
 type Subscribes struct {
 	gorm.Model
-	CID        uint   `gorm:"primaryKey;c_id"`
-	Subscriber string `gorm:"primaryKey;type:varchar(999);subscriber"`
+	ChannelID       uint   `gorm:"primaryKey;channel_id"`
+	Subscriber      string `gorm:"primaryKey;type:varchar(999);subscriber"`
+	SubscriberInbox string `gorm:"primaryKey;subscriber_inbox"`
 }
 
 func (s *Subscribes) Remove() error {
@@ -20,7 +21,7 @@ func (s *Subscribes) QueryLisByID() (*[]Subscribes, error) {
 	db := cockroach.GetDB()
 
 	var sub []Subscribes
-	if err := db.Debug().Table("subscribes").Where("c_id = ?", s.CID).Find(&sub); err != nil {
+	if err := db.Debug().Table("subscribes").Where("channel_id = ?", s.ChannelID).Find(&sub); err != nil {
 		ok := cockroach.IsNotFound(err.Error)
 		if ok {
 			return nil, errors.Errorf("SUBSCRIBERS_NOT_FOUND")
@@ -62,24 +63,24 @@ type Subscriber interface {
 	QueryLisByID() (*[]Subscribes, error)
 }
 
-func NewSubscribes(cid uint, subscriber string) (*Subscribes, error) {
+func NewSubscribes(channelId uint, subscriber, subscriberInbox string) (*Subscribes, error) {
 	db := cockroach.GetDB()
-	if err := db.Debug().Table("channels").Where("id = ?", cid).First(&Channels{}); err != nil {
+	if err := db.Debug().Table("channels").Where("id = ?", channelId).First(&Channels{}); err != nil {
 		ok := cockroach.IsNotFound(err.Error)
 		if ok {
 			return nil, errors.Errorf("CHANNEL_DOESN'T_EXIST")
 		}
 	}
 
-	return &Subscribes{CID: cid, Subscriber: subscriber}, nil
+	return &Subscribes{ChannelID: channelId, Subscriber: subscriber, SubscriberInbox: subscriberInbox}, nil
 }
 
-func NewSubLisByID(cid, aid uint) (*Subscribes, error) {
+func NewSubLisByID(channelId, accountId uint) (*Subscribes, error) {
 	db := cockroach.GetDB()
 
-	if err := db.Debug().Table("administrators").Where("c_id = ?", cid).Where("a_id = ?", aid).First(&Channels{}); err.Error != nil {
+	if err := db.Debug().Table("administrators").Where("channel_id = ?", channelId).Where("accounts_id = ?", accountId).First(&Channels{}); err.Error != nil {
 		return nil, errors.Errorf("YOU ARE NOT THE MODERATOR OF THE CHANNEL")
 	}
 
-	return &Subscribes{CID: cid}, nil
+	return &Subscribes{ChannelID: channelId}, nil
 }

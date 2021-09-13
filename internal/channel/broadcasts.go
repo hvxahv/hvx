@@ -13,18 +13,18 @@ import (
 
 type Broadcasts struct {
 	gorm.Model
-	CID     uint   `gorm:"primarykey"`
-	Author  string `gorm:"type:varchar(100);author"`
-	Title   string `gorm:"type:varchar(999);article"`
-	Article string `gorm:"type:varchar(3000);article"`
-	IpfsCID string `gorm:"type:varchar(3000);ipfs_cid"`
+	ChannelID uint   `gorm:"primarykey;channel_id"`
+	Author    string `gorm:"type:varchar(100);author"`
+	Title     string `gorm:"type:varchar(999);article"`
+	Article   string `gorm:"type:varchar(3000);article"`
+	IpfsCID   string `gorm:"type:varchar(3000);ipfs_cid"`
 }
 
 func (b *Broadcasts) QueryLisByCID() (*[]Broadcasts, error) {
 	db := cockroach.GetDB()
 
 	var br []Broadcasts
-	if err := db.Debug().Table("broadcasts").Where("c_id = ?", b.CID).Find(&br); err != nil {
+	if err := db.Debug().Table("broadcasts").Where("channel_id = ?", b.ChannelID).Find(&br); err != nil {
 		ok := cockroach.IsNotFound(err.Error)
 		if ok {
 			return nil, errors.Errorf("BROADCASTS_NOT_FOUND")
@@ -64,10 +64,10 @@ func (b *Broadcasts) New() error {
 	}
 
 	data := Broadcasts{
-		CID:     b.CID,
-		Author:  b.Author,
-		Article: broad,
-		IpfsCID: cid,
+		ChannelID: b.ChannelID,
+		Author:    b.Author,
+		Article:   broad,
+		IpfsCID:   cid,
 	}
 
 	if err1 := db.Debug().Table("broadcasts").Create(&data).Error; err1 != nil {
@@ -87,21 +87,21 @@ type Broadcast interface {
 	QueryLisByCID() (*[]Broadcasts, error)
 }
 
-func NewBroadcast(title, article string, cid, aid uint) (*Broadcasts, error) {
+func NewBroadcast(title, article string, channelId, accountId uint) (*Broadcasts, error) {
 	db := cockroach.GetDB()
-	if err := db.Table("administrators").Where("c_id = ?", cid).Where("a_id = ?", aid).First(&Administrators{}); err != nil {
+	if err := db.Table("administrators").Where("channel_id = ?", channelId).Where("account_id = ?", accountId).First(&Administrators{}); err != nil {
 		if cockroach.IsNotFound(err.Error) {
 			return nil, errors.Errorf("You are not the moderator of this channel")
 		}
 	}
 
-	author, err := client.FetchAccountNameByID(aid)
+	author, err := client.FetchAccountNameByID(accountId)
 	if err != nil {
 		return nil, errors.Errorf("Failed to get author.")
 	}
-	return &Broadcasts{Author: author, Title: title, Article: article, CID: cid}, nil
+	return &Broadcasts{Author: author, Title: title, Article: article, ChannelID: accountId}, nil
 }
 
-func NewBroadcastCID(cid uint) *Broadcasts {
-	return &Broadcasts{CID: cid}
+func NewBroadcastCID(channelId uint) *Broadcasts {
+	return &Broadcasts{ChannelID: channelId}
 }

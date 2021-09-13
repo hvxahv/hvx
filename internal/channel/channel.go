@@ -1,7 +1,6 @@
 package channel
 
 import (
-	"fmt"
 	"github.com/disism/hvxahv/pkg/cockroach"
 	"github.com/disism/hvxahv/pkg/microservices/client"
 	"github.com/disism/hvxahv/pkg/security"
@@ -41,18 +40,16 @@ func (c *Channels) New() error {
 		return errors.Errorf("failed to automatically create database: %v", err)
 	}
 
-	var ch Channels
-	if err := db.Debug().Table("channels").Create(&c).Where("link = ?", c.Link).First(&ch).Error; err != nil {
+	if err := db.Debug().Table("channels").Create(&c).Error; err != nil {
 		return errors.Errorf("failed to create channel: %v", err)
 	}
 
 	if err := db.AutoMigrate(&Administrators{}); err != nil {
 		return errors.Errorf("failed to create channel admin database automatically: %s", err)
 	}
-	fmt.Println(ch.ID)
 	adm := &Administrators{
-		CID:   ch.ID,
-		AID:   c.OwnerID,
+		ChannelID: c.ID,
+		AccountID: c.OwnerID,
 	}
 
 	if err := db.Debug().Table("administrators").Create(&adm).Error; err != nil {
@@ -71,7 +68,6 @@ type Channel interface {
 
 	// Update channel information.
 	Update()
-
 }
 
 func NewChannelsByLink(link string) *Channels {

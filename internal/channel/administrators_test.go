@@ -8,7 +8,7 @@ import (
 func TestNewAddAdmins(t *testing.T) {
 	TestInitChannelConfig(t)
 
-	na, err := NewAddAdmins(692668434193383425, 692283236803346433,  692635608323948545)
+	na, err := NewAddAdmins(692910076694757377, 692283236803346433,  692635608323948545)
 	if err != nil {
 		fmt.Println(err)
 		return
