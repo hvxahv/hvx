@@ -7,16 +7,28 @@ package articles
 
 import (
 	"github.com/disism/hvxahv/pkg/cockroach"
-	"github.com/disism/hvxahv/pkg/microservices/client"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
 )
 
 type Articles struct {
 	gorm.Model
-	AuthorID uint   `gorm:"primaryKey;author_id"`
-	Title    string `gorm:"type:varchar(600);title"`
-	Article  string `gorm:"type:varchar(3000);article"`
+	AuthorID       uint   `gorm:"primaryKey;author_id"`
+	Title          string `gorm:"type:varchar(600);title"`
+	Summary        string `gorm:"type:varchar(2000);summary"`
+	Article        string `gorm:"type:varchar(3000);article"`
+
+	// Whether the setting is status.
+	Statuses       string `gorm:"type:boolean;statuses"`
+	URL            string `gorm:"url"`
+	NSFW           string `gorm:"type:boolean;nsfw"`
+
+	// If it is set to the public state, the article data will be combined into data traversal
+	// and sent to everyone in the follower list.
+	Visibility     string `gorm:"type:boolean;visibility"`
+
+	// ID of the conversation below the article.
+	ConversationId string  `gorm:"conversation_id"`
 }
 
 func (a *Articles) New() error {
@@ -69,10 +81,27 @@ type Article interface {
 	FetchLisByName()
 }
 
-func NewArticles(name, title, article string) *Articles {
+func NewArticles(
+	authorID uint,
+	title string,
+	summary string,
+	article string,
+	statuses string,
+	URL string,
+	NSFW string,
+	visibility string,
+	conversationId string,
+) *Articles {
 	return &Articles{
-		AuthorID: client.FetchAccountIdByName(name),
-		Title:    title,
-		Article:  article,
+		Model:          gorm.Model{},
+		AuthorID:       authorID,
+		Title:          title,
+		Summary:        summary,
+		Article:        article,
+		Statuses:       statuses,
+		URL:            URL,
+		NSFW:           NSFW,
+		Visibility:     visibility,
+		ConversationId: conversationId,
 	}
 }
