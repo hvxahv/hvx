@@ -132,7 +132,7 @@ func FetchAccountsHandler(c *gin.Context) {
 	}
 	defer conn.Close()
 
-	r, err := cli.Find(context.Background(), &pb.NewAccountByName{
+	r, err := cli.QueryByName(context.Background(), &pb.NewAccountByName{
 		Username: name,
 	})
 	if err != nil {

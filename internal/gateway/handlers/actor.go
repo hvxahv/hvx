@@ -25,7 +25,7 @@ func GetActorHandler(c *gin.Context) {
 		log.Println(err)
 	}
 	defer conn.Close()
-	acct, err := cli.Find(context.Background(), &pb.NewAccountByName{Username: name})
+	acct, err := cli.QueryByName(context.Background(), &pb.NewAccountByName{Username: name})
 	if err != nil {
 		return
 	}

@@ -68,6 +68,8 @@ func NewFollowAccept(name, actor, oid string) *activitypub.Accept {
 	}
 }
 
+
+
 func (a *ActivityRequest) Send() {
 	h, err := url.Parse(a.TargetURL)
 	if err != nil {

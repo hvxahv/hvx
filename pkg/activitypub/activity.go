@@ -195,24 +195,24 @@ type Block struct {
 // Create Indicates that the actor has created the object.
 // Object creation without a Create Activity
 // https://www.w3.org/TR/activitypub/#create-activity-outbox
-type Create struct {
-	Context string `json:"@context"`
-	Type    string `json:"type"`
-	Id      string `json:"id"`
-	Actor   string `json:"actor"`
-	Object  struct {
-		Id           string    `json:"id"`
-		Type         string    `json:"type"`
-		AttributedTo string    `json:"attributedTo"`
-		Content      string    `json:"content"`
-		Published    time.Time `json:"published"`
-		To           []string  `json:"to"`
-		Cc           []string  `json:"cc"`
-	} `json:"object"`
-	Published time.Time `json:"published"`
-	To        []string  `json:"to"`
-	Cc        []string  `json:"cc"`
-}
+//type Create struct {
+//	Context string `json:"@context"`
+//	Type    string `json:"type"`
+//	Id      string `json:"id"`
+//	Actor   string `json:"actor"`
+//	Object  struct {
+//		Id           string    `json:"id"`
+//		Type         string    `json:"type"`
+//		AttributedTo string    `json:"attributedTo"`
+//		Content      string    `json:"content"`
+//		Published    time.Time `json:"published"`
+//		To           []string  `json:"to"`
+//		Cc           []string  `json:"cc"`
+//	} `json:"object"`
+//	Published time.Time `json:"published"`
+//	To        []string  `json:"to"`
+//	Cc        []string  `json:"cc"`
+//}
 
 // Delete Indicates that the actor has deleted the object.
 // If specified, the origin indicates the context from which the object was deleted.
@@ -330,4 +330,42 @@ type Update struct {
 		Name string `json:"name"`
 	} `json:"actor"`
 	Object string `json:"object"`
+}
+
+type Create struct {
+	Context   []interface{} `json:"@context"`
+	Id        string        `json:"id"`
+	Type      string        `json:"type"`
+	Actor     string        `json:"actor"`
+	Published time.Time     `json:"published"`
+	To        []string      `json:"to"`
+	Cc        []interface{} `json:"cc"`
+	Object    struct {
+		Id               string        `json:"id"`
+		Type             string        `json:"type"`
+		Summary          interface{}   `json:"summary"`
+		InReplyTo        interface{}   `json:"inReplyTo"`
+		Published        time.Time     `json:"published"`
+		Url              string        `json:"url"`
+		AttributedTo     string        `json:"attributedTo"`
+		To               []string      `json:"to"`
+		Cc               []interface{} `json:"cc"`
+		Sensitive        bool          `json:"sensitive"`
+		AtomUri          string        `json:"atomUri"`
+		InReplyToAtomUri interface{}   `json:"inReplyToAtomUri"`
+		Conversation     string        `json:"conversation"`
+		Content          string        `json:"content"`
+		Attachment []interface{} `json:"attachment"`
+		Tag        []interface{} `json:"tag"`
+		Replies    struct {
+			Id    string `json:"id"`
+			Type  string `json:"type"`
+			First struct {
+				Type   string        `json:"type"`
+				Next   string        `json:"next"`
+				PartOf string        `json:"partOf"`
+				Items  []interface{} `json:"items"`
+			} `json:"first"`
+		} `json:"replies"`
+	} `json:"object"`
 }
