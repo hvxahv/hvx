@@ -68,20 +68,18 @@ func NewFollowAccept(name, actor, oid string) *activitypub.Accept {
 	}
 }
 
-
-
 func (a *ActivityRequest) Send() {
 	h, err := url.Parse(a.TargetURL)
 	if err != nil {
 		log.Fatal(err)
 	}
-	url := fmt.Sprintf("https://%s/inbox", h.Hostname())
+	uri := fmt.Sprintf("https://%s/inbox", h.Hostname())
 	method := "POST"
 
 	payload := bytes.NewBuffer(a.Data)
 	client := &http.Client{}
 	fmt.Println(payload)
-	req, err := http.NewRequest(method, url, payload)
+	req, err := http.NewRequest(method, uri, payload)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -106,13 +104,15 @@ func (a *ActivityRequest) Send() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	res.Body.Close()
+	if err := res.Body.Close(); err != nil {
+		log.Println(err)
+	}
 	switch res.StatusCode {
 	case 200:
 	case 201:
 	case 202:
 	default:
-		fmt.Errorf("http post status: %d", res.StatusCode)
+		_ = fmt.Errorf("http post status: %d", res.StatusCode)
 	}
-	log.Printf("successful post: %s %d", url, res.StatusCode)
+	log.Printf("successful post: %s %d", uri, res.StatusCode)
 }

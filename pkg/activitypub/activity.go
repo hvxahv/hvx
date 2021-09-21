@@ -218,18 +218,16 @@ type Block struct {
 // If specified, the origin indicates the context from which the object was deleted.
 // https://www.w3.org/TR/activitystreams-vocabulary/#dfn-delete
 type Delete struct {
-	Context string `json:"@context"`
-	Summary string `json:"summary"`
-	Type    string `json:"type"`
-	Actor   struct {
-		Type string `json:"type"`
-		Name string `json:"name"`
-	} `json:"actor"`
-	Object string `json:"object"`
-	Origin struct {
-		Type string `json:"type"`
-		Name string `json:"name"`
-	} `json:"origin"`
+	Context []interface{} `json:"@context"`
+	Id      string        `json:"id"`
+	Type    string        `json:"type"`
+	Actor   string        `json:"actor"`
+	To      []string      `json:"to"`
+	Object  struct {
+		Id      string `json:"id"`
+		Type    string `json:"type"`
+		AtomUri string `json:"atomUri"`
+	} `json:"object"`
 }
 
 // Follow Indicates that the actor is "following" the object.
@@ -321,16 +319,16 @@ type Undo struct {
 // Note, however, that this vocabulary does not define a mechanism for describing the actual set of modifications made to object.
 // The target and origin typically have no defined meaning.
 // https://www.w3.org/TR/activitystreams-vocabulary/#dfn-update
-type Update struct {
-	Context string `json:"@context"`
-	Summary string `json:"summary"`
-	Type    string `json:"type"`
-	Actor   struct {
-		Type string `json:"type"`
-		Name string `json:"name"`
-	} `json:"actor"`
-	Object string `json:"object"`
-}
+//type Update struct {
+//	Context string `json:"@context"`
+//	Summary string `json:"summary"`
+//	Type    string `json:"type"`
+//	Actor   struct {
+//		Type string `json:"type"`
+//		Name string `json:"name"`
+//	} `json:"actor"`
+//	Object string `json:"object"`
+//}
 
 type Create struct {
 	Context   []interface{} `json:"@context"`
@@ -368,4 +366,55 @@ type Create struct {
 			} `json:"first"`
 		} `json:"replies"`
 	} `json:"object"`
+}
+
+// Update Indicates that the actor has updated the object.
+// Note, however, that this vocabulary does not define a mechanism for describing the actual set of modifications made to object.
+// The target and origin typically have no defined meaning.
+// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-update
+type Update struct {
+	Context []interface{} `json:"@context"`
+	Id      string        `json:"id"`
+	Type    string        `json:"type"`
+	Actor   string        `json:"actor"`
+	To      []string      `json:"to"`
+	Object  struct {
+		Id                        string    `json:"id"`
+		Type                      string    `json:"type"`
+		Following                 string    `json:"following"`
+		Followers                 string    `json:"followers"`
+		Inbox                     string    `json:"inbox"`
+		Outbox                    string    `json:"outbox"`
+		Featured                  string    `json:"featured"`
+		FeaturedTags              string    `json:"featuredTags"`
+		PreferredUsername         string    `json:"preferredUsername"`
+		Name                      string    `json:"name"`
+		Summary                   string    `json:"summary"`
+		Url                       string    `json:"url"`
+		ManuallyApprovesFollowers bool      `json:"manuallyApprovesFollowers"`
+		Discoverable              bool      `json:"discoverable"`
+		Published                 time.Time `json:"published"`
+		Devices                   string    `json:"devices"`
+		PublicKey                 struct {
+			Id           string `json:"id"`
+			Owner        string `json:"owner"`
+			PublicKeyPem string `json:"publicKeyPem"`
+		} `json:"publicKey"`
+		Tag        []interface{} `json:"tag"`
+		Attachment []interface{} `json:"attachment"`
+		Endpoints  struct {
+			SharedInbox string `json:"sharedInbox"`
+		} `json:"endpoints"`
+		Icon struct {
+			Type      string `json:"type"`
+			MediaType string `json:"mediaType"`
+			Url       string `json:"url"`
+		} `json:"icon"`
+	} `json:"object"`
+	Signature struct {
+		Type           string    `json:"type"`
+		Creator        string    `json:"creator"`
+		Created        time.Time `json:"created"`
+		SignatureValue string    `json:"signatureValue"`
+	} `json:"signature"`
 }

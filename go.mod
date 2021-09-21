@@ -12,6 +12,7 @@ require (
 	github.com/hashicorp/consul/api v1.3.0
 	github.com/ipfs/go-ipfs-api v0.2.0
 	github.com/lib/pq v1.10.2
+	github.com/matrix-org/gomatrix v0.0.0-20210324163249-be2af5ef2e16
 	github.com/minio/minio-go/v7 v7.0.11
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/pkg/errors v0.9.1

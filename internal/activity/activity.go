@@ -79,3 +79,7 @@ func (a *ActivityRequest) Follow() {
 func (a *ActivityRequest) Accept() {
 	a.Send()
 }
+
+func (a *ActivityRequest) Create() {
+	a.Send()
+}

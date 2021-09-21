@@ -143,6 +143,11 @@ func InboxEventHandler(name string, body []byte) {
 		fmt.Println("Content:", c.Object.Content)
 		fmt.Println("InReplyToAtomUri:", c.Object.InReplyToAtomUri)
 
+		switch c.Object.Type {
+		case "Note":
+			fmt.Println("得到了一条 Note")
+		}
+
 	}
 }
 
