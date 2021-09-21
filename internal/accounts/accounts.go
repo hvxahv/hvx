@@ -6,6 +6,7 @@ import (
 	"github.com/disism/hvxahv/internal"
 	"github.com/disism/hvxahv/pkg/cache"
 	"github.com/disism/hvxahv/pkg/cockroach"
+	"github.com/disism/hvxahv/pkg/matrix"
 	"github.com/disism/hvxahv/pkg/security"
 	"github.com/go-playground/validator/v10"
 	"github.com/pkg/errors"
@@ -17,13 +18,16 @@ import (
 // Must be a unique key: username, email and phone.
 type Accounts struct {
 	gorm.Model
+
+	//
 	Username   string `gorm:"primaryKey;type:varchar(100);username;unique" validate:"required,min=4,max=16"`
 	Password   string `gorm:"type:varchar(100);password" validate:"required,min=8,max=100"`
 	Avatar     string `gorm:"type:varchar(999);avatar"`
-	Bio        string `gorm:"type:varchar(999);bio" validate:"max=650"`
+	Summary    string `gorm:"type:varchar(999);summary" validate:"max=2999"`
 	Name       string `gorm:"type:varchar(100);name" validate:"max=16"`
 	Mail       string `gorm:"index;type:varchar(100);mail;unique" validate:"required,email"`
-	Phone      string `gorm:"type:varchar(100);phone"`
+	MatrixID   string `gorm:"type:varchar(999);matrix_id;unique"`
+	ActorType  string `gorm:"type:varchar(100);actor_type"`
 	IsPrivate  bool   `gorm:"type:boolean;is_private"`
 	Follower   int    `gorm:"type:bigint;follower"`
 	Following  int    `gorm:"type:bigint;following"`
@@ -31,7 +35,6 @@ type Accounts struct {
 	PrivateKey string `gorm:"type:varchar(3000);private_key"`
 	PublicKey  string `gorm:"type:varchar(3000);public_key"`
 }
-
 
 func (a *Accounts) QueryByID() (*Accounts, error) {
 	db := cockroach.GetDB()
@@ -215,11 +218,20 @@ func NewAccounts(username, password, mail string) (Account, error) {
 	}
 
 	hash := security.GenPassword(password)
+	na := matrix.NewAuth(username, password)
+
+	mid, err := na.Register()
+	if err != nil {
+		log.Println("Failed to register to the matrix account")
+		return nil, err
+	}
 
 	acct := &Accounts{
 		Username:   username,
-		Mail:       mail,
 		Password:   hash,
+		Mail:       mail,
+		MatrixID:   mid,
+		IsPrivate:  false,
 		PrivateKey: privateKey,
 		PublicKey:  publicKey,
 	}

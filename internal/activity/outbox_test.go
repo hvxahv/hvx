@@ -24,15 +24,30 @@ func TestMessages_Outbox(t *testing.T) {
 
 }
 
+func TestNewCreateNote(t *testing.T) {
+	IniTestConfig(t)
+
+	ncn := NewCreateNote()
+	data, err := json.Marshal(ncn)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	nar := NewActivityRequest(ncn.Actor, "https://mas.to/users/hvturingga", data, []byte(getPrivk()))
+	nar.Create()
+}
+
 func TestNewAccept(t *testing.T) {
 	IniTestConfig(t)
 
 	name := "hvturingga"
 	actor := "https://mas.to/users/hvturingga"
-	oid := "https://mas.to/d176e658-5c0a-403a-8391-8ed0b16dc38c"
+	oid := "https://mas.to/2db62f3e-3663-4be2-b881-1576bdf0e279"
 	object := fmt.Sprintf("https://%s/u/%s", viper.GetString("localhost"), name)
 
 	na := NewFollowAccept(name, actor, oid)
+
 	data, err := json.Marshal(na)
 	if err != nil {
 		log.Println(err)
@@ -41,7 +56,6 @@ func TestNewAccept(t *testing.T) {
 
 	nar := NewActivityRequest(object, actor, data, []byte(getPrivk()))
 	nar.Accept()
-
 }
 
 // reply

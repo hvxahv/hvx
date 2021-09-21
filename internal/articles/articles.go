@@ -13,22 +13,22 @@ import (
 
 type Articles struct {
 	gorm.Model
-	AuthorID       uint   `gorm:"primaryKey;author_id"`
-	Title          string `gorm:"type:varchar(600);title"`
-	Summary        string `gorm:"type:varchar(2000);summary"`
-	Article        string `gorm:"type:varchar(3000);article"`
+	AuthorID uint   `gorm:"primaryKey;author_id"`
+	Title    string `gorm:"type:varchar(600);title"`
+	Summary  string `gorm:"type:varchar(2000);summary"`
+	Article  string `gorm:"type:varchar(3000);article"`
 
 	// Whether the setting is status.
-	Statuses       string `gorm:"type:boolean;statuses"`
-	URL            string `gorm:"url"`
-	NSFW           string `gorm:"type:boolean;nsfw"`
+	Statuses bool   `gorm:"type:boolean;statuses"`
+	URL      string `gorm:"url"`
+	NSFW     bool   `gorm:"type:boolean;nsfw"`
 
 	// If it is set to the public state, the article data will be combined into data traversal
 	// and sent to everyone in the follower list.
-	Visibility     string `gorm:"type:boolean;visibility"`
+	Visibility bool `gorm:"type:boolean;visibility"`
 
 	// ID of the conversation below the article.
-	ConversationId string  `gorm:"conversation_id"`
+	ConversationId string `gorm:"conversation_id"`
 }
 
 func (a *Articles) New() error {
@@ -86,12 +86,13 @@ func NewArticles(
 	title string,
 	summary string,
 	article string,
-	statuses string,
+	statuses bool,
 	URL string,
-	NSFW string,
-	visibility string,
+	NSFW bool,
+	visibility bool,
 	conversationId string,
 ) *Articles {
+
 	return &Articles{
 		Model:          gorm.Model{},
 		AuthorID:       authorID,
