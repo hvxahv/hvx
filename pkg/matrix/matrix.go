@@ -1,3 +1,8 @@
+/*
+Matrix is an open standard for interoperable, decentralised, real-time communication over IP.
+https://matrix.org/docs/guides/introduction
+*/
+
 package matrix
 
 import (
