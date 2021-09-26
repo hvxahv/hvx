@@ -29,7 +29,7 @@ func TestInitDB(t *testing.T) {
 	}
 
 	// Initialize the database.
-	n :=  cockroach.NewDBAddr()
+	n := cockroach.NewDBAddr()
 	if err2 := n.InitDB(); err2 != nil {
 		return
 	}
@@ -38,7 +38,6 @@ func TestInitDB(t *testing.T) {
 	if err3 := viper.ReadInConfig(); err3 == nil {
 		fmt.Fprintln(os.Stderr, "Using configs file:", viper.ConfigFileUsed())
 	}
-
 
 	cache.InitRedis(1)
 
@@ -52,4 +51,45 @@ func TestNewAccounts(t *testing.T) {
 	if err != nil {
 		log.Println(err)
 	}
+}
+
+func TestAccounts_FindAccountByName(t *testing.T) {
+	TestInitDB(t)
+
+	a := NewAccountsName("hvturingga")
+	accounts, err := a.FindByName()
+	if err != nil {
+		log.Println(err)
+	}
+	fmt.Println(accounts)
+}
+
+func TestAccounts_Update(t *testing.T) {
+	a := NewAccountsName("hvturingga")
+	a.Password = ""
+	a.Mail = ""
+
+}
+
+func TestActors_FindActorByPreferredUsername(t *testing.T) {
+	TestInitDB(t)
+
+	a := NewActorsPreferredUsername("hvturingga")
+
+	r, err := a.FindByPreferredUsername()
+	if err != nil {
+		log.Println(err)
+	}
+	fmt.Println(r)
+}
+
+func TestActors_FindActorByID(t *testing.T) {
+	TestInitDB(t)
+
+	a := NewActorID(696077920006668289)
+	actor, err := a.FindByID()
+	if err != nil {
+		log.Println(err)
+	}
+	fmt.Println(actor)
 }
