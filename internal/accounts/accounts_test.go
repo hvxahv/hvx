@@ -65,31 +65,39 @@ func TestAccounts_FindAccountByName(t *testing.T) {
 }
 
 func TestAccounts_Update(t *testing.T) {
+	TestInitDB(t)
+
 	a := NewAccountsName("hvturingga")
-	a.Password = ""
-	a.Mail = ""
+	a.Password = "Hvxahv123"
+	a.Mail = "x@disism.com"
+
+
+	err := a.Update()
+	if err != nil {
+		log.Println(err)
+		return
+	}
 
 }
 
-func TestActors_FindActorByPreferredUsername(t *testing.T) {
+func TestAccounts_ChangeUsername(t *testing.T) {
 	TestInitDB(t)
 
-	a := NewActorsPreferredUsername("hvturingga")
-
-	r, err := a.FindByPreferredUsername()
+	a := NewAcctNameANDActorID("hvturinggas", 696077920006668289)
+	err := a.UpdateUsername("hvturingga")
 	if err != nil {
 		log.Println(err)
+		return
 	}
-	fmt.Println(r)
 }
 
-func TestActors_FindActorByID(t *testing.T) {
+func TestAccounts_Delete(t *testing.T) {
 	TestInitDB(t)
 
-	a := NewActorID(696077920006668289)
-	actor, err := a.FindByID()
+	a := NewAcctNameANDActorID("hvturingga", 696077920006668289)
+	err := a.Delete()
 	if err != nil {
 		log.Println(err)
+		return
 	}
-	fmt.Println(actor)
 }

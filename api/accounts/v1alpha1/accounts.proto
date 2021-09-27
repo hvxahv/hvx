@@ -5,57 +5,58 @@ option go_package = "github.com/disism/hvxahv/api/accounts/v1alpha1";
 
 // Accounts List of account gRPC service.
 service Accounts {
+
   // New Create an account through the NewAccountData data structure.
   rpc New (NewAccountData) returns (AccountsReply) {}
 
   // Update Update the account through AccountData data.
   rpc Update (AccountData) returns (AccountsReply) {}
+  rpc UpdatePassword (UpdatePasswordData) returns (AccountsReply) {}
+  rpc UpdateUsername (UpdateUsernameData) returns (AccountsReply) {}
 
   // Delete Delete the specified account by user name.
-  rpc Delete (AuthData) returns (AccountsReply) {}
+  rpc Delete (DeleteData) returns (AccountsReply) {}
 
-  // Query account specified user data by username.
-  rpc QueryByName (NewAccountByName) returns (AccountData) {}
-
-  // Query account specified user data by id.
-  rpc QueryByID (NewAccountByID) returns (AccountData) {}
+  rpc FindAccountsByUsername(AccountUsername) returns (AccountData) {}
+  rpc FindActorByAccountsUsername(AccountUsername) returns (ActorData) {}
+  rpc FindActorByID(ActorID) returns (ActorData) {}
 
   // Login ...
-  rpc Login (AuthData) returns (AuthReply) {}
+  rpc Login (AuthData) returns (AccountsReply) {}
 }
 
-
-// AccountsData List of all data of the account service
-message AccountData {
-  uint64 id = 1;
-  string username = 2;
-  string password = 3;
-  string mail = 4;
-  string avatar = 5;
-  string bio = 6;
-  string name = 7;
-  string phone = 8;
-  bool   isPrivate = 9;
-  int32  follower = 10;
-  int32  following = 11;
-  int32  friend = 12;
-  string privateKey = 13;
-  string publicKey = 14;
-}
-
-// AccountsReply The return value, code and message of the Accounts operation.
-message AccountsReply {
-  int32  code = 1;
-  string message = 2;
-}
-
-// AccountByName Functions operated by username.
-message NewAccountByName{
+message DeleteData {
   string username = 1;
+  uint64 actorID = 2;
 }
 
-message NewAccountByID {
+message UpdatePasswordData {
+  string username = 1;
+  string password = 2;
+}
+
+message UpdateUsernameData {
+  string username = 1;
+  string targetUsername = 2;
+  uint64 actorID = 3;
+}
+
+message ActorID {
+  uint64 actorID = 1;
+}
+
+message ActorData {
   uint64 id = 1;
+  string preferredUsername = 2;
+  string domain = 3;
+  string avatar = 4;
+  string name = 5;
+  string summary = 6;
+  string inbox = 7;
+  string publicKey = 8;
+  string matrixId = 9;
+  string matrixToken = 10;
+  string actorType = 11;
 }
 
 // NewAccountData Data needed to create a new account.
@@ -65,14 +66,29 @@ message NewAccountData {
   string mail = 3;
 }
 
+// AccountsReply The return value, code and message of the Accounts operation.
+message AccountsReply {
+  string code = 1;
+  string message = 2;
+}
+
+// AccountUsername Functions operated by username.
+message AccountUsername{
+  string username = 1;
+}
+
+// AccountsData List of all data of the account service
+message AccountData {
+  uint64 id = 1;
+  string username = 2;
+  string mail = 3;
+  uint64 actorId = 5;
+  bool   isPrivate = 6;
+}
+
+
 // AuthReply Account login, use email and password.
 message AuthData {
   string mail = 1;
   string password = 2;
-}
-
-// AuthReply The data returned by the login account needs to return a token.
-message AuthReply {
-  string username = 1;
-  string uuid = 2;
 }

@@ -12,8 +12,8 @@ import (
 	"time"
 )
 
-// GetActorHandler Get the actor's handler. It will get the queried user name from Param,
-// then call the gRPC service by the user name,
+// GetActorHandler Get the actor's handler. It will get the queried username from Param,
+// then call the gRPC service by the username,
 // and return the JsonLD of the standard activitypub protocol.
 func GetActorHandler(c *gin.Context) {
 	name := c.Param("actor")
@@ -25,7 +25,7 @@ func GetActorHandler(c *gin.Context) {
 		log.Println(err)
 	}
 	defer conn.Close()
-	acct, err := cli.QueryByName(context.Background(), &pb.NewAccountByName{Username: name})
+	acct, err := cli.FindActorByAccountsUsername(context.Background(), &pb.AccountUsername{Username: name})
 	if err != nil {
 		return
 	}
@@ -48,13 +48,13 @@ func NewContext() []string {
 }
 
 // NewActor Return standard ActivityPub protocol user data.
-func NewActor(a *pb.AccountData) *activitypub.Actor {
+func NewActor(a *pb.ActorData) *activitypub.Actor {
 	var (
 		addr = viper.GetString("localhost")
 
-		id = fmt.Sprintf("https://%s/u/%s", addr, a.Username)
+		id = fmt.Sprintf("https://%s/u/%s", addr, a.PreferredUsername)
 		kid = fmt.Sprintf("%s#main-key", id)
-		box = fmt.Sprintf("https://%s/u/%s/", addr, a.Username)
+		box = fmt.Sprintf("https://%s/u/%s/", addr, a.PreferredUsername)
 	)
 
 	actor := &activitypub.Actor{
@@ -67,9 +67,9 @@ func NewActor(a *pb.AccountData) *activitypub.Actor {
 		Outbox:                    box + "outbox",
 		Featured:                  "",
 		FeaturedTags:              "",
-		PreferredUsername:         a.Username,
+		PreferredUsername:         a.PreferredUsername,
 		Name:                      a.Name,
-		Summary:                   a.Bio,
+		Summary:                   a.Summary,
 		Url:                       "",
 		ManuallyApprovesFollowers: false,
 		Discoverable:              false,

@@ -47,7 +47,7 @@ func WebFingerHandler(c *gin.Context) {
 	}
 	defer conn.Close()
 
-	accounts, err := cli.QueryByName(context.Background(), &pb.NewAccountByName{Username: activitypub.GetActorName(resource)})
+	accounts, err := cli.FindAccountsByUsername(context.Background(), &pb.AccountUsername{Username: activitypub.GetActorName(resource)})
 	if err != nil {
 		return
 	}
