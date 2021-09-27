@@ -7,12 +7,12 @@ import (
 
 func V1Accounts(v1 *gin.RouterGroup) {
 
-		v1.GET("/accounts/i", handlers.FetchAccountsHandler)
+		//v1.GET("/accounts/i", handlers.FetchAccountsHandler)
 		v1.POST("/accounts/follow", handlers.FollowHandler)
 
 		// Delete accounts
-		v1.POST("/accounts/delete", handlers.DeleteAccount)
-		v1.POST("/accounts/update", handlers.UpdateAccount)
+		//v1.POST("/accounts/delete", handlers.DeleteAccount)
+		//v1.POST("/accounts/update", handlers.UpdateAccount)
 
 		v1.POST("/upload/avatar", handlers.UploadAvatar)
 

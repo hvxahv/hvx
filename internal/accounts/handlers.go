@@ -51,6 +51,27 @@ func (s *server) FindAccountsByUsername(ctx context.Context, in *pb.AccountUsern
 	}, nil
 }
 
+func (s *server) FindActorByAccountsUsername(ctx context.Context, in *pb.AccountUsername) (*pb.ActorData, error) {
+	a := NewActorsPreferredUsername(in.Username)
+	actor, err := a.FindActorByAccountUsername()
+	if err != nil {
+		return nil, err
+	}
+	return &pb.ActorData{
+		Id: uint64(actor.ID),
+		PreferredUsername: actor.PreferredUsername,
+		Domain:            actor.Domain,
+		Avatar:            actor.Avatar,
+		Name:              actor.Name,
+		Summary:           actor.Summary,
+		Inbox:             actor.Inbox,
+		PublicKey:         actor.PublicKey,
+		MatrixId:          actor.MatrixID,
+		MatrixToken:       actor.MatrixToken,
+		ActorType:         actor.ActorType,
+	}, nil
+}
+
 func (s *server) FindActorByID(ctx context.Context, in *pb.ActorID) (*pb.ActorData, error) {
 	a := NewActorID(uint(in.ActorID))
 	a, err := a.FindActorByID()

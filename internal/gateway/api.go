@@ -44,8 +44,8 @@ func APIServer() *gin.Engine {
 
 	// The internal open API service provided by hvxahv usually does not require Token authentication,
 	// as login and registration.
-	api.POST("/accounts/new", handlers.NewAccountsHandler)
-	api.POST("/accounts/login", handlers.LoginHandler)
+	//api.POST("/accounts/new", handlers.NewAccountsHandler)
+	//api.POST("/accounts/login", handlers.LoginHandler)
 
 	// INTERNAL API GROUP.
 	v1alpha1.V1Accounts(v1)

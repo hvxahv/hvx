@@ -29,6 +29,21 @@ type Actors struct {
 	ActorType string `gorm:"type:text;actor_type"`
 }
 
+func (a *Actors) FindActorByAccountUsername() (*Actors, error) {
+	db := cockroach.GetDB()
+
+	acct, err := NewAccountsName(a.PreferredUsername).FindAccountByUsername()
+	if err != nil {
+		return nil, err
+	}
+
+	if err := db.Debug().Table("actors").Where("id = ?", acct.ActorID).First(&a).Error; err != nil {
+		return nil, err
+	}
+
+	return a, nil
+}
+
 func (a *Actors) Update() error {
 	db := cockroach.GetDB()
 
@@ -111,6 +126,7 @@ type Actor interface {
 	// FindByPreferredUsername Find the Actor collection by PreferredUsername.
 	FindByPreferredUsername() (*[]Actors, error)
 
+	FindActorByAccountUsername() (*Actors, error)
 	FindActorByID() (*Actors, error)
 
 	Update() error

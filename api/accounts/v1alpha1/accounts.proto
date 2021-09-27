@@ -18,6 +18,7 @@ service Accounts {
   rpc Delete (DeleteData) returns (AccountsReply) {}
 
   rpc FindAccountsByUsername(AccountUsername) returns (AccountData) {}
+  rpc FindActorByAccountsUsername(AccountUsername) returns (ActorData) {}
   rpc FindActorByID(ActorID) returns (ActorData) {}
 
   // Login ...
@@ -45,16 +46,17 @@ message ActorID {
 }
 
 message ActorData {
-  string preferredUsername = 1;
-  string domain = 2;
-  string avatar = 3;
-  string name = 4;
-  string summary = 5;
-  string inbox = 6;
-  string publicKey = 7;
-  string matrixId = 8;
-  string matrixToken = 9;
-  string actorType = 10;
+  uint64 id = 1;
+  string preferredUsername = 2;
+  string domain = 3;
+  string avatar = 4;
+  string name = 5;
+  string summary = 6;
+  string inbox = 7;
+  string publicKey = 8;
+  string matrixId = 9;
+  string matrixToken = 10;
+  string actorType = 11;
 }
 
 // NewAccountData Data needed to create a new account.

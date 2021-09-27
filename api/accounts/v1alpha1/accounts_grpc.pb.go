@@ -27,6 +27,7 @@ type AccountsClient interface {
 	// Delete Delete the specified account by user name.
 	Delete(ctx context.Context, in *DeleteData, opts ...grpc.CallOption) (*AccountsReply, error)
 	FindAccountsByUsername(ctx context.Context, in *AccountUsername, opts ...grpc.CallOption) (*AccountData, error)
+	FindActorByAccountsUsername(ctx context.Context, in *AccountUsername, opts ...grpc.CallOption) (*ActorData, error)
 	FindActorByID(ctx context.Context, in *ActorID, opts ...grpc.CallOption) (*ActorData, error)
 	// Login ...
 	Login(ctx context.Context, in *AuthData, opts ...grpc.CallOption) (*AccountsReply, error)
@@ -94,6 +95,15 @@ func (c *accountsClient) FindAccountsByUsername(ctx context.Context, in *Account
 	return out, nil
 }
 
+func (c *accountsClient) FindActorByAccountsUsername(ctx context.Context, in *AccountUsername, opts ...grpc.CallOption) (*ActorData, error) {
+	out := new(ActorData)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Accounts/FindActorByAccountsUsername", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *accountsClient) FindActorByID(ctx context.Context, in *ActorID, opts ...grpc.CallOption) (*ActorData, error) {
 	out := new(ActorData)
 	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Accounts/FindActorByID", in, out, opts...)
@@ -125,6 +135,7 @@ type AccountsServer interface {
 	// Delete Delete the specified account by user name.
 	Delete(context.Context, *DeleteData) (*AccountsReply, error)
 	FindAccountsByUsername(context.Context, *AccountUsername) (*AccountData, error)
+	FindActorByAccountsUsername(context.Context, *AccountUsername) (*ActorData, error)
 	FindActorByID(context.Context, *ActorID) (*ActorData, error)
 	// Login ...
 	Login(context.Context, *AuthData) (*AccountsReply, error)
@@ -152,6 +163,9 @@ func (UnimplementedAccountsServer) Delete(context.Context, *DeleteData) (*Accoun
 }
 func (UnimplementedAccountsServer) FindAccountsByUsername(context.Context, *AccountUsername) (*AccountData, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FindAccountsByUsername not implemented")
+}
+func (UnimplementedAccountsServer) FindActorByAccountsUsername(context.Context, *AccountUsername) (*ActorData, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FindActorByAccountsUsername not implemented")
 }
 func (UnimplementedAccountsServer) FindActorByID(context.Context, *ActorID) (*ActorData, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FindActorByID not implemented")
@@ -280,6 +294,24 @@ func _Accounts_FindAccountsByUsername_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Accounts_FindActorByAccountsUsername_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AccountUsername)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountsServer).FindActorByAccountsUsername(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/hvxahv.v1alpha1.proto.Accounts/FindActorByAccountsUsername",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountsServer).FindActorByAccountsUsername(ctx, req.(*AccountUsername))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Accounts_FindActorByID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ActorID)
 	if err := dec(in); err != nil {
@@ -346,6 +378,10 @@ var Accounts_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "FindAccountsByUsername",
 			Handler:    _Accounts_FindAccountsByUsername_Handler,
+		},
+		{
+			MethodName: "FindActorByAccountsUsername",
+			Handler:    _Accounts_FindActorByAccountsUsername_Handler,
 		},
 		{
 			MethodName: "FindActorByID",
