@@ -84,7 +84,7 @@ func TestAccounts_ChangeUsername(t *testing.T) {
 	TestInitDB(t)
 
 	a := NewAcctNameANDActorID("hvturinggas", 696077920006668289)
-	err := a.ChangeUsername("hvturingga")
+	err := a.UpdateUsername("hvturingga")
 	if err != nil {
 		log.Println(err)
 		return

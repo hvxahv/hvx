@@ -48,7 +48,7 @@ func NewActorID(id uint) *Actors {
 	}
 }
 
-func (a *Actors) FindByID() (*Actors, error) {
+func (a *Actors) FindActorByID() (*Actors, error) {
 	db := cockroach.GetDB()
 
 	if err := db.Debug().Table("actors").Where("id = ?", a.ID).First(&a).Error; err != nil {
@@ -111,7 +111,7 @@ type Actor interface {
 	// FindByPreferredUsername Find the Actor collection by PreferredUsername.
 	FindByPreferredUsername() (*[]Actors, error)
 
-	FindByID() (*Actors, error)
+	FindActorByID() (*Actors, error)
 
 	Update() error
 }

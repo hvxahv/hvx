@@ -22,14 +22,14 @@ type AccountsClient interface {
 	New(ctx context.Context, in *NewAccountData, opts ...grpc.CallOption) (*AccountsReply, error)
 	// Update Update the account through AccountData data.
 	Update(ctx context.Context, in *AccountData, opts ...grpc.CallOption) (*AccountsReply, error)
+	UpdatePassword(ctx context.Context, in *UpdatePasswordData, opts ...grpc.CallOption) (*AccountsReply, error)
+	UpdateUsername(ctx context.Context, in *UpdateUsernameData, opts ...grpc.CallOption) (*AccountsReply, error)
 	// Delete Delete the specified account by user name.
-	Delete(ctx context.Context, in *AuthData, opts ...grpc.CallOption) (*AccountsReply, error)
-	// Query account specified user data by username.
-	QueryByName(ctx context.Context, in *NewAccountByName, opts ...grpc.CallOption) (*AccountData, error)
-	// Query account specified user data by id.
-	QueryByID(ctx context.Context, in *NewAccountByID, opts ...grpc.CallOption) (*AccountData, error)
+	Delete(ctx context.Context, in *DeleteData, opts ...grpc.CallOption) (*AccountsReply, error)
+	FindAccountsByUsername(ctx context.Context, in *AccountUsername, opts ...grpc.CallOption) (*AccountData, error)
+	FindActorByID(ctx context.Context, in *ActorID, opts ...grpc.CallOption) (*ActorData, error)
 	// Login ...
-	Login(ctx context.Context, in *AuthData, opts ...grpc.CallOption) (*AuthReply, error)
+	Login(ctx context.Context, in *AuthData, opts ...grpc.CallOption) (*AccountsReply, error)
 }
 
 type accountsClient struct {
@@ -58,7 +58,25 @@ func (c *accountsClient) Update(ctx context.Context, in *AccountData, opts ...gr
 	return out, nil
 }
 
-func (c *accountsClient) Delete(ctx context.Context, in *AuthData, opts ...grpc.CallOption) (*AccountsReply, error) {
+func (c *accountsClient) UpdatePassword(ctx context.Context, in *UpdatePasswordData, opts ...grpc.CallOption) (*AccountsReply, error) {
+	out := new(AccountsReply)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Accounts/UpdatePassword", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *accountsClient) UpdateUsername(ctx context.Context, in *UpdateUsernameData, opts ...grpc.CallOption) (*AccountsReply, error) {
+	out := new(AccountsReply)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Accounts/UpdateUsername", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *accountsClient) Delete(ctx context.Context, in *DeleteData, opts ...grpc.CallOption) (*AccountsReply, error) {
 	out := new(AccountsReply)
 	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Accounts/Delete", in, out, opts...)
 	if err != nil {
@@ -67,26 +85,26 @@ func (c *accountsClient) Delete(ctx context.Context, in *AuthData, opts ...grpc.
 	return out, nil
 }
 
-func (c *accountsClient) QueryByName(ctx context.Context, in *NewAccountByName, opts ...grpc.CallOption) (*AccountData, error) {
+func (c *accountsClient) FindAccountsByUsername(ctx context.Context, in *AccountUsername, opts ...grpc.CallOption) (*AccountData, error) {
 	out := new(AccountData)
-	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Accounts/QueryByName", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Accounts/FindAccountsByUsername", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *accountsClient) QueryByID(ctx context.Context, in *NewAccountByID, opts ...grpc.CallOption) (*AccountData, error) {
-	out := new(AccountData)
-	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Accounts/QueryByID", in, out, opts...)
+func (c *accountsClient) FindActorByID(ctx context.Context, in *ActorID, opts ...grpc.CallOption) (*ActorData, error) {
+	out := new(ActorData)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Accounts/FindActorByID", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *accountsClient) Login(ctx context.Context, in *AuthData, opts ...grpc.CallOption) (*AuthReply, error) {
-	out := new(AuthReply)
+func (c *accountsClient) Login(ctx context.Context, in *AuthData, opts ...grpc.CallOption) (*AccountsReply, error) {
+	out := new(AccountsReply)
 	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Accounts/Login", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -102,14 +120,14 @@ type AccountsServer interface {
 	New(context.Context, *NewAccountData) (*AccountsReply, error)
 	// Update Update the account through AccountData data.
 	Update(context.Context, *AccountData) (*AccountsReply, error)
+	UpdatePassword(context.Context, *UpdatePasswordData) (*AccountsReply, error)
+	UpdateUsername(context.Context, *UpdateUsernameData) (*AccountsReply, error)
 	// Delete Delete the specified account by user name.
-	Delete(context.Context, *AuthData) (*AccountsReply, error)
-	// Query account specified user data by username.
-	QueryByName(context.Context, *NewAccountByName) (*AccountData, error)
-	// Query account specified user data by id.
-	QueryByID(context.Context, *NewAccountByID) (*AccountData, error)
+	Delete(context.Context, *DeleteData) (*AccountsReply, error)
+	FindAccountsByUsername(context.Context, *AccountUsername) (*AccountData, error)
+	FindActorByID(context.Context, *ActorID) (*ActorData, error)
 	// Login ...
-	Login(context.Context, *AuthData) (*AuthReply, error)
+	Login(context.Context, *AuthData) (*AccountsReply, error)
 	mustEmbedUnimplementedAccountsServer()
 }
 
@@ -123,16 +141,22 @@ func (UnimplementedAccountsServer) New(context.Context, *NewAccountData) (*Accou
 func (UnimplementedAccountsServer) Update(context.Context, *AccountData) (*AccountsReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
 }
-func (UnimplementedAccountsServer) Delete(context.Context, *AuthData) (*AccountsReply, error) {
+func (UnimplementedAccountsServer) UpdatePassword(context.Context, *UpdatePasswordData) (*AccountsReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdatePassword not implemented")
+}
+func (UnimplementedAccountsServer) UpdateUsername(context.Context, *UpdateUsernameData) (*AccountsReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateUsername not implemented")
+}
+func (UnimplementedAccountsServer) Delete(context.Context, *DeleteData) (*AccountsReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
 }
-func (UnimplementedAccountsServer) QueryByName(context.Context, *NewAccountByName) (*AccountData, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method QueryByName not implemented")
+func (UnimplementedAccountsServer) FindAccountsByUsername(context.Context, *AccountUsername) (*AccountData, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FindAccountsByUsername not implemented")
 }
-func (UnimplementedAccountsServer) QueryByID(context.Context, *NewAccountByID) (*AccountData, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method QueryByID not implemented")
+func (UnimplementedAccountsServer) FindActorByID(context.Context, *ActorID) (*ActorData, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FindActorByID not implemented")
 }
-func (UnimplementedAccountsServer) Login(context.Context, *AuthData) (*AuthReply, error) {
+func (UnimplementedAccountsServer) Login(context.Context, *AuthData) (*AccountsReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
 }
 func (UnimplementedAccountsServer) mustEmbedUnimplementedAccountsServer() {}
@@ -184,8 +208,44 @@ func _Accounts_Update_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Accounts_UpdatePassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdatePasswordData)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountsServer).UpdatePassword(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/hvxahv.v1alpha1.proto.Accounts/UpdatePassword",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountsServer).UpdatePassword(ctx, req.(*UpdatePasswordData))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Accounts_UpdateUsername_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateUsernameData)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountsServer).UpdateUsername(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/hvxahv.v1alpha1.proto.Accounts/UpdateUsername",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountsServer).UpdateUsername(ctx, req.(*UpdateUsernameData))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Accounts_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AuthData)
+	in := new(DeleteData)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -197,43 +257,43 @@ func _Accounts_Delete_Handler(srv interface{}, ctx context.Context, dec func(int
 		FullMethod: "/hvxahv.v1alpha1.proto.Accounts/Delete",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccountsServer).Delete(ctx, req.(*AuthData))
+		return srv.(AccountsServer).Delete(ctx, req.(*DeleteData))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Accounts_QueryByName_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(NewAccountByName)
+func _Accounts_FindAccountsByUsername_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AccountUsername)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AccountsServer).QueryByName(ctx, in)
+		return srv.(AccountsServer).FindAccountsByUsername(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/hvxahv.v1alpha1.proto.Accounts/QueryByName",
+		FullMethod: "/hvxahv.v1alpha1.proto.Accounts/FindAccountsByUsername",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccountsServer).QueryByName(ctx, req.(*NewAccountByName))
+		return srv.(AccountsServer).FindAccountsByUsername(ctx, req.(*AccountUsername))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Accounts_QueryByID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(NewAccountByID)
+func _Accounts_FindActorByID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ActorID)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AccountsServer).QueryByID(ctx, in)
+		return srv.(AccountsServer).FindActorByID(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/hvxahv.v1alpha1.proto.Accounts/QueryByID",
+		FullMethod: "/hvxahv.v1alpha1.proto.Accounts/FindActorByID",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccountsServer).QueryByID(ctx, req.(*NewAccountByID))
+		return srv.(AccountsServer).FindActorByID(ctx, req.(*ActorID))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -272,16 +332,24 @@ var Accounts_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Accounts_Update_Handler,
 		},
 		{
+			MethodName: "UpdatePassword",
+			Handler:    _Accounts_UpdatePassword_Handler,
+		},
+		{
+			MethodName: "UpdateUsername",
+			Handler:    _Accounts_UpdateUsername_Handler,
+		},
+		{
 			MethodName: "Delete",
 			Handler:    _Accounts_Delete_Handler,
 		},
 		{
-			MethodName: "QueryByName",
-			Handler:    _Accounts_QueryByName_Handler,
+			MethodName: "FindAccountsByUsername",
+			Handler:    _Accounts_FindAccountsByUsername_Handler,
 		},
 		{
-			MethodName: "QueryByID",
-			Handler:    _Accounts_QueryByID_Handler,
+			MethodName: "FindActorByID",
+			Handler:    _Accounts_FindActorByID_Handler,
 		},
 		{
 			MethodName: "Login",

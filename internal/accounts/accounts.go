@@ -48,7 +48,7 @@ func NewAcctNameANDActorID(username string, id uint) *Accounts {
 	}
 }
 
-func (a *Accounts) ChangeUsername(target string) error {
+func (a *Accounts) UpdateUsername(target string) error {
 	db := cockroach.GetDB()
 
 	if err := db.Debug().Table("accounts").Where("username = ?", a.Username).Update("username", target).Error; err != nil {
@@ -80,7 +80,7 @@ func NewAccountsName(username string) *Accounts {
 	return &Accounts{Username: username}
 }
 
-func (a *Accounts) FindByName() (*Accounts, error) {
+func (a *Accounts) FindAccountByUsername() (*Accounts, error) {
 	db := cockroach.GetDB()
 
 	if err := db.Debug().Table("accounts").Where("username = ? ", a.Username).First(&a).Error; err != nil {
@@ -142,12 +142,12 @@ type Account interface {
 
 	New() error
 
-	FindByName() (*Accounts, error)
+	FindAccountByUsername() (*Accounts, error)
 
 	Update() error
 
-	// ChangeUsername Change the username and pass the target username as a parameter.
-	ChangeUsername(target string) error
+	// UpdateUsername Change the username and pass the target username as a parameter.
+	UpdateUsername(target string) error
 
 	Delete() error
 }

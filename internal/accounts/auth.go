@@ -12,25 +12,25 @@ import (
 // including method interfaces for login or developer API permissions.
 type AccountAuth interface {
 	// Login to the account and generate token, Return token and custom error message.
-	Login() (uint, error)
+	Login() (string, error)
 }
 
 func NewAuth(mail string, password string) AccountAuth {
 	return &Accounts{Mail: mail, Password: password}
 }
 
-func (a *Accounts) Login() (uint, error) {
+func (a *Accounts) Login() (string, error) {
 	db := cockroach.GetDB()
 
 	var acct *Accounts
 	if err := db.Debug().Table("accounts").Where("mail = ?", a.Mail).First(&acct).Error; err != nil {
 		log.Println(gorm.ErrMissingWhereClause)
-		return 0, err
+		return "", err
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(acct.Password), []byte(a.Password)); err != nil {
-		return 0, errors.Errorf("Password verification failed.")
+		return "", errors.Errorf("Password verification failed.")
 	}
 
-	return acct.ActorID, nil
+	return acct.Mail, nil
 }
