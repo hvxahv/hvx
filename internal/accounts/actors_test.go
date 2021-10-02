@@ -6,6 +6,19 @@ import (
 	"testing"
 )
 
+func TestActors_NewActor(t *testing.T) {
+	TestInitDB(t)
+	
+	a := NewActors("hvturingga", "", "")
+	actor, err := a.NewActor()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	fmt.Println(actor)
+}
+
 func TestActors_FindActorByPreferredUsername(t *testing.T) {
 	TestInitDB(t)
 
@@ -22,7 +35,7 @@ func TestActors_FindActorByID(t *testing.T) {
 	TestInitDB(t)
 
 	a := NewActorID(696901249207894017)
-	actor, err := a.FindByID()
+	actor, err := a.FindActorByID()
 	if err != nil {
 		log.Println(err)
 	}
@@ -32,7 +45,7 @@ func TestActors_FindActorByID(t *testing.T) {
 func TestActors_Update(t *testing.T) {
 	TestInitDB(t)
 
-	a := NewActorID(696901249207894017)
+	a := NewActorID(698320974363721729)
 
 	a.ActorType = ""
 	a.Name = "HVTURINGGA"

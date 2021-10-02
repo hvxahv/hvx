@@ -90,7 +90,7 @@ func NewChannels(name, link, avatar, bio, owner string, isPrivate bool) *Channel
 		Link:      link,
 		Avatar:    avatar,
 		Bio:       bio,
-		OwnerID:   client.FetchAccountIdByName(owner),
+		OwnerID:   ,
 		IsPrivate: isPrivate,
 	}
 }

@@ -17,7 +17,7 @@ func WebFingerHandler(c *gin.Context) {
 	ok := activitypub.IsRemote(resource)
 	if ok {
 		// If you are not searching for the user of this instance, go to the remote request.
-		wf, err := streams.NewClient("GET", activitypub.NewWebFingerUrl(activitypub.GetHost(resource), resource)).Get()
+		wf, err := streams.NewRequest("GET", activitypub.NewWebFingerUrl(activitypub.GetHost(resource), resource)).Get()
 		if err != nil {
 			log.Println(err)
 		}
@@ -26,7 +26,7 @@ func WebFingerHandler(c *gin.Context) {
 
 
 		var ar activitypub.Actor
-		actor, err := streams.NewClient("GET", wfd.Links[0].Href).Get()
+		actor, err := streams.NewRequest("GET", wfd.Links[0].Href).Get()
 		if err != nil {
 			log.Println(err)
 		}

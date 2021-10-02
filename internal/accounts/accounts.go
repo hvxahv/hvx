@@ -123,12 +123,12 @@ func (a *Accounts) New() error {
 		return errors.Errorf("FAILED_TO_CREATE_ACCOUNT")
 	}
 
-	id, err := NewActors(a.Username, a.Password, publicKey).NewActor()
+	acct, err := NewActors(a.Username, a.Password, publicKey).NewActor()
 	if err != nil {
 		return err
 	}
 
-	a.ActorID = id
+	a.ActorID = acct.ID
 	a.PrivateKey = privateKey
 
 	if err := db.Debug().Table("accounts").Create(&a).Error; err != nil {

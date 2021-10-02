@@ -1,7 +1,11 @@
 package activitypub
 
 import (
+	"encoding/json"
+	"github.com/disism/hvxahv/internal/accounts"
+	"github.com/disism/hvxahv/pkg/streams"
 	"github.com/spf13/viper"
+	"net/url"
 	"strings"
 	"time"
 )
@@ -43,6 +47,28 @@ func GetHost(resource string) string {
 	}
 	return resource[5:]
 }
+
+func FetchRemoteActor(actorUrl string) (*accounts.Actors, error) {
+	a, err := streams.NewRequest("GET", actorUrl).Get()
+	if err != nil {
+		return nil, err
+	}
+	var actor Actor
+	_ = json.Unmarshal(a, &actor)
+
+	h, err := url.Parse(actorUrl)
+	if err != nil {
+		return nil, err
+	}
+	
+	account := accounts.NewAddActor(actor.PreferredUsername, h.Hostname(), actor.Icon.Url, actor.Name, actor.Summary, actor.Inbox, actor.PublicKey.PublicKeyPem, "", "")
+	act, err := account.AddActor()
+	if err != nil {
+		return nil, err
+	}
+	return act, nil
+}
+
 
 // EXAMPLE 9
 //{
