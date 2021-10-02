@@ -10,7 +10,7 @@ type Client struct {
 	Url    string
 }
 
-func NewClient(method string, url string) *Client {
+func NewRequest(method string, url string) *Client {
 	return &Client{Method: method, Url: url}
 }
 

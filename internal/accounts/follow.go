@@ -2,39 +2,44 @@ package accounts
 
 import (
 	"fmt"
+	pb "github.com/disism/hvxahv/api/accounts/v1alpha1"
 	"github.com/disism/hvxahv/pkg/cockroach"
+	"github.com/disism/hvxahv/pkg/microservices/client"
 	"github.com/pkg/errors"
+	"golang.org/x/net/context"
 	"gorm.io/gorm"
 	"log"
 )
 
 type Follows struct {
 	gorm.Model
-	Name       string `gorm:"primaryKey;type:varchar(100);name"`
-	TargetName string `gorm:"primaryKey;type:varchar(100);target_name"`
+
+	ActorID  uint `gorm:"primaryKey;bigint;actor_id"`
+	TargetID uint `gorm:"primaryKey;bigint;target_id"`
 }
 
-func (f *Follows) Followers() {
-	db := cockroach.GetDB()
-	res := Follows{}
-
-	if r := db.Debug().Table("follows").Where("target_name = ?", f.TargetName).Find(&res); r.Error != nil {
-		log.Printf(r.Error.Error())
-	}
-
-	fmt.Println(res.Name)
-}
-
-func (f *Follows) Following() {
-	db := cockroach.GetDB()
-	res := Follows{}
-
-	if r := db.Debug().Table("follows").Where("name = ?", f.Name).Find(&res); r.Error != nil {
-		log.Printf(r.Error.Error())
-	}
-
-	fmt.Println(res.TargetName)
-}
+//
+//func (f *Follows) Followers() {
+//	db := cockroach.GetDB()
+//	res := Follows{}
+//
+//	if r := db.Debug().Table("follows").Where("target_name = ?", f.TargetName).Find(&res); r.Error != nil {
+//		log.Printf(r.Error.Error())
+//	}
+//
+//	fmt.Println(res.Name)
+//}
+//
+//func (f *Follows) Following() {
+//	db := cockroach.GetDB()
+//	res := Follows{}
+//
+//	if r := db.Debug().Table("follows").Where("name = ?", f.Name).Find(&res); r.Error != nil {
+//		log.Printf(r.Error.Error())
+//	}
+//
+//	fmt.Println(res.TargetName)
+//}
 
 func (f *Follows) New() error {
 	db := cockroach.GetDB()
@@ -45,7 +50,8 @@ func (f *Follows) New() error {
 	if err := db.AutoMigrate(&Follows{}); err != nil {
 		fmt.Printf("failed to automatically create database: %v\n", err)
 	}
-	err := db.Debug().Table("follows").Where("name = ? AND target_name = ?", f.Name, f.TargetName).First(&Accounts{})
+
+	err := db.Debug().Table("follows").Where("actor_id = ? AND target_id = ?", f.ActorID, f.TargetID).First(&Accounts{})
 	if err != nil {
 		ok := cockroach.IsNotFound(err.Error)
 		if !ok {
@@ -57,11 +63,6 @@ func (f *Follows) New() error {
 		return errors.Errorf("failed to follow actor: %v", err)
 	}
 
-	if err := db.Debug().Table("accounts").Where("username = ?", f.Name).
-		Update("following", gorm.Expr("following + ?", 1)).Error; err != nil {
-		return errors.Errorf("failed to increase the number of followers: %v", err)
-	}
-
 	return nil
 }
 
@@ -71,14 +72,22 @@ type Follow interface {
 	Followers()
 }
 
-func NewFollows(name string, targetName string) Follow {
-	return &Follows{Name: name, TargetName: targetName}
+func NewFollows(actorID uint, targetID uint) *Follows {
+
+	return &Follows{ActorID: actorID, TargetID: targetID}
 }
 
-func NewFoByName(name string) Follow {
-	return &Follows{Name: name}
-}
+func NewFollower(actor string, targetID uint) *Follows {
+	cli, conn, err := client.Accounts()
+	if err != nil {
+		log.Println(err)
+	}
+	defer conn.Close()
 
-func NewFoTargetByName(targetName string) Follow {
-	return &Follows{TargetName: targetName}
+	account, err := cli.FindAccountsByUsername(context.Background(), &pb.AccountUsername{Username: actor})
+	if err != nil {
+		log.Println(err)
+	}
+
+	return &Follows{ActorID: uint(account.ActorId), TargetID: targetID}
 }

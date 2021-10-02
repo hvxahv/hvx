@@ -19,7 +19,7 @@ func GetActorHandler(c *gin.Context) {
 	name := c.Param("actor")
 
 	// Use this client to call the remote Accounts gRPC service,
-	// and then pass the user name to get the queried data.
+	// and then pass the username to get the queried data.
 	cli, conn, err := client.Accounts()
 	if err != nil {
 		log.Println(err)

@@ -3,18 +3,16 @@ package accounts
 import (
 	"fmt"
 	"github.com/disism/hvxahv/pkg/cockroach"
-	"github.com/disism/hvxahv/pkg/matrix"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	"gorm.io/gorm"
-	"log"
 )
 
 type Actors struct {
 	gorm.Model
 
 	PreferredUsername string `gorm:"primaryKey;type:text;preferredUsername;"`
-	Domain            string `gorm:"type:text;domain"`
+	Domain            string `gorm:"index;type:text;domain"`
 	Avatar            string `gorm:"type:text;avatar"`
 	Name              string `gorm:"type:text;name"`
 	Summary           string `gorm:"type:text;summary"`
@@ -27,6 +25,30 @@ type Actors struct {
 
 	// Whether it is a robot or other type of account
 	ActorType string `gorm:"type:text;actor_type"`
+}
+
+func (a *Actors) AddActor() (*Actors, error) {
+	db := cockroach.GetDB()
+
+	if err := db.Debug().Table("actors").Create(&a).Error; err != nil {
+		return nil, errors.Errorf("FAILED_TO_CREATE_ACTOR")
+	}
+
+	return a, nil
+}
+
+func NewAddActor(PreferredUsername, Domain, Avatar, Name, Summary, Inbox, PublicKey, MatrixID, ActorType string) Actors {
+	return Actors{
+		PreferredUsername: PreferredUsername,
+		Domain:            Domain,
+		Avatar:            Avatar,
+		Name:              Name,
+		Summary:           Summary,
+		Inbox:             Inbox,
+		PublicKey:         PublicKey,
+		MatrixID:          MatrixID,
+		ActorType:         ActorType,
+	}
 }
 
 func (a *Actors) FindActorByAccountUsername() (*Actors, error) {
@@ -91,37 +113,39 @@ func (a *Actors) FindByPreferredUsername() (*[]Actors, error) {
 func NewActors(preferredUsername, password, publicKey string) *Actors {
 	domain := viper.GetString("localhost")
 
-	id, err := matrix.NewAuth(preferredUsername, password).Register()
-	if err != nil {
-		log.Println("FAILED TO REGISTER TO THE MATRIX ACCOUNT.")
-	}
+	//id, err := matrix.NewAuth(preferredUsername, password).Register()
+	//if err != nil {
+	//	log.Println("FAILED TO REGISTER TO THE MATRIX ACCOUNT.")
+	//}
 
 	return &Actors{
 		PreferredUsername: preferredUsername,
 		Domain:            domain,
 		Inbox:             fmt.Sprintf("https://%s/u/%s/inbox", domain, preferredUsername),
 		PublicKey:         publicKey,
-		MatrixID:          id,
+		MatrixID:          "id",
 	}
 }
 
-func (a *Actors) NewActor() (uint, error) {
+func (a *Actors) NewActor() (*Actors, error) {
 	db := cockroach.GetDB()
 
 	if err := db.AutoMigrate(&Actors{}); err != nil {
-		return 0, errors.New("FAILED_TO_AUTOMATICALLY_CREATE_DATABASE")
+		return nil, errors.New("FAILED_TO_AUTOMATICALLY_CREATE_DATABASE")
 	}
 
 	if err := db.Debug().Table("actors").Create(&a).Error; err != nil {
-		return 0, errors.Errorf("FAILED_TO_CREATE_ACTOR")
+		return nil, errors.Errorf("FAILED_TO_CREATE_ACTOR")
 	}
 
-	return a.ID, nil
+	return a, nil
 }
 
 type Actor interface {
 	// NewActor Create new actors data and add the returned ID to the accounts field.
-	NewActor() (uint, error)
+	NewActor() (*Actors, error)
+
+	AddActor() (*Actors, error)
 
 	// FindByPreferredUsername Find the Actor collection by PreferredUsername.
 	FindByPreferredUsername() (*[]Actors, error)

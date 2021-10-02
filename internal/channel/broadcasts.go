@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/disism/hvxahv/pkg/cockroach"
 	"github.com/disism/hvxahv/pkg/ipfs"
-	"github.com/disism/hvxahv/pkg/microservices/client"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
 	"log"
@@ -86,21 +85,21 @@ type Broadcast interface {
 	// QueryLisByCID Fetch the content list in the channel by channel id.
 	QueryLisByCID() (*[]Broadcasts, error)
 }
-
-func NewBroadcast(title, article string, channelId, accountId uint) (*Broadcasts, error) {
-	db := cockroach.GetDB()
-	if err := db.Table("administrators").Where("channel_id = ?", channelId).Where("account_id = ?", accountId).First(&Administrators{}); err != nil {
-		if cockroach.IsNotFound(err.Error) {
-			return nil, errors.Errorf("You are not the moderator of this channel")
-		}
-	}
-
-	author, err := client.FetchAccountNameByID(accountId)
-	if err != nil {
-		return nil, errors.Errorf("Failed to get author.")
-	}
-	return &Broadcasts{Author: author, Title: title, Article: article, ChannelID: accountId}, nil
-}
+//
+//func NewBroadcast(title, article string, channelId, accountId uint) (*Broadcasts, error) {
+//	db := cockroach.GetDB()
+//	if err := db.Table("administrators").Where("channel_id = ?", channelId).Where("account_id = ?", accountId).First(&Administrators{}); err != nil {
+//		if cockroach.IsNotFound(err.Error) {
+//			return nil, errors.Errorf("You are not the moderator of this channel")
+//		}
+//	}
+//
+//	author, err := client.FetchAccountNameByID(accountId)
+//	if err != nil {
+//		return nil, errors.Errorf("Failed to get author.")
+//	}
+//	return &Broadcasts{Author: author, Title: title, Article: article, ChannelID: accountId}, nil
+//}
 
 func NewBroadcastCID(channelId uint) *Broadcasts {
 	return &Broadcasts{ChannelID: channelId}

@@ -3,11 +3,22 @@ package activity
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/disism/hvxahv/internal/accounts"
+	pb "github.com/disism/hvxahv/api/accounts/v1alpha1"
 	"github.com/disism/hvxahv/pkg/activitypub"
+	"github.com/disism/hvxahv/pkg/cockroach"
+	"github.com/disism/hvxahv/pkg/microservices/client"
+	"github.com/pkg/errors"
+	"golang.org/x/net/context"
 	"gorm.io/gorm"
 	"log"
 )
+
+// TODO - Redesign the INBOX data structure.
+
+
+
+
+
 
 type InboxData struct {
 	Context string `json:"@context"`
@@ -17,44 +28,63 @@ type InboxData struct {
 	Object  string `json:"object"`
 }
 
-type Inbox struct {
+type Inboxes struct {
 	gorm.Model
-	Actor     string `gorm:"type:varchar(999);actor"`
-	EventType string `gorm:"type:varchar(999);event_type"`
-	EventID   string `gorm:"type:varchar(999);event_id"`
-	Username  string `gorm:"primaryKey;type:varchar(999);username"`
+
+	Actor     string `gorm:"type:text;actor"`
+	EventType string `gorm:"type:text;event_type"`
+	EventID   string `gorm:"type:text;event_id"`
+	AccountID uint   `gorm:"primaryKey;type:bigint;account_id"`
 }
 
-func (i *Inbox) FetchInbox() {
-	inbox, err := FetchInboxCollectionByName(i.Username)
+func (i *Inboxes) FindInboxByAccountID() (*[]Inboxes, error) {
+	db := cockroach.GetDB()
+
+	var inboxes []Inboxes
+	if err := db.Debug().Table("inboxes").Where("account_id", i.AccountID).Find(&inboxes).Error; err != nil {
+		return nil, errors.Errorf("an error occurred while creating the activity: %v", err)
+	}
+	return &inboxes, nil
+}
+
+func (i *Inboxes) New() error {
+	db := cockroach.GetDB()
+
+	if err := db.Debug().Table("inboxes").Create(&i).Error; err != nil {
+		return errors.Errorf("an error occurred while creating the activity: %v", err)
+	}
+	return nil
+}
+
+type Inbox interface {
+	New() error
+
+	FindInboxByAccountID() (*[]Inboxes, error)
+}
+
+func NewInbox(actor, types, eventID, username string) (*Inboxes, error) {
+	db := cockroach.GetDB()
+
+	if err := db.AutoMigrate(&Inboxes{}); err != nil {
+		return nil, errors.New("FAILED_TO_AUTOMATICALLY_CREATE_INBOX_DATABASE")
+	}
+
+	cli, conn, err := client.Accounts()
 	if err != nil {
-		return 
+		return nil, err
 	}
-	fmt.Println(inbox)
+	defer conn.Close()
 
-}
-
-func (i *Inbox) NewInbox() {
-	if err := NewInboxToDB(i); err != nil {
-		return 
+	account, err := cli.FindAccountsByUsername(context.Background(), &pb.AccountUsername{Username: username})
+	if err != nil {
+		return nil, err
 	}
+
+	return &Inboxes{Actor: actor, EventType: types, EventID: eventID, AccountID: uint(account.Id)}, nil
 }
 
-type INBOX interface {
-	// NewInbox inbox data.
-	NewInbox()
-
-	// FetchInbox The inbox is discovered through the property of an actor's profile.
-	// The MUST be an OrderedCollection.
-	FetchInbox()
-}
-
-func NewInbox(actor string, types string, eventID string, username string) *Inbox {
-	return &Inbox{Actor: actor, EventType: types, EventID: eventID, Username: username}
-}
-
-func NewInboxByName(username string) *Inbox {
-	return &Inbox{Username: username}
+func NewInboxAccountID(id uint) *Inboxes {
+	return &Inboxes{AccountID: id}
 }
 
 func InboxEventHandler(name string, body []byte) {
@@ -79,20 +109,23 @@ func InboxEventHandler(name string, body []byte) {
 		fmt.Println(f)
 		fmt.Printf("%s 请求关注你", f.Actor)
 
-		nm := NewInbox(f.Actor, f.Type, f.Id, name)
-		nm.NewInbox()
+		inbox, err := NewInbox(f.Actor, f.Type, f.Id, name)
+		if err != nil {
+			log.Println(err)
+		}
+		if err := inbox.New(); err != nil {
+			log.Println(err)
+		}
 
 	case "Undo":
 		fmt.Printf("取消了请求")
 		fmt.Println("得到的接口数据:", i.Object)
-		nm := NewInbox(i.Actor, i.Type, i.Id, name)
-		nm.NewInbox()
+		//nm := NewInbox(i.Actor, i.Type, i.Id, name)
 
 	case "Reject":
 		fmt.Printf("拒绝了你的请求")
 		fmt.Println("接收了你的请求:", i.Object)
-		nm := NewInbox(i.Actor, i.Type, i.Id, name)
-		nm.NewInbox()
+		//nm := NewInbox(i.Actor, i.Type, i.Id, name)
 
 	case "Accept":
 		fmt.Println("接受了你的请求:", i.Object)
@@ -102,15 +135,6 @@ func InboxEventHandler(name string, body []byte) {
 			fmt.Println(err2)
 		}
 		fmt.Println(a)
-
-		nm := NewInbox(a.Actor, a.Type, a.Id, name)
-		nm.NewInbox()
-		
-		nf := accounts.NewFollows(name, i.Actor)
-		err3 := nf.New()
-		if err3 != nil {
-			log.Println(err3)
-		}
 
 	case "Create":
 		fmt.Println("创建了一条消息")
@@ -159,7 +183,6 @@ func InboxEventHandler(name string, body []byte) {
 //CC:  []
 //TO:  [https://mas.to/users/hvturingga/followers]
 
-
 /*
 Id: https://mas.to/users/hvturingga/statuses/106947728146032819
 Type: Note
@@ -176,4 +199,4 @@ Conversation: tag:mas.to,2021-09-17:objectId=51323475:objectType=Conversation
 Content: <p>你的名字叫做希望</p>
 InReplyToAtomUri: <nil>
 InReplyToAtomUri: <nil>
- */
+*/

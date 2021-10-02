@@ -42,11 +42,14 @@ func NewFollowAccept(name, actor, oid string) *activitypub.Accept {
 		id  = fmt.Sprintf("https://%s/u/%s#accepts/follows/%s", viper.GetString("localhost"), name, uuid.New().String())
 		a   = fmt.Sprintf("https://%s/u/%s", viper.GetString("localhost"), name)
 	)
+	acct, err := activitypub.FetchRemoteActor(actor)
+	 if err != nil {
+		log.Println(err)
+	}
 
-	nf := accounts.NewFollows(actor, name)
-	err := nf.New()
-	if err != nil {
-		return nil
+	nf := accounts.NewFollower(name, acct.ID)
+	if err := nf.New(); err != nil {
+		log.Println(err)
 	}
 
 	return &activitypub.Accept{
@@ -73,12 +76,14 @@ func (a *ActivityRequest) Send() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	uri := fmt.Sprintf("https://%s/inbox", h.Hostname())
+	uri := fmt.Sprintf("https://%s/users/hvturingga/inbox", h.Hostname())
 	method := "POST"
 
 	payload := bytes.NewBuffer(a.Data)
 	client := &http.Client{}
+
 	fmt.Println(payload)
+
 	req, err := http.NewRequest(method, uri, payload)
 	if err != nil {
 		fmt.Println(err)

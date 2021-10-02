@@ -57,7 +57,7 @@ func TestAccounts_FindAccountByName(t *testing.T) {
 	TestInitDB(t)
 
 	a := NewAccountsName("hvturingga")
-	accounts, err := a.FindByName()
+	accounts, err := a.FindAccountByUsername()
 	if err != nil {
 		log.Println(err)
 	}

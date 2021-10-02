@@ -21,8 +21,10 @@ type ActivityRequest struct {
 type Request interface {
 	// Send request to remote server.
 	Send()
+
 	// Follow ActivityPub follow method.
 	Follow()
+
 	// Accept ... TODO - Implement the method...
 	Accept()
 }

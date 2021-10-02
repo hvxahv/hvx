@@ -6,6 +6,7 @@ import (
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"log"
 	"os"
 	"testing"
 )
@@ -38,14 +39,17 @@ func IniTestConfig(t *testing.T) {
 
 func TestNewMessages(t *testing.T) {
 	IniTestConfig(t)
-	nm := NewInbox("https://mas.to/users/hvturingga", "Follow", "https://mas.to/9dc74aa1-9f24-4514-b6e4-00ebd6be012f", "hvturingga")
-	nm.NewInbox()
+	//nm := NewInbox("https://mas.to/users/hvturingga", "Follow", "https://mas.to/9dc74aa1-9f24-4514-b6e4-00ebd6be012f", "hvturingga")
+	//nm.NewInbox()
 }
 
-func TestInbox_FetchInbox(t *testing.T) {
+func TestInbox_FindInboxByAccountID(t *testing.T) {
 	IniTestConfig(t)
 
-	nib := NewInboxByName("hvturingga")
-
-	nib.FetchInbox()
+	i := NewInboxAccountID(696901249244790785)
+	inboxes, err := i.FindInboxByAccountID()
+	if err != nil {
+		log.Println(err)
+	}
+	fmt.Println(inboxes)
 }
