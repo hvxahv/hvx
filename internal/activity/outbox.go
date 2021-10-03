@@ -3,7 +3,6 @@ package activity
 import (
 	"bytes"
 	"fmt"
-	"github.com/disism/hvxahv/internal/accounts"
 	"github.com/disism/hvxahv/pkg/activitypub"
 	"github.com/disism/hvxahv/pkg/security"
 	"github.com/google/uuid"
@@ -42,15 +41,11 @@ func NewFollowAccept(name, actor, oid string) *activitypub.Accept {
 		id  = fmt.Sprintf("https://%s/u/%s#accepts/follows/%s", viper.GetString("localhost"), name, uuid.New().String())
 		a   = fmt.Sprintf("https://%s/u/%s", viper.GetString("localhost"), name)
 	)
-	acct, err := activitypub.FetchRemoteActor(actor)
-	 if err != nil {
-		log.Println(err)
-	}
 
-	nf := accounts.NewFollower(name, acct.ID)
-	if err := nf.New(); err != nil {
-		log.Println(err)
-	}
+	//nf := accounts.NewFollower(name, acct.ID)
+	//if err := nf.New(); err != nil {
+	//	log.Println(err)
+	//}
 
 	return &activitypub.Accept{
 		Context: ctx,
@@ -76,6 +71,7 @@ func (a *ActivityRequest) Send() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	uri := fmt.Sprintf("https://%s/users/hvturingga/inbox", h.Hostname())
 	method := "POST"
 
@@ -88,6 +84,7 @@ func (a *ActivityRequest) Send() {
 	if err != nil {
 		fmt.Println(err)
 	}
+
 	date := time.Now().UTC().Format(http.TimeFormat)
 	req.Header.Add("Host", h.Hostname())
 	req.Header.Add("Date", date)

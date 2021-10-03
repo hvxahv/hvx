@@ -17,6 +17,7 @@ type Actors struct {
 	Name              string `gorm:"type:text;name"`
 	Summary           string `gorm:"type:text;summary"`
 	Inbox             string `gorm:"type:text;inbox"`
+	Url               string `gorm:"index;test;url"`
 	PublicKey         string `gorm:"type:text;public_key"`
 
 	// ID returned after completing the registration of the matrix account.
@@ -25,6 +26,22 @@ type Actors struct {
 
 	// Whether it is a robot or other type of account
 	ActorType string `gorm:"type:text;actor_type"`
+}
+
+func (a *Actors) FindActorByUrl() (*Actors, error) {
+	db := cockroach.GetDB()
+
+	if err := db.Debug().Table("actors").Where("url = ?", a.Url).First(&a).Error; err != nil {
+		ok := cockroach.IsNotFound(err)
+		if ok {
+			return nil, err
+		}
+	}
+	return a, nil
+}
+
+func NewActorUrl(url string) *Actors {
+	return &Actors{Url: url}
 }
 
 func (a *Actors) AddActor() (*Actors, error) {
@@ -37,14 +54,15 @@ func (a *Actors) AddActor() (*Actors, error) {
 	return a, nil
 }
 
-func NewAddActor(PreferredUsername, Domain, Avatar, Name, Summary, Inbox, PublicKey, MatrixID, ActorType string) Actors {
-	return Actors{
+func NewAddActor(PreferredUsername, Domain, Avatar, Name, Summary, Inbox, Url, PublicKey, MatrixID, ActorType string) *Actors {
+	return &Actors{
 		PreferredUsername: PreferredUsername,
 		Domain:            Domain,
 		Avatar:            Avatar,
 		Name:              Name,
 		Summary:           Summary,
 		Inbox:             Inbox,
+		Url:               Url,
 		PublicKey:         PublicKey,
 		MatrixID:          MatrixID,
 		ActorType:         ActorType,
@@ -122,6 +140,7 @@ func NewActors(preferredUsername, password, publicKey string) *Actors {
 		PreferredUsername: preferredUsername,
 		Domain:            domain,
 		Inbox:             fmt.Sprintf("https://%s/u/%s/inbox", domain, preferredUsername),
+		Url:               fmt.Sprintf("https://%s/u/%s", domain, preferredUsername),
 		PublicKey:         publicKey,
 		MatrixID:          "id",
 	}
@@ -152,6 +171,7 @@ type Actor interface {
 
 	FindActorByAccountUsername() (*Actors, error)
 	FindActorByID() (*Actors, error)
+	FindActorByUrl() (*Actors, error)
 
 	Update() error
 }

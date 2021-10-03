@@ -11,8 +11,12 @@ import (
 
 func InboxHandler(c *gin.Context) {
 	name := c.Param("actor")
-	body, _ := ioutil.ReadAll(c.Request.Body)
-	activity.InboxEventHandler(name, body)
+	body, err := ioutil.ReadAll(c.Request.Body)
+	if err != nil {
+		return
+	}
+
+	activity.Types(name, body)
 }
 
 func OutboxHandler(c *gin.Context) {
