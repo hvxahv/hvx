@@ -49,6 +49,7 @@ func GetHost(resource string) string {
 }
 
 func FetchRemoteActor(actorUrl string) (*accounts.Actors, error) {
+
 	a, err := streams.NewRequest("GET", actorUrl).Get()
 	if err != nil {
 		return nil, err
@@ -60,12 +61,26 @@ func FetchRemoteActor(actorUrl string) (*accounts.Actors, error) {
 	if err != nil {
 		return nil, err
 	}
-	
-	account := accounts.NewAddActor(actor.PreferredUsername, h.Hostname(), actor.Icon.Url, actor.Name, actor.Summary, actor.Inbox, actor.PublicKey.PublicKeyPem, "", "")
+
+
+	account := accounts.NewAddActor(
+		actor.PreferredUsername,
+		h.Hostname(),
+		actor.Icon.Url,
+		actor.Name,
+		actor.Summary,
+		actor.Inbox,
+		actorUrl,
+		actor.PublicKey.PublicKeyPem,
+		"",
+		"",
+	)
+
 	act, err := account.AddActor()
 	if err != nil {
 		return nil, err
 	}
+
 	return act, nil
 }
 
