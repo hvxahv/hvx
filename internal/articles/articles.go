@@ -13,10 +13,12 @@ import (
 
 type Articles struct {
 	gorm.Model
+
 	AuthorID uint   `gorm:"primaryKey;author_id"`
 	Title    string `gorm:"type:text;title"`
 	Summary  string `gorm:"type:text;summary"`
 	Article  string `gorm:"type:text;article"`
+	Url      string `gorm:"index;type:text;url"`
 
 	// Whether the setting is status.
 	Statuses bool `gorm:"type:boolean;statuses"`
@@ -25,6 +27,19 @@ type Articles struct {
 	// If it is set to the public state, the article data will be combined into data traversal
 	// and sent to everyone in the follower list.
 	Visibility bool `gorm:"type:boolean;visibility"`
+}
+
+func (a *Articles) DeleteByURL() error {
+	db := cockroach.GetDB()
+
+	if err := db.Debug().Table("articles").Where("url = ?", a.Url).Unscoped().Delete(&Articles{}).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func NewArticleURL(url string) *Articles {
+	return &Articles{Url: url}
 }
 
 func (a *Articles) DeleteByAccountID() error {
@@ -59,7 +74,7 @@ func (a *Articles) Update() error {
 	return nil
 }
 
-func (a *Articles) Delete() error {
+func (a *Articles) DeleteByID() error {
 	db := cockroach.GetDB()
 
 	if err := db.Debug().Table("articles").Where("id = ?", a.ID).Unscoped().Delete(&Articles{}).Error; err != nil {
@@ -106,8 +121,10 @@ type Article interface {
 	// Update your article or status.
 	Update() error
 
-	// Delete your article or status.
-	Delete() error
+	// DeleteByID your article or status.
+	DeleteByID() error
+
+	DeleteByURL() error
 
 	// FindByID Get article or status by ID.
 	FindByID() (*Articles, error)
@@ -139,5 +156,16 @@ func NewArticles(
 		Article:  article,
 		Statuses: statuses,
 		NSFW:     NSFW,
+	}
+}
+
+func NewStatus(actorID uint, url, content string) *Articles {
+	return &Articles{
+		AuthorID:   actorID,
+		Article:    content,
+		Url:        url,
+		Statuses:   true,
+		NSFW:       false,
+		Visibility: false,
 	}
 }

@@ -11,8 +11,21 @@ type Inboxes struct {
 
 	ActorID      uint   `gorm:"type:bigint;actor_id"`
 	ActivityType string `gorm:"type:text;activity_type"`
-	ActivityID   string `gorm:"type:text;event_id"`
+	ActivityID   string `gorm:"index;type:text;activity_id"`
 	LocalActorID uint   `gorm:"primaryKey;type:bigint;local_actor_id"`
+}
+
+func (i *Inboxes) Delete() error {
+	db := cockroach.GetDB()
+
+	if err := db.Debug().Table("inboxes").Where("activity_id = ?", i.ActivityID).Unscoped().Delete(&Inboxes{}).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func NewInboxesActivityID(id string) *Inboxes {
+	return &Inboxes{ActivityID: id}
 }
 
 func (i *Inboxes) FindInboxesByActorID() (*[]Inboxes, error) {
@@ -38,6 +51,8 @@ type Inbox interface {
 	New() error
 
 	FindInboxesByActorID() (*[]Inboxes, error)
+
+	Delete() error
 }
 
 func NewInbox(actorID uint, types string, eventID string, localActorID uint) (*Inboxes, error) {
