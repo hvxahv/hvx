@@ -4,8 +4,6 @@ import (
 	"time"
 )
 
-
-
 // Create Activity.
 // https://www.w3.org/TR/activitypub/#create-activity-outbox
 // {
@@ -61,16 +59,6 @@ type Activity struct {
 //  "deleted": "2015-02-10T15:04:55Z"
 // }
 //
-
-// ActivityDel ...
-type ActivityDel struct {
-	Context   string    `json:"@context"`
-	Id        string    `json:"id"`
-	Type      string    `json:"type"`
-	Published time.Time `json:"published"`
-	Updated   time.Time `json:"updated"`
-	Deleted   time.Time `json:"deleted"`
-}
 
 // Follow
 //{
@@ -220,7 +208,7 @@ type Block struct {
 // If specified, the origin indicates the context from which the object was deleted.
 // https://www.w3.org/TR/activitystreams-vocabulary/#dfn-delete
 type Delete struct {
-	Context []interface{} `json:"@context"`
+	Context string `json:"@context"`
 	Id      string        `json:"id"`
 	Type    string        `json:"type"`
 	Actor   string        `json:"actor"`
@@ -306,14 +294,14 @@ type Reject struct {
 // https://www.w3.org/TR/activitystreams-vocabulary/#dfn-undo
 type Undo struct {
 	Context string `json:"@context"`
-	Summary string `json:"summary"`
+	Id      string `json:"id"`
 	Type    string `json:"type"`
 	Actor   string `json:"actor"`
 	Object  struct {
+		Id     string `json:"id"`
 		Type   string `json:"type"`
 		Actor  string `json:"actor"`
 		Object string `json:"object"`
-		Target string `json:"target"`
 	} `json:"object"`
 }
 
@@ -333,7 +321,7 @@ type Undo struct {
 //}
 
 type Create struct {
-	Context   []interface{} `json:"@context"`
+	Context   string `json:"@context"`
 	Id        string        `json:"id"`
 	Type      string        `json:"type"`
 	Actor     string        `json:"actor"`
@@ -355,9 +343,9 @@ type Create struct {
 		InReplyToAtomUri interface{}   `json:"inReplyToAtomUri"`
 		Conversation     string        `json:"conversation"`
 		Content          string        `json:"content"`
-		Attachment []interface{} `json:"attachment"`
-		Tag        []interface{} `json:"tag"`
-		Replies    struct {
+		Attachment       []interface{} `json:"attachment"`
+		Tag              []interface{} `json:"tag"`
+		Replies          struct {
 			Id    string `json:"id"`
 			Type  string `json:"type"`
 			First struct {
@@ -419,4 +407,27 @@ type Update struct {
 		Created        time.Time `json:"created"`
 		SignatureValue string    `json:"signatureValue"`
 	} `json:"signature"`
+}
+
+type Context struct {
+	Ostatus          string `json:"ostatus"`
+	AtomUri          string `json:"atomUri"`
+	InReplyToAtomUri string `json:"inReplyToAtomUri"`
+	Conversation     string `json:"conversation"`
+	Sensitive        string `json:"sensitive"`
+	Toot             string `json:"toot"`
+	VotersCount      string `json:"votersCount"`
+}
+
+func NewContext() *Context {
+
+	return &Context{
+		Ostatus:          "http://ostatus.org#",
+		AtomUri:          "ostatus:atomUri",
+		InReplyToAtomUri: "ostatus:inReplyToAtomUri",
+		Conversation:     "ostatus:conversation",
+		Sensitive:        "as:sensitive",
+		Toot:             "http://joinmastodon.org/ns#",
+		VotersCount:      "toot:votersCount",
+	}
 }

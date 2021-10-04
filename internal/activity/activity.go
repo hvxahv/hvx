@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/disism/hvxahv/internal/accounts"
+	"github.com/disism/hvxahv/internal/articles"
 	"github.com/disism/hvxahv/pkg/activitypub"
 	"github.com/disism/hvxahv/pkg/cockroach"
 	"github.com/spf13/viper"
@@ -51,15 +52,13 @@ func Types(name string, body []byte) {
 		if err2 != nil {
 			fmt.Println(err2)
 		}
-
-		fmt.Printf("%s 给 %s 发送了请求; 请求关注", f.Actor, f.Object)
-		la := accounts.NewActorUrl(f.Object)
+		fmt.Println("请求关注")
+		la := accounts.NewActorUrl(f.Actor)
 		LID, err3 := la.FindActorByUrl()
 		if err3 != nil {
 			return 
 		}
 		inbox, err := NewInbox(actor.ID, f.Type, f.Id, LID.ID)
-
 		if err != nil {
 			log.Println(err)
 		}
@@ -68,9 +67,21 @@ func Types(name string, body []byte) {
 		}
 
 	case "Undo":
-		fmt.Printf("取消了请求")
+		fmt.Printf("撤回了消息")
 		fmt.Println("得到的接口数据:", i.Object)
-		//nm := NewInbox(i.Actor, i.Type, i.Id, name)
+		fmt.Println(string(body))
+		undo := activitypub.Undo{}
+		err2 := json.Unmarshal(body, &undo)
+		if err2 != nil {
+			fmt.Println(err2)
+		}
+
+		d := NewInboxesActivityID(undo.Object.Id)
+		if err := d.Delete(); err != nil {
+			log.Println(err)
+			return
+		}
+		fmt.Println("删除消息成功")
 
 	case "Reject":
 		fmt.Printf("拒绝了你的请求")
@@ -92,6 +103,8 @@ func Types(name string, body []byte) {
 		if err := json.Unmarshal(body, &c); err != nil {
 			log.Println(err)
 		}
+
+		fmt.Println(string(body))
 		fmt.Println("CONTEXT: ", c.Context)
 		fmt.Println("ACTOR: ", c.Actor)
 		fmt.Println("TYPE: ", c.Type)
@@ -120,8 +133,29 @@ func Types(name string, body []byte) {
 		switch c.Object.Type {
 		case "Note":
 			fmt.Println("得到了一条 Note")
+			la := accounts.NewActorUrl(c.Actor)
+			LID, err3 := la.FindActorByUrl()
+			if err3 != nil {
+				return
+			}
+			n := articles.NewStatus(LID.ID, c.Object.Id, c.Object.Content)
+			if err := n.New(); err != nil {
+				log.Println(err)
+				return 
+			}
 		}
-
+	case "Delete":
+		fmt.Println("一个删除事件")
+		fmt.Println(string(body))
+		d := activitypub.Delete{}
+		if err := json.Unmarshal(body, &d); err != nil {
+			log.Println(err)
+		}
+		da := articles.NewArticleURL(d.Object.Id)
+		if err := da.DeleteByURL(); err != nil {
+			log.Println(err)
+			return 
+		}
 	}
 }
 
@@ -224,3 +258,8 @@ func (a *ActivityRequest) Accept() {
 func (a *ActivityRequest) Create() {
 	a.Send()
 }
+
+func (a *ActivityRequest) Article() {
+	a.Send()
+}
+

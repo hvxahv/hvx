@@ -123,13 +123,15 @@ Ha
 	if err != nil {
 		return 
 	}
+
+	
 }
 
 func TestArticles_FindArticlesByAccountID(t *testing.T) {
 	TestInitDB(t)
 
 	n := NewArticlesByAccountID(696901249244790785)
-	articles, err := n.FindArticlesByAccountID()
+	articles, err := n.FindByAccountID()
 	if err != nil {
 		return
 	}
@@ -140,9 +142,20 @@ func TestArticles_FindArticleByID(t *testing.T) {
 	TestInitDB(t)
 
 	n := NewArticleID(698064660731101185)
-	article, err := n.FindArticleByID()
+	article, err := n.FindByID()
 	if err != nil {
 		log.Println(err)
 	}
 	fmt.Println(article)
+}
+
+func TestArticles_DeleteByURL(t *testing.T) {
+	TestInitDB(t)
+	
+	d := NewArticleURL("https://mas.to/users/hvturingga/statuses/107043507276353003")
+	err := d.DeleteByURL()
+	if err != nil {
+		log.Println(err)
+		return 
+	}
 }
