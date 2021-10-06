@@ -2,11 +2,8 @@ package accounts
 
 import (
 	"fmt"
-	pb "github.com/disism/hvxahv/api/accounts/v1alpha1"
 	"github.com/disism/hvxahv/pkg/cockroach"
-	"github.com/disism/hvxahv/pkg/microservices/client"
 	"github.com/pkg/errors"
-	"golang.org/x/net/context"
 	"gorm.io/gorm"
 	"log"
 )
@@ -18,28 +15,39 @@ type Follows struct {
 	TargetID uint `gorm:"primaryKey;bigint;target_id"`
 }
 
-//
-//func (f *Follows) Followers() {
-//	db := cockroach.GetDB()
-//	res := Follows{}
-//
-//	if r := db.Debug().Table("follows").Where("target_name = ?", f.TargetName).Find(&res); r.Error != nil {
-//		log.Printf(r.Error.Error())
-//	}
-//
-//	fmt.Println(res.Name)
-//}
-//
-//func (f *Follows) Following() {
-//	db := cockroach.GetDB()
-//	res := Follows{}
-//
-//	if r := db.Debug().Table("follows").Where("name = ?", f.Name).Find(&res); r.Error != nil {
-//		log.Printf(r.Error.Error())
-//	}
-//
-//	fmt.Println(res.TargetName)
-//}
+func (f *Follows) FetchFollowers() *[]uint {
+	db := cockroach.GetDB()
+
+	var fs []Follows
+	if err := db.Debug().Table("follows").Where("target_id = ?", f.ActorID).First(&fs); err != nil {
+		log.Println(err)
+	}
+	var c []uint
+	for _, i := range fs {
+		c = append(c, i.ActorID)
+	}
+
+	return &c
+}
+
+func (f *Follows) FetchFollowing() *[]uint {
+	db := cockroach.GetDB()
+
+	var fs []Follows
+	if err := db.Debug().Table("follows").Where("actor_id = ?", f.ActorID).First(&fs); err != nil {
+		log.Println(err)
+	}
+	var c []uint
+	for _, i := range fs {
+		c = append(c, i.TargetID)
+	}
+
+	return &c
+}
+
+func NewFetchByID(id uint) *Follows {
+	return &Follows{ActorID: id}
+}
 
 func (f *Follows) New() error {
 	db := cockroach.GetDB()
@@ -51,8 +59,7 @@ func (f *Follows) New() error {
 		fmt.Printf("failed to automatically create database: %v\n", err)
 	}
 
-	err := db.Debug().Table("follows").Where("actor_id = ? AND target_id = ?", f.ActorID, f.TargetID).First(&Accounts{})
-	if err != nil {
+	if err := db.Debug().Table("follows").Where("actor_id = ? AND target_id = ?", f.ActorID, f.TargetID).First(&Follows{}); err != nil {
 		ok := cockroach.IsNotFound(err.Error)
 		if !ok {
 			return errors.Errorf("ACTOR ALREADY FOLLOWED.")
@@ -66,28 +73,14 @@ func (f *Follows) New() error {
 	return nil
 }
 
-type Follow interface {
-	New() error
-	Following()
-	Followers()
-}
-
 func NewFollows(actorID uint, targetID uint) *Follows {
-
 	return &Follows{ActorID: actorID, TargetID: targetID}
 }
 
-func NewFollower(actor string, targetID uint) *Follows {
-	cli, conn, err := client.Accounts()
-	if err != nil {
-		log.Println(err)
-	}
-	defer conn.Close()
+type Follow interface {
+	New() error
 
-	account, err := cli.FindAccountsByUsername(context.Background(), &pb.AccountUsername{Username: actor})
-	if err != nil {
-		log.Println(err)
-	}
+	FetchFollowers() *[]uint
 
-	return &Follows{ActorID: uint(account.ActorId), TargetID: targetID}
+	FetchFollowing() *[]uint
 }

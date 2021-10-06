@@ -29,7 +29,7 @@ func TestNewAccept(t *testing.T) {
 
 	name := "hvturingga"
 	actor := "https://mas.to/users/hvturingga"
-	oid := "https://mas.to/2862e03d-af32-43e5-9e01-6c639d94125e"
+	oid := "https://mas.to/a9821242-c202-4c9e-bb41-dd4f9484e934"
 	object := fmt.Sprintf("https://%s/u/%s", viper.GetString("localhost"), name)
 
 	na := NewFollowAccept(name, actor, oid)

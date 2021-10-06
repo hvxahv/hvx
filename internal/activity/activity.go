@@ -91,11 +91,23 @@ func Types(name string, body []byte) {
 	case "Accept":
 		fmt.Println("接受了你的请求:", i.Object)
 		a := activitypub.Accept{}
-		err2 := json.Unmarshal(body, &a)
-		if err2 != nil {
-			fmt.Println(err2)
+		if err := json.Unmarshal(body, &a); err != nil {
+			fmt.Println(err)
 		}
-		fmt.Println(a)
+		fmt.Println(string(body))
+
+		la := accounts.NewActorUrl(a.Object.Actor)
+		LID, err3 := la.FindActorByUrl()
+		if err3 != nil {
+			return
+		}
+
+
+		// Following...
+		nf := accounts.NewFollows(LID.ID, actor.ID)
+		if err := nf.New(); err != nil {
+			return
+		}
 
 	case "Create":
 		fmt.Println("创建了一条消息")
@@ -202,6 +214,10 @@ type Request interface {
 
 	// Accept ... TODO - Implement the method...
 	Accept()
+
+	Create()
+
+	Article()
 }
 
 type InboxWithCtx struct {

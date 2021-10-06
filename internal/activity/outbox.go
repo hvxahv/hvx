@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/disism/hvxahv/pkg/activitypub"
-	"github.com/disism/hvxahv/pkg/security"
 	"github.com/google/uuid"
 	"github.com/spf13/viper"
 	"golang.org/x/net/context"
@@ -186,12 +185,12 @@ func (a *ActivityRequest) Send() {
 	req.Header.Set("User-Agent", fmt.Sprintf("hvxahv/%s; %s", viper.GetString("version"), a.Local))
 	req.Header.Set("Content-Type", "application/activity+json")
 
-	block := security.PriKEY{
-		Type: security.RSA,
+	block := activitypub.PriKEY{
+		Type: activitypub.RSA,
 		Key:  a.Key,
 	}
 
-	ns := security.NewSign(a.KeyID, block, req, a.Data)
+	ns := activitypub.NewSign(a.KeyID, block, req, a.Data)
 	ns.SignRequest()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)

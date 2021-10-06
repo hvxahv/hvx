@@ -1,26 +1,39 @@
 package accounts
 
-import "testing"
+import (
+	"fmt"
+	"log"
+	"testing"
+)
 
 func TestNewFollowers(t *testing.T) {
 	TestInitDB(t)
-	// hvturingga fo hvturi
-	//nf := NewFollows("hvturingga", "hvturi")
-	//err := nf.New()
-	//if err != nil {
-	//	return
-	//}
 
-	//nf := NewFollows("hvturi", "hvturingga")
-	//err := nf.New()
-	//if err != nil {
-	//	return
-	//}
+	nf := NewFollows(698619813575491585, 699445624156061697)
+	if err := nf.New(); err != nil {
+		log.Println(err)
+		return
+	}
+
+	nf2 := NewFollows(699445624156061697, 698619813575491585)
+	if err := nf2.New(); err != nil {
+		log.Println(err)
+		return
+	}
 }
 
-func TestFollows_Get(t *testing.T) {
+func TestFollows_FetchFollowing(t *testing.T) {
 	TestInitDB(t)
-	// hvturingga fo hvturi
-	//nf := ("hvturingga")
-	//nf.Get()
+
+	na := NewFetchByID(698619813575491585)
+	n := na.FetchFollowing()
+	fmt.Println(n)
+}
+
+func TestFollows_FetchFollowers(t *testing.T) {
+	TestInitDB(t)
+
+	nf := NewFetchByID(698619813575491585)
+	n := nf.FetchFollowers()
+	fmt.Println(n)
 }
