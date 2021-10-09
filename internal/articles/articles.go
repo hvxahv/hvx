@@ -62,6 +62,8 @@ func (a *Articles) New() error {
 		return errors.Errorf("failed to create article: %v", err)
 	}
 
+	// Save to timelines.
+
 	return nil
 }
 
