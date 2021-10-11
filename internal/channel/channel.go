@@ -2,7 +2,6 @@ package channel
 
 import (
 	"github.com/disism/hvxahv/pkg/cockroach"
-	"github.com/disism/hvxahv/pkg/microservices/client"
 	"github.com/disism/hvxahv/pkg/security"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
@@ -11,6 +10,7 @@ import (
 
 type Channels struct {
 	gorm.Model
+
 	Name      string `gorm:"type:varchar(100);name"`
 	Link      string `gorm:"primaryKey;type:varchar(100);link;unique"`
 	Avatar    string `gorm:"type:varchar(999);avatar"`
@@ -90,7 +90,7 @@ func NewChannels(name, link, avatar, bio, owner string, isPrivate bool) *Channel
 		Link:      link,
 		Avatar:    avatar,
 		Bio:       bio,
-		OwnerID:   ,
+		//OwnerID:   ,
 		IsPrivate: isPrivate,
 	}
 }
