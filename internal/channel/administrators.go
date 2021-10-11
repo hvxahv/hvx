@@ -3,13 +3,13 @@ package channel
 import (
 	"fmt"
 	"github.com/disism/hvxahv/pkg/cockroach"
-	"github.com/disism/hvxahv/pkg/microservices/client"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
 )
 
 type Administrators struct {
 	gorm.Model
+
 	ChannelID uint `gorm:"primaryKey;channel_id"`
 	AccountID uint `gorm:"primaryKey;account_id"`
 }
@@ -83,26 +83,26 @@ type Admin interface {
 
 // NewAddAdmins constructor for a new administrator.
 func NewAddAdmins(channelId, ownerId, accountId uint) (*Administrators, error) {
-	db := cockroach.GetDB()
+	//db := cockroach.GetDB()
 
-	owner, err := client.FetchAccountNameByID(ownerId)
-	if err != nil {
-		return nil, err
-	}
+	//owner, err := client.FetchAccountNameByID(ownerId)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//
+	//admin, err := client.FetchAccountNameByID(accountId)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//
+	//if owner == admin {
+	//	return nil, errors.Errorf("Cannot add yourself as an administrator.")
+	//}
 
-	admin, err := client.FetchAccountNameByID(accountId)
-	if err != nil {
-		return nil, err
-	}
-
-	if owner == admin {
-		return nil, errors.Errorf("Cannot add yourself as an administrator.")
-	}
-
-	fo := db.Debug().Table("channels").Where("id = ?", channelId).Where("owner_id = ?", ownerId).First(&Channels{})
-	if fo.Error != nil {
-		return nil, errors.Errorf("%s not the owner of the channel.", owner)
-	}
+	//fo := db.Debug().Table("channels").Where("id = ?", channelId).Where("owner_id = ?", ownerId).First(&Channels{})
+	//if fo.Error != nil {
+	//	return nil, errors.Errorf("%s not the owner of the channel.", owner)
+	//}
 
 	return &Administrators{ChannelID: channelId, AccountID: accountId}, nil
 }
