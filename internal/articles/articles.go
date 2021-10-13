@@ -11,14 +11,41 @@ import (
 	"gorm.io/gorm"
 )
 
+type TO struct {
+	TO []string
+}
+
+type Attachment struct {
+	Attachment []struct {
+		Type      string      `json:"type"`
+		MediaType string      `json:"mediaType"`
+		Url       string      `json:"url"`
+		Name      interface{} `json:"name"`
+		Blurhash  string      `json:"blurhash"`
+		Width     int         `json:"width"`
+		Height    int         `json:"height"`
+	} `json:"attachment"`
+}
+
+
+type CC struct {
+	CC []string
+}
+
 type Articles struct {
 	gorm.Model
 
-	AuthorID uint   `gorm:"primaryKey;author_id"`
-	Title    string `gorm:"type:text;title"`
-	Summary  string `gorm:"type:text;summary"`
-	Article  string `gorm:"type:text;article"`
-	Url      string `gorm:"index;type:text;url"`
+	ActivityID string `gorm:type:text;activity_id`
+	AuthorID   uint   `gorm:"primaryKey;author_id"`
+	URL        string `gorm:"type:text;url"`
+	Title      string `gorm:"type:text;title"`
+	Summary    string `gorm:"type:text;summary"`
+	Article    string `gorm:"type:text;article"`
+
+	Attachment *Attachment `gorm:"type:jsonb;attachment"`
+
+	TO *TO `gorm:"type:jsonb;to"`
+	CC *CC `gorm:"type:jsonb;cc"`
 
 	// Whether the setting is status.
 	Statuses bool `gorm:"type:boolean;statuses"`
@@ -32,14 +59,14 @@ type Articles struct {
 func (a *Articles) DeleteByURL() error {
 	db := cockroach.GetDB()
 
-	if err := db.Debug().Table("articles").Where("url = ?", a.Url).Unscoped().Delete(&Articles{}).Error; err != nil {
+	if err := db.Debug().Table("articles").Where("url = ?", a.URL).Unscoped().Delete(&Articles{}).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
 func NewArticleURL(url string) *Articles {
-	return &Articles{Url: url}
+	return &Articles{URL: url}
 }
 
 func (a *Articles) DeleteByAccountID() error {
@@ -161,13 +188,12 @@ func NewArticles(
 	}
 }
 
-func NewStatus(actorID uint, url, content string) *Articles {
+func NewStatus(actorID uint, content string) *Articles {
+	to := []string{"https://mas.to/users/hvturingga"}
 	return &Articles{
-		AuthorID:   actorID,
-		Article:    content,
-		Url:        url,
-		Statuses:   true,
-		NSFW:       false,
-		Visibility: false,
+		AuthorID: actorID,
+		Article:  content,
+		TO:       &TO{TO: to},
+		Statuses: true,
 	}
 }

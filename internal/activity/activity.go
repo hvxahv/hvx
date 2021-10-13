@@ -66,7 +66,7 @@ func Types(name string, body []byte) {
 		la := accounts.NewActorUrl(f.Actor)
 		LID, err3 := la.FindActorByUrl()
 		if err3 != nil {
-			return 
+			return
 		}
 		inbox, err := NewInbox(actor.ID, f.Type, f.Id, LID.ID)
 		if err != nil {
@@ -137,7 +137,6 @@ func Types(name string, body []byte) {
 			return
 		}
 
-
 		// Following...
 		nf := accounts.NewFollows(LID.ID, actor.ID)
 		if err := nf.New(); err != nil {
@@ -145,209 +144,6 @@ func Types(name string, body []byte) {
 		}
 
 	case "Create":
-		//	创建一条状态
-		//	{
-		//		"@context":[
-		//			"https://www.w3.org/ns/activitystreams",
-		//			{
-		//				"ostatus":"http://ostatus.org#",
-		//				"atomUri":"ostatus:atomUri",
-		//				"inReplyToAtomUri":"ostatus:inReplyToAtomUri",
-		//				"conversation":"ostatus:conversation",
-		//				"sensitive":"as:sensitive",
-		//				"toot":"http://joinmastodon.org/ns#",
-		//				"votersCount":"toot:votersCount"
-		//			}
-		//		] ,
-		//		"id":"https://mas.to/users/hvturingga/statuses/107083179372856908/activity",
-		//		"type":"Create",
-		//		"actor":"https://mas.to/users/hvturingga",
-		//		"published":"2021-10-11T13:40:46Z",
-		//		"to":["https://mas.to/users/hvturingga/followers"],
-		//		"cc":[],"object":{"id":"https://mas.to/users/hvturingga/statuses/107083179372856908",
-		//		"type":"Note",
-		//		"summary":null,
-		//		"inReplyTo":null,
-		//		"published":"2021-10-11T13:40:46Z",
-		//		"url":"https://mas.to/@hvturingga/107083179372856908",
-		//		"attributedTo":"https://mas.to/users/hvturingga",
-		//		"to":["https://mas.to/users/hvturingga/followers"],
-		//		"cc":[],
-		//		"sensitive":false,
-		//		"atomUri":"https://mas.to/users/hvturingga/statuses/107083179372856908",
-		//		"inReplyToAtomUri":null,
-		//		"conversation":"tag:mas.to,2021-10-11:objectId=52928987:objectType=Conversation",
-		//		"content":"<p>君の名は希望。</p>",
-		//		"contentMap":{"ja":"<p>君の名は希望。</p>"},
-		//		"attachment":[],"tag":[],
-		//		"replies":{
-		//			"id":"https://mas.to/users/hvturingga/statuses/107083179372856908/replies",
-		//			"type":"Collection",
-		//			"first":{
-		//				"type":"CollectionPage",
-		//				"next":"https://mas.to/users/hvturingga/statuses/107083179372856908/replies?only_other_accounts=true&page=true",
-		//				"partOf":"https://mas.to/users/hvturingga/statuses/107083179372856908/replies",
-		//				"items":[]
-		//				}
-		//			}
-		//		}
-		//	}
-
-		//	带附件的状态
-		// 	{
-		//		"@context":[
-		//			"https://www.w3.org/ns/activitystreams",
-		//			{
-		//				"ostatus":"http://ostatus.org#",
-		//				"atomUri":"ostatus:atomUri",
-		//				"inReplyToAtomUri":"ostatus:inReplyToAtomUri",
-		//				"conversation":"ostatus:conversation",
-		//				"sensitive":"as:sensitive",
-		//				"toot":"http://joinmastodon.org/ns#",
-		//				"votersCount":"toot:votersCount","blurhash":"toot:blurhash",
-		//				"focalPoint":{
-		//					"@container":"@list","@id":"toot:focalPoint"
-		//				}
-		//			}],
-		//		"id":"https://mas.to/users/hvturingga/statuses/107083196244034047/activity",
-		//		"type":"Create",
-		//		"actor":"https://mas.to/users/hvturingga",
-		//		"published":"2021-10-11T13:45:03Z",
-		//		"to":[ "https://mas.to/users/hvturingga/followers" ],
-		//		"cc":[],
-		//		"object":{
-		//			"id":"https://mas.to/users/hvturingga/statuses/107083196244034047",
-		//			"type":"Note",
-		//			"summary":null,
-		//			"inReplyTo":null,
-		//			"published":"2021-10-11T13:45:03Z",
-		//			"url":"https://mas.to/@hvturingga/107083196244034047",
-		//			"attributedTo":"https://mas.to/users/hvturingga",
-		//			"to":["https://mas.to/users/hvturingga/followers"],
-		//			"cc":[],"sensitive":false,
-		//			"atomUri":"https://mas.to/users/hvturingga/statuses/107083196244034047",
-		//			"inReplyToAtomUri":null,
-		//			"conversation":"tag:mas.to,2021-10-11:objectId=52929212:objectType=Conversation",
-		//			"content":"<p>YUI</p>",
-		//			"contentMap":{"zhCn":"<p>YUI</p>"},
-		//			"attachment":[
-		//				{
-		//					"type":"Document",
-		//					"mediaType":"image/jpeg","url":"https://media.mas.to/masto-public/media_attachments/files/107/083/195/995/411/991/original/151bc8c73f2a9432.jpg",
-		//					"name":null,"blurhash":"UaF~T[02.69Gt6Io%MkCIpt7niaejZWBt7fk",
-		//					"width":666,"height":666
-		//				}
-		//			],
-		//			"tag":[],
-		//			"replies":{
-		//				"id":"https://mas.to/users/hvturingga/statuses/107083196244034047/replies",
-		//				"type":"Collection",
-		//				"first":{
-		//					"type":"CollectionPage",
-		//					"next":"https://mas.to/users/hvturingga/statuses/107083196244034047/replies?only_other_accounts=true&page=true",
-		//					"partOf":"https://mas.to/users/hvturingga/statuses/107083196244034047/replies",
-		//					"items":[]
-		//				}
-		//			}
-		//		}
-		//	}
-
-		//	提到了你。
-		//	{
-		//		"@context":[
-		//			"https://www.w3.org/ns/activitystreams",
-		//			{
-		//				"ostatus":"http://ostatus.org#",
-		//				"atomUri":"ostatus:atomUri",
-		//				"inReplyToAtomUri":"ostatus:inReplyToAtomUri",
-		//				"conversation":"ostatus:conversation",
-		//				"sensitive":"as:sensitive",
-		//				"toot":"http://joinmastodon.org/ns#",
-		//				"votersCount":"toot:votersCount"}],
-		//				"id":"https://mas.to/users/hvturingga/statuses/107083226612892801/activity",
-		//				"type":"Create",
-		//				"actor":"https://mas.to/users/hvturingga",
-		//				"published":"2021-10-11T13:52:47Z",
-		//				"to":["https://mas.to/users/hvturingga/followers"],
-		//				"cc":["https://ec45-2408-832f-20b4-3480-c58f-a0f9-96e6-54eb.ngrok.io/u/hvturingga"],
-		//				"object":{"id":"https://mas.to/users/hvturingga/statuses/107083226612892801",
-		//				"type":"Note",
-		//				"summary":null,
-		//				"inReplyTo":null,"published":"2021-10-11T13:52:47Z",
-		//				"url":"https://mas.to/@hvturingga/107083226612892801",
-		//				"attributedTo":"https://mas.to/users/hvturingga",
-		//				"to":["https://mas.to/users/hvturingga/followers"],
-		//				"cc":["https://ec45-2408-832f-20b4-3480-c58f-a0f9-96e6-54eb.ngrok.io/u/hvturingga"],
-		//				"sensitive":false,
-		//				"atomUri":"https://mas.to/users/hvturingga/statuses/107083226612892801",
-		//				"inReplyToAtomUri":null,"conversation":"tag:mas.to,2021-10-11:objectId=52929574:objectType=Conversation",
-		//				"content":"<p><span class=\"h-card\"><a href=\"https://ec45-2408-832f-20b4-3480-c58f-a0f9-96e6-54eb.ngrok.io/u/hvturingga\" class=\"u-url mention\">@<span>hvturingga@ec45-2408-832f-20b4-3480-c58f-a0f9-96e6-54eb.ngrok.io</span></a></span> 提到了你</p>",
-		//				"contentMap":{"zh":"<p><span class=\"h-card\"><a href=\"https://ec45-2408-832f-20b4-3480-c58f-a0f9-96e6-54eb.ngrok.io/u/hvturingga\" class=\"u-url mention\">@<span>hvturingga@ec45-2408-832f-20b4-3480-c58f-a0f9-96e6-54eb.ngrok.io</span></a></span> 提到了你</p>"},
-		//				"attachment":[],
-		//				"tag":[{"type":"Mention","href":"https://ec45-2408-832f-20b4-3480-c58f-a0f9-96e6-54eb.ngrok.io/u/hvturingga","name":"@hvturingga@ec45-2408-832f-20b4-3480-c58f-a0f9-96e6-54eb.ngrok.io"}],
-		//				"replies":{"id":"https://mas.to/users/hvturingga/statuses/107083226612892801/replies",
-		//				"type":"Collection",
-		//				"first":{"type":"CollectionPage","next":"https://mas.to/users/hvturingga/statuses/107083226612892801/replies?only_other_accounts=true&page=true","partOf":"https://mas.to/users/hvturingga/statuses/107083226612892801/replies","items":[]
-		//				}
-		//			}
-		//		}
-		//	}
-
-		//	回复了消息
-		// 	{"@context":["https://www.w3.org/ns/activitystreams",{"ostatus":"http://ostatus.org#","atomUri":"ostatus:atomUri","inReplyToAtomUri":"ostatus:inReplyToAtomUri","conversation":"ostatus:conversation","sensitive":"as:sensitive","toot":"http://joinmastodon.org/ns#","votersCount":"toot:votersCount"}],
-		//	"id":"https://mas.to/users/hvturingga/statuses/107083240780164438/activity",
-		//	"type":"Create",
-		//	"actor":"https://mas.to/users/hvturingga",
-		//	"published":"2021-10-11T13:56:23Z",
-		//	"to":["https://mas.to/users/hvturingga/followers"],
-		//	"cc":["https://ec45-2408-832f-20b4-3480-c58f-a0f9-96e6-54eb.ngrok.io/u/hvturingga"],
-		//	"object":{"id":"https://mas.to/users/hvturingga/statuses/107083240780164438",
-		//	"type":"Note",
-		//	"summary":null,
-		//	"inReplyTo":"https://ec45-2408-832f-20b4-3480-c58f-a0f9-96e6-54eb.ngrok.io/u/hvturingga/article/698898124205195265",
-		//	"published":"2021-10-11T13:56:23Z",
-		//	"url":"https://mas.to/@hvturingga/107083240780164438",
-		//	"attributedTo":"https://mas.to/users/hvturingga",
-		//	"to":["https://mas.to/users/hvturingga/followers"],
-		//	"cc":["https://ec45-2408-832f-20b4-3480-c58f-a0f9-96e6-54eb.ngrok.io/u/hvturingga"],
-		//	"sensitive":false,"atomUri":"https://mas.to/users/hvturingga/statuses/107083240780164438",
-		//	"inReplyToAtomUri":"https://ec45-2408-832f-20b4-3480-c58f-a0f9-96e6-54eb.ngrok.io/u/hvturingga/article/698898124205195265","conversation":"tag:mas.to,2021-10-04:objectId=52441016:objectType=Conversation","content":"<p><span class=\"h-card\"><a href=\"https://ec45-2408-832f-20b4-3480-c58f-a0f9-96e6-54eb.ngrok.io/u/hvturingga\" class=\"u-url mention\">@<span>hvturingga@ec45-2408-832f-20b4-3480-c58f-a0f9-96e6-54eb.ngrok.io</span></a></span> 僕もセゾン</p>","contentMap":{"ja":"<p><span class=\"h-card\"><a href=\"https://ec45-2408-832f-20b4-3480-c58f-a0f9-96e6-54eb.ngrok.io/u/hvturingga\" class=\"u-url mention\">@<span>hvturingga@ec45-2408-832f-20b4-3480-c58f-a0f9-96e6-54eb.ngrok.io</span></a></span> 僕もセゾン</p>"},
-		//	"attachment":[],
-		//	"tag":[{"type":"Mention","href":"https://ec45-2408-832f-20b4-3480-c58f-a0f9-96e6-54eb.ngrok.io/u/hvturingga","name":"@hvturingga@ec45-2408-832f-20b4-3480-c58f-a0f9-96e6-54eb.ngrok.io"}],"replies":{"id":"https://mas.to/users/hvturingga/statuses/107083240780164438/replies","type":"Collection","first":{"type":"CollectionPage","next":"https://mas.to/users/hvturingga/statuses/107083240780164438/replies?only_other_accounts=true&page=true","partOf":"https://mas.to/users/hvturingga/statuses/107083240780164438/replies","items":[]}}}}
-
-		//	{"@context":["https://www.w3.org/ns/activitystreams",{"ostatus":"http://ostatus.org#","atomUri":"ostatus:atomUri","inReplyToAtomUri":"ostatus:inReplyToAtomUri","conversation":"ostatus:conversation","sensitive":"as:sensitive","toot":"http://joinmastodon.org/ns#","votersCount":"toot:votersCount"}],
-		//	"id":"https://mas.to/users/hvturingga/statuses/107083240780164438/activity",
-		//	"type":"Create",
-		//	"actor":"https://mas.to/users/hvturingga",
-		//	"published":"2021-10-11T13:56:23Z",
-		//	"to":["https://mas.to/users/hvturingga/followers"],
-		//	"cc":["https://ec45-2408-832f-20b4-3480-c58f-a0f9-96e6-54eb.ngrok.io/u/hvturingga"],
-		//	"object":{"id":"https://mas.to/users/hvturingga/statuses/107083240780164438",
-		//	"type":"Note",
-		//	"summary":null,
-		//	"inReplyTo":"https://ec45-2408-832f-20b4-3480-c58f-a0f9-96e6-54eb.ngrok.io/u/hvturingga/article/698898124205195265",
-		//	"published":"2021-10-11T13:56:23Z",
-		//	"url":"https://mas.to/@hvturingga/107083240780164438",
-		//	"attributedTo":"https://mas.to/users/hvturingga",
-		//	"to":["https://mas.to/users/hvturingga/followers"],
-		//	"cc":["https://ec45-2408-832f-20b4-3480-c58f-a0f9-96e6-54eb.ngrok.io/u/hvturingga"],
-		//	"sensitive":false,"atomUri":"https://mas.to/users/hvturingga/statuses/107083240780164438",
-		//	"inReplyToAtomUri":"https://ec45-2408-832f-20b4-3480-c58f-a0f9-96e6-54eb.ngrok.io/u/hvturingga/article/698898124205195265",
-		//	"conversation":"tag:mas.to,2021-10-04:objectId=52441016:objectType=Conversation",
-		//	"content":"<p><span class=\"h-card\"><a href=\"https://ec45-2408-832f-20b4-3480-c58f-a0f9-96e6-54eb.ngrok.io/u/hvturingga\" class=\"u-url mention\">@<span>hvturingga@ec45-2408-832f-20b4-3480-c58f-a0f9-96e6-54eb.ngrok.io</span></a></span> 僕もセゾン</p>","contentMap":{"ja":"<p><span class=\"h-card\"><a href=\"https://ec45-2408-832f-20b4-3480-c58f-a0f9-96e6-54eb.ngrok.io/u/hvturingga\" class=\"u-url mention\">@<span>hvturingga@ec45-2408-832f-20b4-3480-c58f-a0f9-96e6-54eb.ngrok.io</span></a></span> 僕もセゾン</p>"},
-		//	"attachment":[],"tag":[{"type":"Mention","href":"https://ec45-2408-832f-20b4-3480-c58f-a0f9-96e6-54eb.ngrok.io/u/hvturingga","name":"@hvturingga@ec45-2408-832f-20b4-3480-c58f-a0f9-96e6-54eb.ngrok.io"}],
-		//	"replies":{
-		//		"id":"https://mas.to/users/hvturingga/statuses/107083240780164438/replies",
-		//		"type":"Collection",
-		//		"first":{
-		//			"type":"CollectionPage",
-		//			"next":"https://mas.to/users/hvturingga/statuses/107083240780164438/replies?only_other_accounts=true&page=true",
-		//			"partOf":"https://mas.to/users/hvturingga/statuses/107083240780164438/replies",
-		//			"items":[]
-		//		}
-		//	}
-		//	}
-		//	}
 
 		fmt.Println("创建了一条消息")
 		c := activitypub.Create{}
@@ -389,10 +185,23 @@ func Types(name string, body []byte) {
 			if err3 != nil {
 				return
 			}
-			n := articles.NewStatus(LID.ID, c.Object.Id, c.Object.Content)
+			n := articles.Articles{
+				ActivityID: c.Id,
+				AuthorID:   LID.ID,
+				URL:        c.Object.Url,
+				Article:    c.Object.Content,
+				Attachment: &articles.Attachment{
+					Attachment: c.Object.Attachment,
+				},
+				TO:         &articles.TO{TO: c.Object.To},
+				CC:         &articles.CC{CC: c.Object.Cc},
+				Statuses:   true,
+				NSFW:       false,
+				Visibility: false,
+			}
 			if err := n.New(); err != nil {
 				log.Println(err)
-				return 
+				return
 			}
 		}
 	case "Delete":
@@ -405,7 +214,7 @@ func Types(name string, body []byte) {
 		da := articles.NewArticleURL(d.Object.Id)
 		if err := da.DeleteByURL(); err != nil {
 			log.Println(err)
-			return 
+			return
 		}
 	}
 }
@@ -491,4 +300,3 @@ func (a *ActivityRequest) Create() {
 func (a *ActivityRequest) Article() {
 	a.Send()
 }
-

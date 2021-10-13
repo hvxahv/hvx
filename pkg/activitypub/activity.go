@@ -208,11 +208,11 @@ type Block struct {
 // If specified, the origin indicates the context from which the object was deleted.
 // https://www.w3.org/TR/activitystreams-vocabulary/#dfn-delete
 type Delete struct {
-	Context string `json:"@context"`
-	Id      string        `json:"id"`
-	Type    string        `json:"type"`
-	Actor   string        `json:"actor"`
-	To      []string      `json:"to"`
+	Context string   `json:"@context"`
+	Id      string   `json:"id"`
+	Type    string   `json:"type"`
+	Actor   string   `json:"actor"`
+	To      []string `json:"to"`
 	Object  struct {
 		Id      string `json:"id"`
 		Type    string `json:"type"`
@@ -321,7 +321,7 @@ type Undo struct {
 //}
 
 type Create struct {
-	Context   string `json:"@context"`
+	Context   string        `json:"@context"`
 	Id        string        `json:"id"`
 	Type      string        `json:"type"`
 	Actor     string        `json:"actor"`
@@ -329,23 +329,31 @@ type Create struct {
 	To        []string      `json:"to"`
 	Cc        []interface{} `json:"cc"`
 	Object    struct {
-		Id               string        `json:"id"`
-		Type             string        `json:"type"`
-		Summary          interface{}   `json:"summary"`
-		InReplyTo        interface{}   `json:"inReplyTo"`
-		Published        time.Time     `json:"published"`
-		Url              string        `json:"url"`
-		AttributedTo     string        `json:"attributedTo"`
-		To               []string      `json:"to"`
-		Cc               []interface{} `json:"cc"`
-		Sensitive        bool          `json:"sensitive"`
-		AtomUri          string        `json:"atomUri"`
-		InReplyToAtomUri interface{}   `json:"inReplyToAtomUri"`
-		Conversation     string        `json:"conversation"`
-		Content          string        `json:"content"`
-		Attachment       []interface{} `json:"attachment"`
-		Tag              []interface{} `json:"tag"`
-		Replies          struct {
+		Id               string      `json:"id"`
+		Type             string      `json:"type"`
+		Summary          interface{}      `json:"summary"`
+		InReplyTo        interface{} `json:"inReplyTo"`
+		Published        time.Time   `json:"published"`
+		Url              string      `json:"url"`
+		AttributedTo     string      `json:"attributedTo"`
+		To               []string    `json:"to"`
+		Cc               []string    `json:"cc"`
+		Sensitive        bool        `json:"sensitive"`
+		AtomUri          string      `json:"atomUri"`
+		InReplyToAtomUri interface{} `json:"inReplyToAtomUri"`
+		Conversation     string      `json:"conversation"`
+		Content          string      `json:"content"`
+		Attachment       []struct {
+			Type      string      `json:"type"`
+			MediaType string      `json:"mediaType"`
+			Url       string      `json:"url"`
+			Name      interface{} `json:"name"`
+			Blurhash  string      `json:"blurhash"`
+			Width     int         `json:"width"`
+			Height    int         `json:"height"`
+		} `json:"attachment"`
+		Tag     []interface{} `json:"tag"`
+		Replies struct {
 			Id    string `json:"id"`
 			Type  string `json:"type"`
 			First struct {
