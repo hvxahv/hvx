@@ -127,10 +127,30 @@ Ha
 	
 }
 
+func TestNewArticles2(t *testing.T) {
+	TestInitDB(t)
+
+	na := NewStatus(696901249244790785, `
+<p>
+二人セゾン 二人セゾン
+春夏で恋をして
+二人セゾン 二人セゾン
+秋冬で去って行く
+一緒に過ごした季節よ
+後悔はしてないか?
+</p>
+`)
+	err := na.New()
+	if err != nil {
+		return
+	}
+
+}
+
 func TestArticles_FindArticlesByAccountID(t *testing.T) {
 	TestInitDB(t)
 
-	n := NewArticlesByAccountID(696901249244790785)
+	n := NewArticlesByAccountID(699445624156061697)
 	articles, err := n.FindByAccountID()
 	if err != nil {
 		return
