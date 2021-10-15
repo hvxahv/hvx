@@ -185,16 +185,21 @@ func Types(name string, body []byte) {
 			if err3 != nil {
 				return
 			}
+
+			to := map[string]interface{} {
+				"to": c.Object.To,
+			}
+
 			n := articles.Articles{
 				ActivityID: c.Id,
 				AuthorID:   LID.ID,
 				URL:        c.Object.Url,
 				Article:    c.Object.Content,
-				Attachment: &articles.Attachment{
-					Attachment: c.Object.Attachment,
-				},
-				TO:         &articles.TO{TO: c.Object.To},
-				CC:         &articles.CC{CC: c.Object.Cc},
+				//Attachment: &articles.Attachment{
+				//	Attachment: c.Object.Attachment,
+				//},
+				TO:         to,
+				//CC:         &articles.CC{CC: c.Object.Cc},
 				Statuses:   true,
 				NSFW:       false,
 				Visibility: false,

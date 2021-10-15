@@ -6,13 +6,15 @@
 package articles
 
 import (
+	"fmt"
 	"github.com/disism/hvxahv/pkg/cockroach"
 	"github.com/pkg/errors"
+	"gorm.io/datatypes"
 	"gorm.io/gorm"
 )
 
 type TO struct {
-	TO []string
+	TO []string `gorm:"type:jsonb;to"`
 }
 
 type Attachment struct {
@@ -27,9 +29,8 @@ type Attachment struct {
 	} `json:"attachment"`
 }
 
-
 type CC struct {
-	CC []string
+	CC []string `gorm:"type:jsonb;to"`
 }
 
 type Articles struct {
@@ -42,10 +43,10 @@ type Articles struct {
 	Summary    string `gorm:"type:text;summary"`
 	Article    string `gorm:"type:text;article"`
 
-	Attachment *Attachment `gorm:"type:jsonb;attachment"`
+	//Attachment *Attachment `gorm:"type:jsonb;attachment"`
 
-	TO *TO `gorm:"type:jsonb;to"`
-	CC *CC `gorm:"type:jsonb;cc"`
+	TO datatypes.JSONMap `gorm:"type:jsonb;to"`
+	//CC *CC `gorm:"type:jsonb;cc"`
 
 	// Whether the setting is status.
 	Statuses bool `gorm:"type:boolean;statuses"`
@@ -136,6 +137,9 @@ func (a *Articles) FindByAccountID() (*[]Articles, error) {
 	if err := db.Debug().Table("articles").Where("author_id", a.AuthorID).Find(&articles).Error; err != nil {
 		return nil, err
 	}
+	for _, i := range articles {
+		fmt.Println(i.TO)
+	}
 	return &articles, nil
 }
 
@@ -189,11 +193,15 @@ func NewArticles(
 }
 
 func NewStatus(actorID uint, content string) *Articles {
-	to := []string{"https://mas.to/users/hvturingga"}
+	//to := []string{"https://mas.to/users/hvturingga"}
+	to := map[string]interface{} {
+		"to": []string{"https://mas.to/users/hvturingga"},
+	}
+
 	return &Articles{
 		AuthorID: actorID,
 		Article:  content,
-		TO:       &TO{TO: to},
+		TO:       to,
 		Statuses: true,
 	}
 }
