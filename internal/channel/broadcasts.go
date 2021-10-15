@@ -2,9 +2,12 @@ package channel
 
 import (
 	"fmt"
+	pb "github.com/disism/hvxahv/api/accounts/v1alpha1"
 	"github.com/disism/hvxahv/pkg/cockroach"
 	"github.com/disism/hvxahv/pkg/ipfs"
+	"github.com/disism/hvxahv/pkg/microservices/client"
 	"github.com/pkg/errors"
+	"golang.org/x/net/context"
 	"gorm.io/gorm"
 	"log"
 	"strings"
@@ -13,10 +16,12 @@ import (
 type Broadcasts struct {
 	gorm.Model
 	ChannelID uint   `gorm:"primarykey;channel_id"`
-	Author    string `gorm:"type:varchar(100);author"`
-	Title     string `gorm:"type:varchar(999);article"`
-	Article   string `gorm:"type:varchar(3000);article"`
-	IpfsCID   string `gorm:"type:varchar(3000);ipfs_cid"`
+	AuthorID  uint   `gorm:"type:bigint;author_id`
+	Title     string `gorm:"type:text;article"`
+	Summary   string `gorm:"type:text;summary"`
+	Article   string `gorm:"type:text;article"`
+	NSFW      bool   `gorm:"type:boolean;nsfw"`
+	IpfsCID   string `gorm:"type:text;ipfs_cid"`
 }
 
 func (b *Broadcasts) QueryLisByCID() (*[]Broadcasts, error) {
@@ -34,6 +39,20 @@ func (b *Broadcasts) QueryLisByCID() (*[]Broadcasts, error) {
 
 func (b *Broadcasts) New() error {
 
+	cli, conn, err := client.Accounts()
+	if err != nil {
+		log.Println(err)
+	}
+	defer conn.Close()
+
+	r, err := cli.FindActorByID(context.Background(), &pb.ActorID{
+		ActorID: uint64(b.AuthorID),
+	})
+	if err != nil {
+		log.Printf("failed to send message to accounts server: %v", err)
+	}
+	author := r.PreferredUsername
+
 	broad := fmt.Sprintf(`
 <!doctype html>
 <html>
@@ -43,13 +62,13 @@ func (b *Broadcasts) New() error {
 </head>
 <body>
 <div>
-<p>AUTHOR: %s</p>
 <h1>%s</h1>
+<p>%s</p>
 <p>%s</p>
 </div>
 </body>
 </html>
-`, b.Author, b.Title, b.Article)
+`, b.Title, author, b.Article)
 	cid, err := ipfs.GetIPFS().Add(strings.NewReader(broad))
 	if err != nil {
 		fmt.Printf("ipfs add error: %v", err)
@@ -64,7 +83,7 @@ func (b *Broadcasts) New() error {
 
 	data := Broadcasts{
 		ChannelID: b.ChannelID,
-		Author:    b.Author,
+		AuthorID:  b.AuthorID,
 		Article:   broad,
 		IpfsCID:   cid,
 	}
@@ -85,21 +104,17 @@ type Broadcast interface {
 	// QueryLisByCID Fetch the content list in the channel by channel id.
 	QueryLisByCID() (*[]Broadcasts, error)
 }
-//
-//func NewBroadcast(title, article string, channelId, accountId uint) (*Broadcasts, error) {
-//	db := cockroach.GetDB()
-//	if err := db.Table("administrators").Where("channel_id = ?", channelId).Where("account_id = ?", accountId).First(&Administrators{}); err != nil {
-//		if cockroach.IsNotFound(err.Error) {
-//			return nil, errors.Errorf("You are not the moderator of this channel")
-//		}
-//	}
-//
-//	author, err := client.FetchAccountNameByID(accountId)
-//	if err != nil {
-//		return nil, errors.Errorf("Failed to get author.")
-//	}
-//	return &Broadcasts{Author: author, Title: title, Article: article, ChannelID: accountId}, nil
-//}
+
+func NewBroadcast(title, article string, channelID, actorID uint) (*Broadcasts, error) {
+	db := cockroach.GetDB()
+	if err := db.Table("administrators").Where("channel_id = ?", channelID).Where("actor_id = ?", actorID).First(&Administrators{}); err != nil {
+		if cockroach.IsNotFound(err.Error) {
+			return nil, errors.Errorf("You are not the moderator of this channel")
+		}
+	}
+
+	return &Broadcasts{AuthorID: actorID, Title: title, Article: article, ChannelID: channelID}, nil
+}
 
 func NewBroadcastCID(channelId uint) *Broadcasts {
 	return &Broadcasts{ChannelID: channelId}
