@@ -26,6 +26,9 @@ type Actors struct {
 
 	// Whether it is a robot or other type of account
 	ActorType string `gorm:"type:text;actor_type"`
+
+	// Set whether it is a remote actor.
+	IsRemote bool `gorm:"type:boolean;is_remote"`
 }
 
 func (a *Actors) FindActorByUrl() (*Actors, error) {
@@ -54,6 +57,7 @@ func (a *Actors) AddActor() (*Actors, error) {
 	return a, nil
 }
 
+// NewAddActor Add an Actor from remote and set IsRemote to true.
 func NewAddActor(PreferredUsername, Domain, Avatar, Name, Summary, Inbox, Url, PublicKey, MatrixID, ActorType string) *Actors {
 	return &Actors{
 		PreferredUsername: PreferredUsername,
@@ -66,6 +70,7 @@ func NewAddActor(PreferredUsername, Domain, Avatar, Name, Summary, Inbox, Url, P
 		PublicKey:         PublicKey,
 		MatrixID:          MatrixID,
 		ActorType:         ActorType,
+		IsRemote:          true,
 	}
 }
 
@@ -143,6 +148,7 @@ func NewActors(preferredUsername, password, publicKey string) *Actors {
 		Url:               fmt.Sprintf("https://%s/u/%s", domain, preferredUsername),
 		PublicKey:         publicKey,
 		MatrixID:          "id",
+		IsRemote:          false,
 	}
 }
 

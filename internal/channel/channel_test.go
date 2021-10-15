@@ -48,7 +48,7 @@ func TestInitChannelConfig(t *testing.T) {
 func TestNewChannels(t *testing.T) {
 	TestInitChannelConfig(t)
 
-	nc1 := NewChannels("Hvxahv", "", "avatar", "bio", "hvturingga", false)
+	nc1 := NewChannels("Hvxahv", "", "avatar", "bio", 698619813575491585, false)
 	fmt.Println(nc1)
 	err := nc1.New()
 	if err != nil {
@@ -63,14 +63,16 @@ func TestNewChannels(t *testing.T) {
 	//}
 }
 
-func TestChannels_FetchByLink(t *testing.T) {
+
+func TestChannels_FindByActorID(t *testing.T) {
 	TestInitChannelConfig(t)
 
-	n := NewChannelsByLink("y2yrpHc0TTK-4AB")
-	data, err := n.QueryByLink()
+	n := NewChannelOwnerID(698619813575491585)
+	c, err := n.FindByActorID()
 	if err != nil {
-		return
+		fmt.Println(err)
+		return 
 	}
 
-	fmt.Println(data.Name)
+	fmt.Println(c)
 }

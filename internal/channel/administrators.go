@@ -11,13 +11,13 @@ type Administrators struct {
 	gorm.Model
 
 	ChannelID uint `gorm:"primaryKey;channel_id"`
-	AccountID uint `gorm:"primaryKey;account_id"`
+	ActorID uint `gorm:"primaryKey;account_id"`
 }
 
 func (c *Administrators) Add() error {
 	db := cockroach.GetDB()
 
-	if err := db.Debug().Table("administrators").Where("channel_id = ?", c.ChannelID).Where("account_id", c.AccountID).First(&Administrators{}); err != nil {
+	if err := db.Debug().Table("administrators").Where("channel_id = ?", c.ChannelID).Where("actor_id", c.ActorID).First(&Administrators{}); err != nil {
 		fmt.Println(err.Error)
 		ok := cockroach.IsNotFound(err.Error)
 		if !ok {
@@ -35,24 +35,24 @@ func (c *Administrators) Add() error {
 func (c *Administrators) Remove() error {
 	db := cockroach.GetDB()
 
-	if err := db.Debug().Table("administrators").Where("channel_id = ?", c.ChannelID).Where("accounts_id = ?", c.AccountID).First(&Administrators{}); err != nil {
+	if err := db.Debug().Table("administrators").Where("channel_id = ?", c.ChannelID).Where("actor_id = ?", c.ActorID).First(&Administrators{}); err != nil {
 		ok := cockroach.IsNotFound(err.Error)
 		if ok {
 			return errors.Errorf("the administrator does not exist: %v", err.Error)
 		}
 	}
 
-	if err := db.Debug().Table("administrators").Where("account_id = ?", c.AccountID).Unscoped().Delete(&Administrators{}); err != nil {
+	if err := db.Debug().Table("administrators").Where("actor_id = ?", c.ActorID).Unscoped().Delete(&Administrators{}); err != nil {
 		return err.Error
 	}
 
 	return nil
 }
 
-func (c *Administrators) QueryAdmLisByCID() (*[]Administrators, error) {
+func (c *Administrators) FindAdmLisByChannelID() (*[]Administrators, error) {
 	db := cockroach.GetDB()
 
-	err := db.Debug().Table("administrators").Where("account_id = ?", c.AccountID).Where("channel_id = ?", c.ChannelID).First(&Channels{})
+	err := db.Debug().Table("administrators").Where("actor_id = ?", c.ActorID).Where("channel_id = ?", c.ChannelID).First(&Channels{})
 	if err.Error != nil {
 		return nil, errors.Errorf("You are not the administrators of the channel")
 	}
@@ -76,37 +76,27 @@ type Admin interface {
 	// only the channel owner can use this method.
 	Remove() error
 
-	// QueryAdmLisByCID Fetch the list of administrators through channel id.
+	// FindAdmLisByChannelID Fetch the list of administrators through channel id.
 	// Only channel administrators and channel owners can use this method.
-	QueryAdmLisByCID() (*[]Administrators, error)
+	FindAdmLisByChannelID() (*[]Administrators, error)
 }
 
 // NewAddAdmins constructor for a new administrator.
-func NewAddAdmins(channelId, ownerId, accountId uint) (*Administrators, error) {
-	//db := cockroach.GetDB()
+func NewAddAdmins(channelID, ownerID, actorID uint) (*Administrators, error) {
+	db := cockroach.GetDB()
 
-	//owner, err := client.FetchAccountNameByID(ownerId)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//
-	//admin, err := client.FetchAccountNameByID(accountId)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//
-	//if owner == admin {
-	//	return nil, errors.Errorf("Cannot add yourself as an administrator.")
-	//}
+	if ownerID == actorID {
+		return nil, errors.Errorf("Cannot add yourself as an administrator.")
+	}
 
-	//fo := db.Debug().Table("channels").Where("id = ?", channelId).Where("owner_id = ?", ownerId).First(&Channels{})
-	//if fo.Error != nil {
-	//	return nil, errors.Errorf("%s not the owner of the channel.", owner)
-	//}
+	fo := db.Debug().Table("channels").Where("id = ?", channelID).Where("owner_id = ?", ownerID).First(&Channels{})
+	if fo.Error != nil {
+		return nil, errors.Errorf("%v not the owner of the channel.", ownerID)
+	}
 
-	return &Administrators{ChannelID: channelId, AccountID: accountId}, nil
+	return &Administrators{ChannelID: channelID, ActorID: actorID}, nil
 }
 
-func NewAdminsByID(channelId, accountId uint) *Administrators {
-	return &Administrators{AccountID: accountId, ChannelID: channelId}
+func NewAdminsByID(channelID, actorID uint) *Administrators {
+	return &Administrators{ActorID: actorID, ChannelID: channelID}
 }
