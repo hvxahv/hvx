@@ -150,18 +150,19 @@ func TestNewArticles2(t *testing.T) {
 func TestArticles_FindArticlesByAccountID(t *testing.T) {
 	TestInitDB(t)
 
-	n := NewArticlesByAccountID(699445624156061697)
+	n := NewArticlesByAccountID(696901249244790785)
 	articles, err := n.FindByAccountID()
 	if err != nil {
 		return
 	}
 	fmt.Println(articles)
+
 }
 
 func TestArticles_FindArticleByID(t *testing.T) {
 	TestInitDB(t)
 
-	n := NewArticleID(698064660731101185)
+	n := NewArticleID(701716343427432449)
 	article, err := n.FindByID()
 	if err != nil {
 		log.Println(err)
