@@ -37,76 +37,83 @@ func NewDelete(articleID uint) *activitypub.Delete {
 	}
 }
 
-//func NewArticle(articleID uint, content string) *activitypub.Create {
-//	actor := fmt.Sprintf("https://%s/u/%s", viper.GetString("localhost"), "hvturingga")
-//	id := fmt.Sprintf("%s/article/%s", actor, strconv.Itoa(int(articleID)))
-//	to := []string{"https://mas.to/users/hvturingga/"}
-//
-//	return &activitypub.Create{
-//		Context:   "https://www.w3.org/ns/activitystreams",
-//		Id:        fmt.Sprintf("%s/activity", id),
-//		Type:      "Create",
-//		Actor:     actor,
-//		Published: time.Time{},
-//		To:        to,
-//		Cc:        nil,
-//		Object: struct {
-//			Id               string        `json:"id"`
-//			Type             string        `json:"type"`
-//			Summary          interface{}   `json:"summary"`
-//			InReplyTo        interface{}   `json:"inReplyTo"`
-//			Published        time.Time     `json:"published"`
-//			Url              string        `json:"url"`
-//			AttributedTo     string        `json:"attributedTo"`
-//			To               []string      `json:"to"`
-//			Cc               []interface{} `json:"cc"`
-//			Sensitive        bool          `json:"sensitive"`
-//			AtomUri          string        `json:"atomUri"`
-//			InReplyToAtomUri interface{}   `json:"inReplyToAtomUri"`
-//			Conversation     string        `json:"conversation"`
-//			Content          string        `json:"content"`
-//			Attachment       []interface{} `json:"attachment"`
-//			Tag              []interface{} `json:"tag"`
-//			Replies          struct {
-//				Id    string `json:"id"`
-//				Type  string `json:"type"`
-//				First struct {
-//					Type   string        `json:"type"`
-//					Next   string        `json:"next"`
-//					PartOf string        `json:"partOf"`
-//					Items  []interface{} `json:"items"`
-//				} `json:"first"`
-//			} `json:"replies"`
-//		}{
-//			Id:               id,
-//			Type:             "Note",
-//			Summary:          nil,
-//			InReplyTo:        nil,
-//			Published:        time.Time{},
-//			Url:              id,
-//			AttributedTo:     "",
-//			To:               to,
-//			Cc:               nil,
-//			Sensitive:        false,
-//			AtomUri:          "",
-//			InReplyToAtomUri: nil,
-//			Conversation:     "",
-//			Content:          content,
-//			Attachment:       nil,
-//			Tag:              nil,
-//			Replies: struct {
-//				Id    string `json:"id"`
-//				Type  string `json:"type"`
-//				First struct {
-//					Type   string        `json:"type"`
-//					Next   string        `json:"next"`
-//					PartOf string        `json:"partOf"`
-//					Items  []interface{} `json:"items"`
-//				} `json:"first"`
-//			}{},
-//		},
-//	}
-//}
+func NewArticle(articleID uint, content string) *activitypub.Create {
+	actor := fmt.Sprintf("https://%s/u/%s", viper.GetString("localhost"), "hvturingga")
+	id := fmt.Sprintf("%s/article/%s", actor, strconv.Itoa(int(articleID)))
+	to := []string{"https://mas.to/users/hvturingga/"}
+	return &activitypub.Create{
+		Context:   "https://www.w3.org/ns/activitystreams",
+		Id:        fmt.Sprintf("%s/activity", id),
+		Type:      "Create",
+		Actor:     actor,
+		Published: time.Time{},
+		To:        to,
+		Cc:        nil,
+		Object: struct {
+			Id               string      `json:"id"`
+			Type             string      `json:"type"`
+			Summary          interface{} `json:"summary"`
+			InReplyTo        interface{} `json:"inReplyTo"`
+			Published        time.Time   `json:"published"`
+			Url              string      `json:"url"`
+			AttributedTo     string      `json:"attributedTo"`
+			To               []string    `json:"to"`
+			Cc               []string    `json:"cc"`
+			Sensitive        bool        `json:"sensitive"`
+			AtomUri          string      `json:"atomUri"`
+			InReplyToAtomUri interface{} `json:"inReplyToAtomUri"`
+			Conversation     string      `json:"conversation"`
+			Content          string      `json:"content"`
+			Attachment       []struct {
+				Type      string      `json:"type"`
+				MediaType string      `json:"mediaType"`
+				Url       string      `json:"url"`
+				Name      interface{} `json:"name"`
+				Blurhash  string      `json:"blurhash"`
+				Width     int         `json:"width"`
+				Height    int         `json:"height"`
+			} `json:"attachment"`
+			Tag     []interface{} `json:"tag"`
+			Replies struct {
+				Id    string `json:"id"`
+				Type  string `json:"type"`
+				First struct {
+					Type   string        `json:"type"`
+					Next   string        `json:"next"`
+					PartOf string        `json:"partOf"`
+					Items  []interface{} `json:"items"`
+				} `json:"first"`
+			} `json:"replies"`
+		}{
+				Id:               id,
+				Type:             "Note",
+				Summary:          nil,
+				InReplyTo:        nil,
+				Published:        time.Time{},
+				Url:              id,
+				AttributedTo:     "",
+				To:               to,
+				Cc:               nil,
+				Sensitive:        false,
+				AtomUri:          "",
+				InReplyToAtomUri: nil,
+				Conversation:     "",
+				Content:          content,
+				Attachment:       nil,
+				Tag:              nil,
+			Replies: struct {
+				Id    string `json:"id"`
+				Type  string `json:"type"`
+				First struct {
+					Type   string        `json:"type"`
+					Next   string        `json:"next"`
+					PartOf string        `json:"partOf"`
+					Items  []interface{} `json:"items"`
+				} `json:"first"`
+			}{},
+		},
+	}
+}
 
 func NewFollowRequest(actor, object string) *activitypub.Follow {
 	var (
