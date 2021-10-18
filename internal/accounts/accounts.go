@@ -123,7 +123,7 @@ func (a *Accounts) New() error {
 		return errors.Errorf("FAILED_TO_CREATE_ACCOUNT")
 	}
 
-	acct, err := NewActors(a.Username, a.Password, publicKey, false).NewActor()
+	acct, err := NewActors(a.Username, a.Password, publicKey).NewActor()
 	if err != nil {
 		return err
 	}
