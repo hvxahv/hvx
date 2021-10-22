@@ -271,19 +271,14 @@ type Ignore struct {
 // https://www.w3.org/TR/activitystreams-vocabulary/#dfn-reject
 type Reject struct {
 	Context string `json:"@context"`
-	Summary string `json:"summary"`
+	Id      string `json:"id"`
 	Type    string `json:"type"`
-	Actor   struct {
-		Type string `json:"type"`
-		Name string `json:"name"`
-	} `json:"actor"`
-	Object struct {
+	Actor   string `json:"actor"`
+	Object  struct {
+		Id     string `json:"id"`
 		Type   string `json:"type"`
 		Actor  string `json:"actor"`
-		Object struct {
-			Type string `json:"type"`
-			Name string `json:"name"`
-		} `json:"object"`
+		Object string `json:"object"`
 	} `json:"object"`
 }
 

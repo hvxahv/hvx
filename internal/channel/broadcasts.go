@@ -16,7 +16,7 @@ import (
 type Broadcasts struct {
 	gorm.Model
 	ChannelID uint   `gorm:"primarykey;channel_id"`
-	AuthorID  uint   `gorm:"type:bigint;author_id`
+	AuthorID  uint   `gorm:"type:bigint;author_id"`
 	Title     string `gorm:"type:text;article"`
 	Summary   string `gorm:"type:text;summary"`
 	Article   string `gorm:"type:text;article"`

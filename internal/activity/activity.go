@@ -29,6 +29,13 @@ type Activity struct {
 
 // Types handler for inbox activity.
 func Types(name string, body []byte) {
+	// Get local actor ID
+	acctName := accounts.NewAccountsName(name)
+	localActor, err3 := acctName.FindAccountByUsername()
+	if err3 != nil {
+		return
+	}
+
 	fmt.Println(string(body))
 
 	i := Activity{}
@@ -38,57 +45,30 @@ func Types(name string, body []byte) {
 	}
 
 	u := accounts.NewActorUrl(i.Actor)
-	actor, err := u.FindActorByUrl()
+	remoteActor, err := u.FindActorByUrl()
 	if err != nil {
 		remote, err2 := activitypub.FetchRemoteActor(i.Actor)
 		if err2 != nil {
 			return
 		}
-		actor = remote
+		remoteActor = remote
 	}
 
 	switch i.Type {
 	case "Follow":
-		// 请求关注。
-		//{
-		//	"@context":"https://www.w3.org/ns/activitystreams",
-		//	"id":"https://mas.to/ad263d19-ed74-46d1-8827-ffa6ea2cb893",
-		//	"type":"Follow",
-		//	"actor":"https://mas.to/users/hvturingga",
-		//	"object":"https://ec45-2408-832f-20b4-3480-c58f-a0f9-96e6-54eb.ngrok.io/u/hvturingga"
-		//}
 		f := activitypub.Follow{}
 		err2 := json.Unmarshal(body, &f)
 		if err2 != nil {
 			fmt.Println(err2)
 		}
 		fmt.Println("请求关注")
-		la := accounts.NewActorUrl(f.Actor)
-		LID, err3 := la.FindActorByUrl()
-		if err3 != nil {
-			return
-		}
-		inbox, err := NewInbox(actor.ID, f.Type, f.Id, LID.ID)
-		if err != nil {
+
+		if err := NewFollow(i.Id, "Follow", remoteActor.ID, localActor.ActorID).New(); err != nil {
 			log.Println(err)
-		}
-		if err := inbox.New(); err != nil {
-			log.Println(err)
+			return 
 		}
 
 	case "Undo":
-		// 撤回了请求。
-		//	{
-		//		"@context":"https://www.w3.org/ns/activitystreams",
-		//		"id":"https://mas.to/users/hvturingga#follows/120713/undo",
-		//		"type":"Undo",
-		//		"actor":"https://mas.to/users/hvturingga",
-		//		"object":{
-		//			"id":"https://mas.to/ad263d19-ed74-46d1-8827-ffa6ea2cb893",
-		//			"type":"Follow","actor":"https://mas.to/users/hvturingga",
-		//			"object":"https://ec45-2408-832f-20b4-3480-c58f-a0f9-96e6-54eb.ngrok.io/u/hvturingga"
-		//		}
-		//	}
 		fmt.Printf("撤回了消息")
 		fmt.Println("得到的接口数据:", i.Object)
 		fmt.Println(string(body))
@@ -106,24 +86,21 @@ func Types(name string, body []byte) {
 		fmt.Println("删除消息成功")
 
 	case "Reject":
-		fmt.Printf("拒绝了你的请求")
-		fmt.Println("接收了你的请求:", i.Object)
-		//nm := NewInbox(i.Actor, i.Type, i.Id, name)
+		reject := activitypub.Reject{}
+		err2 := json.Unmarshal(body, &reject)
+		if err2 != nil {
+			fmt.Println(err2)
+		}
+
+		if reject.Object.Type == "Follow" {
+			fmt.Println("移除了你的关注")
+			if err := accounts.NewFollows(localActor.ActorID, remoteActor.ID).Remove(); err != nil {
+				log.Println(err)
+				return
+			}
+		}
 
 	case "Accept":
-		// 同意请求。
-		//	{
-		//		"@context":"https://www.w3.org/ns/activitystreams",
-		//		"id":"https://mas.to/users/hvturingga#accepts/follows/120712",
-		//		"type":"Accept",
-		//		"actor":"https://mas.to/users/hvturingga",
-		//		"object":{
-		//			"id":"https://ec45-2408-832f-20b4-3480-c58f-a0f9-96e6-54eb.ngrok.io/3c338626-4588-440d-a3de-13b5e5918bd6",
-		//			"type":"Follow",
-		//			"actor":"https://ec45-2408-832f-20b4-3480-c58f-a0f9-96e6-54eb.ngrok.io/u/hvturingga",
-		//			"object":"https://mas.to/users/hvturingga"
-		//		}
-		//	}
 		fmt.Println("接受了你的请求:", i.Object)
 		a := activitypub.Accept{}
 		if err := json.Unmarshal(body, &a); err != nil {
@@ -131,15 +108,14 @@ func Types(name string, body []byte) {
 		}
 		fmt.Println(string(body))
 
-		la := accounts.NewActorUrl(a.Object.Actor)
-		LID, err3 := la.FindActorByUrl()
-		if err3 != nil {
-			return
-		}
 
 		// Following...
-		nf := accounts.NewFollows(LID.ID, actor.ID)
+		nf := accounts.NewFollows(localActor.ActorID, remoteActor.ID)
 		if err := nf.New(); err != nil {
+			return
+		}
+		if err := NewAccept(i.Id, "Accept", remoteActor.ID, localActor.ActorID, a.Object.Id).New(); err != nil {
+			log.Println(err)
 			return
 		}
 
@@ -305,12 +281,3 @@ func (a *ActivityRequest) Create() {
 func (a *ActivityRequest) Article() {
 	a.Send()
 }
-
-// 推送给用户的通知
-
-// 提及
-// {"@context":["https://www.w3.org/ns/activitystreams",{"ostatus":"http://ostatus.org#","atomUri":"ostatus:atomUri","inReplyToAtomUri":"ostatus:inReplyToAtomUri","conversation":"ostatus:conversation","sensitive":"as:sensitive","toot":"http://joinmastodon.org/ns#","votersCount":"toot:votersCount"}],"id":"https://mas.to/users/hvturingga/statuses/107122649066661445/activity","type":"Create","actor":"https://mas.to/users/hvturingga","published":"2021-10-18T12:58:25Z","to":["https://mas.to/users/hvturingga/followers"],"cc":["https://fb09-175-162-3-122.ngrok.io/u/hvturingga"],"object":{"id":"https://mas.to/users/hvturingga/statuses/107122649066661445","type":"Note","summary":null,"inReplyTo":null,"published":"2021-10-18T12:58:25Z","url":"https://mas.to/@hvturingga/107122649066661445","attributedTo":"https://mas.to/users/hvturingga","to":["https://mas.to/users/hvturingga/followers"],"cc":["https://fb09-175-162-3-122.ngrok.io/u/hvturingga"],"sensitive":false,"atomUri":"https://mas.to/users/hvturingga/statuses/107122649066661445","inReplyToAtomUri":null,"conversation":"tag:mas.to,2021-10-18:objectId=53402191:objectType=Conversation","content":"<p><span class=\"h-card\"><a href=\"https://fb09-175-162-3-122.ngrok.io/u/hvturingga\" class=\"u-url mention\">@<span>hvturingga@fb09-175-162-3-122.ngrok.io</span></a></span> 悲しみの忘れ方。</p>","contentMap":{"ja":"<p><span class=\"h-card\"><a href=\"https://fb09-175-162-3-122.ngrok.io/u/hvturingga\" class=\"u-url mention\">@<span>hvturingga@fb09-175-162-3-122.ngrok.io</span></a></span> 悲しみの忘れ方。</p>"},"attachment":[],"tag":[{"type":"Mention","href":"https://fb09-175-162-3-122.ngrok.io/u/hvturingga","name":"@hvturingga@fb09-175-162-3-122.ngrok.io"}],"replies":{"id":"https://mas.to/users/hvturingga/statuses/107122649066661445/replies","type":"Collection","first":{"type":"CollectionPage","next":"https://mas.to/users/hvturingga/statuses/107122649066661445/replies?only_other_accounts=true&page=true","partOf":"https://mas.to/users/hvturingga/statuses/107122649066661445/replies","items":[]}}}}
-
-// 评论
-// {"@context":["https://www.w3.org/ns/activitystreams",{"ostatus":"http://ostatus.org#","atomUri":"ostatus:atomUri","inReplyToAtomUri":"ostatus:inReplyToAtomUri","conversation":"ostatus:conversation","sensitive":"as:sensitive","toot":"http://joinmastodon.org/ns#","votersCount":"toot:votersCount"}],"id":"https://mas.to/users/hvturingga/statuses/107122822497703019/activity","type":"Create","actor":"https://mas.to/users/hvturingga","published":"2021-10-18T13:42:32Z","to":["https://mas.to/users/hvturingga/followers"],"cc":["https://fb09-175-162-3-122.ngrok.io/u/hvturingga"],"object":{"id":"https://mas.to/users/hvturingga/statuses/107122822497703019","type":"Note","summary":null,"inReplyTo":"https://fb09-175-162-3-122.ngrok.io/u/hvturingga/article/698898124205195265","published":"2021-10-18T13:42:32Z","url":"https://mas.to/@hvturingga/107122822497703019","attributedTo":"https://mas.to/users/hvturingga","to":["https://mas.to/users/hvturingga/followers"],"cc":["https://fb09-175-162-3-122.ngrok.io/u/hvturingga"],"sensitive":false,"atomUri":"https://mas.to/users/hvturingga/statuses/107122822497703019","inReplyToAtomUri":"https://fb09-175-162-3-122.ngrok.io/u/hvturingga/article/698898124205195265","conversation":"tag:mas.to,2021-10-04:objectId=52441016:objectType=Conversation","content":"<p><span class=\"h-card\"><a href=\"https://fb09-175-162-3-122.ngrok.io/u/hvturingga\" class=\"u-url mention\">@<span>hvturingga@fb09-175-162-3-122.ngrok.io</span></a></span> HAHA</p>","contentMap":{"zhCn":"<p><span class=\"h-card\"><a href=\"https://fb09-175-162-3-122.ngrok.io/u/hvturingga\" class=\"u-url mention\">@<span>hvturingga@fb09-175-162-3-122.ngrok.io</span></a></span> HAHA</p>"},"attachment":[],"tag":[{"type":"Mention","href":"https://fb09-175-162-3-122.ngrok.io/u/hvturingga","name":"@hvturingga@fb09-175-162-3-122.ngrok.io"}],"replies":{"id":"https://mas.to/users/hvturingga/statuses/107122822497703019/replies","type":"Collection","first":{"type":"CollectionPage","next":"https://mas.to/users/hvturingga/statuses/107122822497703019/replies?only_other_accounts=true&page=true","partOf":"https://mas.to/users/hvturingga/statuses/107122822497703019/replies","items":[]}}}}
-

@@ -36,7 +36,7 @@ type CC struct {
 type Articles struct {
 	gorm.Model
 
-	ActivityID string `gorm:type:text;activity_id`
+	ActivityID string `gorm:"type:text;activity_id"`
 	AuthorID   uint   `gorm:"primaryKey;author_id"`
 	URL        string `gorm:"type:text;url"`
 	Title      string `gorm:"type:text;title"`

@@ -4,15 +4,28 @@ import (
 	"github.com/disism/hvxahv/pkg/cockroach"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
+	"log"
 )
 
 type Inboxes struct {
 	gorm.Model
 
-	ActorID      uint   `gorm:"type:bigint;actor_id"`
-	ActivityType string `gorm:"type:text;activity_type"`
-	ActivityID   string `gorm:"index;type:text;activity_id"`
-	LocalActorID uint   `gorm:"primaryKey;type:bigint;local_actor_id"`
+	ActivityID string `gorm:"index;type:text;activity_id"`
+
+	//  Type: "Follow", "Accept", "Mention", "Conversation"
+	ActivityType     string `gorm:"type:text;activity_type"`
+	ActorID          uint   `gorm:"type:bigint;actor_id"`
+	LocalActorID     uint   `gorm:"primaryKey;type:bigint;local_actor_id"`
+	TargetActivityID string `gorm:"type;type:text;target_activity_id"`
+
+	// If it is true, it is a mention, and there is a pointing ID in the Article.
+	Mention bool `gorm:"type:boolean;mention"`
+
+	// If it is true, it is a dialogue, and there is a pointing ID in the Article.
+	Reply bool `gorm:"type:boolean;reply"`
+
+	// The ID of the article
+	ArticleID uint `gorm:"type:bigint;article_id"`
 }
 
 func (i *Inboxes) Delete() error {
@@ -24,8 +37,8 @@ func (i *Inboxes) Delete() error {
 	return nil
 }
 
-func NewInboxesActivityID(id string) *Inboxes {
-	return &Inboxes{ActivityID: id}
+func NewInboxesActivityID(activityID string) *Inboxes {
+	return &Inboxes{ActivityID: activityID}
 }
 
 func (i *Inboxes) FindInboxesByActorID() (*[]Inboxes, error) {
@@ -41,6 +54,10 @@ func (i *Inboxes) FindInboxesByActorID() (*[]Inboxes, error) {
 func (i *Inboxes) New() error {
 	db := cockroach.GetDB()
 
+	if err := db.AutoMigrate(&Inboxes{}); err != nil {
+		log.Println(err)
+		return err
+	}
 	if err := db.Debug().Table("inboxes").Create(&i).Error; err != nil {
 		return errors.Errorf("an error occurred while creating the activity: %v", err)
 	}
@@ -55,16 +72,47 @@ type Inbox interface {
 	Delete() error
 }
 
-func NewInbox(actorID uint, types string, eventID string, localActorID uint) (*Inboxes, error) {
-	db := cockroach.GetDB()
-
-	if err := db.AutoMigrate(&Inboxes{}); err != nil {
-		return nil, errors.New("FAILED_TO_AUTOMATICALLY_CREATE_INBOX_DATABASE")
+func NewMention(activityID string, activityType string, actorID uint, localActorID uint, targetActivityID string, mention bool, articleID uint) *Inboxes {
+	return &Inboxes{
+		ActivityID:       activityID,
+		ActivityType:     activityType,
+		ActorID:          actorID,
+		LocalActorID:     localActorID,
+		TargetActivityID: targetActivityID,
+		Mention:          mention,
+		Reply:            false,
+		ArticleID:        articleID,
 	}
-
-	return &Inboxes{ActorID: actorID, ActivityType: types, ActivityID: eventID, LocalActorID: localActorID}, nil
 }
 
-func NewInboxAccountID(id uint) *Inboxes {
-	return &Inboxes{LocalActorID: id}
+func NewReply(activityID string, activityType string, actorID uint, localActorID uint, targetActivityID string, reply bool, articleID uint) *Inboxes {
+	return &Inboxes{
+		ActivityID:       activityID,
+		ActivityType:     activityType,
+		ActorID:          actorID,
+		LocalActorID:     localActorID,
+		TargetActivityID: targetActivityID,
+		Mention:          false,
+		Reply:            reply,
+		ArticleID:        articleID,
+	}
+}
+
+func NewAccept(activityID string, activityType string, actorID uint, localActorID uint, targetActivityID string) *Inboxes {
+	return &Inboxes{
+		ActivityID:       activityID,
+		ActivityType:     activityType,
+		ActorID:          actorID,
+		LocalActorID:     localActorID,
+		TargetActivityID: targetActivityID,
+	}
+}
+
+func NewFollow(activityID string, activityType string, actorID uint, localActorID uint) *Inboxes {
+	return &Inboxes{
+		ActivityID:   activityID,
+		ActivityType: activityType,
+		ActorID:      actorID,
+		LocalActorID: localActorID,
+	}
 }
