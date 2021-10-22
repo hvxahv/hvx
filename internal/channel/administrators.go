@@ -11,7 +11,7 @@ type Administrators struct {
 	gorm.Model
 
 	ChannelID uint `gorm:"primaryKey;channel_id"`
-	ActorID uint `gorm:"primaryKey;account_id"`
+	ActorID   uint `gorm:"primaryKey;account_id"`
 }
 
 func (c *Administrators) Add() error {

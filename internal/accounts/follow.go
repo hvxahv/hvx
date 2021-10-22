@@ -15,6 +15,14 @@ type Follows struct {
 	TargetID uint `gorm:"primaryKey;bigint;target_id"`
 }
 
+func (f *Follows) Remove() error {
+	db := cockroach.GetDB()
+	if err := db.Debug().Table("follows").Where("actor_id = ? AND target_id = ?", f.ActorID, f.TargetID).Unscoped().Delete(&Follows{}).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
 func (f *Follows) FetchFollowers() *[]uint {
 	db := cockroach.GetDB()
 
@@ -79,6 +87,8 @@ func NewFollows(actorID uint, targetID uint) *Follows {
 
 type Follow interface {
 	New() error
+
+	Remove() error
 
 	FetchFollowers() *[]uint
 
