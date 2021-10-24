@@ -36,7 +36,7 @@ type CC struct {
 type Articles struct {
 	gorm.Model
 
-	ActivityID string `gorm:"type:text;activity_id"`
+	ActivityID string `gorm:"index;type:text;activity_id"`
 	AuthorID   uint   `gorm:"primaryKey;author_id"`
 	URL        string `gorm:"type:text;url"`
 	Title      string `gorm:"type:text;title"`
@@ -86,8 +86,15 @@ func (a *Articles) New() error {
 		return errors.Errorf("failed to automatically create database: %v", err)
 	}
 
-	if err := db.Debug().Table("articles").Create(&a); err != nil {
-		return errors.Errorf("failed to create article: %v", err)
+	if err := db.Debug().Table("articles").Where("activity_id = ?", a.ActivityID).First(&a); err != nil {
+		// Existence means return, nonexistence means storage.
+		if !cockroach.IsNotFound(err.Error) {
+			return nil
+		} else {
+			if err := db.Debug().Table("articles").Create(&a); err != nil {
+				return errors.Errorf("failed to create article: %v", err)
+			}
+		}
 	}
 
 	// Save to timelines.

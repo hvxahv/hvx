@@ -327,7 +327,7 @@ type Create struct {
 		Id               string      `json:"id"`
 		Type             string      `json:"type"`
 		Summary          interface{}      `json:"summary"`
-		InReplyTo        interface{} `json:"inReplyTo"`
+		InReplyTo        string `json:"inReplyTo"`
 		Published        time.Time   `json:"published"`
 		Url              string      `json:"url"`
 		AttributedTo     string      `json:"attributedTo"`
