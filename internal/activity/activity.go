@@ -41,7 +41,7 @@ func Types(name string, body []byte) {
 	i := Activity{}
 
 	if err := json.Unmarshal(body, &i); err != nil {
-		fmt.Println(err)
+		fmt.Printf("UNMARSHAL ACTICITY TYPE ERROR:%v", err)
 	}
 
 	u := accounts.NewActorUrl(i.Actor)
@@ -65,7 +65,7 @@ func Types(name string, body []byte) {
 
 		if err := NewFollow(i.Id, "Follow", remoteActor.ID, localActor.ActorID).New(); err != nil {
 			log.Println(err)
-			return 
+			return
 		}
 
 	case "Undo":
@@ -107,7 +107,6 @@ func Types(name string, body []byte) {
 			fmt.Println(err)
 		}
 		fmt.Println(string(body))
-
 
 		// Following...
 		nf := accounts.NewFollows(localActor.ActorID, remoteActor.ID)
@@ -156,14 +155,29 @@ func Types(name string, body []byte) {
 		switch c.Object.Type {
 		case "Note":
 			fmt.Println("得到了一条 Note")
+
 			la := accounts.NewActorUrl(c.Actor)
 			LID, err3 := la.FindActorByUrl()
 			if err3 != nil {
 				return
 			}
 
-			to := map[string]interface{} {
+			to := map[string]interface{}{
 				"to": c.Object.To,
+			}
+
+			if len(c.Object.Cc) != 0 {
+				fmt.Println("这是条消息提及：", c.Object.Cc)
+
+				if c.Object.InReplyTo != "" {
+					fmt.Println("这是一条评论消息，对于：", c.Object.InReplyTo)
+					nc := articles.NewConversations(c.Id, LID.ID, c.Object.InReplyTo, c.Object.Content, remoteActor.ID)
+					if err := nc.New(); err != nil {
+						log.Println(err)
+						return 
+					}
+					return
+				}
 			}
 
 			n := articles.Articles{
@@ -174,7 +188,7 @@ func Types(name string, body []byte) {
 				//Attachment: &articles.Attachment{
 				//	Attachment: c.Object.Attachment,
 				//},
-				TO:         to,
+				TO: to,
 				//CC:         &articles.CC{CC: c.Object.Cc},
 				Statuses:   true,
 				NSFW:       false,
@@ -184,6 +198,7 @@ func Types(name string, body []byte) {
 				log.Println(err)
 				return
 			}
+
 		}
 	case "Delete":
 		fmt.Println("一个删除事件")

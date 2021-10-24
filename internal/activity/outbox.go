@@ -3,6 +3,7 @@ package activity
 import (
 	"bytes"
 	"fmt"
+	"github.com/disism/hvxahv/internal/accounts"
 	"github.com/disism/hvxahv/pkg/activitypub"
 	"github.com/google/uuid"
 	"github.com/spf13/viper"
@@ -53,7 +54,7 @@ func NewArticle(articleID uint, content string) *activitypub.Create {
 			Id               string      `json:"id"`
 			Type             string      `json:"type"`
 			Summary          interface{} `json:"summary"`
-			InReplyTo        interface{} `json:"inReplyTo"`
+			InReplyTo        string      `json:"inReplyTo"`
 			Published        time.Time   `json:"published"`
 			Url              string      `json:"url"`
 			AttributedTo     string      `json:"attributedTo"`
@@ -85,22 +86,22 @@ func NewArticle(articleID uint, content string) *activitypub.Create {
 				} `json:"first"`
 			} `json:"replies"`
 		}{
-				Id:               id,
-				Type:             "Note",
-				Summary:          nil,
-				InReplyTo:        nil,
-				Published:        time.Time{},
-				Url:              id,
-				AttributedTo:     "",
-				To:               to,
-				Cc:               nil,
-				Sensitive:        false,
-				AtomUri:          "",
-				InReplyToAtomUri: nil,
-				Conversation:     "",
-				Content:          content,
-				Attachment:       nil,
-				Tag:              nil,
+			Id:               id,
+			Type:             "Note",
+			Summary:          nil,
+			InReplyTo:        "",
+			Published:        time.Time{},
+			Url:              id,
+			AttributedTo:     "",
+			To:               to,
+			Cc:               nil,
+			Sensitive:        false,
+			AtomUri:          "",
+			InReplyToAtomUri: nil,
+			Conversation:     "",
+			Content:          content,
+			Attachment:       nil,
+			Tag:              nil,
 			Replies: struct {
 				Id    string `json:"id"`
 				Type  string `json:"type"`
@@ -136,23 +137,32 @@ func NewFollowRequest(actor, object string) *activitypub.Follow {
 // actor: REMOTE ACTOR LINK,
 // oid: CONTEXT ID,
 // object: LOCAL ACTOR LINK.
-func NewFollowAccept(name, actor, oid string) *activitypub.Accept {
+func NewFollowAccept(name, actor, oid, object string) *activitypub.Accept {
 	var (
 		ctx = "https://www.w3.org/ns/activitystreams"
 		id  = fmt.Sprintf("https://%s/u/%s#accepts/follows/%s", viper.GetString("localhost"), name, uuid.New().String())
-		a   = fmt.Sprintf("https://%s/u/%s", viper.GetString("localhost"), name)
 	)
 
-	//nf := accounts.NewFollower(name, acct.ID)
-	//if err := nf.New(); err != nil {
-	//	log.Println(err)
-	//}
+	y := accounts.NewActorUrl(actor)
+	remoteActor, err := y.FindActorByUrl()
+	if err != nil {
+		return nil
+	}
+	k := accounts.NewActorUrl(object)
+	localActor, err := k.FindActorByUrl()
+	if err != nil {
+		return nil
+	}
+	nf := accounts.NewFollows(remoteActor.ID, localActor.ID)
+	if err := nf.New(); err != nil {
+		log.Println(err)
+	}
 
 	return &activitypub.Accept{
 		Context: ctx,
 		Id:      id,
 		Type:    "Accept",
-		Actor:   a,
+		Actor:   object,
 		Object: struct {
 			Id     string `json:"id"`
 			Type   string `json:"type"`
@@ -162,7 +172,7 @@ func NewFollowAccept(name, actor, oid string) *activitypub.Accept {
 			Id:     oid,
 			Type:   "Follow",
 			Actor:  actor,
-			Object: a,
+			Object: object,
 		},
 	}
 }
