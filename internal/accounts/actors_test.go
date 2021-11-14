@@ -9,7 +9,7 @@ import (
 func TestActors_NewActor(t *testing.T) {
 	TestInitDB(t)
 	
-	a := NewActors("hvturingga", "", "")
+	a := NewActors("hvturingga", "", "", "Person")
 	actor, err := a.NewActor()
 	if err != nil {
 		log.Println(err)

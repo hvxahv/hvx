@@ -35,9 +35,10 @@ type CC struct {
 
 type Articles struct {
 	gorm.Model
-
-	ActivityID string `gorm:"index;type:text;activity_id"`
+	
 	AuthorID   uint   `gorm:"primaryKey;author_id"`
+	//AuthorID   uint   `gorm:"index;author_id"`
+	AuthorName string `gorm:"type:text;author_name"`
 	URL        string `gorm:"type:text;url"`
 	Title      string `gorm:"type:text;title"`
 	Summary    string `gorm:"type:text;summary"`
@@ -86,15 +87,8 @@ func (a *Articles) New() error {
 		return errors.Errorf("failed to automatically create database: %v", err)
 	}
 
-	if err := db.Debug().Table("articles").Where("activity_id = ?", a.ActivityID).First(&a); err != nil {
-		// Existence means return, nonexistence means storage.
-		if !cockroach.IsNotFound(err.Error) {
-			return nil
-		} else {
-			if err := db.Debug().Table("articles").Create(&a); err != nil {
-				return errors.Errorf("failed to create article: %v", err)
-			}
-		}
+	if err := db.Debug().Table("articles").Create(&a); err != nil {
+		return errors.Errorf("failed to create article: %v", err)
 	}
 
 	// Save to timelines.
@@ -179,36 +173,31 @@ type Article interface {
 	DeleteByAccountID() error
 }
 
-func NewArticles(
-	authorID uint,
-	title string,
-	summary string,
-	article string,
-	statuses bool,
-	NSFW bool,
-) *Articles {
+func NewArticles(authorID uint, name, title, summary, article string, isNSFW bool) *Articles {
 
 	return &Articles{
-		Model:    gorm.Model{},
 		AuthorID: authorID,
+		AuthorName: name,
 		Title:    title,
 		Summary:  summary,
 		Article:  article,
-		Statuses: statuses,
-		NSFW:     NSFW,
+		Statuses: false,
+		NSFW:     isNSFW,
 	}
 }
 
-func NewStatus(actorID uint, content string) *Articles {
+func NewStatus(actorID uint, name, content string, isNSFW bool) *Articles {
 	//to := []string{"https://mas.to/users/hvturingga"}
-	to := map[string]interface{} {
+	to := map[string]interface{}{
 		"to": []string{"https://mas.to/users/hvturingga"},
 	}
 
 	return &Articles{
 		AuthorID: actorID,
+		AuthorName: name,
 		Article:  content,
 		TO:       to,
 		Statuses: true,
+		NSFW:     isNSFW,
 	}
 }

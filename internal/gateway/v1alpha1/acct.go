@@ -7,8 +7,8 @@ import (
 
 func V1Accounts(v1 *gin.RouterGroup) {
 
-		//v1.GET("/accounts/i", handlers.FetchAccountsHandler)
-		v1.POST("/accounts/follow", handlers.FollowHandler)
+		//v1.GET("/accounts/iam", handlers.FetchAccountsHandler)
+		v1.POST("/accounts/follow", handlers.FollowReqHandler)
 
 		// Delete accounts
 		//v1.POST("/accounts/delete", handlers.DeleteAccount)

@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func FollowHandler(c *gin.Context) {
+func FollowReqHandler(c *gin.Context) {
 	//name := middleware.GetUserName(c)
 	//target := c.PostForm("following")
 	//
@@ -24,5 +24,9 @@ func FollowHandler(c *gin.Context) {
 	//
 	//
 	//c.JSON(200, r)
+
+}
+
+func FollowAcceptHandler(c *gin.Context) {
 
 }
