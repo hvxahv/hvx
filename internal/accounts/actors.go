@@ -133,7 +133,7 @@ func (a *Actors) FindByPreferredUsername() (*[]Actors, error) {
 	return &ac, nil
 }
 
-func NewActors(preferredUsername, password, publicKey string) *Actors {
+func NewActors(preferredUsername, password, publicKey, actorType string) *Actors {
 	domain := viper.GetString("localhost")
 
 	//id, err := matrix.NewAuth(preferredUsername, password).Register()
@@ -147,7 +147,8 @@ func NewActors(preferredUsername, password, publicKey string) *Actors {
 		Inbox:             fmt.Sprintf("https://%s/u/%s/inbox", domain, preferredUsername),
 		Url:               fmt.Sprintf("https://%s/u/%s", domain, preferredUsername),
 		PublicKey:         publicKey,
-		MatrixID:          "id",
+		MatrixID:          "",
+		ActorType:         actorType,
 		IsRemote:          false,
 	}
 }

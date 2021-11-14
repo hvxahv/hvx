@@ -54,5 +54,8 @@ func APIServer() *gin.Engine {
 
 	v1alpha1.V1Articles(v1)
 
+	// Follow API
+	v1alpha1.V1Follow(v1)
+
 	return api
 }

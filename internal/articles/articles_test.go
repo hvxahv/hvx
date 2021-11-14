@@ -48,7 +48,7 @@ func TestInitDB(t *testing.T) {
 func TestNewArticles(t *testing.T) {
 	TestInitDB(t)
 
-	na := NewArticles(696901249244790785, "二人セゾン", "僕もセゾン", `
+	na := NewArticles(696901249244790785, "HVTURINGGA", "二人セゾン", "僕もセゾン", `
 <p>
 二人セゾン 二人セゾン
 春夏で恋をして
@@ -118,7 +118,7 @@ What made you do that?
 Ha
 僕もセゾン
 </p>
-`, false, false)
+`, false)
 	err := na.New()
 	if err != nil {
 		return 
@@ -130,7 +130,7 @@ Ha
 func TestNewArticles2(t *testing.T) {
 	TestInitDB(t)
 
-	na := NewStatus(696901249244790785, `
+	na := NewStatus(696901249244790785,"HVTURINGGA", `
 <p>
 二人セゾン 二人セゾン
 春夏で恋をして
@@ -139,7 +139,7 @@ func TestNewArticles2(t *testing.T) {
 一緒に過ごした季節よ
 後悔はしてないか?
 </p>
-`)
+`, false)
 	err := na.New()
 	if err != nil {
 		return

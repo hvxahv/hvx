@@ -48,7 +48,7 @@ func TestInitChannelConfig(t *testing.T) {
 func TestNewChannels(t *testing.T) {
 	TestInitChannelConfig(t)
 
-	nc1 := NewChannels("Hvxahv", "", "avatar", "bio", 698619813575491585, false)
+	nc1 := NewChannels("Hvxahv", "hvx", "avatar", "bio", "hvturingga", 698619813575491585, false)
 	fmt.Println(nc1)
 	err := nc1.New()
 	if err != nil {

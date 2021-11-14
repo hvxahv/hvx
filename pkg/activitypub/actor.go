@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/disism/hvxahv/internal/accounts"
 	"github.com/disism/hvxahv/pkg/streams"
+	"github.com/google/uuid"
 	"github.com/spf13/viper"
 	"net/url"
 	"strings"
@@ -62,7 +63,6 @@ func FetchRemoteActor(actorUrl string) (*accounts.Actors, error) {
 		return nil, err
 	}
 
-
 	account := accounts.NewAddActor(
 		actor.PreferredUsername,
 		h.Hostname(),
@@ -72,8 +72,8 @@ func FetchRemoteActor(actorUrl string) (*accounts.Actors, error) {
 		actor.Inbox,
 		actorUrl,
 		actor.PublicKey.PublicKeyPem,
-		"",
-		"",
+		uuid.New().String(),
+		actor.Type,
 	)
 
 	act, err := account.AddActor()

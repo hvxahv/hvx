@@ -181,7 +181,6 @@ func Types(name string, body []byte) {
 			}
 
 			n := articles.Articles{
-				ActivityID: c.Id,
 				AuthorID:   LID.ID,
 				URL:        c.Object.Url,
 				Article:    c.Object.Content,
