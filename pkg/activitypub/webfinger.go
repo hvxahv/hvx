@@ -1,8 +1,11 @@
 package activitypub
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/go-resty/resty/v2"
 	"github.com/spf13/viper"
+	"log"
 )
 
 // https://webfinger.net.
@@ -32,6 +35,7 @@ type WebFingerData struct {
 }
 
 // NewWebFingerUrl Returns a standard remote webFinger query url.
+// for example: https://mas.to/.well-known/webfinger?resource=hvturingga
 func NewWebFingerUrl(host, resource string) string {
 	return fmt.Sprintf("https://%s/.well-known/webfinger?resource=%s", host, resource)
 }
@@ -63,4 +67,15 @@ func NewWebFinger(name string) *WebFingerData {
 	wf := NewWebFingerData(sub, address, name)
 
 	return wf
+}
+
+// GetWebFinger Obtain the WebFinger of the remote instance through the email address format.
+func GetWebFinger(resource string) *WebFingerData {
+	wf, err := resty.New().R().Get(NewWebFingerUrl(GetHost(resource), resource))
+	if err != nil {
+		log.Fatal(err)
+	}
+	var wfd WebFingerData
+	_ = json.Unmarshal(wf.Body(), &wfd)
+	return &wfd
 }

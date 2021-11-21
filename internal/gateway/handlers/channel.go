@@ -2,9 +2,9 @@ package handlers
 
 import (
 	"fmt"
-	pb "github.com/disism/hvxahv/api/channel/v1alpha1"
-	"github.com/disism/hvxahv/internal/gateway/middleware"
-	"github.com/disism/hvxahv/pkg/microservices/client"
+	pb "github.com/hvxahv/hvxahv/api/channel/v1alpha1"
+	"github.com/hvxahv/hvxahv/internal/gateway/middleware"
+	"github.com/hvxahv/hvxahv/pkg/microservices/client"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/net/context"
 	"log"

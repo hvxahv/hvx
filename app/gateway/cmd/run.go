@@ -17,8 +17,8 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/disism/hvxahv/internal/gateway"
-	"github.com/disism/hvxahv/pkg/microservices/consul"
+	"github.com/hvxahv/hvxahv/internal/gateway"
+	"github.com/hvxahv/hvxahv/pkg/microservices/consul"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"log"

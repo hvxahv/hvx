@@ -2,9 +2,9 @@ package channel
 
 import (
 	"fmt"
-	"github.com/disism/hvxahv/internal/accounts"
-	"github.com/disism/hvxahv/pkg/cockroach"
-	"github.com/disism/hvxahv/pkg/security"
+	"github.com/hvxahv/hvxahv/internal/accounts"
+	"github.com/hvxahv/hvxahv/pkg/cockroach"
+	"github.com/hvxahv/hvxahv/pkg/security"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
@@ -25,6 +25,22 @@ type Channels struct {
 	PrivateKey    string `gorm:"type:text;private_key"`
 }
 
+func (c *Channels) DeleteHistory() {
+	panic("implement me")
+}
+
+func (c *Channels) DeleteUserHistory() {
+	panic("implement me")
+}
+
+func (c *Channels) EditCreator() {
+	panic("implement me")
+}
+
+func (c *Channels) Delete() {
+	panic("implement me")
+}
+
 func (c *Channels) FindByActorID() (*[]Channels, error) {
 	var ch []Channels
 	db := cockroach.GetDB()
@@ -42,7 +58,7 @@ func (c *Channels) Update() {
 	panic("implement me")
 }
 
-func (c *Channels) New() error {
+func (c *Channels) Create() error {
 	db := cockroach.GetDB()
 
 	if err := db.AutoMigrate(&Channels{}); err != nil {
@@ -91,14 +107,20 @@ func (c *Channels) New() error {
 
 type Channel interface {
 
-	// New Create a channel.
-	New() error
+	// Create a channel.
+	Create() error
 
 	// FindByActorID Find the channel created by the actor by Actor ID.
 	FindByActorID() (*[]Channels, error)
 
 	// Update channel information.
 	Update()
+
+	Delete()
+
+	DeleteHistory()
+	DeleteUserHistory()
+	EditCreator()
 }
 
 func NewChannels(name, link, avatar, bio, username string, owner uint, isPrivate bool) *Channels {

@@ -17,7 +17,7 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/disism/hvxahv/internal/channel"
+	"github.com/hvxahv/hvxahv/internal/channel"
 	"github.com/spf13/cobra"
 )
 

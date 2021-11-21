@@ -3,8 +3,7 @@ package activity
 import (
 	"bytes"
 	"fmt"
-	"github.com/disism/hvxahv/internal/accounts"
-	"github.com/disism/hvxahv/pkg/activitypub"
+	"github.com/hvxahv/hvxahv/pkg/activitypub"
 	"github.com/google/uuid"
 	"github.com/spf13/viper"
 	"golang.org/x/net/context"
@@ -132,50 +131,6 @@ func NewFollowRequest(actor, object string) *activitypub.Follow {
 	}
 }
 
-// NewFollowAccept
-// name: LOCAL ACTOR NAME,
-// actor: REMOTE ACTOR LINK,
-// oid: CONTEXT ID,
-// object: LOCAL ACTOR LINK.
-func NewFollowAccept(name, actor, oid, object string) *activitypub.Accept {
-	var (
-		ctx = "https://www.w3.org/ns/activitystreams"
-		id  = fmt.Sprintf("https://%s/u/%s#accepts/follows/%s", viper.GetString("localhost"), name, uuid.New().String())
-	)
-
-	y := accounts.NewActorUrl(actor)
-	remoteActor, err := y.FindActorByUrl()
-	if err != nil {
-		return nil
-	}
-	k := accounts.NewActorUrl(object)
-	localActor, err := k.FindActorByUrl()
-	if err != nil {
-		return nil
-	}
-	nf := accounts.NewFollows(remoteActor.ID, localActor.ID)
-	if err := nf.New(); err != nil {
-		log.Println(err)
-	}
-
-	return &activitypub.Accept{
-		Context: ctx,
-		Id:      id,
-		Type:    "Accept",
-		Actor:   object,
-		Object: struct {
-			Id     string `json:"id"`
-			Type   string `json:"type"`
-			Actor  string `json:"actor"`
-			Object string `json:"object"`
-		}{
-			Id:     oid,
-			Type:   "Follow",
-			Actor:  actor,
-			Object: object,
-		},
-	}
-}
 
 func (a *ActivityRequest) Send() {
 	h, err := url.Parse(a.TargetURL)

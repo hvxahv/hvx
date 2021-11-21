@@ -2,9 +2,9 @@ package channel
 
 import (
 	"fmt"
-	"github.com/disism/hvxahv/pkg/cache"
-	"github.com/disism/hvxahv/pkg/cockroach"
-	"github.com/disism/hvxahv/pkg/ipfs"
+	"github.com/hvxahv/hvxahv/pkg/cache"
+	"github.com/hvxahv/hvxahv/pkg/cockroach"
+	"github.com/hvxahv/hvxahv/pkg/ipfs"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -50,7 +50,7 @@ func TestNewChannels(t *testing.T) {
 
 	nc1 := NewChannels("Hvxahv", "hvx", "avatar", "bio", "hvturingga", 698619813575491585, false)
 	fmt.Println(nc1)
-	err := nc1.New()
+	err := nc1.Create()
 	if err != nil {
 		return
 	}

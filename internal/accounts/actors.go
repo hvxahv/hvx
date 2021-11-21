@@ -2,7 +2,7 @@ package accounts
 
 import (
 	"fmt"
-	"github.com/disism/hvxahv/pkg/cockroach"
+	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	"gorm.io/gorm"

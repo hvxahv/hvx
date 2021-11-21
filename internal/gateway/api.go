@@ -1,10 +1,10 @@
 package gateway
 
 import (
-	"github.com/disism/hvxahv/internal/gateway/handlers"
-	"github.com/disism/hvxahv/internal/gateway/middleware"
-	"github.com/disism/hvxahv/internal/gateway/v1alpha1"
 	"github.com/gin-gonic/gin"
+	"github.com/hvxahv/hvxahv/internal/gateway/handlers"
+	"github.com/hvxahv/hvxahv/internal/gateway/middleware"
+	"github.com/hvxahv/hvxahv/internal/gateway/v1alpha1"
 )
 
 // APIServer Used to provide routing for RESTful access,

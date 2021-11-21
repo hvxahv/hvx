@@ -1,13 +1,16 @@
 package v1alpha1
 
 import (
-	"github.com/disism/hvxahv/internal/gateway/handlers"
+	"github.com/hvxahv/hvxahv/internal/gateway/handlers"
 	"github.com/gin-gonic/gin"
 )
 
 func V1Accounts(v1 *gin.RouterGroup) {
 
 		//v1.GET("/accounts/iam", handlers.FetchAccountsHandler)
+
+		v1.GET("/iam/timelines")
+
 		v1.POST("/accounts/follow", handlers.FollowReqHandler)
 
 		// Delete accounts

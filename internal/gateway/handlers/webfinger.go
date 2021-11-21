@@ -2,11 +2,11 @@ package handlers
 
 import (
 	"encoding/json"
-	pb "github.com/disism/hvxahv/api/accounts/v1alpha1"
-	"github.com/disism/hvxahv/pkg/activitypub"
-	"github.com/disism/hvxahv/pkg/microservices/client"
-	"github.com/disism/hvxahv/pkg/streams"
 	"github.com/gin-gonic/gin"
+	pb "github.com/hvxahv/hvxahv/api/accounts/v1alpha1"
+	"github.com/hvxahv/hvxahv/pkg/activitypub"
+	"github.com/hvxahv/hvxahv/pkg/microservices/client"
+	"github.com/hvxahv/hvxahv/pkg/streams"
 	"golang.org/x/net/context"
 	"log"
 )
@@ -17,16 +17,13 @@ func WebFingerHandler(c *gin.Context) {
 	ok := activitypub.IsRemote(resource)
 	if ok {
 		// If you are not searching for the user of this instance, go to the remote request.
-		wf, err := streams.NewRequest("GET", activitypub.NewWebFingerUrl(activitypub.GetHost(resource), resource)).Get()
-		if err != nil {
-			log.Println(err)
-		}
-		var wfd activitypub.WebFingerData
-		_ = json.Unmarshal(wf, &wfd)
-
+		//wf, err := streams.NewRequest("GET", activitypub.NewWebFingerUrl(activitypub.GetHost(resource), resource)).Get()
+		//if err != nil {
+		//	log.Println(err)
+		//}
 
 		var ar activitypub.Actor
-		actor, err := streams.NewRequest("GET", wfd.Links[0].Href).Get()
+		actor, err := streams.NewRequest("GET", activitypub.GetWebFinger(resource).Links[0].Href).Get()
 		if err != nil {
 			log.Println(err)
 		}

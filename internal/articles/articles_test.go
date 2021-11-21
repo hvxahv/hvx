@@ -2,8 +2,8 @@ package articles
 
 import (
 	"fmt"
-	"github.com/disism/hvxahv/pkg/cache"
-	"github.com/disism/hvxahv/pkg/cockroach"
+	"github.com/hvxahv/hvxahv/pkg/cache"
+	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -119,7 +119,7 @@ Ha
 僕もセゾン
 </p>
 `, false)
-	err := na.New()
+	err := na.Create()
 	if err != nil {
 		return 
 	}
@@ -140,7 +140,7 @@ func TestNewArticles2(t *testing.T) {
 後悔はしてないか?
 </p>
 `, false)
-	err := na.New()
+	err := na.Create()
 	if err != nil {
 		return
 	}

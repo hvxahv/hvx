@@ -17,7 +17,7 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/disism/hvxahv/app/hvx/pkg"
+	"github.com/hvxahv/hvxahv/app/hvx/pkg"
 	"github.com/spf13/cobra"
 )
 

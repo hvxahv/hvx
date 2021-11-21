@@ -2,8 +2,8 @@ package activitypub
 
 import (
 	"encoding/json"
-	"github.com/disism/hvxahv/internal/accounts"
-	"github.com/disism/hvxahv/pkg/streams"
+	"github.com/hvxahv/hvxahv/internal/accounts"
+	"github.com/hvxahv/hvxahv/pkg/streams"
 	"github.com/google/uuid"
 	"github.com/spf13/viper"
 	"net/url"

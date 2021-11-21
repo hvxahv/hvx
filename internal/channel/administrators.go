@@ -2,7 +2,7 @@ package channel
 
 import (
 	"fmt"
-	"github.com/disism/hvxahv/pkg/cockroach"
+	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
 )

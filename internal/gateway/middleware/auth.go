@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"github.com/disism/hvxahv/pkg/security"
+	"github.com/hvxahv/hvxahv/pkg/security"
 	"github.com/gin-gonic/gin"
 	"log"
 	"strings"

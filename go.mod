@@ -1,4 +1,4 @@
-module github.com/disism/hvxahv
+module github.com/hvxahv/hvxahv
 
 go 1.16
 
@@ -6,6 +6,7 @@ require (
 	github.com/gin-gonic/gin v1.7.2
 	github.com/go-playground/validator/v10 v10.4.1
 	github.com/go-redis/redis/v8 v8.10.0
+	github.com/go-resty/resty/v2 v2.7.0
 	github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/uuid v1.1.2
@@ -20,7 +21,7 @@ require (
 	github.com/spf13/viper v1.7.1
 	github.com/technoweenie/multipartstreamer v1.0.1 // indirect
 	golang.org/x/crypto v0.0.0-20210817164053-32db794688a5
-	golang.org/x/net v0.0.0-20210610132358-84b48f89b13b
+	golang.org/x/net v0.0.0-20211029224645-99673261e6eb
 	google.golang.org/genproto v0.0.0-20210611144927-798beca9d670 // indirect
 	google.golang.org/grpc v1.38.0
 	google.golang.org/protobuf v1.26.0

@@ -1,7 +1,7 @@
 package channel
 
 import (
-	"github.com/disism/hvxahv/pkg/cockroach"
+	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
 )
@@ -11,6 +11,10 @@ type Subscribes struct {
 	ChannelID       uint   `gorm:"primaryKey;channel_id"`
 	Subscriber      string `gorm:"primaryKey;type:varchar(999);subscriber"`
 	SubscriberInbox string `gorm:"primaryKey;subscriber_inbox"`
+}
+
+func (s *Subscribes) Unsubscribe() {
+	panic("implement me")
 }
 
 func (s *Subscribes) Remove() error {
@@ -30,7 +34,7 @@ func (s *Subscribes) QueryLisByID() (*[]Subscribes, error) {
 	return &sub, nil
 }
 
-func (s *Subscribes) New() error {
+func (s *Subscribes) Create() error {
 	db := cockroach.GetDB()
 
 	if err := db.AutoMigrate(Subscribes{}); err != nil {
@@ -51,8 +55,8 @@ func (s *Subscribes) New() error {
 }
 
 type Subscriber interface {
-	// New Add a channel subscription.
-	New() error
+	// Create Add a channel subscription.
+	Create() error
 
 	// Remove subscribers from a channel.
 	// This method only allows channel managers to operate.
@@ -61,6 +65,7 @@ type Subscriber interface {
 	// QueryLisByID Get the list of subscribers of the channel,
 	// this method only allows the administrator of the channel to operate
 	QueryLisByID() (*[]Subscribes, error)
+	Unsubscribe()
 }
 
 func NewSubscribes(channelId uint, subscriber, subscriberInbox string) (*Subscribes, error) {

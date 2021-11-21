@@ -1,8 +1,8 @@
 package accounts
 
 import (
-	"github.com/disism/hvxahv/pkg/cockroach"
-	"github.com/disism/hvxahv/pkg/security"
+	"github.com/hvxahv/hvxahv/pkg/cockroach"
+	"github.com/hvxahv/hvxahv/pkg/security"
 	"github.com/go-playground/validator/v10"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
@@ -94,7 +94,7 @@ func NewAccounts(username string, mail string, password string) *Accounts {
 	return &Accounts{Username: username, Mail: mail, Password: hash}
 }
 
-func (a *Accounts) New() error {
+func (a *Accounts) Create() error {
 	if err := validator.New().Struct(*a); err != nil {
 		return err
 	}
@@ -140,7 +140,7 @@ func (a *Accounts) New() error {
 
 type Account interface {
 
-	New() error
+	Create() error
 
 	FindAccountByUsername() (*Accounts, error)
 
