@@ -1,13 +1,13 @@
 syntax = "proto3";
 
 package hvxahv.v1alpha1.proto;
-option go_package = "github.com/disism/hvxahv/api/accounts/v1alpha1";
+option go_package = "github.com/hvxahv/hvxahv/api/accounts/v1alpha1";
 
 // Accounts List of account gRPC service.
 service Accounts {
 
-  // New Create an account through the NewAccountData data structure.
-  rpc New (NewAccountData) returns (AccountsReply) {}
+  // Create an account through the NewAccountData data structure.
+  rpc Create (CreateAccountData) returns (AccountsReply) {}
 
   // Update Update the account through AccountData data.
   rpc Update (AccountData) returns (AccountsReply) {}
@@ -60,7 +60,7 @@ message ActorData {
 }
 
 // NewAccountData Data needed to create a new account.
-message NewAccountData {
+message CreateAccountData {
   string username = 1;
   string password = 2;
   string mail = 3;

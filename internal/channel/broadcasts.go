@@ -2,10 +2,10 @@ package channel
 
 import (
 	"fmt"
-	pb "github.com/disism/hvxahv/api/accounts/v1alpha1"
-	"github.com/disism/hvxahv/pkg/cockroach"
-	"github.com/disism/hvxahv/pkg/ipfs"
-	"github.com/disism/hvxahv/pkg/microservices/client"
+	pb "github.com/hvxahv/hvxahv/api/accounts/v1alpha1"
+	"github.com/hvxahv/hvxahv/pkg/cockroach"
+	"github.com/hvxahv/hvxahv/pkg/ipfs"
+	"github.com/hvxahv/hvxahv/pkg/microservices/client"
 	"github.com/pkg/errors"
 	"golang.org/x/net/context"
 	"gorm.io/gorm"
@@ -15,7 +15,7 @@ import (
 
 type Broadcasts struct {
 	gorm.Model
-	ChannelID uint   `gorm:"primarykey;channel_id"`
+	ChannelID uint   `gorm:"primaryKey;channel_id"`
 	AuthorID  uint   `gorm:"type:bigint;author_id"`
 	Title     string `gorm:"type:text;article"`
 	Summary   string `gorm:"type:text;summary"`
@@ -37,7 +37,7 @@ func (b *Broadcasts) QueryLisByCID() (*[]Broadcasts, error) {
 	return &br, nil
 }
 
-func (b *Broadcasts) New() error {
+func (b *Broadcasts) Create() error {
 
 	cli, conn, err := client.Accounts()
 	if err != nil {
@@ -97,9 +97,9 @@ func (b *Broadcasts) New() error {
 }
 
 type Broadcast interface {
-	// New Create broadcast Articles.
+	// Create broadcast Articles.
 	// Synchronize to ipfs return ipfs id.
-	New() error
+	Create() error
 
 	// QueryLisByCID Fetch the content list in the channel by channel id.
 	QueryLisByCID() (*[]Broadcasts, error)

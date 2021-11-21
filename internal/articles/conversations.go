@@ -1,7 +1,7 @@
 package articles
 
 import (
-	"github.com/disism/hvxahv/pkg/cockroach"
+	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"gorm.io/gorm"
 )
 

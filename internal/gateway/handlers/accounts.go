@@ -2,10 +2,10 @@ package handlers
 
 import (
 	"fmt"
-	pb "github.com/disism/hvxahv/api/accounts/v1alpha1"
-	"github.com/disism/hvxahv/pkg/microservices/client"
-	"github.com/disism/hvxahv/pkg/security"
-	"github.com/disism/hvxahv/pkg/storage"
+	pb "github.com/hvxahv/hvxahv/api/accounts/v1alpha1"
+	"github.com/hvxahv/hvxahv/pkg/microservices/client"
+	"github.com/hvxahv/hvxahv/pkg/security"
+	"github.com/hvxahv/hvxahv/pkg/storage"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 	"golang.org/x/net/context"

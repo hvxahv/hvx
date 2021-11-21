@@ -1,13 +1,13 @@
 package accounts
 
 import (
-	pb "github.com/disism/hvxahv/api/accounts/v1alpha1"
+	pb "github.com/hvxahv/hvxahv/api/accounts/v1alpha1"
 	"golang.org/x/net/context"
 )
 
-func (s *server) New(ctx context.Context, in *pb.NewAccountData) (*pb.AccountsReply, error) {
+func (s *server) Create(ctx context.Context, in *pb.CreateAccountData) (*pb.AccountsReply, error) {
 	a := NewAccounts(in.Username, in.Mail, in.Password)
-	if err := a.New(); err != nil {
+	if err := a.Create(); err != nil {
 		return &pb.AccountsReply{Code: "500", Message: "!ok"}, err
 	}
 	return &pb.AccountsReply{Code: "200", Message: "ok"}, nil

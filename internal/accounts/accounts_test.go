@@ -2,8 +2,8 @@ package accounts
 
 import (
 	"fmt"
-	"github.com/disism/hvxahv/pkg/cache"
-	"github.com/disism/hvxahv/pkg/cockroach"
+	"github.com/hvxahv/hvxahv/pkg/cache"
+	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -47,7 +47,7 @@ func TestNewAccounts(t *testing.T) {
 	TestInitDB(t)
 
 	a := NewAccounts("hvturingga", "x@disism.com", "Hvxahv123")
-	err := a.New()
+	err := a.Create()
 	if err != nil {
 		log.Println(err)
 	}

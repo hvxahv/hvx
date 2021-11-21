@@ -1,7 +1,7 @@
 package activity
 
 import (
-	"github.com/disism/hvxahv/pkg/cockroach"
+	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
 	"log"
@@ -10,13 +10,12 @@ import (
 type Inboxes struct {
 	gorm.Model
 
-	ActivityID string `gorm:"index;type:text;activity_id"`
-
-	//  Type: "Follow", "Accept", "Mention", "Conversation"
+	ActivityID       string `gorm:"index;type:text;activity_id"`
 	ActivityType     string `gorm:"type:text;activity_type"`
 	ActorID          uint   `gorm:"type:bigint;actor_id"`
 	LocalActorID     uint   `gorm:"primaryKey;type:bigint;local_actor_id"`
 	TargetActivityID string `gorm:"type;type:text;target_activity_id"`
+	ReqActor         string `gorm:"type;type:text;req_actor"`
 
 	// If it is true, it is a mention, and there is a pointing ID in the Article.
 	Mention bool `gorm:"type:boolean;mention"`
@@ -79,9 +78,6 @@ func NewMention(activityID string, activityType string, actorID uint, localActor
 		ActorID:          actorID,
 		LocalActorID:     localActorID,
 		TargetActivityID: targetActivityID,
-		Mention:          mention,
-		Reply:            false,
-		ArticleID:        articleID,
 	}
 }
 
@@ -92,9 +88,6 @@ func NewReply(activityID string, activityType string, actorID uint, localActorID
 		ActorID:          actorID,
 		LocalActorID:     localActorID,
 		TargetActivityID: targetActivityID,
-		Mention:          false,
-		Reply:            reply,
-		ArticleID:        articleID,
 	}
 }
 

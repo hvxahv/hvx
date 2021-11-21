@@ -3,10 +3,10 @@ package activity
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/disism/hvxahv/internal/accounts"
-	"github.com/disism/hvxahv/internal/articles"
-	"github.com/disism/hvxahv/pkg/activitypub"
-	"github.com/disism/hvxahv/pkg/cockroach"
+	"github.com/hvxahv/hvxahv/internal/accounts"
+	"github.com/hvxahv/hvxahv/internal/articles"
+	"github.com/hvxahv/hvxahv/pkg/activitypub"
+	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"github.com/spf13/viper"
 	"gorm.io/gorm"
 	"log"
@@ -193,7 +193,7 @@ func Types(name string, body []byte) {
 				NSFW:       false,
 				Visibility: false,
 			}
-			if err := n.New(); err != nil {
+			if err := n.Create(); err != nil {
 				log.Println(err)
 				return
 			}

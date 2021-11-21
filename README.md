@@ -1,6 +1,6 @@
 # hvxahv
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/disism/hvxahv)](https://goreportcard.com/report/github.com/disism/hvxahv) [![Go](https://github.com/disism/hvxahv/actions/workflows/lint.yml/badge.svg)](https://github.com/disism/hvxahv/actions/workflows/lint.yml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/hvxahv/hvxahv)](https://goreportcard.com/report/github.com/hvxahv/hvxahv) [![Go](https://github.com/hvxahv/hvxahv/actions/workflows/lint.yml/badge.svg)](https://github.com/hvxahv/hvxahv/actions/workflows/lint.yml)
 
 Instance: [halfmemories.com](https://halfmemories.com)
 
@@ -64,7 +64,7 @@ DEPLOY:
 
 FOR CLIENT DEVELOPERS: 
 
-- WEB CLIENT REPO: [HVXAHV-WEB](https://github.com/disism/hvxahv-web)
+- WEB CLIENT REPO: [HVXAHV-WEB](https://github.com/hvxahv/hvxahv-web)
 
 - RESTful API DOCS: [RESTful.md](./app/gateway/RESTful.md)
 
@@ -72,7 +72,7 @@ FOR CLIENT DEVELOPERS:
 
 Everyone has the right to control their own data and privacy and to choose who they share it with.
 
-MIT License: [LISENSE](https://github.com/disism/hvxahv/blob/main/LICENSE).
+MIT License: [LISENSE](https://github.com/hvxahv/hvxahv/blob/main/LICENSE).
 
 [disism.com](https://disism.com/) OPEN SOURCE. 
 

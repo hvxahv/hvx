@@ -2,10 +2,10 @@ package handlers
 
 import (
 	"fmt"
-	pb "github.com/disism/hvxahv/api/accounts/v1alpha1"
-	"github.com/disism/hvxahv/internal/articles"
-	"github.com/disism/hvxahv/internal/gateway/middleware"
-	"github.com/disism/hvxahv/pkg/microservices/client"
+	pb "github.com/hvxahv/hvxahv/api/accounts/v1alpha1"
+	"github.com/hvxahv/hvxahv/internal/articles"
+	"github.com/hvxahv/hvxahv/internal/gateway/middleware"
+	"github.com/hvxahv/hvxahv/pkg/microservices/client"
 	"github.com/gin-gonic/gin"
 	"golang.org/x/net/context"
 	"log"
@@ -44,12 +44,12 @@ func NewArticleHandler(c *gin.Context) {
 	}
 
 	if isA {
-		if err := articles.NewArticles(uint(r.Id), r.Username, title, summary, article, isNSFW).New(); err != nil {
+		if err := articles.NewArticles(uint(r.Id), r.Username, title, summary, article, isNSFW).Create(); err != nil {
 			log.Println(err)
 		}
 	} else {
 		fmt.Println("创建状态")
-		if err := articles.NewStatus(uint(r.Id), r.Username, article, isNSFW).New(); err != nil {
+		if err := articles.NewStatus(uint(r.Id), r.Username, article, isNSFW).Create(); err != nil {
 			log.Println(err)
 		}
 	}

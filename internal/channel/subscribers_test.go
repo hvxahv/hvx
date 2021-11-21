@@ -14,7 +14,7 @@ func TestNewSubscriber(t *testing.T) {
 		fmt.Println(err)
 		return
 	}
-	if err := ns.New(); err != nil {
+	if err := ns.Create(); err != nil {
 		fmt.Println(err)
 	}
 

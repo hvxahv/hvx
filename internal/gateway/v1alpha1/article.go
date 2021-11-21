@@ -1,7 +1,7 @@
 package v1alpha1
 
 import (
-	"github.com/disism/hvxahv/internal/gateway/handlers"
+	"github.com/hvxahv/hvxahv/internal/gateway/handlers"
 	"github.com/gin-gonic/gin"
 )
 

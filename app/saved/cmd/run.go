@@ -17,50 +17,22 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/hvxahv/hvxahv/internal/accounts"
-	"github.com/hvxahv/hvxahv/pkg/microservices/consul"
+
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
-	"log"
-	"os"
-	"os/signal"
-	"syscall"
 )
 
 // runCmd represents the run command
 var runCmd = &cobra.Command{
 	Use:   "run",
-	Short: "Run Accounts Services...",
-	Long: ``,
+	Short: "A brief description of your command",
+	Long: `A longer description that spans multiple lines and likely contains examples
+and usage of using your command. For example:
+
+Cobra is a CLI library for Go that empowers applications.
+This application is a tool to generate the needed files
+to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		port := viper.GetString("microservices.accounts.port")
-
-		tags := []string{"accounts", "gRPC"}
-		nr := consul.NewRegister("accounts", port, tags, "localhost")
-		err := nr.Register()
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-
-		c := make(chan os.Signal, 1)
-		signal.Notify(c, syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT)
-
-		if err := accounts.Run(); err != nil {
-			_ = fmt.Errorf("failed to start accounts gRPC service: %v", err)
-		}
-		log.Printf("Port: %s, The %s gRPC service is running...", port, "accounts")
-
-		s := <-c
-		switch s {
-		case syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT:
-			err := consul.Deregister(nr.ID)
-			if err != nil {
-				log.Println(err)
-			}
-			return
-		default:
-		}
+		fmt.Println("run called")
 	},
 }
 

@@ -27,6 +27,8 @@ func FollowReqHandler(c *gin.Context) {
 
 }
 
-func FollowAcceptHandler(c *gin.Context) {
-
-}
+//func FollowAcceptHandler(c *gin.Context) {
+//	inboxID := c.Param("id")
+//
+//
+//}

@@ -18,8 +18,8 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AccountsClient interface {
-	// New Create an account through the NewAccountData data structure.
-	New(ctx context.Context, in *NewAccountData, opts ...grpc.CallOption) (*AccountsReply, error)
+	// Create an account through the NewAccountData data structure.
+	Create(ctx context.Context, in *CreateAccountData, opts ...grpc.CallOption) (*AccountsReply, error)
 	// Update Update the account through AccountData data.
 	Update(ctx context.Context, in *AccountData, opts ...grpc.CallOption) (*AccountsReply, error)
 	UpdatePassword(ctx context.Context, in *UpdatePasswordData, opts ...grpc.CallOption) (*AccountsReply, error)
@@ -41,9 +41,9 @@ func NewAccountsClient(cc grpc.ClientConnInterface) AccountsClient {
 	return &accountsClient{cc}
 }
 
-func (c *accountsClient) New(ctx context.Context, in *NewAccountData, opts ...grpc.CallOption) (*AccountsReply, error) {
+func (c *accountsClient) Create(ctx context.Context, in *CreateAccountData, opts ...grpc.CallOption) (*AccountsReply, error) {
 	out := new(AccountsReply)
-	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Accounts/New", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Accounts/Create", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -126,8 +126,8 @@ func (c *accountsClient) Login(ctx context.Context, in *AuthData, opts ...grpc.C
 // All implementations must embed UnimplementedAccountsServer
 // for forward compatibility
 type AccountsServer interface {
-	// New Create an account through the NewAccountData data structure.
-	New(context.Context, *NewAccountData) (*AccountsReply, error)
+	// Create an account through the NewAccountData data structure.
+	Create(context.Context, *CreateAccountData) (*AccountsReply, error)
 	// Update Update the account through AccountData data.
 	Update(context.Context, *AccountData) (*AccountsReply, error)
 	UpdatePassword(context.Context, *UpdatePasswordData) (*AccountsReply, error)
@@ -146,8 +146,8 @@ type AccountsServer interface {
 type UnimplementedAccountsServer struct {
 }
 
-func (UnimplementedAccountsServer) New(context.Context, *NewAccountData) (*AccountsReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method New not implemented")
+func (UnimplementedAccountsServer) Create(context.Context, *CreateAccountData) (*AccountsReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
 }
 func (UnimplementedAccountsServer) Update(context.Context, *AccountData) (*AccountsReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
@@ -186,20 +186,20 @@ func RegisterAccountsServer(s grpc.ServiceRegistrar, srv AccountsServer) {
 	s.RegisterService(&Accounts_ServiceDesc, srv)
 }
 
-func _Accounts_New_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(NewAccountData)
+func _Accounts_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateAccountData)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AccountsServer).New(ctx, in)
+		return srv.(AccountsServer).Create(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/hvxahv.v1alpha1.proto.Accounts/New",
+		FullMethod: "/hvxahv.v1alpha1.proto.Accounts/Create",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccountsServer).New(ctx, req.(*NewAccountData))
+		return srv.(AccountsServer).Create(ctx, req.(*CreateAccountData))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -356,8 +356,8 @@ var Accounts_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*AccountsServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "New",
-			Handler:    _Accounts_New_Handler,
+			MethodName: "Create",
+			Handler:    _Accounts_Create_Handler,
 		},
 		{
 			MethodName: "Update",

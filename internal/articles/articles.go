@@ -7,7 +7,7 @@ package articles
 
 import (
 	"fmt"
-	"github.com/disism/hvxahv/pkg/cockroach"
+	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"github.com/pkg/errors"
 	"gorm.io/datatypes"
 	"gorm.io/gorm"
@@ -37,14 +37,15 @@ type Articles struct {
 	gorm.Model
 	
 	AuthorID   uint   `gorm:"primaryKey;author_id"`
-	//AuthorID   uint   `gorm:"index;author_id"`
+
+	// AuthorID   uint   `gorm:"index;author_id"`
 	AuthorName string `gorm:"type:text;author_name"`
 	URL        string `gorm:"type:text;url"`
 	Title      string `gorm:"type:text;title"`
 	Summary    string `gorm:"type:text;summary"`
 	Article    string `gorm:"type:text;article"`
 
-	//Attachment *Attachment `gorm:"type:jsonb;attachment"`
+	// Attachment *Attachment `gorm:"type:jsonb;attachment"`
 
 	TO datatypes.JSONMap `gorm:"type:jsonb;to"`
 	//CC *CC `gorm:"type:jsonb;cc"`
@@ -80,19 +81,17 @@ func (a *Articles) DeleteByAccountID() error {
 	return nil
 }
 
-func (a *Articles) New() error {
+func (a *Articles) Create() error {
 	db := cockroach.GetDB()
 
 	if err := db.AutoMigrate(&Articles{}); err != nil {
 		return errors.Errorf("failed to automatically create database: %v", err)
 	}
-
 	if err := db.Debug().Table("articles").Create(&a); err != nil {
 		return errors.Errorf("failed to create article: %v", err)
 	}
 
 	// Save to timelines.
-
 	return nil
 }
 
@@ -149,8 +148,8 @@ func NewArticlesByAccountID(id uint) *Articles {
 }
 
 type Article interface {
-	// New Create an article or status.
-	New() error
+	// Create an article or status.
+	Create() error
 
 	// Update your article or status.
 	Update() error
