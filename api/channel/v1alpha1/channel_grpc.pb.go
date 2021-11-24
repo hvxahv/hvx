@@ -24,7 +24,7 @@ type ChannelClient interface {
 	NewAdmin(ctx context.Context, in *NewAdminData, opts ...grpc.CallOption) (*ChannelReply, error)
 	// NewSubscribers New Subscriber.
 	NewSubscriber(ctx context.Context, in *NewSubscriberData, opts ...grpc.CallOption) (*ChannelReply, error)
-	// GetSubscribers Get channel subscribers.
+	// GetSubscribers Get channels subscribers.
 	GetSubscribers(ctx context.Context, in *NewChannelByID, opts ...grpc.CallOption) (*GetSubscribersReply, error)
 }
 
@@ -82,7 +82,7 @@ type ChannelServer interface {
 	NewAdmin(context.Context, *NewAdminData) (*ChannelReply, error)
 	// NewSubscribers New Subscriber.
 	NewSubscriber(context.Context, *NewSubscriberData) (*ChannelReply, error)
-	// GetSubscribers Get channel subscribers.
+	// GetSubscribers Get channels subscribers.
 	GetSubscribers(context.Context, *NewChannelByID) (*GetSubscribersReply, error)
 	mustEmbedUnimplementedChannelServer()
 }
@@ -213,5 +213,5 @@ var Channel_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "api/channel/v1alpha1/channel.proto",
+	Metadata: "api/channels/v1alpha1/channels.proto",
 }

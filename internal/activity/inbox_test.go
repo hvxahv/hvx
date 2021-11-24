@@ -42,24 +42,12 @@ func TestNewMessages(t *testing.T) {
 	//nm.NewInbox()
 }
 
-func TestInbox_FindInboxByAccountID(t *testing.T) {
+func TestInboxes_GetInboxesByObjectID(t *testing.T) {
 	IniTestConfig(t)
 
-	//i := NewInboxAccountID(696901249244790785)
-	//inboxes, err := i.FindInboxByAccountID()
-	//if err != nil {
-	//	log.Println(err)
-	//}
-	//fmt.Println(inboxes)
-}
-
-func TestInboxes_Delete(t *testing.T) {
-	IniTestConfig(t)
-	
-	a := NewInboxesActivityID("https://mas.to/d92892b6-6d73-4b61-b2dc-6fefc94d7fb4")
-	err := a.Delete()
+	r, err := NewObjectID(698619813575491585).GetInboxesByObjectID()
 	if err != nil {
 		fmt.Println(err)
-		return 
 	}
+	fmt.Println(r)
 }

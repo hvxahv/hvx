@@ -27,21 +27,21 @@ func TestMessages_Outbox(t *testing.T) {
 func TestNewAccept(t *testing.T) {
 	IniTestConfig(t)
 
-	name := "hvturingga"
-	actor := "https://mas.to/users/hvturingga"
-	oid := "https://mas.to/47a0d162-db65-4518-b875-b743b70734c6"
-	object := fmt.Sprintf("https://%s/u/%s", viper.GetString("localhost"), name)
+	//name := "hvturingga"
+	//actor := "https://mas.to/users/hvturingga"
+	//oid := "https://mas.to/47a0d162-db65-4518-b875-b743b70734c6"
+	//object := fmt.Sprintf("https://%s/u/%s", viper.GetString("localhost"), name)
 
-	na := NewFollowAccept(name, actor, oid, object)
-
-	data, err := json.Marshal(na)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-	nar := NewActivityRequest(object, actor, data, []byte(getPrivk()))
-	nar.Accept()
+	//na := NewFollowAccept(name, actor, oid, object)
+	//
+	//data, err := json.Marshal(na)
+	//if err != nil {
+	//	log.Println(err)
+	//	return
+	//}
+	//
+	//nar := NewActivityRequest(object, actor, data, []byte(getPrivk()))
+	//nar.Accept()
 }
 
 func TestNewArticle(t *testing.T) {

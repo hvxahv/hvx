@@ -1,4 +1,4 @@
-package channel
+package channels
 
 import (
 	"github.com/hvxahv/hvxahv/pkg/cockroach"
@@ -55,15 +55,15 @@ func (s *Subscribes) Create() error {
 }
 
 type Subscriber interface {
-	// Create Add a channel subscription.
+	// Create Add a channels subscription.
 	Create() error
 
-	// Remove subscribers from a channel.
-	// This method only allows channel managers to operate.
+	// Remove subscribers from a channels.
+	// This method only allows channels managers to operate.
 	Remove() error
 
-	// QueryLisByID Get the list of subscribers of the channel,
-	// this method only allows the administrator of the channel to operate
+	// QueryLisByID Get the list of subscribers of the channels,
+	// this method only allows the administrator of the channels to operate
 	QueryLisByID() (*[]Subscribes, error)
 	Unsubscribe()
 }

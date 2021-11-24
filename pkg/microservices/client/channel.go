@@ -10,7 +10,7 @@ import (
 
 // Channel Microservice client for Channel.
 func Channel() (pb.ChannelClient, *grpc.ClientConn, error) {
-	name := "channel"
+	name := "channels"
 
 	host := viper.GetString(fmt.Sprintf("microservices.%s.host", name))
 	port := viper.GetString(fmt.Sprintf("microservices.%s.port", name))

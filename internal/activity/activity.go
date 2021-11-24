@@ -30,11 +30,11 @@ type Activity struct {
 // Types handler for inbox activity.
 func Types(name string, body []byte) {
 	// Get local actor ID
-	acctName := accounts.NewAccountsName(name)
-	localActor, err3 := acctName.FindAccountByUsername()
-	if err3 != nil {
-		return
-	}
+	//acctName := accounts.NewAccountsName(name)
+	//objectID, err := acctName.FindAccountByUsername()
+	//if err != nil {
+	//	return
+	//}
 
 	fmt.Println(string(body))
 
@@ -63,10 +63,10 @@ func Types(name string, body []byte) {
 		}
 		fmt.Println("请求关注")
 
-		if err := NewFollow(i.Id, "Follow", remoteActor.ID, localActor.ActorID).New(); err != nil {
-			log.Println(err)
-			return
-		}
+		//if err := NewFollow(i.Id, "Follow", remoteActor.ID, localActor.ActorID).New(); err != nil {
+		//	log.Println(err)
+		//	return
+		//}
 
 	case "Undo":
 		fmt.Printf("撤回了消息")
@@ -77,13 +77,13 @@ func Types(name string, body []byte) {
 		if err2 != nil {
 			fmt.Println(err2)
 		}
-
-		d := NewInboxesActivityID(undo.Object.Id)
-		if err := d.Delete(); err != nil {
-			log.Println(err)
-			return
-		}
-		fmt.Println("删除消息成功")
+		//
+		//d := NewInboxesActivityID(undo.Object.Id)
+		//if err := d.Delete(); err != nil {
+		//	log.Println(err)
+		//	return
+		//}
+		//fmt.Println("删除消息成功")
 
 	case "Reject":
 		reject := activitypub.Reject{}
@@ -92,13 +92,13 @@ func Types(name string, body []byte) {
 			fmt.Println(err2)
 		}
 
-		if reject.Object.Type == "Follow" {
-			fmt.Println("移除了你的关注")
-			if err := accounts.NewFollows(localActor.ActorID, remoteActor.ID).Remove(); err != nil {
-				log.Println(err)
-				return
-			}
-		}
+		//if reject.Object.Type == "Follow" {
+		//	fmt.Println("移除了你的关注")
+		//	if err := accounts.NewFollows(localActor.ActorID, remoteActor.ID).Remove(); err != nil {
+		//		log.Println(err)
+		//		return
+		//	}
+		//}
 
 	case "Accept":
 		fmt.Println("接受了你的请求:", i.Object)
@@ -109,14 +109,14 @@ func Types(name string, body []byte) {
 		fmt.Println(string(body))
 
 		// Following...
-		nf := accounts.NewFollows(localActor.ActorID, remoteActor.ID)
-		if err := nf.New(); err != nil {
-			return
-		}
-		if err := NewAccept(i.Id, "Accept", remoteActor.ID, localActor.ActorID, a.Object.Id).New(); err != nil {
-			log.Println(err)
-			return
-		}
+		//nf := accounts.NewFollows(localActor.ActorID, remoteActor.ID)
+		//if err := nf.New(); err != nil {
+		//	return
+		//}
+		////if err := NewAccept(i.Id, "Accept", remoteActor.ID, localActor.ActorID, a.Object.Id).New(); err != nil {
+		////	log.Println(err)
+		////	return
+		////}
 
 	case "Create":
 
