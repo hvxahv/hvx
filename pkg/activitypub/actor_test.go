@@ -28,3 +28,11 @@ func TestIsRemote(t *testing.T) {
 	fmt.Println(ir3)
 
 }
+
+func TestGetRemoteActor(t *testing.T) {
+	actor, err := GetRemoteActor("https://mas.to/users/hvturingga")
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(actor)
+}

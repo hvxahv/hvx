@@ -26,7 +26,7 @@ type AccountsClient interface {
 	UpdateUsername(ctx context.Context, in *UpdateUsernameData, opts ...grpc.CallOption) (*AccountsReply, error)
 	// Delete Delete the specified account by user name.
 	Delete(ctx context.Context, in *DeleteData, opts ...grpc.CallOption) (*AccountsReply, error)
-	FindAccountsByUsername(ctx context.Context, in *AccountUsername, opts ...grpc.CallOption) (*AccountData, error)
+	GetAccountsByUsername(ctx context.Context, in *AccountUsername, opts ...grpc.CallOption) (*AccountData, error)
 	FindActorByAccountsUsername(ctx context.Context, in *AccountUsername, opts ...grpc.CallOption) (*ActorData, error)
 	FindActorByID(ctx context.Context, in *ActorID, opts ...grpc.CallOption) (*ActorData, error)
 	// Login ...
@@ -86,9 +86,9 @@ func (c *accountsClient) Delete(ctx context.Context, in *DeleteData, opts ...grp
 	return out, nil
 }
 
-func (c *accountsClient) FindAccountsByUsername(ctx context.Context, in *AccountUsername, opts ...grpc.CallOption) (*AccountData, error) {
+func (c *accountsClient) GetAccountsByUsername(ctx context.Context, in *AccountUsername, opts ...grpc.CallOption) (*AccountData, error) {
 	out := new(AccountData)
-	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Accounts/FindAccountsByUsername", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Accounts/GetAccountsByUsername", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -134,7 +134,7 @@ type AccountsServer interface {
 	UpdateUsername(context.Context, *UpdateUsernameData) (*AccountsReply, error)
 	// Delete Delete the specified account by user name.
 	Delete(context.Context, *DeleteData) (*AccountsReply, error)
-	FindAccountsByUsername(context.Context, *AccountUsername) (*AccountData, error)
+	GetAccountsByUsername(context.Context, *AccountUsername) (*AccountData, error)
 	FindActorByAccountsUsername(context.Context, *AccountUsername) (*ActorData, error)
 	FindActorByID(context.Context, *ActorID) (*ActorData, error)
 	// Login ...
@@ -161,8 +161,8 @@ func (UnimplementedAccountsServer) UpdateUsername(context.Context, *UpdateUserna
 func (UnimplementedAccountsServer) Delete(context.Context, *DeleteData) (*AccountsReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
 }
-func (UnimplementedAccountsServer) FindAccountsByUsername(context.Context, *AccountUsername) (*AccountData, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method FindAccountsByUsername not implemented")
+func (UnimplementedAccountsServer) GetAccountsByUsername(context.Context, *AccountUsername) (*AccountData, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAccountsByUsername not implemented")
 }
 func (UnimplementedAccountsServer) FindActorByAccountsUsername(context.Context, *AccountUsername) (*ActorData, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FindActorByAccountsUsername not implemented")
@@ -276,20 +276,20 @@ func _Accounts_Delete_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Accounts_FindAccountsByUsername_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Accounts_GetAccountsByUsername_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(AccountUsername)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AccountsServer).FindAccountsByUsername(ctx, in)
+		return srv.(AccountsServer).GetAccountsByUsername(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/hvxahv.v1alpha1.proto.Accounts/FindAccountsByUsername",
+		FullMethod: "/hvxahv.v1alpha1.proto.Accounts/GetAccountsByUsername",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccountsServer).FindAccountsByUsername(ctx, req.(*AccountUsername))
+		return srv.(AccountsServer).GetAccountsByUsername(ctx, req.(*AccountUsername))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -376,8 +376,8 @@ var Accounts_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Accounts_Delete_Handler,
 		},
 		{
-			MethodName: "FindAccountsByUsername",
-			Handler:    _Accounts_FindAccountsByUsername_Handler,
+			MethodName: "GetAccountsByUsername",
+			Handler:    _Accounts_GetAccountsByUsername_Handler,
 		},
 		{
 			MethodName: "FindActorByAccountsUsername",

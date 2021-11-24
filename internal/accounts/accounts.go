@@ -1,9 +1,9 @@
 package accounts
 
 import (
+	"github.com/go-playground/validator/v10"
 	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"github.com/hvxahv/hvxahv/pkg/security"
-	"github.com/go-playground/validator/v10"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
 	"log"
@@ -26,6 +26,7 @@ type Accounts struct {
 	IsPrivate  bool   `gorm:"type:boolean;is_private"`
 	PrivateKey string `gorm:"type:text;private_key"`
 }
+
 
 func (a *Accounts) Delete() error {
 	db := cockroach.GetDB()
@@ -76,11 +77,11 @@ func (a *Accounts) Update() error {
 	return nil
 }
 
-func NewAccountsName(username string) *Accounts {
+func NewAccountsUsername(username string) *Accounts {
 	return &Accounts{Username: username}
 }
 
-func (a *Accounts) FindAccountByUsername() (*Accounts, error) {
+func (a *Accounts) GetAccountByUsername() (*Accounts, error) {
 	db := cockroach.GetDB()
 
 	if err := db.Debug().Table("accounts").Where("username = ? ", a.Username).First(&a).Error; err != nil {
@@ -142,7 +143,7 @@ type Account interface {
 
 	Create() error
 
-	FindAccountByUsername() (*Accounts, error)
+	GetAccountByUsername() (*Accounts, error)
 
 	Update() error
 

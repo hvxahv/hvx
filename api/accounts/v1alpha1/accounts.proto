@@ -17,7 +17,7 @@ service Accounts {
   // Delete Delete the specified account by user name.
   rpc Delete (DeleteData) returns (AccountsReply) {}
 
-  rpc FindAccountsByUsername(AccountUsername) returns (AccountData) {}
+  rpc GetAccountsByUsername(AccountUsername) returns (AccountData) {}
   rpc FindActorByAccountsUsername(AccountUsername) returns (ActorData) {}
   rpc FindActorByID(ActorID) returns (ActorData) {}
 

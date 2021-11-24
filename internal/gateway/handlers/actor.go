@@ -2,10 +2,10 @@ package handlers
 
 import (
 	"fmt"
+	"github.com/gin-gonic/gin"
 	pb "github.com/hvxahv/hvxahv/api/accounts/v1alpha1"
 	"github.com/hvxahv/hvxahv/pkg/activitypub"
 	"github.com/hvxahv/hvxahv/pkg/microservices/client"
-	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 	"golang.org/x/net/context"
 	"log"
@@ -41,10 +41,13 @@ func GetActorHandler(c *gin.Context) {
 	c.JSON(200, a)
 }
 
-
-func NewContext() []string {
+func NewContext() []interface{} {
+	arr := make([]interface{}, 0)
 	ctx := []string{"https://www.w3.org/ns/activitystreams", "https://w3id.org/security/v1alpha1"}
-	return ctx
+	for _, i := range ctx {
+		arr = append(arr, i)
+	}
+	return arr
 }
 
 // NewActor Return standard ActivityPub protocol user data.

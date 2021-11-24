@@ -2,10 +2,9 @@ package handlers
 
 import (
 	"fmt"
-	"github.com/hvxahv/hvxahv/internal/activity"
-
-	"github.com/hvxahv/hvxahv/internal/gateway/middleware"
 	"github.com/gin-gonic/gin"
+	"github.com/hvxahv/hvxahv/internal/activity"
+	"github.com/hvxahv/hvxahv/internal/gateway/middleware"
 	"io/ioutil"
 )
 
