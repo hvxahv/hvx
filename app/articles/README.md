@@ -6,7 +6,7 @@ You can also check the channel (your channel and the channel you manage) when yo
 
 If you want to send a public article or status, you can publish it to the channel, any subscribers of your channel can see it, and you can delete it. However, the content published in the channel will use the ipfs protocol, which means you publish The content of will be stored permanently and cannot be modified, and it will be synchronized to other ipfs nodes.
 
-For details, please refer to Channel's [README](../channel/README.md).
+For details, please refer to Channel's [README](../channels/README.md).
 
 ---
 

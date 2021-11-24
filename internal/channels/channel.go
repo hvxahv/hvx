@@ -1,4 +1,4 @@
-package channel
+package channels
 
 import (
 	"fmt"
@@ -45,7 +45,7 @@ func (c *Channels) FindByActorID() (*[]Channels, error) {
 	var ch []Channels
 	db := cockroach.GetDB()
 	if err := db.Debug().Table("channels").Where("owner_id = ?", c.OwnerID).First(&ch).Error; err != nil {
-		return nil, errors.Errorf("querying channel by link error: %v", err)
+		return nil, errors.Errorf("querying channels by link error: %v", err)
 	}
 	return &ch, nil
 }
@@ -71,12 +71,12 @@ func (c *Channels) Create() error {
 		log.Println(err)
 	}
 
-	// Channel is an extension of ActivityPub. When subscribing to a channel,
+	// Channel is an extension of ActivityPub. When subscribing to a channels,
 	// ActivityPub is called follow and hvxahv is called subscription.
 	// The type of Channel is a service in Activitypub. Details:
 	// https://www.w3.org/TR/activitystreams-vocabulary/#actor-types
 	domain := viper.GetString("localhost")
-	url := fmt.Sprintf("https://%s/channel/%s", domain, c.Link)
+	url := fmt.Sprintf("https://%s/channels/%s", domain, c.Link)
 	inbox := fmt.Sprintf("https://%s/u/%s/inbox", domain, c.OwnerUsername)
 	acct, err := accounts.NewAddActor(c.Link, domain, c.Avatar, c.Name, c.Bio, inbox, url, publicKey, c.Link, "Service").NewActor()
 	if err != nil {
@@ -87,11 +87,11 @@ func (c *Channels) Create() error {
 	c.PrivateKey = privateKey
 
 	if err := db.Debug().Table("channels").Create(&c).Error; err != nil {
-		return errors.Errorf("failed to create channel: %v", err)
+		return errors.Errorf("failed to create channels: %v", err)
 	}
 
 	if err := db.AutoMigrate(&Administrators{}); err != nil {
-		return errors.Errorf("failed to create channel admin database automatically: %s", err)
+		return errors.Errorf("failed to create channels admin database automatically: %s", err)
 	}
 	adm := &Administrators{
 		ChannelID: c.ID,
@@ -99,7 +99,7 @@ func (c *Channels) Create() error {
 	}
 
 	if err := db.Debug().Table("administrators").Create(&adm).Error; err != nil {
-		return errors.Errorf("failed to create channel: %v", err)
+		return errors.Errorf("failed to create channels: %v", err)
 	}
 
 	return nil
@@ -107,13 +107,13 @@ func (c *Channels) Create() error {
 
 type Channel interface {
 
-	// Create a channel.
+	// Create a channels.
 	Create() error
 
-	// FindByActorID Find the channel created by the actor by Actor ID.
+	// FindByActorID Find the channels created by the actor by Actor ID.
 	FindByActorID() (*[]Channels, error)
 
-	// Update channel information.
+	// Update channels information.
 	Update()
 
 	Delete()

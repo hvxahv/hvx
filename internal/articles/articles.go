@@ -35,7 +35,8 @@ type CC struct {
 
 type Articles struct {
 	gorm.Model
-	
+
+
 	AuthorID   uint   `gorm:"primaryKey;author_id"`
 
 	// AuthorID   uint   `gorm:"index;author_id"`

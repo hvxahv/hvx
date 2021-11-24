@@ -1,4 +1,4 @@
-package channel
+package channels
 
 import (
 	"fmt"
@@ -54,7 +54,7 @@ func (c *Administrators) FindAdmLisByChannelID() (*[]Administrators, error) {
 
 	err := db.Debug().Table("administrators").Where("actor_id = ?", c.ActorID).Where("channel_id = ?", c.ChannelID).First(&Channels{})
 	if err.Error != nil {
-		return nil, errors.Errorf("You are not the administrators of the channel")
+		return nil, errors.Errorf("You are not the administrators of the channels")
 	}
 
 	var ch []Administrators
@@ -69,15 +69,15 @@ func (c *Administrators) FindAdmLisByChannelID() (*[]Administrators, error) {
 }
 
 type Admin interface {
-	// Add a channel administrators, only the channel owner can operate this method.
+	// Add a channels administrators, only the channels owner can operate this method.
 	Add() error
 
-	// Remove To delete a channel administrators through this method,
-	// only the channel owner can use this method.
+	// Remove To delete a channels administrators through this method,
+	// only the channels owner can use this method.
 	Remove() error
 
-	// FindAdmLisByChannelID Fetch the list of administrators through channel id.
-	// Only channel administrators and channel owners can use this method.
+	// FindAdmLisByChannelID Fetch the list of administrators through channels id.
+	// Only channels administrators and channels owners can use this method.
 	FindAdmLisByChannelID() (*[]Administrators, error)
 }
 
@@ -91,7 +91,7 @@ func NewAddAdmins(channelID, ownerID, actorID uint) (*Administrators, error) {
 
 	fo := db.Debug().Table("channels").Where("id = ?", channelID).Where("owner_id = ?", ownerID).First(&Channels{})
 	if fo.Error != nil {
-		return nil, errors.Errorf("%v not the owner of the channel.", ownerID)
+		return nil, errors.Errorf("%v not the owner of the channels.", ownerID)
 	}
 
 	return &Administrators{ChannelID: channelID, ActorID: actorID}, nil

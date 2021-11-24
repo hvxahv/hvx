@@ -1,4 +1,4 @@
-package channel
+package channels
 
 import (
 	"fmt"
@@ -17,7 +17,7 @@ type server struct {
 
 func Run() error {
 	name := "Channel"
-	port := viper.GetString("microservices.channel.port")
+	port := viper.GetString("microservices.channels.port")
 
 	log.Printf("app %s started at %s\n", name, time.Now())
 

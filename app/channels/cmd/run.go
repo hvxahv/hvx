@@ -17,17 +17,17 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/hvxahv/hvxahv/internal/channel"
+	"github.com/hvxahv/hvxahv/internal/channels"
 	"github.com/spf13/cobra"
 )
 
 // runCmd represents the run command
 var runCmd = &cobra.Command{
 	Use:   "run",
-	Short: "Run the channel service of hvxahv.",
+	Short: "Run the channels service of hvxahv.",
 	Long: ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		err := channel.Run()
+		err := channels.Run()
 		if err != nil {
 			fmt.Println(err)
 		}

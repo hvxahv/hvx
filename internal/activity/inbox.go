@@ -9,103 +9,54 @@ import (
 
 type Inboxes struct {
 	gorm.Model
-
-	ActivityID       string `gorm:"index;type:text;activity_id"`
-	ActivityType     string `gorm:"type:text;activity_type"`
-	ActorID          uint   `gorm:"type:bigint;actor_id"`
-	LocalActorID     uint   `gorm:"primaryKey;type:bigint;local_actor_id"`
-	TargetActivityID string `gorm:"type;type:text;target_activity_id"`
-	ReqActor         string `gorm:"type;type:text;req_actor"`
-
-	// If it is true, it is a mention, and there is a pointing ID in the Article.
-	Mention bool `gorm:"type:boolean;mention"`
-
-	// If it is true, it is a dialogue, and there is a pointing ID in the Article.
-	Reply bool `gorm:"type:boolean;reply"`
-
-	// The ID of the article
-	ArticleID uint `gorm:"type:bigint;article_id"`
+	ActivityType string `gorm:"type:text;activity_type"`
+	ActorID      uint   `gorm:"type:bigint;actor_id"`
+	ObjectID     uint   `gorm:"primaryKey;type:bigint;object_id"`
+	SourceID     uint   `gorm:"type:bigint;source_id"`
 }
 
 func (i *Inboxes) Delete() error {
-	db := cockroach.GetDB()
-
-	if err := db.Debug().Table("inboxes").Where("activity_id = ?", i.ActivityID).Unscoped().Delete(&Inboxes{}).Error; err != nil {
-		return err
-	}
-	return nil
+	panic("implement me")
 }
 
-func NewInboxesActivityID(activityID string) *Inboxes {
-	return &Inboxes{ActivityID: activityID}
-}
-
-func (i *Inboxes) FindInboxesByActorID() (*[]Inboxes, error) {
+func (i *Inboxes) GetInboxesByObjectID() (*[]Inboxes, error) {
 	db := cockroach.GetDB()
 
 	var inboxes []Inboxes
-	if err := db.Debug().Table("inboxes").Where("account_id = ?", i.LocalActorID).Find(&inboxes).Error; err != nil {
+	if err := db.Debug().Table("inboxes").Where("object_id = ?", i.ObjectID).Find(&inboxes).Error; err != nil {
 		return nil, errors.Errorf("an error occurred while creating the activity: %v", err)
 	}
 	return &inboxes, nil
 }
 
-func (i *Inboxes) New() error {
+func (i *Inboxes) Create() error {
 	db := cockroach.GetDB()
 
 	if err := db.AutoMigrate(&Inboxes{}); err != nil {
 		log.Println(err)
 		return err
 	}
+
 	if err := db.Debug().Table("inboxes").Create(&i).Error; err != nil {
 		return errors.Errorf("an error occurred while creating the activity: %v", err)
 	}
+
 	return nil
 }
 
-type Inbox interface {
-	New() error
+func NewObjectID(id uint) *Inboxes {
+	return &Inboxes{ObjectID: id}
+}
 
-	FindInboxesByActorID() (*[]Inboxes, error)
+func NewInboxes(activityType string, actorID uint, objectID uint, sourceID uint) *Inboxes {
+	return &Inboxes{ActivityType: activityType, ActorID: actorID, ObjectID: objectID, SourceID: sourceID}
+}
+
+type Inbox interface {
+
+	Create() error
+
+	GetInboxesByObjectID() (*[]Inboxes, error)
 
 	Delete() error
-}
-
-func NewMention(activityID string, activityType string, actorID uint, localActorID uint, targetActivityID string, mention bool, articleID uint) *Inboxes {
-	return &Inboxes{
-		ActivityID:       activityID,
-		ActivityType:     activityType,
-		ActorID:          actorID,
-		LocalActorID:     localActorID,
-		TargetActivityID: targetActivityID,
-	}
-}
-
-func NewReply(activityID string, activityType string, actorID uint, localActorID uint, targetActivityID string, reply bool, articleID uint) *Inboxes {
-	return &Inboxes{
-		ActivityID:       activityID,
-		ActivityType:     activityType,
-		ActorID:          actorID,
-		LocalActorID:     localActorID,
-		TargetActivityID: targetActivityID,
-	}
-}
-
-func NewAccept(activityID string, activityType string, actorID uint, localActorID uint, targetActivityID string) *Inboxes {
-	return &Inboxes{
-		ActivityID:       activityID,
-		ActivityType:     activityType,
-		ActorID:          actorID,
-		LocalActorID:     localActorID,
-		TargetActivityID: targetActivityID,
-	}
-}
-
-func NewFollow(activityID string, activityType string, actorID uint, localActorID uint) *Inboxes {
-	return &Inboxes{
-		ActivityID:   activityID,
-		ActivityType: activityType,
-		ActorID:      actorID,
-		LocalActorID: localActorID,
-	}
 }

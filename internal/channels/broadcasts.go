@@ -1,4 +1,4 @@
-package channel
+package channels
 
 import (
 	"fmt"
@@ -101,7 +101,7 @@ type Broadcast interface {
 	// Synchronize to ipfs return ipfs id.
 	Create() error
 
-	// QueryLisByCID Fetch the content list in the channel by channel id.
+	// QueryLisByCID Fetch the content list in the channels by channels id.
 	QueryLisByCID() (*[]Broadcasts, error)
 }
 
@@ -109,7 +109,7 @@ func NewBroadcast(title, article string, channelID, actorID uint) (*Broadcasts, 
 	db := cockroach.GetDB()
 	if err := db.Table("administrators").Where("channel_id = ?", channelID).Where("actor_id = ?", actorID).First(&Administrators{}); err != nil {
 		if cockroach.IsNotFound(err.Error) {
-			return nil, errors.Errorf("You are not the moderator of this channel")
+			return nil, errors.Errorf("You are not the moderator of this channels")
 		}
 	}
 
