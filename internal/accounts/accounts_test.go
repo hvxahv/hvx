@@ -56,8 +56,8 @@ func TestNewAccounts(t *testing.T) {
 func TestAccounts_FindAccountByName(t *testing.T) {
 	TestInitDB(t)
 
-	a := NewAccountsName("hvturingga")
-	accounts, err := a.FindAccountByUsername()
+	a := NewAccountsUsername("hvturingga")
+	accounts, err := a.GetAccountByUsername()
 	if err != nil {
 		log.Println(err)
 	}
@@ -67,7 +67,7 @@ func TestAccounts_FindAccountByName(t *testing.T) {
 func TestAccounts_Update(t *testing.T) {
 	TestInitDB(t)
 
-	a := NewAccountsName("hvturingga")
+	a := NewAccountsUsername("hvturingga")
 	a.Password = "Hvxahv123"
 	a.Mail = "x@disism.com"
 

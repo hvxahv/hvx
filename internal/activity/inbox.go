@@ -12,7 +12,7 @@ type Inboxes struct {
 	ActivityType string `gorm:"type:text;activity_type"`
 	ActorID      uint   `gorm:"type:bigint;actor_id"`
 	ObjectID     uint   `gorm:"primaryKey;type:bigint;object_id"`
-	SourceID     uint   `gorm:"type:bigint;source_id"`
+	SourceID     uint   `gorm:"index;type:bigint;source_id"`
 }
 
 func (i *Inboxes) Delete() error {

@@ -3,8 +3,8 @@ package activity
 import (
 	"bytes"
 	"fmt"
-	"github.com/hvxahv/hvxahv/pkg/activitypub"
 	"github.com/google/uuid"
+	"github.com/hvxahv/hvxahv/pkg/activitypub"
 	"github.com/spf13/viper"
 	"golang.org/x/net/context"
 	"log"

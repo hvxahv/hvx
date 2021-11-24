@@ -41,6 +41,10 @@ func (f *FollowAccepts) Create() error {
 		return err
 	}
 
+	if err := NewFollows(f.ActorID, f.ObjectID).Create(); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -61,8 +65,37 @@ func (f *FollowRequests) Create() error {
 	return nil
 }
 
+func (f *FollowRequests) CreateSend() error {
+	db := cockroach.GetDB()
+
+	if err := db.AutoMigrate(&FollowRequests{}); err != nil {
+		return err
+	}
+	if err := db.Debug().Table("follow_requests").Create(&f).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (f *FollowRequests) Delete() error {
-	panic("implement me")
+	db := cockroach.GetDB()
+
+	if err := db.Debug().Table("follow_requests").Where("activity_id = ?", f.ActivityId).
+		First(&f).
+		Unscoped().Delete(&FollowRequests{}).Error; err != nil {
+		return err
+	}
+
+	if err := db.Debug().Table("inboxes").Where("source_id = ?", f.ID).Unscoped().Delete(&Inboxes{}).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func NewFollowRequestsActivityID(activityId string) *FollowRequests {
+	return &FollowRequests{ActivityId: activityId}
 }
 
 func NewFollowRequests(activityId string, actorID, objectID uint) *FollowRequests {
@@ -128,7 +161,7 @@ func (f *Follows) GetFollowers() (*[]uint, error) {
 	return &actorID, nil
 }
 
-func (f *Follows) GetFollowing() (*[]uint, error)  {
+func (f *Follows) GetFollowing() (*[]uint, error) {
 	db := cockroach.GetDB()
 
 	var following []Follows
@@ -149,6 +182,7 @@ type FollowAccept interface {
 
 type FollowRequest interface {
 	Create() error
+	CreateSend() error
 	Delete() error
 }
 

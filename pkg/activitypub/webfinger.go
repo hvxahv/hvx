@@ -71,11 +71,13 @@ func NewWebFinger(name string) *WebFingerData {
 
 // GetWebFinger Obtain the WebFinger of the remote instance through the email address format.
 func GetWebFinger(resource string) *WebFingerData {
-	wf, err := resty.New().R().Get(NewWebFingerUrl(GetHost(resource), resource))
+	w, err := resty.New().R().Get(NewWebFingerUrl(GetHost(resource), resource))
 	if err != nil {
 		log.Fatal(err)
 	}
-	var wfd WebFingerData
-	_ = json.Unmarshal(wf.Body(), &wfd)
-	return &wfd
+	var wf WebFingerData
+	if err := json.Unmarshal(w.Body(), &wf); err != nil {
+		return nil
+	}
+	return &wf
 }

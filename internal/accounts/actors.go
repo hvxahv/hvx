@@ -31,7 +31,7 @@ type Actors struct {
 	IsRemote bool `gorm:"type:boolean;is_remote"`
 }
 
-func (a *Actors) FindActorByUrl() (*Actors, error) {
+func (a *Actors) GetActorByUri() (*Actors, error) {
 	db := cockroach.GetDB()
 
 	if err := db.Debug().Table("actors").Where("url = ?", a.Url).First(&a).Error; err != nil {
@@ -43,8 +43,8 @@ func (a *Actors) FindActorByUrl() (*Actors, error) {
 	return a, nil
 }
 
-func NewActorUrl(url string) *Actors {
-	return &Actors{Url: url}
+func NewActorUri(uri string) *Actors {
+	return &Actors{Url: uri}
 }
 
 func (a *Actors) AddActor() (*Actors, error) {
@@ -77,7 +77,7 @@ func NewAddActor(PreferredUsername, Domain, Avatar, Name, Summary, Inbox, Url, P
 func (a *Actors) FindActorByAccountUsername() (*Actors, error) {
 	db := cockroach.GetDB()
 
-	acct, err := NewAccountsName(a.PreferredUsername).FindAccountByUsername()
+	acct, err := NewAccountsUsername(a.PreferredUsername).GetAccountByUsername()
 	if err != nil {
 		return nil, err
 	}

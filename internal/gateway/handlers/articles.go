@@ -2,11 +2,11 @@ package handlers
 
 import (
 	"fmt"
+	"github.com/gin-gonic/gin"
 	pb "github.com/hvxahv/hvxahv/api/accounts/v1alpha1"
 	"github.com/hvxahv/hvxahv/internal/articles"
 	"github.com/hvxahv/hvxahv/internal/gateway/middleware"
 	"github.com/hvxahv/hvxahv/pkg/microservices/client"
-	"github.com/gin-gonic/gin"
 	"golang.org/x/net/context"
 	"log"
 	"strconv"
@@ -19,7 +19,7 @@ func NewArticleHandler(c *gin.Context) {
 		log.Println(err)
 	}
 	defer conn.Close()
-	r, err := cli.FindAccountsByUsername(context.Background(), &pb.AccountUsername{
+	r, err := cli.GetAccountsByUsername(context.Background(), &pb.AccountUsername{
 		Username: middleware.GetUserName(c),
 	})
 	if err != nil {

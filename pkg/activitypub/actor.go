@@ -2,87 +2,15 @@ package activitypub
 
 import (
 	"encoding/json"
-	"github.com/hvxahv/hvxahv/internal/accounts"
-	"github.com/hvxahv/hvxahv/pkg/streams"
+	"fmt"
+	"github.com/go-resty/resty/v2"
 	"github.com/google/uuid"
+	"github.com/hvxahv/hvxahv/internal/accounts"
 	"github.com/spf13/viper"
 	"net/url"
 	"strings"
 	"time"
 )
-
-// GetActorName Get the username in the request url such,
-// as "/.well-known/webFinger?resource=acct:hvturingga@0efb43b41a8a.ngrok.io" Will get hvturingga,
-// If the match fails, it will return a custom username not found error.
-func GetActorName(resource string) string {
-	if strings.HasPrefix(resource, "acct:") {
-		resource = resource[5:]
-		if ali := strings.IndexByte(resource, '@'); ali != -1 {
-			resource = resource[:ali]
-		}
-	}
-
-	return resource
-}
-
-// IsRemote Get host to determine whether it is a remote instance user (not a user of this instance).
-func IsRemote(resource string) bool {
-	host := GetHost(resource)
-	if !strings.Contains(resource, "@") {
-		return false
-	}
-	if host != viper.GetString("localhost") {
-		return true
-	}
-	return false
-
-}
-
-// GetHost Get the host of the received resource.
-func GetHost(resource string) string {
-	if strings.HasPrefix(resource, "acct:") {
-		ali := strings.IndexByte(resource, '@')
-		if ali != -1 {
-			return resource[ali+1:]
-		}
-	}
-	return resource[5:]
-}
-
-func FetchRemoteActor(actorUrl string) (*accounts.Actors, error) {
-
-	a, err := streams.NewRequest("GET", actorUrl).Get()
-	if err != nil {
-		return nil, err
-	}
-	var actor Actor
-	_ = json.Unmarshal(a, &actor)
-
-	h, err := url.Parse(actorUrl)
-	if err != nil {
-		return nil, err
-	}
-
-	account := accounts.NewAddActor(
-		actor.PreferredUsername,
-		h.Hostname(),
-		actor.Icon.Url,
-		actor.Name,
-		actor.Summary,
-		actor.Inbox,
-		actorUrl,
-		actor.PublicKey.PublicKeyPem,
-		uuid.New().String(),
-		actor.Type,
-	)
-
-	act, err := account.AddActor()
-	if err != nil {
-		return nil, err
-	}
-
-	return act, nil
-}
 
 
 // EXAMPLE 9
@@ -198,8 +126,43 @@ func FetchRemoteActor(actorUrl string) (*accounts.Actors, error) {
 //    }
 //}
 
+//type Actor struct {
+//	Context                   []string `json:"@context"`
+//	Id                        string        `json:"id"`
+//	Type                      string        `json:"type"`
+//	Following                 string        `json:"following"`
+//	Followers                 string        `json:"followers"`
+//	Inbox                     string        `json:"inbox"`
+//	Outbox                    string        `json:"outbox"`
+//	Featured                  string        `json:"featured"`
+//	FeaturedTags              string        `json:"featuredTags"`
+//	PreferredUsername         string        `json:"preferredUsername"`
+//	Name                      string        `json:"name"`
+//	Summary                   string        `json:"summary"`
+//	Url                       string        `json:"url"`
+//	ManuallyApprovesFollowers bool          `json:"manuallyApprovesFollowers"`
+//	Discoverable              bool          `json:"discoverable"`
+//	Published                 time.Time     `json:"published"`
+//	Devices                   string        `json:"devices"`
+//	PublicKey                 struct {
+//		Id           string `json:"id"`
+//		Owner        string `json:"owner"`
+//		PublicKeyPem string `json:"publicKeyPem"`
+//	} `json:"publicKey"`
+//	Tag        []interface{} `json:"tag"`
+//	Attachment []interface{} `json:"attachment"`
+//	Endpoints  struct {
+//		SharedInbox string `json:"sharedInbox"`
+//	} `json:"endpoints"`
+//	Icon struct {
+//		Type      string `json:"type"`
+//		MediaType string `json:"mediaType"`
+//		Url       string `json:"url"`
+//	} `json:"icon"`
+//}
+
 type Actor struct {
-	Context                   []string `json:"@context"`
+	Context                   []interface{} `json:"@context"`
 	Id                        string        `json:"id"`
 	Type                      string        `json:"type"`
 	Following                 string        `json:"following"`
@@ -232,3 +195,86 @@ type Actor struct {
 		Url       string `json:"url"`
 	} `json:"icon"`
 }
+
+// GetActorName Get the username in the request url such,
+// as "/.well-known/webFinger?resource=acct:hvturingga@0efb43b41a8a.ngrok.io" Will get hvturingga,
+// If the match fails, it will return a custom username not found error.
+func GetActorName(resource string) string {
+	if strings.HasPrefix(resource, "acct:") {
+		resource = resource[5:]
+		if ali := strings.IndexByte(resource, '@'); ali != -1 {
+			resource = resource[:ali]
+		}
+	}
+
+	return resource
+}
+
+// IsRemote Get host to determine whether it is a remote instance user (not a user of this instance).
+func IsRemote(resource string) bool {
+	host := GetHost(resource)
+	if !strings.Contains(resource, "@") {
+		return false
+	}
+	if host != viper.GetString("localhost") {
+		return true
+	}
+	return false
+
+}
+
+// GetHost Get the host of the received resource.
+func GetHost(resource string) string {
+	if strings.HasPrefix(resource, "acct:") {
+		ali := strings.IndexByte(resource, '@')
+		if ali != -1 {
+			return resource[ali+1:]
+		}
+	}
+	return resource[5:]
+}
+
+// GetRemoteActor Get remote Actor data and save it locally.
+func GetRemoteActor(uri string) (*accounts.Actors, error) {
+	resp, err := resty.New().R().
+		SetHeader("Content-Type", "application/activity+json; charset=utf-8").
+		SetHeader("Accept", "application/ld+json").
+		EnableTrace().
+		Get(uri)
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Println(string(resp.Body()))
+	var actor *Actor
+
+	if err = json.Unmarshal(resp.Body(), &actor); err != nil {
+		return nil, err
+	}
+
+	h, err := url.Parse(uri)
+	if err != nil {
+		return nil, err
+	}
+
+	account := accounts.NewAddActor(
+		actor.PreferredUsername,
+		h.Hostname(),
+		actor.Icon.Url,
+		actor.Name,
+		actor.Summary,
+		actor.Inbox,
+		uri,
+		actor.PublicKey.PublicKeyPem,
+		uuid.New().String(),
+		actor.Type,
+	)
+
+	act, err := account.AddActor()
+	if err != nil {
+		return nil, err
+	}
+
+	return act, nil
+}
+

@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/hvxahv/hvxahv/internal/accounts"
-	"github.com/hvxahv/hvxahv/internal/articles"
 	"github.com/hvxahv/hvxahv/pkg/activitypub"
 	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"github.com/spf13/viper"
@@ -29,212 +28,184 @@ type Activity struct {
 
 // Types handler for inbox activity.
 func Types(name string, body []byte) {
-	// Get local actor ID
-	//acctName := accounts.NewAccountsName(name)
-	//objectID, err := acctName.FindAccountByUsername()
-	//if err != nil {
-	//	return
-	//}
+	var objectID uint
+	var actorID uint
 
-	fmt.Println(string(body))
+	// Get ActorID by NAME.
+	account, err := accounts.NewAccountsUsername(name).GetAccountByUsername()
+	if err != nil {
+		return
+	}
+	objectID = account.ID
 
-	i := Activity{}
-
-	if err := json.Unmarshal(body, &i); err != nil {
+	a := Activity{}
+	if err := json.Unmarshal(body, &a); err != nil {
 		fmt.Printf("UNMARSHAL ACTICITY TYPE ERROR:%v", err)
 	}
 
-	u := accounts.NewActorUrl(i.Actor)
-	remoteActor, err := u.FindActorByUrl()
+	actor, err := accounts.NewActorUri(a.Actor).GetActorByUri()
 	if err != nil {
-		remote, err2 := activitypub.FetchRemoteActor(i.Actor)
+		resp, err2 := activitypub.GetRemoteActor(a.Actor)
 		if err2 != nil {
 			return
 		}
-		remoteActor = remote
+		actorID = resp.ID
 	}
+	actorID = actor.ID
 
-	switch i.Type {
+	switch a.Type {
 	case "Follow":
 		f := activitypub.Follow{}
-		err2 := json.Unmarshal(body, &f)
-		if err2 != nil {
-			fmt.Println(err2)
+		if err := json.Unmarshal(body, &f); err != nil {
+			fmt.Println(err)
+			return
 		}
-		fmt.Println("请求关注")
 
-		//if err := NewFollow(i.Id, "Follow", remoteActor.ID, localActor.ActorID).New(); err != nil {
-		//	log.Println(err)
-		//	return
-		//}
+		fmt.Println("请求关注")
+		if err := NewFollowRequests(a.Id, actorID, objectID).Create(); err != nil {
+			fmt.Println(err)
+			return
+		}
 
 	case "Undo":
-		fmt.Printf("撤回了消息")
-		fmt.Println("得到的接口数据:", i.Object)
-		fmt.Println(string(body))
 		undo := activitypub.Undo{}
-		err2 := json.Unmarshal(body, &undo)
-		if err2 != nil {
-			fmt.Println(err2)
+		if err := json.Unmarshal(body, &undo); err != nil {
+			fmt.Println(err)
+			return
 		}
+
+		fmt.Printf("撤回了消息")
+		if err := NewFollowRequestsActivityID(undo.Object.Id).Delete(); err != nil {
+			fmt.Println(err)
+			return
+		}
+
+	case "Accept":
+		accept := activitypub.Accept{}
+		if err := json.Unmarshal(body, &accept); err != nil {
+			fmt.Println(err)
+		}
+
+		fmt.Println("接受了你的请求:")
+		if err := NewFollowAccepts(accept.Id, actorID, objectID, accept.Object.Id).Create(); err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		//case "Reject":
+		//	reject := activitypub.Reject{}
+		//	err2 := json.Unmarshal(body, &reject)
+		//	if err2 != nil {
+		//		fmt.Println(err2)
+		//	}
 		//
-		//d := NewInboxesActivityID(undo.Object.Id)
-		//if err := d.Delete(); err != nil {
-		//	log.Println(err)
-		//	return
-		//}
-		//fmt.Println("删除消息成功")
-
-	case "Reject":
-		reject := activitypub.Reject{}
-		err2 := json.Unmarshal(body, &reject)
-		if err2 != nil {
-			fmt.Println(err2)
-		}
-
-		//if reject.Object.Type == "Follow" {
-		//	fmt.Println("移除了你的关注")
-		//	if err := accounts.NewFollows(localActor.ActorID, remoteActor.ID).Remove(); err != nil {
+		//	//if reject.Object.Type == "Follow" {
+		//	//	fmt.Println("移除了你的关注")
+		//	//	if err := accounts.NewFollows(localActor.ActorID, remoteActor.ID).Remove(); err != nil {
+		//	//		log.Println(err)
+		//	//		return
+		//	//	}
+		//	//}
+		//
+		//
+		//case "Create":
+		//
+		//	fmt.Println("创建了一条消息")
+		//	c := activitypub.Create{}
+		//	if err := json.Unmarshal(body, &c); err != nil {
+		//		log.Println(err)
+		//	}
+		//
+		//	fmt.Println(string(body))
+		//	fmt.Println("CONTEXT: ", c.Context)
+		//	fmt.Println("ACTOR: ", c.Actor)
+		//	fmt.Println("TYPE: ", c.Type)
+		//	fmt.Println("ID: ", c.Id)
+		//	fmt.Println("PUBLISHED: ", c.Published)
+		//	fmt.Println("CC: ", c.Cc)
+		//	fmt.Println("TO: ", c.To)
+		//
+		//	fmt.Println("OBJECT: ", c.Object)
+		//
+		//	fmt.Println("Id:", c.Object.Id)
+		//	fmt.Println("Type:", c.Object.Type)
+		//	fmt.Println("Summary:", c.Object.Summary)
+		//	fmt.Println("InReplyTo:", c.Object.InReplyTo)
+		//	fmt.Println("Url:", c.Object.Url)
+		//	fmt.Println("AttributedTo:", c.Object.AttributedTo)
+		//	fmt.Println("To:", c.Object.To)
+		//	fmt.Println("Cc:", c.Object.Cc)
+		//	fmt.Println("Sensitive:", c.Object.Sensitive)
+		//	fmt.Println("AtomUri:", c.Object.AtomUri)
+		//	fmt.Println("InReplyToAtomUri:", c.Object.InReplyToAtomUri)
+		//	fmt.Println("Conversation:", c.Object.Conversation)
+		//	fmt.Println("Content:", c.Object.Content)
+		//	fmt.Println("InReplyToAtomUri:", c.Object.InReplyToAtomUri)
+		//
+		//	switch c.Object.Type {
+		//	case "Note":
+		//		fmt.Println("得到了一条 Note")
+		//
+		//		la := accounts.NewActorUrl(c.Actor)
+		//		LID, err3 := la.FindActorByUrl()
+		//		if err3 != nil {
+		//			return
+		//		}
+		//
+		//		to := map[string]interface{}{
+		//			"to": c.Object.To,
+		//		}
+		//
+		//		if len(c.Object.Cc) != 0 {
+		//			fmt.Println("这是条消息提及：", c.Object.Cc)
+		//
+		//			if c.Object.InReplyTo != "" {
+		//				fmt.Println("这是一条评论消息，对于：", c.Object.InReplyTo)
+		//				nc := articles.NewConversations(c.Id, LID.ID, c.Object.InReplyTo, c.Object.Content, remoteActor.ID)
+		//				if err := nc.New(); err != nil {
+		//					log.Println(err)
+		//					return
+		//				}
+		//				return
+		//			}
+		//		}
+		//
+		//		n := articles.Articles{
+		//			AuthorID:   LID.ID,
+		//			URL:        c.Object.Url,
+		//			Article:    c.Object.Content,
+		//			//Attachment: &articles.Attachment{
+		//			//	Attachment: c.Object.Attachment,
+		//			//},
+		//			TO: to,
+		//			//CC:         &articles.CC{CC: c.Object.Cc},
+		//			Statuses:   true,
+		//			NSFW:       false,
+		//			Visibility: false,
+		//		}
+		//		if err := n.Create(); err != nil {
+		//			log.Println(err)
+		//			return
+		//		}
+		//
+		//	}
+		//case "Delete":
+		//	fmt.Println("一个删除事件")
+		//	fmt.Println(string(body))
+		//	d := activitypub.Delete{}
+		//	if err := json.Unmarshal(body, &d); err != nil {
+		//		log.Println(err)
+		//	}
+		//	da := articles.NewArticleURL(d.Object.Id)
+		//	if err := da.DeleteByURL(); err != nil {
 		//		log.Println(err)
 		//		return
 		//	}
 		//}
-
-	case "Accept":
-		fmt.Println("接受了你的请求:", i.Object)
-		a := activitypub.Accept{}
-		if err := json.Unmarshal(body, &a); err != nil {
-			fmt.Println(err)
-		}
-		fmt.Println(string(body))
-
-		// Following...
-		//nf := accounts.NewFollows(localActor.ActorID, remoteActor.ID)
-		//if err := nf.New(); err != nil {
-		//	return
-		//}
-		////if err := NewAccept(i.Id, "Accept", remoteActor.ID, localActor.ActorID, a.Object.Id).New(); err != nil {
-		////	log.Println(err)
-		////	return
-		////}
-
-	case "Create":
-
-		fmt.Println("创建了一条消息")
-		c := activitypub.Create{}
-		if err := json.Unmarshal(body, &c); err != nil {
-			log.Println(err)
-		}
-
-		fmt.Println(string(body))
-		fmt.Println("CONTEXT: ", c.Context)
-		fmt.Println("ACTOR: ", c.Actor)
-		fmt.Println("TYPE: ", c.Type)
-		fmt.Println("ID: ", c.Id)
-		fmt.Println("PUBLISHED: ", c.Published)
-		fmt.Println("CC: ", c.Cc)
-		fmt.Println("TO: ", c.To)
-
-		fmt.Println("OBJECT: ", c.Object)
-
-		fmt.Println("Id:", c.Object.Id)
-		fmt.Println("Type:", c.Object.Type)
-		fmt.Println("Summary:", c.Object.Summary)
-		fmt.Println("InReplyTo:", c.Object.InReplyTo)
-		fmt.Println("Url:", c.Object.Url)
-		fmt.Println("AttributedTo:", c.Object.AttributedTo)
-		fmt.Println("To:", c.Object.To)
-		fmt.Println("Cc:", c.Object.Cc)
-		fmt.Println("Sensitive:", c.Object.Sensitive)
-		fmt.Println("AtomUri:", c.Object.AtomUri)
-		fmt.Println("InReplyToAtomUri:", c.Object.InReplyToAtomUri)
-		fmt.Println("Conversation:", c.Object.Conversation)
-		fmt.Println("Content:", c.Object.Content)
-		fmt.Println("InReplyToAtomUri:", c.Object.InReplyToAtomUri)
-
-		switch c.Object.Type {
-		case "Note":
-			fmt.Println("得到了一条 Note")
-
-			la := accounts.NewActorUrl(c.Actor)
-			LID, err3 := la.FindActorByUrl()
-			if err3 != nil {
-				return
-			}
-
-			to := map[string]interface{}{
-				"to": c.Object.To,
-			}
-
-			if len(c.Object.Cc) != 0 {
-				fmt.Println("这是条消息提及：", c.Object.Cc)
-
-				if c.Object.InReplyTo != "" {
-					fmt.Println("这是一条评论消息，对于：", c.Object.InReplyTo)
-					nc := articles.NewConversations(c.Id, LID.ID, c.Object.InReplyTo, c.Object.Content, remoteActor.ID)
-					if err := nc.New(); err != nil {
-						log.Println(err)
-						return 
-					}
-					return
-				}
-			}
-
-			n := articles.Articles{
-				AuthorID:   LID.ID,
-				URL:        c.Object.Url,
-				Article:    c.Object.Content,
-				//Attachment: &articles.Attachment{
-				//	Attachment: c.Object.Attachment,
-				//},
-				TO: to,
-				//CC:         &articles.CC{CC: c.Object.Cc},
-				Statuses:   true,
-				NSFW:       false,
-				Visibility: false,
-			}
-			if err := n.Create(); err != nil {
-				log.Println(err)
-				return
-			}
-
-		}
-	case "Delete":
-		fmt.Println("一个删除事件")
-		fmt.Println(string(body))
-		d := activitypub.Delete{}
-		if err := json.Unmarshal(body, &d); err != nil {
-			log.Println(err)
-		}
-		da := articles.NewArticleURL(d.Object.Id)
-		if err := da.DeleteByURL(); err != nil {
-			log.Println(err)
-			return
-		}
 	}
-}
 
-type ActivityRequest struct {
-	KeyID     string
-	TargetURL string
-	Local     string
-	Data      []byte
-	Key       []byte
-}
 
-type Request interface {
-	// Send request to remote server.
-	Send()
 
-	// Follow ActivityPub follow method.
-	Follow()
-
-	// Accept ... TODO - Implement the method...
-	Accept()
-
-	Create()
-
-	Article()
 }
 
 type InboxWithCtx struct {
@@ -259,6 +230,15 @@ func getPrivk() string {
 	return acct.PrivateKey
 }
 
+
+type ActivityRequest struct {
+	KeyID     string
+	TargetURL string
+	Local     string
+	Data      []byte
+	Key       []byte
+}
+
 // NewActivityRequest Receive the current actor name,
 // the other party's URL,
 // the requested data and the current user's private key.
@@ -267,7 +247,6 @@ func NewActivityRequest(actor string, object string, data []byte, key []byte) *A
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	targetURL := fmt.Sprintf("https://%s/inbox", h.Hostname())
 	keyID := fmt.Sprintf("%s#main-key", actor)
 
@@ -279,19 +258,17 @@ func NewActivityRequest(actor string, object string, data []byte, key []byte) *A
 		Key:       key,
 	}
 }
+type Request interface {
+	// Send request to remote server.
+	Send()
 
-func (a *ActivityRequest) Follow() {
-	a.Send()
-}
+	// Follow ActivityPub follow method.
+	Follow()
 
-func (a *ActivityRequest) Accept() {
-	a.Send()
-}
+	// Accept ... TODO - Implement the method...
+	Accept()
 
-func (a *ActivityRequest) Create() {
-	a.Send()
-}
+	Create()
 
-func (a *ActivityRequest) Article() {
-	a.Send()
+	Article()
 }

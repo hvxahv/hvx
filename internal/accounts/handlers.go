@@ -36,9 +36,9 @@ func (s *server) Update(ctx context.Context, in *pb.AccountData) (*pb.AccountsRe
 	return &pb.AccountsReply{Code: "200", Message: "ok"}, nil
 }
 
-func (s *server) FindAccountsByUsername(ctx context.Context, in *pb.AccountUsername) (*pb.AccountData, error) {
-	r := NewAccountsName(in.Username)
-	a, err := r.FindAccountByUsername()
+func (s *server) GetAccountsByUsername(ctx context.Context, in *pb.AccountUsername) (*pb.AccountData, error) {
+	r := NewAccountsUsername(in.Username)
+	a, err := r.GetAccountByUsername()
 	if err != nil {
 		return nil, err
 	}

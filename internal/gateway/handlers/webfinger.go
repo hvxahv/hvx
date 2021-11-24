@@ -1,12 +1,10 @@
 package handlers
 
 import (
-	"encoding/json"
 	"github.com/gin-gonic/gin"
 	pb "github.com/hvxahv/hvxahv/api/accounts/v1alpha1"
 	"github.com/hvxahv/hvxahv/pkg/activitypub"
 	"github.com/hvxahv/hvxahv/pkg/microservices/client"
-	"github.com/hvxahv/hvxahv/pkg/streams"
 	"golang.org/x/net/context"
 	"log"
 )
@@ -14,22 +12,18 @@ import (
 func WebFingerHandler(c *gin.Context) {
 	resource := c.Query("resource")
 
+	cli, conn, err := client.Accounts()
+	if err != nil {
+		log.Println(err)
+	}
+	defer conn.Close()
+
+	// Determine whether it is a user of this instance,
+	// if you do not search for a user of this instance, go to the remote request.
 	ok := activitypub.IsRemote(resource)
 	if ok {
-		// If you are not searching for the user of this instance, go to the remote request.
-		//wf, err := streams.NewRequest("GET", activitypub.NewWebFingerUrl(activitypub.GetHost(resource), resource)).Get()
-		//if err != nil {
-		//	log.Println(err)
-		//}
-
-		var ar activitypub.Actor
-		actor, err := streams.NewRequest("GET", activitypub.GetWebFinger(resource).Links[0].Href).Get()
-		if err != nil {
-			log.Println(err)
-		}
-		_ = json.Unmarshal(actor, &ar)
-
-		c.JSON(200, ar)
+		actor := activitypub.GetWebFinger(resource)
+		c.JSON(200, actor)
 		return
 	}
 
@@ -38,13 +32,7 @@ func WebFingerHandler(c *gin.Context) {
 	// Currently only tested mastodon has not supported other ActivityPub implementations.
 	// Use this client to call the remote Accounts gRPC service,
 	// and then pass the username to get the queried data.
-	cli, conn, err := client.Accounts()
-	if err != nil {
-		log.Println(err)
-	}
-	defer conn.Close()
-
-	accounts, err := cli.FindAccountsByUsername(context.Background(), &pb.AccountUsername{Username: activitypub.GetActorName(resource)})
+	accounts, err := cli.GetAccountsByUsername(context.Background(), &pb.AccountUsername{Username: activitypub.GetActorName(resource)})
 	if err != nil {
 		return
 	}

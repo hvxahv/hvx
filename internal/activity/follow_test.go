@@ -56,3 +56,12 @@ func TestFollows_GetFollowing(t *testing.T) {
 	}
 	fmt.Println(f)
 }
+
+func TestFollowRequests_Delete(t *testing.T) {
+	IniTestConfig(t)
+
+	if err := NewFollowRequestsActivityID("https://mas.to/2d7db601-f78e-40f8-b9cb-5fc3e285883f").Delete(); err != nil {
+		fmt.Println(err)
+		return 
+	}
+}

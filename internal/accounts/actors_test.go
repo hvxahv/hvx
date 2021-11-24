@@ -45,8 +45,8 @@ func TestActors_FindActorByID(t *testing.T) {
 func TestActors_FindActorByUrl(t *testing.T) {
 	TestInitDB(t)
 
-	a := NewActorUrl("https://mas.to/users/hvturinggas")
-	actor, err := a.FindActorByUrl()
+	a := NewActorUri("https://mas.to/users/hvturinggas")
+	actor, err := a.GetActorByUri()
 	if err != nil {
 		log.Println(err)
 	}
