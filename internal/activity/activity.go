@@ -36,7 +36,7 @@ func Types(name string, body []byte) {
 	if err != nil {
 		return
 	}
-	objectID = account.ID
+	objectID = account.ActorID
 
 	a := Activity{}
 	if err := json.Unmarshal(body, &a); err != nil {
@@ -92,22 +92,21 @@ func Types(name string, body []byte) {
 			return
 		}
 
-		//case "Reject":
-		//	reject := activitypub.Reject{}
-		//	err2 := json.Unmarshal(body, &reject)
-		//	if err2 != nil {
-		//		fmt.Println(err2)
-		//	}
-		//
-		//	//if reject.Object.Type == "Follow" {
-		//	//	fmt.Println("移除了你的关注")
-		//	//	if err := accounts.NewFollows(localActor.ActorID, remoteActor.ID).Remove(); err != nil {
-		//	//		log.Println(err)
-		//	//		return
-		//	//	}
-		//	//}
-		//
-		//
+	case "Reject":
+		reject := activitypub.Reject{}
+		if err := json.Unmarshal(body, &reject); err != nil {
+			fmt.Println(err)
+		}
+
+		if reject.Object.Type == "Follow" {
+			fmt.Println("移除了你的关注")
+			if err := NewFollows(actorID, objectID).Remove(); err != nil {
+				fmt.Println(err)
+				return
+			}
+		}
+
+
 		//case "Create":
 		//
 		//	fmt.Println("创建了一条消息")
