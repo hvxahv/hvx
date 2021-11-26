@@ -15,6 +15,8 @@ func InboxHandler(c *gin.Context) {
 		return
 	}
 
+	fmt.Println(string(body))
+
 	activity.Types(name, body)
 }
 

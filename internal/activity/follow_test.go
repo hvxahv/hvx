@@ -65,3 +65,12 @@ func TestFollowRequests_Delete(t *testing.T) {
 		return 
 	}
 }
+
+func TestFollows_Remove(t *testing.T) {
+	IniTestConfig(t)
+
+	if err := NewFollows(698619814874251265, 710444110081654785).Remove(); err != nil {
+		fmt.Println(err)
+	}
+
+}

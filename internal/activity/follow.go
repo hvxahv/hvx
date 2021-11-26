@@ -143,7 +143,14 @@ func (f *Follows) Create() error {
 }
 
 func (f *Follows) Remove() error {
-	panic("implement me")
+	db := cockroach.GetDB()
+
+	if err := db.Debug().Table("follows").
+		Where("actor_id = ? AND object_id = ?", f.ActorID, f.ObjectID).
+		Unscoped().Delete(&Follows{}).Error; err != nil {
+			return err
+	}
+	return nil
 }
 
 func (f *Follows) GetFollowers() (*[]uint, error) {
@@ -187,7 +194,9 @@ type FollowRequest interface {
 }
 
 type Follow interface {
+	// Create a new follower, the follower of the Actor is Object.
 	Create() error
+	// Remove followers of Actor.
 	Remove() error
 	GetFollowers() (*[]uint, error)
 	GetFollowing() (*[]uint, error)
