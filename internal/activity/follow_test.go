@@ -40,7 +40,7 @@ func TestFollows_Create(t *testing.T) {
 func TestFollows_GetFollowers(t *testing.T) {
 	IniTestConfig(t)
 
-	f, err := NewObjectByID(698619813575491585).GetFollowers()
+	f, err := NewByActorID(698619813575491585).GetFollowers()
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -50,7 +50,7 @@ func TestFollows_GetFollowers(t *testing.T) {
 func TestFollows_GetFollowing(t *testing.T) {
 	IniTestConfig(t)
 
-	f, err := NewActorByID(698619813575491585).GetFollowing()
+	f, err := NewByActorID(698619813575491585).GetFollowing()
 	if err != nil {
 		fmt.Println(err)
 	}

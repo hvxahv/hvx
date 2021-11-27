@@ -132,11 +132,7 @@ func NewFollows(actorID uint, objectID uint) *Follows {
 	return &Follows{ActorID: actorID, ObjectID: objectID}
 }
 
-func NewObjectByID(id uint) *Follows {
-	return &Follows{ObjectID: id}
-}
-
-func NewActorByID(id uint) *Follows {
+func NewByActorID(id uint) *Follows {
 	return &Follows{ActorID: id}
 }
 
@@ -178,13 +174,13 @@ func (f *Follows) GetFollowers() (*[]uint, error) {
 	db := cockroach.GetDB()
 
 	var followers []Follows
-	if err := db.Debug().Table("follows").Where("object_id = ?", f.ObjectID).Find(&followers).Error; err != nil {
+	if err := db.Debug().Table("follows").Where("actor_id = ?", f.ActorID).Find(&followers).Error; err != nil {
 		return nil, err
 	}
 
 	var actorID []uint
 	for _, i := range followers {
-		actorID = append(actorID, i.ActorID)
+		actorID = append(actorID, i.ObjectID)
 	}
 	return &actorID, nil
 }
@@ -193,13 +189,13 @@ func (f *Follows) GetFollowing() (*[]uint, error) {
 	db := cockroach.GetDB()
 
 	var following []Follows
-	if err := db.Debug().Table("follows").Where("actor_id = ?", f.ActorID).Find(&following).Error; err != nil {
+	if err := db.Debug().Table("follows").Where("object_id = ?", f.ActorID).Find(&following).Error; err != nil {
 		return nil, err
 	}
 
 	var actorID []uint
 	for _, i := range following {
-		actorID = append(actorID, i.ObjectID)
+		actorID = append(actorID, i.ActorID)
 	}
 	return &actorID, nil
 }

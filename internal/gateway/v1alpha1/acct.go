@@ -12,8 +12,7 @@ func V1Accounts(v1 *gin.RouterGroup) {
 		v1.GET("/inbox", handlers.GetInboxesHandler)
 		v1.GET("/iam/timelines")
 
-		v1.POST("/accounts/follow", handlers.FollowReqHandler)
-		v1.POST("/accounts/follow/accept", handlers.FollowAcceptHandler)
+		//v1.POST("/accounts/follow", handlers.FollowReqHandler)
 
 		// Delete accounts
 		//v1.POST("/accounts/delete", handlers.DeleteAccount)

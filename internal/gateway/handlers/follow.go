@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/hvxahv/hvxahv/internal/accounts"
 	"github.com/hvxahv/hvxahv/internal/activity"
 	"github.com/hvxahv/hvxahv/internal/gateway/middleware"
 	"strconv"
@@ -69,5 +70,41 @@ func FollowAcceptHandler(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"code": 200,
 		"message": "ok",
+	})
+}
+
+func FollowerHandler(c *gin.Context) {
+	name := middleware.GetUserName(c)
+	acct, err := accounts.NewAccountsUsername(name).GetAccountByUsername()
+	if err != nil {
+		return 
+	}
+	fmt.Println(acct.ActorID)
+	f, err := activity.NewByActorID(acct.ActorID).GetFollowers()
+	if err != nil {
+		return 
+	}
+
+	c.JSON(200, gin.H{
+		"code": "200",
+		"message": f,
+	})
+}
+
+func FollowingHandler(c *gin.Context) {
+	name := middleware.GetUserName(c)
+	acct, err := accounts.NewAccountsUsername(name).GetAccountByUsername()
+	if err != nil {
+		return
+	}
+	fmt.Println(acct.ActorID)
+	f, err := activity.NewByActorID(acct.ActorID).GetFollowing()
+	if err != nil {
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"code": "200",
+		"message": f,
 	})
 }

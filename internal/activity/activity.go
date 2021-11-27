@@ -5,9 +5,6 @@ import (
 	"fmt"
 	"github.com/hvxahv/hvxahv/internal/accounts"
 	"github.com/hvxahv/hvxahv/pkg/activitypub"
-	"github.com/hvxahv/hvxahv/pkg/cockroach"
-	"gorm.io/gorm"
-	"log"
 )
 
 // All Activity Types inherit the properties of the base Activity type.
@@ -215,30 +212,3 @@ type Receive interface {
 	Inbox(name string)
 }
 
-func getPrivk() string {
-	acct := &accounts.Accounts{}
-	if err2 := cockroach.GetDB().
-		Debug().
-		Table("accounts").
-		Where("username = ?", "hvturingga").
-		First(acct).Error; err2 != nil {
-		log.Println(gorm.ErrMissingWhereClause)
-	}
-	return acct.PrivateKey
-}
-
-
-type Request interface {
-	// Send request to remote server.
-	Send()
-
-	// Follow ActivityPub follow method.
-	Follow()
-
-	// Accept ... TODO - Implement the method...
-	Accept()
-
-	Create()
-
-	Article()
-}
