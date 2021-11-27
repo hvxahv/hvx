@@ -1,8 +1,13 @@
 package activity
 
 import (
+	"fmt"
+	"github.com/google/uuid"
+	"github.com/hvxahv/hvxahv/internal/accounts"
+	"github.com/hvxahv/hvxahv/pkg/activitypub"
 	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"github.com/pkg/errors"
+	"github.com/spf13/viper"
 	"gorm.io/gorm"
 )
 
@@ -214,69 +219,70 @@ type FollowRequest interface {
 
 type Follow interface {
 	// Create a new follower, the follower of the Actor is Object.
+	// Use this method to add a following when receiving the other party's consent to follow request.
+	// Use this method to create a follower when replying to agree to the other party's follow request.
 	Create() error
-	// Remove followers of Actor.
+
+	// Remove a follower or following.
+	// When the other party sends a request to remove followers.
 	Remove() error
+
 	GetFollowers() (*[]uint, error)
 	GetFollowing() (*[]uint, error)
 }
 
-// NewFollowAccept
-// name: LOCAL ACTOR NAME,
-// actor: REMOTE ACTOR LINK,
-// oid: CONTEXT ID,
-// object: LOCAL ACTOR LINK.
-//func NewFollowAccept(name, object, activityID string, remoteActorID, localActorID uint) *activitypub.Accept {
-//	var (
-//		ctx = "https://www.w3.org/ns/activitystreams"
-//		id  = fmt.Sprintf("https://%s/u/%s#accepts/follows/%s", viper.GetString("localhost"), name, uuid.New().String())
-//	)
-//
-//	nf := accounts.NewFollows(remoteActorID, localActorID)
-//	if err := nf.New(); err != nil {
-//		log.Println(err)
-//	}
-//
-//	return &activitypub.Accept{
-//		Context: ctx,
-//		Id:      id,
-//		Type:    "Accept",
-//		Actor:   object,
-//		Object: struct {
-//			Id     string `json:"id"`
-//			Type   string `json:"type"`
-//			Actor  string `json:"actor"`
-//			Object string `json:"object"`
-//		}{
-//			Id:     activityID,
-//			Type:   "Follow",
-//			Actor:  "",
-//			Object: object,
-//		},
-//	}
-//}
-//
-//
-//func FollowAccept(id uint, name string) {
-//	db := cockroach.GetDB()
-//	var ibx Inboxes
-//	if err := db.Debug().Table("inboxes").Where("id = ?", id).First(&ibx).Error; err != nil {
-//		log.Println(err)
-//	}
-//
-//	actor := "https://mas.to/users/hvturingga"
-//
-//	object := fmt.Sprintf("https://%s/u/%s", viper.GetString("localhost"), name)
-//
-//
-//	na := NewFollowAccept(name, object, ibx.ActivityID,  ibx.ActorID, ibx.LocalActorID)
-//
-//	data, err := json.Marshal(na)
-//	if err != nil {
-//		log.Println(err)
-//		return
-//	}
-//
-//	nar := NewActivityRequest(object, actor, data, []byte(getPrivk()))
-//	nar.Accept()
-//}
+// NewFoAPData Instantiate the requested follow data in ActivityPub format.
+// Return the data and the inbox address of the other party.
+func NewFoAPData(actor string, objectID uint) (*activitypub.Follow, string) {
+	o, err := accounts.NewActorID(objectID).GetByID()
+	if err != nil {
+		return nil, ""
+	}
+
+	var (
+		ctx = "https://www.w3.org/ns/activitystreams"
+		id  = fmt.Sprintf("https://%s/%s", viper.GetString("localhost"), uuid.New().String())
+	)
+
+	return &activitypub.Follow{
+		Context: ctx,
+		Id:      id,
+		Type:    "Follow",
+		Actor:   fmt.Sprintf("https://%s/u/%s", viper.GetString("localhost"), actor),
+		Object:  o.Url,
+	}, o.Inbox
+}
+
+// NewFoAPAccept Instantiate the ActivityPub format data that agrees to follow the request,
+// return the data, and the recipient's inbox address.
+// Create a follow data to receive the IDs of followers and followers
+func NewFoAPAccept(actor, activityID string, objectID uint) (*activitypub.Accept, string) {
+	o, err := accounts.NewActorID(objectID).GetByID()
+	if err != nil {
+		return nil, ""
+	}
+
+	var (
+		ctx = "https://www.w3.org/ns/activitystreams"
+		id  = fmt.Sprintf("https://%s/u/%s#accepts/follows/%s", viper.GetString("localhost"), actor, uuid.New().String())
+		a = fmt.Sprintf("https://%s/u/%s", viper.GetString("localhost"), actor)
+	)
+
+	return &activitypub.Accept{
+		Context: ctx,
+		Id:      id,
+		Type:    "Accept",
+		Actor:   a,
+		Object: struct {
+			Id     string `json:"id"`
+			Type   string `json:"type"`
+			Actor  string `json:"actor"`
+			Object string `json:"object"`
+		}{
+			Id:     activityID,
+			Type:   "Follow",
+			Actor:  o.Url,
+			Object: a,
+		},
+	}, o.Inbox
+}

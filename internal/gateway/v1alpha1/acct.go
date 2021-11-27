@@ -13,6 +13,7 @@ func V1Accounts(v1 *gin.RouterGroup) {
 		v1.GET("/iam/timelines")
 
 		v1.POST("/accounts/follow", handlers.FollowReqHandler)
+		v1.POST("/accounts/follow/accept", handlers.FollowAcceptHandler)
 
 		// Delete accounts
 		//v1.POST("/accounts/delete", handlers.DeleteAccount)

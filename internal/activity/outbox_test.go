@@ -2,6 +2,7 @@ package activity
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"testing"
 )
@@ -17,9 +18,9 @@ func TestMessages_Outbox(t *testing.T) {
 		return
 	}
 
-	nar := NewActivityRequest("hvturingga", nf.Object, data)
-
-	nar.Send()
+	if err := NewAPData("hvturingga", nf.Object, data).Send(); err != nil {
+		fmt.Println(err)
+	}
 
 }
 

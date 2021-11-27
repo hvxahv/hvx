@@ -58,10 +58,12 @@ func NewInboxDetails(a string, id uint) *Inboxes {
 }
 
 type Inbox interface {
-
+	// Create an inbox data, SourceID corresponds to the specific primary key ID of the table data.
 	Create() error
 
+	// GetInboxesByID Get the user's inbox list through the inbox ID.
 	GetInboxesByID() (*[]Inboxes, error)
 
+	// Delete a piece of inbox data.
 	Delete() error
 }
