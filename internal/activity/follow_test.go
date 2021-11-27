@@ -72,5 +72,14 @@ func TestFollows_Remove(t *testing.T) {
 	if err := NewFollows(698619814874251265, 710444110081654785).Remove(); err != nil {
 		fmt.Println(err)
 	}
+}
 
+func TestFollowRequests_GetDetailsByID(t *testing.T) {
+	IniTestConfig(t)
+
+	r, err := NewFollowRequestsByID(714081785916784641).GetDetailsByID()
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(r)
 }

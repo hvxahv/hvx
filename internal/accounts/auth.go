@@ -32,5 +32,5 @@ func (a *Accounts) Login() (string, error) {
 		return "", errors.Errorf("Password verification failed.")
 	}
 
-	return acct.Mail, nil
+	return acct.Username, nil
 }

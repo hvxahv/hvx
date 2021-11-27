@@ -6,10 +6,8 @@ import (
 	"github.com/hvxahv/hvxahv/internal/accounts"
 	"github.com/hvxahv/hvxahv/pkg/activitypub"
 	"github.com/hvxahv/hvxahv/pkg/cockroach"
-	"github.com/spf13/viper"
 	"gorm.io/gorm"
 	"log"
-	"net/url"
 )
 
 // All Activity Types inherit the properties of the base Activity type.
@@ -230,33 +228,6 @@ func getPrivk() string {
 }
 
 
-type ActivityRequest struct {
-	KeyID     string
-	TargetURL string
-	Local     string
-	Data      []byte
-	Key       []byte
-}
-
-// NewActivityRequest Receive the current actor name,
-// the other party's URL,
-// the requested data and the current user's private key.
-func NewActivityRequest(actor string, object string, data []byte, key []byte) *ActivityRequest {
-	h, err := url.Parse(object)
-	if err != nil {
-		log.Fatal(err)
-	}
-	targetURL := fmt.Sprintf("https://%s/inbox", h.Hostname())
-	keyID := fmt.Sprintf("%s#main-key", actor)
-
-	return &ActivityRequest{
-		KeyID:     keyID,
-		TargetURL: targetURL,
-		Local:     fmt.Sprintf(viper.GetString("localhost")),
-		Data:      data,
-		Key:       key,
-	}
-}
 type Request interface {
 	// Send request to remote server.
 	Send()

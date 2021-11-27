@@ -94,12 +94,28 @@ func (f *FollowRequests) Delete() error {
 	return nil
 }
 
+func (f *FollowRequests) GetDetailsByID() (*FollowRequests, error) {
+	db := cockroach.GetDB()
+	if err := db.Debug().Table("follow_requests").Where("id = ?", f.ID).First(&f).Error; err != nil {
+		return nil, err
+	}
+	return f, nil
+}
+
 func NewFollowRequestsActivityID(activityId string) *FollowRequests {
 	return &FollowRequests{ActivityId: activityId}
 }
 
 func NewFollowRequests(activityId string, actorID, objectID uint) *FollowRequests {
 	return &FollowRequests{ActivityId: activityId, ActorID: actorID, ObjectID: objectID}
+}
+
+func NewFollowRequestsByID(id uint) *FollowRequests {
+	return &FollowRequests{
+		Model:      gorm.Model{
+			ID:        id,
+		},
+	}
 }
 
 func NewFollowAccepts(activityId string, actorID uint, objectID uint, objectActivityID string) *FollowAccepts {
@@ -191,6 +207,9 @@ type FollowRequest interface {
 	Create() error
 	CreateSend() error
 	Delete() error
+
+	// GetDetailsByID Get a detailed follow request by ID.
+	GetDetailsByID() (*FollowRequests, error)
 }
 
 type Follow interface {

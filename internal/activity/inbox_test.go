@@ -45,7 +45,7 @@ func TestNewMessages(t *testing.T) {
 func TestInboxes_GetInboxesByObjectID(t *testing.T) {
 	IniTestConfig(t)
 
-	r, err := NewObjectID(698619813575491585).GetInboxesByObjectID()
+	r, err := NewObjectID(698619813575491585).GetInboxesByID()
 	if err != nil {
 		fmt.Println(err)
 	}

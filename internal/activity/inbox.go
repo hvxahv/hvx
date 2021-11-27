@@ -19,13 +19,14 @@ func (i *Inboxes) Delete() error {
 	panic("implement me")
 }
 
-func (i *Inboxes) GetInboxesByObjectID() (*[]Inboxes, error) {
+func (i *Inboxes) GetInboxesByID() (*[]Inboxes, error) {
 	db := cockroach.GetDB()
 
 	var inboxes []Inboxes
 	if err := db.Debug().Table("inboxes").Where("object_id = ?", i.ObjectID).Find(&inboxes).Error; err != nil {
 		return nil, errors.Errorf("an error occurred while creating the activity: %v", err)
 	}
+
 	return &inboxes, nil
 }
 
@@ -52,11 +53,15 @@ func NewInboxes(activityType string, actorID uint, objectID uint, sourceID uint)
 	return &Inboxes{ActivityType: activityType, ActorID: actorID, ObjectID: objectID, SourceID: sourceID}
 }
 
+func NewInboxDetails(a string, id uint) *Inboxes {
+	return &Inboxes{ActivityType: a, ObjectID: id}
+}
+
 type Inbox interface {
 
 	Create() error
 
-	GetInboxesByObjectID() (*[]Inboxes, error)
+	GetInboxesByID() (*[]Inboxes, error)
 
 	Delete() error
 }

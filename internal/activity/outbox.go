@@ -1,15 +1,11 @@
 package activity
 
 import (
-	"bytes"
 	"fmt"
 	"github.com/google/uuid"
+	"github.com/hvxahv/hvxahv/internal/accounts"
 	"github.com/hvxahv/hvxahv/pkg/activitypub"
 	"github.com/spf13/viper"
-	"golang.org/x/net/context"
-	"log"
-	"net/http"
-	"net/url"
 	"strconv"
 	"time"
 )
@@ -115,7 +111,12 @@ func NewArticle(articleID uint, content string) *activitypub.Create {
 	}
 }
 
-func NewFollowRequest(actor, object string) *activitypub.Follow {
+func NewFollowRequest(actor string, objectID uint) (*activitypub.Follow, string) {
+	o, err := accounts.NewActorID(objectID).GetByID()
+	if err != nil {
+		return nil, ""
+	}
+
 	var (
 		ctx = "https://www.w3.org/ns/activitystreams"
 		id  = fmt.Sprintf("https://%s/%s", viper.GetString("localhost"), uuid.New().String())
@@ -127,60 +128,6 @@ func NewFollowRequest(actor, object string) *activitypub.Follow {
 		Id:      id,
 		Type:    "Follow",
 		Actor:   a,
-		Object:  object,
-	}
-}
-
-
-func (a *ActivityRequest) Send() {
-	h, err := url.Parse(a.TargetURL)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	uri := fmt.Sprintf("https://%s/users/hvturingga/inbox", h.Hostname())
-	method := "POST"
-
-	payload := bytes.NewBuffer(a.Data)
-	client := &http.Client{}
-
-	fmt.Println(payload)
-
-	req, err := http.NewRequest(method, uri, payload)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	date := time.Now().UTC().Format(http.TimeFormat)
-	req.Header.Add("Host", h.Hostname())
-	req.Header.Add("Date", date)
-	req.Header.Set("User-Agent", fmt.Sprintf("hvxahv/%s; %s", viper.GetString("version"), a.Local))
-	req.Header.Set("Content-Type", "application/activity+json")
-
-	block := activitypub.PriKEY{
-		Type: activitypub.RSA,
-		Key:  a.Key,
-	}
-
-	ns := activitypub.NewSign(a.KeyID, block, req, a.Data)
-	ns.SignRequest()
-
-	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
-	defer cancel()
-	req = req.WithContext(ctx)
-	res, err := client.Do(req)
-	if err != nil {
-		fmt.Println(err)
-	}
-	if err := res.Body.Close(); err != nil {
-		log.Println(err)
-	}
-	switch res.StatusCode {
-	case 200:
-	case 201:
-	case 202:
-	default:
-		_ = fmt.Errorf("http post status: %d", res.StatusCode)
-	}
-	log.Printf("successful post: %s %d", uri, res.StatusCode)
+		Object:  o.Url,
+	}, o.Inbox
 }
