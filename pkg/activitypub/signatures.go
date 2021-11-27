@@ -105,7 +105,7 @@ func (key *PriKEY) Sign(msg []byte) []byte {
 }
 
 // SignRequest ...
-func (si *sign) SignRequest() {
+func (si *sign) SignRequest() string {
 	headers := []string{"(request-target)", "date", "host", "content-type", "digest"}
 	value := BuildSignatureData(si.Req, headers, si.Data)
 
@@ -113,7 +113,7 @@ func (si *sign) SignRequest() {
 	h.Write(value)
 	sig := si.Key.Sign(h.Sum(nil))
 
-	si.Req.Header.Set("Signature", bindSignature(headers, sig, si.KeyID))
+	return bindSignature(headers, sig, si.KeyID)
 }
 
 func bindSignature(headers []string, sig []byte, id string) string {

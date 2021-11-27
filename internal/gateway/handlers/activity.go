@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/hvxahv/hvxahv/internal/accounts"
 	"github.com/hvxahv/hvxahv/internal/activity"
 	"github.com/hvxahv/hvxahv/internal/gateway/middleware"
 	"io/ioutil"
@@ -29,5 +30,23 @@ func OutboxHandler(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"code":    "200",
 		"message": "ok!",
+	})
+}
+
+func GetInboxesHandler(c *gin.Context) {
+	name := middleware.GetUserName(c)
+	fmt.Println(name)
+	acct, err := accounts.NewAccountsUsername(name).GetAccountByUsername()
+	if err != nil {
+		return 
+	}
+	inboxes, err := activity.NewObjectID(acct.ActorID).GetInboxesByID()
+
+	if err != nil {
+		return 
+	}
+	c.JSON(200, gin.H{
+		"code":    "200",
+		"message": inboxes,
 	})
 }

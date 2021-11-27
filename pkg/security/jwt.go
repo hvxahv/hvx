@@ -11,21 +11,23 @@ import (
 // Claims Generate the data needed for TOKEN.
 type Claims struct {
 	Uuid     string
+	Email    string
 	User     string
 	Password string
 	jwt.StandardClaims
 }
 
-func NewClaims(mail, password string) *Claims {
+func NewClaims(mail, username, password string) *Claims {
 	fmt.Println(viper.GetInt("token_expired"))
 	expireTime := time.Now().Add(time.Duration(viper.GetInt("token_expired")) * 24 * time.Hour)
 	c := &Claims{
-		User:     mail,
+		Email:    mail,
+		User:     username,
 		Password: password,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expireTime.Unix(),
 			IssuedAt:  time.Now().Unix(),
-			Issuer:    "localhost",
+			Issuer:    viper.GetString("localhost"),
 			Subject:   "token",
 		},
 	}
@@ -34,8 +36,8 @@ func NewClaims(mail, password string) *Claims {
 
 // GenToken After the user logs in and the password is successfully verified,
 // this method will be used to generate a Token and return.
-func GenToken(mail, password string) (string, error) {
-	t := jwt.NewWithClaims(jwt.SigningMethodHS256, NewClaims(mail, password))
+func GenToken(mail, username, password string) (string, error) {
+	t := jwt.NewWithClaims(jwt.SigningMethodHS256, NewClaims(mail, username, password))
 	token, err := t.SignedString([]byte(viper.GetString("token_signed")))
 	if err != nil {
 		fmt.Println(err)

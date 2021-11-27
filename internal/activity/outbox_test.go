@@ -10,14 +10,14 @@ func TestMessages_Outbox(t *testing.T) {
 	IniTestConfig(t)
 
 	//Prepare the data first.
-	nf := NewFollowRequest("hvturingga", "https://mas.to/users/hvturingga")
+	nf, _ := NewFollowRequest("hvturingga", 710444110081654785)
 	data, err := json.Marshal(nf)
 	if err != nil {
 		log.Println(err)
 		return
 	}
 
-	nar := NewActivityRequest(nf.Actor, nf.Object, data, []byte(getPrivk()))
+	nar := NewActivityRequest("hvturingga", nf.Object, data)
 
 	nar.Send()
 

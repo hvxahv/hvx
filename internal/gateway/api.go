@@ -21,13 +21,6 @@ func APIServer() *gin.Engine {
 		})
 	})
 
-	// The v1alpha1 version of the API service used in the application
-	// is usually allowed to be accessed through Token authentication.
-	v1 := api.Group("/api/v1")
-
-	// USE AUTH MIDDLEWARE.
-	v1.Use(middleware.Auth)
-
 	// Open API routing for the ActivityPub protocol.
 	// ActivityPub https://www.w3.org/TR/activitypub/
 	// HTTP API for public query of ActivityPub.
@@ -44,8 +37,15 @@ func APIServer() *gin.Engine {
 
 	// The internal open API service provided by hvxahv usually does not require Token authentication,
 	// as login and registration.
-	//api.POST("/accounts/new", handlers.NewAccountsHandler)
+	api.POST("/accounts/new", handlers.NewAccountsHandler)
 	api.POST("/accounts/login", handlers.AccountLoginHandler)
+
+	// The v1alpha1 version of the API service used in the application
+	// is usually allowed to be accessed through Token authentication.
+	v1 := api.Group("/api/v1")
+
+	// USE AUTH MIDDLEWARE.
+	v1.Use(middleware.Auth)
 
 	// INTERNAL API GROUP.
 	v1alpha1.V1Accounts(v1)

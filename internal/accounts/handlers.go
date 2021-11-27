@@ -74,7 +74,7 @@ func (s *server) FindActorByAccountsUsername(ctx context.Context, in *pb.Account
 
 func (s *server) FindActorByID(ctx context.Context, in *pb.ActorID) (*pb.ActorData, error) {
 	a := NewActorID(uint(in.ActorID))
-	a, err := a.FindActorByID()
+	a, err := a.GetByID()
 	if err != nil {
 		return nil, err
 	}
