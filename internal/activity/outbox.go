@@ -2,8 +2,6 @@ package activity
 
 import (
 	"fmt"
-	"github.com/google/uuid"
-	"github.com/hvxahv/hvxahv/internal/accounts"
 	"github.com/hvxahv/hvxahv/pkg/activitypub"
 	"github.com/spf13/viper"
 	"strconv"
@@ -109,25 +107,4 @@ func NewArticle(articleID uint, content string) *activitypub.Create {
 			}{},
 		},
 	}
-}
-
-func NewFollowRequest(actor string, objectID uint) (*activitypub.Follow, string) {
-	o, err := accounts.NewActorID(objectID).GetByID()
-	if err != nil {
-		return nil, ""
-	}
-
-	var (
-		ctx = "https://www.w3.org/ns/activitystreams"
-		id  = fmt.Sprintf("https://%s/%s", viper.GetString("localhost"), uuid.New().String())
-		a   = fmt.Sprintf("https://%s/u/%s", viper.GetString("localhost"), actor)
-	)
-
-	return &activitypub.Follow{
-		Context: ctx,
-		Id:      id,
-		Type:    "Follow",
-		Actor:   a,
-		Object:  o.Url,
-	}, o.Inbox
 }

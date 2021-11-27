@@ -3,7 +3,6 @@ package activity
 import (
 	"bytes"
 	"fmt"
-	"github.com/go-resty/resty/v2"
 	"github.com/hvxahv/hvxahv/internal/accounts"
 	"github.com/hvxahv/hvxahv/pkg/activitypub"
 	"github.com/spf13/viper"
@@ -14,76 +13,70 @@ import (
 	"time"
 )
 
-
-type ActivityRequest struct {
-	KeyID     string
-	inboxAddr string
-	Local     string
-	Data      []byte
-	Key       []byte
+type APData struct {
+	ID         string
+	Addr       string
+	Data       []byte
+	PrivateKey []byte
 }
 
-// NewActivityRequest Receive the current actor name,
-// the other party's URL,
-// the requested data and the current user's private key.
-func NewActivityRequest(actor, inbox string, data []byte) *ActivityRequest {
+// NewAPData Instantiate ActivityPub data and return formatted data for sending request.
+func NewAPData(actor, inbox string, data []byte) *APData {
 	acct, err := accounts.NewAccountsUsername(actor).GetAccountByUsername()
 	if err != nil {
 		return nil
 	}
 
-	keyID := fmt.Sprintf("https://%s/u/%s#main-key", viper.GetString("localhost"), actor)
-
-	return &ActivityRequest{
-		KeyID:     keyID,
-		inboxAddr: inbox,
-		Local:     fmt.Sprintf(viper.GetString("localhost")),
-		Data:      data,
-		Key:       []byte(acct.PrivateKey),
+	id := fmt.Sprintf("https://%s/u/%s#main-key", viper.GetString("localhost"), actor)
+	return &APData{
+		ID:         id,
+		Addr:       inbox,
+		Data:       data,
+		PrivateKey: []byte(acct.PrivateKey),
 	}
 }
 
-func (a *ActivityRequest) Send() error {
-	h, err := url.Parse(a.inboxAddr)
+func (a *APData) Send() error {
+	h, err := url.Parse(a.Addr)
 	if err != nil {
 		log.Fatal(err)
 		return err
 	}
-
-	method := "POST"
-
-	payload := bytes.NewBuffer(a.Data)
 	client := &http.Client{}
 
-	fmt.Println(payload)
-
-	req, err := http.NewRequest(method, a.inboxAddr, payload)
+	req, err := http.NewRequest("POST", a.Addr, bytes.NewBuffer(a.Data))
 	if err != nil {
 		fmt.Println(err)
 	}
+
+	ua := fmt.Sprintf("hvxahv/%s; %s", viper.GetString("version"), viper.GetString("localhost"))
 
 	date := time.Now().UTC().Format(http.TimeFormat)
 	req.Header.Add("Host", h.Hostname())
 	req.Header.Add("Date", date)
-	req.Header.Set("User-Agent", fmt.Sprintf("hvxahv/%s; %s", viper.GetString("version"), a.Local))
+	req.Header.Set("User-Agent", ua)
 	req.Header.Set("Content-Type", "application/activity+json")
 
 	block := activitypub.PriKEY{
 		Type: activitypub.RSA,
-		Key:  a.Key,
+		Key:  a.PrivateKey,
 	}
 
-	ns := activitypub.NewSign(a.KeyID, block, req, a.Data)
+	ns := activitypub.NewSign(a.ID, block, req, a.Data)
+
 	req.Header.Set("Signature", ns.SignRequest())
+
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Minute)
 	defer cancel()
+
 	req = req.WithContext(ctx)
 	res, err := client.Do(req)
 	if err != nil {
-		fmt.Println(err)
+		return err
 	}
+
 	if err := res.Body.Close(); err != nil {
-		log.Println(err)
+		return err
 	}
 	switch res.StatusCode {
 	case 200:
@@ -92,40 +85,11 @@ func (a *ActivityRequest) Send() error {
 	default:
 		_ = fmt.Errorf("http post status: %d", res.StatusCode)
 	}
-	log.Printf("successful post: %s %d", a.inboxAddr, res.StatusCode)
+
+	log.Printf("successful post: %s %d", a.Addr, res.StatusCode)
 	return nil
 }
 
-func (a *ActivityRequest) Resty() error {
-	h, err := url.Parse(a.inboxAddr)
-	if err != nil {
-		return err
-	}
-
-	resty := resty.New()
-
-	R := resty.R().
-		SetHeader("Host", h.Hostname()).
-		SetHeader("Date", time.Now().UTC().Format(http.TimeFormat)).
-		SetHeader("Content-Type", "application/activity+json").
-		SetHeader("User-Agent", fmt.Sprintf("hvxahv/%s; %s", viper.GetString("version"), a.Local))
-
-	block := activitypub.PriKEY{
-		Type: activitypub.RSA,
-		Key:  a.Key,
-	}
-
-	ns := activitypub.NewSign(a.KeyID, block, R.RawRequest, a.Data)
-	sign := ns.SignRequest()
-
-	fmt.Println("加密完成")
-	resp, err := R.
-		SetHeader("Signature", sign).
-		Post(a.inboxAddr)
-	if err != nil {
-		return err
-	}
-
-	fmt.Println(resp)
-	return nil
+type Send interface {
+	Send() error
 }
