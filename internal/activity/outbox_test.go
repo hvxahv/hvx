@@ -1,9 +1,6 @@
 package activity
 
 import (
-	"encoding/json"
-	"fmt"
-	"log"
 	"testing"
 )
 
@@ -11,16 +8,16 @@ func TestMessages_Outbox(t *testing.T) {
 	IniTestConfig(t)
 
 	//Prepare the data first.
-	nf, _ := NewFollowRequest("hvturingga", 710444110081654785)
-	data, err := json.Marshal(nf)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-	if err := NewAPData("hvturingga", nf.Object, data).Send(); err != nil {
-		fmt.Println(err)
-	}
+	//nf, _ := NewAPData("hvturingga", 710444110081654785)
+	//data, err := json.Marshal(nf)
+	//if err != nil {
+	//	log.Println(err)
+	//	return
+	//}
+	//
+	//if err := NewAPData("hvturingga", nf.Object, data).Send(); err != nil {
+	//	fmt.Println(err)
+	//}
 
 }
 
