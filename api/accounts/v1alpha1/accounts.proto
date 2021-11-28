@@ -54,9 +54,7 @@ message ActorData {
   string summary = 6;
   string inbox = 7;
   string publicKey = 8;
-  string matrixId = 9;
-  string matrixToken = 10;
-  string actorType = 11;
+  string actorType = 9;
 }
 
 // NewAccountData Data needed to create a new account.

@@ -66,8 +66,6 @@ func (s *server) FindActorByAccountsUsername(ctx context.Context, in *pb.Account
 		Summary:           actor.Summary,
 		Inbox:             actor.Inbox,
 		PublicKey:         actor.PublicKey,
-		MatrixId:          actor.MatrixID,
-		MatrixToken:       actor.MatrixToken,
 		ActorType:         actor.ActorType,
 	}, nil
 }
@@ -87,8 +85,6 @@ func (s *server) FindActorByID(ctx context.Context, in *pb.ActorID) (*pb.ActorDa
 		Summary:           a.Summary,
 		Inbox:             a.Inbox,
 		PublicKey:         a.PublicKey,
-		MatrixId:          a.MatrixID,
-		MatrixToken:       a.MatrixToken,
 		ActorType:         a.ActorType,
 	}, nil
 }

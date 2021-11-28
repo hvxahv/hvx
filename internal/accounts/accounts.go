@@ -1,7 +1,9 @@
 package accounts
 
 import (
+	"fmt"
 	"github.com/go-playground/validator/v10"
+	"github.com/hvxahv/hvxahv/internal/chat"
 	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"github.com/hvxahv/hvxahv/pkg/security"
 	"github.com/pkg/errors"
@@ -26,7 +28,6 @@ type Accounts struct {
 	IsPrivate  bool   `gorm:"type:boolean;is_private"`
 	PrivateKey string `gorm:"type:text;private_key"`
 }
-
 
 func (a *Accounts) Delete() error {
 	db := cockroach.GetDB()
@@ -91,8 +92,7 @@ func (a *Accounts) GetAccountByUsername() (*Accounts, error) {
 }
 
 func NewAccounts(username string, mail string, password string) *Accounts {
-	hash := security.GenPassword(password)
-	return &Accounts{Username: username, Mail: mail, Password: hash}
+	return &Accounts{Username: username, Mail: mail, Password: password}
 }
 
 func (a *Accounts) Create() error {
@@ -111,36 +111,40 @@ func (a *Accounts) Create() error {
 		return errors.New("FAILED_TO_AUTOMATICALLY_CREATE_DATABASE")
 	}
 
-	if err := db.Debug().Table("accounts").Where("username = ? ", a.Username).Or("mail = ?", a.Mail).First(&Accounts{}).Error; err != nil {
-		ok := cockroach.IsNotFound(err)
-		if !ok {
-			return errors.New("THE_ACCOUNT_ALREADY_EXISTS")
-		}
-	}
-
 	privateKey, publicKey, err := security.GenRSA()
 	if err != nil {
 		log.Printf("failed to generate public and private keys: %v", err)
 		return errors.Errorf("FAILED_TO_CREATE_ACCOUNT")
 	}
 
+	if err := db.Debug().Table("accounts").Where("username = ? ", a.Username).Or("mail = ?", a.Mail).First(&Accounts{}); err != nil {
+		ok := cockroach.IsNotFound(err.Error)
+		if !ok {
+			return errors.New("THE_ACCOUNT_ALREADY_EXISTS")
+		}
+	}
+
 	acct, err := NewActors(a.Username, a.Password, publicKey, "Person").NewActor()
 	if err != nil {
 		return err
 	}
+	pass := a.Password
 
 	a.ActorID = acct.ID
 	a.PrivateKey = privateKey
-
+	a.Password = security.GenPassword(a.Password)
 	if err := db.Debug().Table("accounts").Create(&a).Error; err != nil {
 		return errors.Errorf("FAILED_TO_CREATE_ACCOUNT")
+	}
+
+	if err := chat.NewMatrixAuth(a.ID, a.Username, pass).Register(); err != nil {
+		fmt.Println(err)
 	}
 
 	return nil
 }
 
 type Account interface {
-
 	Create() error
 
 	GetAccountByUsername() (*Accounts, error)
