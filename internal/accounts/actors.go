@@ -20,10 +20,6 @@ type Actors struct {
 	Url               string `gorm:"index;test;url"`
 	PublicKey         string `gorm:"type:text;public_key"`
 
-	// ID returned after completing the registration of the matrix account.
-	MatrixID    string `gorm:"type:text;matrix_id;unique"`
-	MatrixToken string `gorm:"type:text;matrix_token"`
-
 	// Whether it is a robot or other type of account
 	ActorType string `gorm:"type:text;actor_type"`
 
@@ -77,7 +73,6 @@ func NewAddActor(PreferredUsername, Domain, Avatar, Name, Summary, Inbox, Url, P
 		Inbox:             Inbox,
 		Url:               Url,
 		PublicKey:         PublicKey,
-		MatrixID:          MatrixID,
 		ActorType:         ActorType,
 		IsRemote:          true,
 	}
@@ -156,7 +151,6 @@ func NewActors(preferredUsername, password, publicKey, actorType string) *Actors
 		Inbox:             fmt.Sprintf("https://%s/u/%s/inbox", domain, preferredUsername),
 		Url:               fmt.Sprintf("https://%s/u/%s", domain, preferredUsername),
 		PublicKey:         publicKey,
-		MatrixID:          "",
 		ActorType:         actorType,
 		IsRemote:          false,
 	}

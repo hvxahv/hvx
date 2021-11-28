@@ -5,7 +5,6 @@ import (
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"log"
 	"os"
 	"testing"
 )
@@ -30,11 +29,9 @@ func TestInitConfig(t *testing.T) {
 func TestClient(t *testing.T) {
 	TestInitConfig(t)
 
-	na := NewAuth("hvxahv2", "Hvxahv123")
-	id, err := na.Register()
+	client, err := NewClient("", "")
 	if err != nil {
-		log.Println(err)
 		return 
 	}
-	fmt.Println(id)
+	fmt.Println(client)
 }

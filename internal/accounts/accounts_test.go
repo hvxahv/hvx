@@ -43,13 +43,13 @@ func TestInitDB(t *testing.T) {
 
 }
 
-func TestNewAccounts(t *testing.T) {
+func TestAccounts_Create(t *testing.T) {
 	TestInitDB(t)
 
 	a := NewAccounts("hvturingga", "x@disism.com", "Hvxahv123")
-	err := a.Create()
-	if err != nil {
+	if err := a.Create(); err != nil {
 		log.Println(err)
+		return
 	}
 }
 

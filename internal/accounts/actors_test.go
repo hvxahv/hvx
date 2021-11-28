@@ -35,7 +35,7 @@ func TestActors_FindActorByID(t *testing.T) {
 	TestInitDB(t)
 
 	a := NewActorID(696901249207894017)
-	actor, err := a.FindActorByID()
+	actor, err := a.GetActorByUri()
 	if err != nil {
 		log.Println(err)
 	}
