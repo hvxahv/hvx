@@ -48,7 +48,7 @@ func TestInitChannelConfig(t *testing.T) {
 func TestNewChannels(t *testing.T) {
 	TestInitChannelConfig(t)
 
-	nc1 := NewChannels("Hvxahv", "hvx", "avatar", "bio", "hvturingga", 698619813575491585, false)
+	nc1 := NewChannels("HVXAHV", "hvxahv", "https://avatars.githubusercontent.com/u/94792300?s=200&v=4", "HVXAHV project official channel...", "hvturingga", false)
 	fmt.Println(nc1)
 	err := nc1.Create()
 	if err != nil {
@@ -67,8 +67,8 @@ func TestNewChannels(t *testing.T) {
 func TestChannels_FindByActorID(t *testing.T) {
 	TestInitChannelConfig(t)
 
-	n := NewChannelOwnerID(698619813575491585)
-	c, err := n.FindByActorID()
+	n := NewChannelsOwnerID(698619813575491585)
+	c, err := n.GetByOwnerID()
 	if err != nil {
 		fmt.Println(err)
 		return 

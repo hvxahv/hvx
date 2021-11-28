@@ -57,7 +57,7 @@ Ah, ah, ah, ah
 		return
 	}
 
-	if err := nb.New(); err != nil {
+	if err := nb.Create(); err != nil {
 		fmt.Println(err)
 		return 
 	}

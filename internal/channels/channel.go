@@ -2,10 +2,10 @@ package channels
 
 import (
 	"fmt"
+	"github.com/google/uuid"
 	"github.com/hvxahv/hvxahv/internal/accounts"
 	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"github.com/hvxahv/hvxahv/pkg/security"
-	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	"gorm.io/gorm"
@@ -14,7 +14,7 @@ import (
 
 type Channels struct {
 	gorm.Model
-
+	ActorID       uint   `gorm:"primaryKey;actor_id"`
 	Name          string `gorm:"type:text;name"`
 	Link          string `gorm:"primaryKey;type:text;link;unique"`
 	Avatar        string `gorm:"type:text;avatar"`
@@ -24,6 +24,33 @@ type Channels struct {
 	IsPrivate     bool   `gorm:"type:boolean;is_private"`
 	PrivateKey    string `gorm:"type:text;private_key"`
 }
+
+func NewChannelsByLink(link string) *Channels {
+	return &Channels{Link: link}
+}
+
+func (c *Channels) GetActorDataByLink() (*accounts.Actors, error) {
+	db := cockroach.GetDB()
+	
+	if err := db.Debug().Table("channels").Where("link = ?", c.Link).First(&c).Error; err != nil {
+		return nil, err
+	}
+	actor, err := accounts.NewActorID(c.ActorID).GetByID()
+	if err != nil {
+		return nil, err
+	}
+	return actor, nil
+}
+
+func (c *Channels) GetByLink() (*Channels, error) {
+	db := cockroach.GetDB()
+
+	if err := db.Debug().Table("channels").Where("link = ?", c.Link).First(&c).Error; err != nil {
+		return nil, err
+	}
+	return c, nil
+}
+
 
 func (c *Channels) DeleteHistory() {
 	panic("implement me")
@@ -37,20 +64,32 @@ func (c *Channels) EditCreator() {
 	panic("implement me")
 }
 
-func (c *Channels) Delete() {
-	panic("implement me")
+func (c *Channels) Delete() error {
+	db := cockroach.GetDB()
+
+	if err := db.Debug().Table("channels").Where("owner_username = ?", c.OwnerUsername).Where("id = ?", c.ID).First(&c).Unscoped().Delete(&Channels{}).Error; err != nil {
+		return err
+	}
+
+	if err := db.Debug().Table("administrators").Where("channel_id = ?", c.ID).Unscoped().Delete(&Administrators{}).Error; err != nil {
+		return err
+	}
+	if err := accounts.NewActorID(c.ActorID).Delete(); err != nil {
+		return err
+	}
+	return nil
 }
 
-func (c *Channels) FindByActorID() (*[]Channels, error) {
+func (c *Channels) GetByOwnerID() (*[]Channels, error) {
 	var ch []Channels
 	db := cockroach.GetDB()
-	if err := db.Debug().Table("channels").Where("owner_id = ?", c.OwnerID).First(&ch).Error; err != nil {
+	if err := db.Debug().Table("channels").Where("owner_id = ?", c.OwnerID).Find(&ch).Error; err != nil {
 		return nil, errors.Errorf("querying channels by link error: %v", err)
 	}
 	return &ch, nil
 }
 
-func NewChannelOwnerID(actorID uint) *Channels {
+func NewChannelsOwnerID(actorID uint) *Channels {
 	return &Channels{OwnerID: actorID}
 }
 
@@ -77,7 +116,7 @@ func (c *Channels) Create() error {
 	// https://www.w3.org/TR/activitystreams-vocabulary/#actor-types
 	domain := viper.GetString("localhost")
 	url := fmt.Sprintf("https://%s/channels/%s", domain, c.Link)
-	inbox := fmt.Sprintf("https://%s/u/%s/inbox", domain, c.OwnerUsername)
+	inbox := fmt.Sprintf("https://%s/c/%s/inbox", domain, c.Link)
 	acct, err := accounts.NewAddActor(c.Link, domain, c.Avatar, c.Name, c.Bio, inbox, url, publicKey, c.Link, "Service").NewActor()
 	if err != nil {
 		return err
@@ -85,6 +124,7 @@ func (c *Channels) Create() error {
 	fmt.Println(acct)
 
 	c.PrivateKey = privateKey
+	c.ActorID = acct.ID
 
 	if err := db.Debug().Table("channels").Create(&c).Error; err != nil {
 		return errors.Errorf("failed to create channels: %v", err)
@@ -105,25 +145,36 @@ func (c *Channels) Create() error {
 	return nil
 }
 
+func NewDeleteChannelByID(username string, id uint) *Channels {
+	return &Channels{
+		Model:         gorm.Model{
+			ID:        id,
+		},
+		OwnerUsername: username,
+	}
+}
+
 type Channel interface {
 
 	// Create a channels.
 	Create() error
 
-	// FindByActorID Find the channels created by the actor by Actor ID.
-	FindByActorID() (*[]Channels, error)
+	GetActorDataByLink() (*accounts.Actors, error)
+	// GetByOwnerID Find the channels created by the actor by Actor ID.
+	GetByOwnerID() (*[]Channels, error)
 
+	GetByLink() (*[]Channels, error)
 	// Update channels information.
 	Update()
 
-	Delete()
+	Delete() error
 
 	DeleteHistory()
 	DeleteUserHistory()
 	EditCreator()
 }
 
-func NewChannels(name, link, avatar, bio, username string, owner uint, isPrivate bool) *Channels {
+func NewChannels(name, link, avatar, bio, username string, isPrivate bool) *Channels {
 	// Generated if the set link is empty.
 	if isPrivate || link == "" {
 		random, err := security.GenerateRandomString(15)
@@ -133,13 +184,18 @@ func NewChannels(name, link, avatar, bio, username string, owner uint, isPrivate
 		link = random
 	}
 
+	acct, err := accounts.NewAccountsUsername(username).GetAccountByUsername()
+	if err != nil {
+		fmt.Println(err)
+	}
+
 	return &Channels{
 		Name:          name,
 		Link:          link,
 		Avatar:        avatar,
 		Bio:           bio,
 		OwnerUsername: username,
-		OwnerID:       owner,
+		OwnerID:       acct.ID,
 		IsPrivate:     isPrivate,
 	}
 }

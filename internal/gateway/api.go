@@ -31,6 +31,11 @@ func APIServer() *gin.Engine {
 	// https://www.w3.org/TR/activitypub/#actor-objects
 	api.GET("/u/:actor", handlers.GetActorHandler)
 
+	// The type of Channel is a service in Activitypub. Details:
+	// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-service
+	api.GET("/c/:actor", handlers.GetChannelHandler)
+	api.POST("/c/:actor/inbox", handlers.ChannelInboxHandler)
+
 	// Inbox
 	// https://www.w3.org/TR/activitypub/#inbox
 	api.POST("/u/:actor/inbox", handlers.InboxHandler)
@@ -56,6 +61,8 @@ func APIServer() *gin.Engine {
 
 	// Follow API
 	v1alpha1.V1Follow(v1)
+
+	v1alpha1.V1Saved(v1)
 
 	return api
 }

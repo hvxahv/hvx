@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/hvxahv/hvxahv/internal/accounts"
+	"github.com/hvxahv/hvxahv/internal/channels"
 	"github.com/hvxahv/hvxahv/pkg/activitypub"
 	"github.com/spf13/viper"
 	"golang.org/x/net/context"
@@ -18,6 +19,20 @@ type APData struct {
 	Addr       string
 	Data       []byte
 	PrivateKey []byte
+}
+func NewChannelAPData(link, inbox string, data []byte) *APData {
+	ca, err := channels.NewChannelsByLink(link).GetByLink()
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	id := fmt.Sprintf("https://%s/c/%s#main-key", viper.GetString("localhost"), link)
+	return &APData{
+		ID:         id,
+		Addr:       inbox,
+		Data:       data,
+		PrivateKey: []byte(ca.PrivateKey),
+	}
 }
 
 // NewAPData Instantiate ActivityPub data and return formatted data for sending request.

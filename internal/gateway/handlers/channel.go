@@ -2,41 +2,53 @@ package handlers
 
 import (
 	"fmt"
+	"github.com/gin-gonic/gin"
 	pb "github.com/hvxahv/hvxahv/api/channel/v1alpha1"
+	"github.com/hvxahv/hvxahv/internal/accounts"
+	"github.com/hvxahv/hvxahv/internal/channels"
 	"github.com/hvxahv/hvxahv/internal/gateway/middleware"
 	"github.com/hvxahv/hvxahv/pkg/microservices/client"
-	"github.com/gin-gonic/gin"
 	"golang.org/x/net/context"
 	"log"
+	"strconv"
 )
 
-func NewChannelHandler(c *gin.Context) {
+func GetMyChannelsHandler(c *gin.Context) {
+	name := middleware.GetUserName(c)
+
+	acct, err := accounts.NewAccountsUsername(name).GetAccountByUsername()
+	if err != nil {
+		return
+	}
+	ch, err := channels.NewChannelsOwnerID(acct.ID).GetByOwnerID()
+	if err != nil {
+		return 
+	}
+	c.JSON(200, gin.H{
+		"code": 200,
+		"message": ch,
+	})
+}
+
+func CreateChannelHandler(c *gin.Context) {
 	name := middleware.GetUserName(c)
 
 	id := c.PostForm("id")
 	cn := c.PostForm("name")
 	bio := c.PostForm("bio")
 	avatar := c.PostForm("avatar")
-	//is_private := c.PostForm("is_private")
 
-	cli, conn, err := client.Channel()
+	isPrivate, err := strconv.ParseBool(c.PostForm("is_private"))
 	if err != nil {
-		log.Println(err)
+		return
 	}
-	defer conn.Close()
+	if err := channels.NewChannels(cn, id, avatar, bio, name, isPrivate).Create(); err != nil {
+		return 
+	}
 
-	r, err := cli.New(context.Background(), &pb.NewChannelData{
-		Id:        id,
-		Name:      cn,
-		Bio:       bio,
-		Avatar:    avatar,
-		Owner:     name,
-		IsPrivate: false,
-	})
-
-	c.JSON(int(r.Code), gin.H{
-		"code":    r.Code,
-		"message": r.Message,
+	c.JSON(200, gin.H{
+		"code":    200,
+		"message": "ok",
 	})
 }
 
@@ -45,7 +57,20 @@ func UpdateChannelHandler(c *gin.Context) {
 }
 
 func DeleteChannelHandler(c *gin.Context) {
+	name := middleware.GetUserName(c)
+	id, err := strconv.Atoi(c.PostForm("id"))
 
+	if err != nil {
+		return
+	}
+	if err := channels.NewDeleteChannelByID(name, uint(id)).Delete(); err != nil {
+		return 
+	}
+
+	c.JSON(200, gin.H{
+		"code":    200,
+		"message": "ok",
+	})
 }
 
 func NewChannelAdminHandler(c *gin.Context) {

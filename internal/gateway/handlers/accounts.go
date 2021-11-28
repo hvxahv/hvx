@@ -119,7 +119,7 @@ func UploadAvatar(c *gin.Context) {
 
 // FetchAccountsHandler Obtain personal account information,
 // analyze the user through TOKEN and return user data.
-//func FetchAccountsHandler(c *gin.Context) {
+//func GetAccountsHandler(c *gin.Context) {
 //	name := middleware.GetUserName(c)
 //
 //	cli, conn, err := client.Accounts()
