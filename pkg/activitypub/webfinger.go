@@ -41,30 +41,36 @@ func NewWebFingerUrl(host, resource string) string {
 }
 
 // NewWebFingerData  WebFinger data and links form the JSON-LD protocol of the standard ActivityPub.
-func NewWebFingerData(subject, address, name string) *WebFingerData {
+func NewWebFingerData(subject, address, name string, isChan bool) *WebFingerData {
+	var href string
+	if isChan {
+		href = fmt.Sprintf("https://%s/c/%s", address, name)
+	} else {
+		href = fmt.Sprintf("https://%s/u/%s", address, name)
+	}
 	return &WebFingerData{
 		Subject: subject,
 		Aliases: nil,
-		Links:   NewWebFingerLinks(address, name),
+		Links:   NewWebFingerLinks(href),
 	}
 }
 
-func NewWebFingerLinks(address, name string) []WebFingerLinks {
+func NewWebFingerLinks(href string) []WebFingerLinks {
 	return []WebFingerLinks{{
 		Rel:      "self",
 		Type:     "application/activity+json",
-		Href:     fmt.Sprintf("https://%s/u/%s", address, name),
+		Href:     href,
 		Template: "",
 	}}
 }
 
 // NewWebFinger Receive the username and combine the object into the standard json data returned by webFinger.
 // In order to return to the query that the instance owns this actor.
-func NewWebFinger(name string) *WebFingerData {
+func NewWebFinger(name string, isChan bool) *WebFingerData {
 	address := viper.GetString("localhost")
 	sub := fmt.Sprintf("acct:%s@%s", name, address)
 
-	wf := NewWebFingerData(sub, address, name)
+	wf := NewWebFingerData(sub, address, name, isChan)
 
 	return wf
 }

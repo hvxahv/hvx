@@ -3,8 +3,11 @@ package activity
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/google/uuid"
 	"github.com/hvxahv/hvxahv/internal/accounts"
+	"github.com/hvxahv/hvxahv/internal/channels"
 	"github.com/hvxahv/hvxahv/pkg/activitypub"
+	"github.com/spf13/viper"
 )
 
 // All Activity Types inherit the properties of the base Activity type.
@@ -197,9 +200,6 @@ func Types(name string, body []byte) {
 		//	}
 		//}
 	}
-
-
-
 }
 
 type InboxWithCtx struct {
@@ -210,5 +210,104 @@ type InboxWithCtx struct {
 }
 type Receive interface {
 	Inbox(name string)
+}
+
+// ChannelTypes Get the request to subscribe to the channel and reply immediately.
+func ChannelTypes(name string, body []byte) {
+	var objectID uint
+	var actorID uint
+
+	// Get ActorID by NAME.
+	ca, err2 := channels.NewChannelsByLink(name).GetActorDataByLink()
+	if err2 != nil {
+		return 
+	}
+
+	objectID = ca.ID
+
+	a := Activity{}
+	if err := json.Unmarshal(body, &a); err != nil {
+		fmt.Printf("UNMARSHAL ACTICITY TYPE ERROR:%v", err)
+	}
+
+	actor, err := accounts.NewActorUri(a.Actor).GetActorByUri()
+	if err != nil {
+		resp, err2 := activitypub.GetRemoteActor(a.Actor)
+		if err2 != nil {
+			return
+		}
+		actorID = resp.ID
+	}
+	actorID = actor.ID
+
+	switch a.Type {
+	case "Follow":
+		f := activitypub.Follow{}
+		if err := json.Unmarshal(body, &f); err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		SubAccept(name, a.Id, actorID, objectID)
+		// Todo - + channel subscriber.
+
+	case "Reject":
+		reject := activitypub.Reject{}
+		if err := json.Unmarshal(body, &reject); err != nil {
+			fmt.Println(err)
+		}
+
+		if reject.Object.Type == "Follow" {
+			fmt.Println("取消订阅")
+			// Todo - + Remove channel subscriber.
+		}
+
+	}
+}
+
+func SubAccept(name, activityId string, actorID, objectID uint) {
+
+	fa, addr := NewSubAccept(name, activityId, actorID)
+	data, err := json.Marshal(fa)
+	if err != nil {
+		return
+	}
+
+	fmt.Println(addr)
+
+	if err := NewChannelAPData(name, addr, data).Send(); err != nil {
+		return
+	}
+}
+
+func NewSubAccept(actor, activityID string, objectID uint) (*activitypub.Accept, string) {
+	o, err := accounts.NewActorID(objectID).GetByID()
+	if err != nil {
+		return nil, ""
+	}
+
+	var (
+		ctx = "https://www.w3.org/ns/activitystreams"
+		id  = fmt.Sprintf("https://%s/c/%s#accepts/follows/%s", viper.GetString("localhost"), actor, uuid.New().String())
+		a = fmt.Sprintf("https://%s/c/%s", viper.GetString("localhost"), actor)
+	)
+
+	return &activitypub.Accept{
+		Context: ctx,
+		Id:      id,
+		Type:    "Accept",
+		Actor:   a,
+		Object: struct {
+			Id     string `json:"id"`
+			Type   string `json:"type"`
+			Actor  string `json:"actor"`
+			Object string `json:"object"`
+		}{
+			Id:     activityID,
+			Type:   "Follow",
+			Actor:  o.Url,
+			Object: a,
+		},
+	}, o.Inbox
 }
 

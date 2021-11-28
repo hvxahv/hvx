@@ -31,6 +31,15 @@ type Actors struct {
 	IsRemote bool `gorm:"type:boolean;is_remote"`
 }
 
+func (a *Actors) Delete() error {
+	db := cockroach.GetDB()
+
+	if err := db.Debug().Table("actors").Where("id = ?", a.ID).Unscoped().Delete(&Actors{}).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
 func (a *Actors) GetActorByUri() (*Actors, error) {
 	db := cockroach.GetDB()
 
@@ -178,7 +187,9 @@ type Actor interface {
 
 	FindActorByAccountUsername() (*Actors, error)
 	GetByID() (*Actors, error)
-	FindActorByUrl() (*Actors, error)
+	GetActorByUri() (*Actors, error)
 
 	Update() error
+
+	Delete() error
 }

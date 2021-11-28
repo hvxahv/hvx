@@ -4,10 +4,14 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	pb "github.com/hvxahv/hvxahv/api/accounts/v1alpha1"
+	"github.com/hvxahv/hvxahv/internal/accounts"
+	"github.com/hvxahv/hvxahv/internal/activity"
+	"github.com/hvxahv/hvxahv/internal/channels"
 	"github.com/hvxahv/hvxahv/pkg/activitypub"
 	"github.com/hvxahv/hvxahv/pkg/microservices/client"
 	"github.com/spf13/viper"
 	"golang.org/x/net/context"
+	"io/ioutil"
 	"log"
 	"time"
 )
@@ -41,6 +45,28 @@ func GetActorHandler(c *gin.Context) {
 	c.JSON(200, a)
 }
 
+func GetChannelHandler(c *gin.Context) {
+	name := c.Param("actor")
+	ch, err := channels.NewChannelsByLink(name).GetActorDataByLink()
+	if err != nil {
+		return
+	}
+	a := NewChannelActor(ch)
+	c.JSON(200, a)
+}
+
+func ChannelInboxHandler(c *gin.Context) {
+	name := c.Param("actor")
+	body, err := ioutil.ReadAll(c.Request.Body)
+	if err != nil {
+		return
+	}
+
+	fmt.Println(string(body))
+
+	activity.ChannelTypes(name, body)
+}
+
 func NewContext() []interface{} {
 	arr := make([]interface{}, 0)
 	ctx := []string{"https://www.w3.org/ns/activitystreams", "https://w3id.org/security/v1alpha1"}
@@ -50,6 +76,59 @@ func NewContext() []interface{} {
 	return arr
 }
 
+func NewChannelActor(a *accounts.Actors) *activitypub.Actor {
+	var (
+		addr = viper.GetString("localhost")
+
+		id = fmt.Sprintf("https://%s/c/%s", addr, a.PreferredUsername)
+		kid = fmt.Sprintf("%s#main-key", id)
+		box = fmt.Sprintf("https://%s/c/%s/", addr, a.PreferredUsername)
+	)
+
+	actor := &activitypub.Actor{
+		Context:                   NewContext(),
+		Id:                        id,
+		Type:                      "Person",
+		Following:                 "",
+		Followers:                 "",
+		Inbox:                     box + "inbox",
+		Outbox:                    box + "outbox",
+		Featured:                  "",
+		FeaturedTags:              "",
+		PreferredUsername:         a.PreferredUsername,
+		Name:                      a.Name,
+		Summary:                   a.Summary,
+		Url:                       "",
+		ManuallyApprovesFollowers: false,
+		Discoverable:              false,
+		Published:                 time.Time{},
+		Devices:                   "",
+		PublicKey: struct {
+			Id           string `json:"id"`
+			Owner        string `json:"owner"`
+			PublicKeyPem string `json:"publicKeyPem"`
+		}{
+			Id:           kid,
+			Owner:        id,
+			PublicKeyPem: a.PublicKey,
+		},
+		Tag:        nil,
+		Attachment: nil,
+		Endpoints: struct {
+			SharedInbox string `json:"sharedInbox"`
+		}{},
+		Icon: struct {
+			Type      string `json:"type"`
+			MediaType string `json:"mediaType"`
+			Url       string `json:"url"`
+		}{
+			Type:      "Image",
+			MediaType: "image/jpg",
+			Url:       a.Avatar,
+		},
+	}
+	return actor
+}
 // NewActor Return standard ActivityPub protocol user data.
 func NewActor(a *pb.ActorData) *activitypub.Actor {
 	var (
