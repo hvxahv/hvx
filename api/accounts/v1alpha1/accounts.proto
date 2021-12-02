@@ -21,8 +21,8 @@ service Accounts {
   rpc FindActorByAccountsUsername(AccountUsername) returns (ActorData) {}
   rpc FindActorByID(ActorID) returns (ActorData) {}
 
-  // Login ...
-  rpc Login (AuthData) returns (AccountsReply) {}
+  // SignIn ...
+  rpc SignIn (AuthData) returns (SignInReply) {}
 }
 
 message DeleteData {
@@ -87,6 +87,12 @@ message AccountData {
 
 // AuthReply Account login, use email and password.
 message AuthData {
-  string mail = 1;
+  string username = 1;
   string password = 2;
+}
+
+message SignInReply {
+  string code = 1;
+  uint64 accountID = 2;
+  string mail = 3;
 }

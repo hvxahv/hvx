@@ -13,13 +13,13 @@ func (s *server) Create(ctx context.Context, in *pb.CreateAccountData) (*pb.Acco
 	return &pb.AccountsReply{Code: "200", Message: "ok"}, nil
 }
 
-func (s *server) Login(ctx context.Context, in *pb.AuthData) (*pb.AccountsReply, error) {
-	a := NewAuth(in.Mail, in.Password)
-	mail, err := a.Login()
+func (s *server) SignIn(ctx context.Context, in *pb.AuthData) (*pb.SignInReply, error) {
+	a := NewAuth(in.Username, in.Password)
+	id, mail, err := a.SignIn()
 	if err != nil {
-		return &pb.AccountsReply{Code: "500", Message: "!ok"}, err
+		return &pb.SignInReply{Code: "500", AccountID: 0, Mail: ""}, err
 	}
-	return &pb.AccountsReply{Code: "200", Message: mail}, nil
+	return &pb.SignInReply{Code: "200", AccountID: uint64(id), Mail: mail}, nil
 }
 
 func (s *server) Update(ctx context.Context, in *pb.AccountData) (*pb.AccountsReply, error) {
@@ -58,7 +58,7 @@ func (s *server) FindActorByAccountsUsername(ctx context.Context, in *pb.Account
 		return nil, err
 	}
 	return &pb.ActorData{
-		Id: uint64(actor.ID),
+		Id:                uint64(actor.ID),
 		PreferredUsername: actor.PreferredUsername,
 		Domain:            actor.Domain,
 		Avatar:            actor.Avatar,
