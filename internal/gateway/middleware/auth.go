@@ -1,8 +1,11 @@
 package middleware
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/hvxahv/hvxahv/internal/accounts"
 	"github.com/hvxahv/hvxahv/pkg/security"
+	"github.com/pkg/errors"
 	"log"
 	"strings"
 )
@@ -22,6 +25,10 @@ func Auth(c *gin.Context) {
 		return
 	}
 
+	// Because the device ID is unique, when logging in,
+	// the device id obtained by the token is used to query whether the device exists.
+	// If the device does not exist, the device will be returned as unregistered.
+	// This method is used to revoke the issued token when resetting the password or deleting the device.
 	_, err := security.VerifyToken(t)
 	if err != nil {
 		c.JSON(500, gin.H{
@@ -30,9 +37,18 @@ func Auth(c *gin.Context) {
 		})
 		c.Abort()
 	} else {
-		u, err1 := security.ParseToken(t)
-		if err1 != nil {
+		u, err := security.ParseToken(t)
+		if err != nil {
 			log.Println("failed to obtain user through token.")
+			c.Abort()
+		}
+		if accounts.NewDevicesID(u.DevicesID).IsNotExist() {
+			fmt.Println(errors.Errorf("THE_DEVICE_HAS_BEEN_BANNED"))
+			c.JSON(401, gin.H{
+				"code":    "401",
+				"message": "Token is not available, the device has been banned.",
+			})
+			c.Abort()
 		}
 		c.Set("devices", u.DevicesID)
 		c.Set("username", u.User)

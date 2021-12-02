@@ -16,6 +16,24 @@ type Devices struct {
 	URL       string `gorm:"type:text;url"`
 }
 
+func (d *Devices) DeleteALLByAccountID() error {
+	db := cockroach.GetDB()
+	if err := db.Debug().Table("devices").Where("account_id = ?", d.AccountID).Unscoped().Delete(&Devices{}); err != nil {
+		return err.Error
+	}
+	return nil
+}
+
+func (d *Devices) IsNotExist() bool {
+	db := cockroach.GetDB()
+	if err := db.Debug().Table("devices").Where("device_id = ?", d.DeviceID).First(&Devices{}); err != nil {
+		if cockroach.IsNotFound(err.Error) {
+			return cockroach.IsNotFound(err.Error)
+		}
+	}
+	return false
+}
+
 func (d *Devices) Get() (*[]Devices, error) {
 	db := cockroach.GetDB()
 	var devices []Devices
@@ -29,6 +47,12 @@ func NewDevicesByDeviceID(accountID uint, deviceID string) *Devices {
 	return &Devices{
 		AccountID: accountID,
 		DeviceID:  deviceID,
+	}
+}
+
+func NewDevicesID(deviceID string) *Devices {
+	return &Devices{
+		DeviceID: deviceID,
 	}
 }
 
@@ -87,7 +111,10 @@ func (d *Devices) DeleteByDeviceID() error {
 type Device interface {
 	Create() error
 	Get() (*[]Devices, error)
+	IsNotExist() bool
 	DeleteByID() error
 	// DeleteByDeviceID This method is used when exiting the current device.
 	DeleteByDeviceID() error
+
+	DeleteALLByAccountID() error
 }
