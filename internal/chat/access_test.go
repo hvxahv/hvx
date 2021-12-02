@@ -10,7 +10,7 @@ import (
 	"testing"
 )
 
-func TestInitDB(t *testing.T) {
+func TestInitChatConfig(t *testing.T) {
 
 	home, err := homedir.Dir()
 	cobra.CheckErr(err)
@@ -22,7 +22,7 @@ func TestInitDB(t *testing.T) {
 	viper.AutomaticEnv()
 
 	// If a configs file is found, read it in.
-	if err := viper.ReadInConfig(); err == nil {
+	if err1 := viper.ReadInConfig(); err1 == nil {
 		fmt.Fprintln(os.Stderr, "Using configs file:", viper.ConfigFileUsed())
 	}
 
@@ -39,11 +39,15 @@ func TestInitDB(t *testing.T) {
 
 }
 
-func TestAuth_Login(t *testing.T) {
-	TestInitDB(t)
+func TestAccess_Register(t *testing.T) {
+	TestInitChatConfig(t)
+}
 
-	n := NewMatrixAuth(1, "", "")
-	if err := n.Register(); err != nil {
+func TestMatrix_Create(t *testing.T) {
+	TestInitChatConfig(t)
+
+	c := NewMatrixAccesses(111, "", "", "", "")
+	if err := c.Create(); err != nil {
 		fmt.Println(err)
 	}
 }
