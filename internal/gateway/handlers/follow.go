@@ -11,30 +11,30 @@ import (
 )
 
 func FollowReqHandler(c *gin.Context) {
-	name := middleware.GetUserName(c)
+	name := middleware.GetUsername(c)
 	object := c.PostForm("object")
 	id, err := strconv.Atoi(object)
 	if err != nil {
-		return 
+		return
 	}
 
 	f, addr := activity.NewFoAPData(name, uint(id))
 	data, err := json.Marshal(f)
 	if err != nil {
-		return 
+		return
 	}
 
 	if err := activity.NewAPData(name, addr, data).Send(); err != nil {
-		return 
+		return
 	}
 	c.JSON(200, gin.H{
-		"code": 200,
+		"code":    200,
 		"message": "ok",
 	})
 }
 
 func FollowAcceptHandler(c *gin.Context) {
-	name := middleware.GetUserName(c)
+	name := middleware.GetUsername(c)
 
 	id := c.PostForm("id")
 	actor := c.PostForm("actor")
@@ -68,31 +68,31 @@ func FollowAcceptHandler(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{
-		"code": 200,
+		"code":    200,
 		"message": "ok",
 	})
 }
 
 func FollowerHandler(c *gin.Context) {
-	name := middleware.GetUserName(c)
+	name := middleware.GetUsername(c)
 	acct, err := accounts.NewAccountsUsername(name).GetAccountByUsername()
 	if err != nil {
-		return 
+		return
 	}
 	fmt.Println(acct.ActorID)
 	f, err := activity.NewByActorID(acct.ActorID).GetFollowers()
 	if err != nil {
-		return 
+		return
 	}
 
 	c.JSON(200, gin.H{
-		"code": "200",
+		"code":    "200",
 		"message": f,
 	})
 }
 
 func FollowingHandler(c *gin.Context) {
-	name := middleware.GetUserName(c)
+	name := middleware.GetUsername(c)
 	acct, err := accounts.NewAccountsUsername(name).GetAccountByUsername()
 	if err != nil {
 		return
@@ -104,7 +104,7 @@ func FollowingHandler(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{
-		"code": "200",
+		"code":    "200",
 		"message": f,
 	})
 }

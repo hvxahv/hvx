@@ -29,8 +29,8 @@ type AccountsClient interface {
 	GetAccountsByUsername(ctx context.Context, in *AccountUsername, opts ...grpc.CallOption) (*AccountData, error)
 	FindActorByAccountsUsername(ctx context.Context, in *AccountUsername, opts ...grpc.CallOption) (*ActorData, error)
 	FindActorByID(ctx context.Context, in *ActorID, opts ...grpc.CallOption) (*ActorData, error)
-	// Login ...
-	Login(ctx context.Context, in *AuthData, opts ...grpc.CallOption) (*AccountsReply, error)
+	// SignIn ...
+	SignIn(ctx context.Context, in *AuthData, opts ...grpc.CallOption) (*SignInReply, error)
 }
 
 type accountsClient struct {
@@ -113,9 +113,9 @@ func (c *accountsClient) FindActorByID(ctx context.Context, in *ActorID, opts ..
 	return out, nil
 }
 
-func (c *accountsClient) Login(ctx context.Context, in *AuthData, opts ...grpc.CallOption) (*AccountsReply, error) {
-	out := new(AccountsReply)
-	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Accounts/Login", in, out, opts...)
+func (c *accountsClient) SignIn(ctx context.Context, in *AuthData, opts ...grpc.CallOption) (*SignInReply, error) {
+	out := new(SignInReply)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Accounts/SignIn", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -137,8 +137,8 @@ type AccountsServer interface {
 	GetAccountsByUsername(context.Context, *AccountUsername) (*AccountData, error)
 	FindActorByAccountsUsername(context.Context, *AccountUsername) (*ActorData, error)
 	FindActorByID(context.Context, *ActorID) (*ActorData, error)
-	// Login ...
-	Login(context.Context, *AuthData) (*AccountsReply, error)
+	// SignIn ...
+	SignIn(context.Context, *AuthData) (*SignInReply, error)
 	mustEmbedUnimplementedAccountsServer()
 }
 
@@ -170,8 +170,8 @@ func (UnimplementedAccountsServer) FindActorByAccountsUsername(context.Context, 
 func (UnimplementedAccountsServer) FindActorByID(context.Context, *ActorID) (*ActorData, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FindActorByID not implemented")
 }
-func (UnimplementedAccountsServer) Login(context.Context, *AuthData) (*AccountsReply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
+func (UnimplementedAccountsServer) SignIn(context.Context, *AuthData) (*SignInReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SignIn not implemented")
 }
 func (UnimplementedAccountsServer) mustEmbedUnimplementedAccountsServer() {}
 
@@ -330,20 +330,20 @@ func _Accounts_FindActorByID_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Accounts_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Accounts_SignIn_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(AuthData)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AccountsServer).Login(ctx, in)
+		return srv.(AccountsServer).SignIn(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/hvxahv.v1alpha1.proto.Accounts/Login",
+		FullMethod: "/hvxahv.v1alpha1.proto.Accounts/SignIn",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccountsServer).Login(ctx, req.(*AuthData))
+		return srv.(AccountsServer).SignIn(ctx, req.(*AuthData))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -388,8 +388,8 @@ var Accounts_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Accounts_FindActorByID_Handler,
 		},
 		{
-			MethodName: "Login",
-			Handler:    _Accounts_Login_Handler,
+			MethodName: "SignIn",
+			Handler:    _Accounts_SignIn_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

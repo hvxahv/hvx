@@ -6,7 +6,12 @@ Instance: [halfmemories.com](https://halfmemories.com)
 
 Preview version: [dev.halfmemories.com](https://dev.halfmemories.com)
 
-#### !Now that the project is under active development, you can read the document below to get an introduction to the project or visit disism.com to contact the developer for details.
+## Next plan
+
+- In the process of implementation, the developer believes that the user's private key and some personal sensitive data should not be stored in the server, even if the instance custodian is not allowed to see it, so hvxahv is revamping the design of user privacy.
+- The current hvxahv does not represent the final design. The developer is pursuing the best solution for user privacy and security.
+- The current hvxahv is under active development and cannot be used as any production environment for the time being. The source code will be frequently modified or rewritten, please be aware.
+- hvxahv pursuit of privacy is the ultimate, please believe that the future hvxahv will become safe and reliable.
 
 ## Introduction
 

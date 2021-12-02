@@ -14,7 +14,7 @@ import (
 )
 
 func GetMyChannelsHandler(c *gin.Context) {
-	name := middleware.GetUserName(c)
+	name := middleware.GetUsername(c)
 
 	acct, err := accounts.NewAccountsUsername(name).GetAccountByUsername()
 	if err != nil {
@@ -22,16 +22,16 @@ func GetMyChannelsHandler(c *gin.Context) {
 	}
 	ch, err := channels.NewChannelsOwnerID(acct.ID).GetByOwnerID()
 	if err != nil {
-		return 
+		return
 	}
 	c.JSON(200, gin.H{
-		"code": 200,
+		"code":    200,
 		"message": ch,
 	})
 }
 
 func CreateChannelHandler(c *gin.Context) {
-	name := middleware.GetUserName(c)
+	name := middleware.GetUsername(c)
 
 	id := c.PostForm("id")
 	cn := c.PostForm("name")
@@ -43,7 +43,7 @@ func CreateChannelHandler(c *gin.Context) {
 		return
 	}
 	if err := channels.NewChannels(cn, id, avatar, bio, name, isPrivate).Create(); err != nil {
-		return 
+		return
 	}
 
 	c.JSON(200, gin.H{
@@ -57,14 +57,14 @@ func UpdateChannelHandler(c *gin.Context) {
 }
 
 func DeleteChannelHandler(c *gin.Context) {
-	name := middleware.GetUserName(c)
+	name := middleware.GetUsername(c)
 	id, err := strconv.Atoi(c.PostForm("id"))
 
 	if err != nil {
 		return
 	}
 	if err := channels.NewDeleteChannelByID(name, uint(id)).Delete(); err != nil {
-		return 
+		return
 	}
 
 	c.JSON(200, gin.H{
@@ -74,7 +74,7 @@ func DeleteChannelHandler(c *gin.Context) {
 }
 
 func NewChannelAdminHandler(c *gin.Context) {
-	name := middleware.GetUserName(c)
+	name := middleware.GetUsername(c)
 
 	id := c.PostForm("id")
 	admin := c.PostForm("admin")
@@ -98,13 +98,13 @@ func NewChannelAdminHandler(c *gin.Context) {
 }
 
 func RemoveChannelAdminHandler(c *gin.Context) {
-	name := middleware.GetUserName(c)
+	name := middleware.GetUsername(c)
 
 	fmt.Println(name)
 }
 
 func NewSubscriberHandler(c *gin.Context) {
-	name := middleware.GetUserName(c)
+	name := middleware.GetUsername(c)
 	id := c.PostForm("id")
 
 	cli, conn, err := client.Channel()

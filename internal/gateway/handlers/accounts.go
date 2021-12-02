@@ -5,14 +5,13 @@ import (
 	"github.com/gin-gonic/gin"
 	pb "github.com/hvxahv/hvxahv/api/accounts/v1alpha1"
 	"github.com/hvxahv/hvxahv/pkg/microservices/client"
-	"github.com/hvxahv/hvxahv/pkg/security"
 	"github.com/hvxahv/hvxahv/pkg/storage"
 	"github.com/spf13/viper"
 	"golang.org/x/net/context"
 	"log"
 )
 
-func NewAccountsHandler(c *gin.Context) {
+func CreateAccountsHandler(c *gin.Context) {
 	// Username used to log in.
 	username := c.PostForm("username")
 	// Password for login.
@@ -41,34 +40,6 @@ func NewAccountsHandler(c *gin.Context) {
 		"message": r.Message,
 	})
 
-}
-
-func AccountLoginHandler(c *gin.Context) {
-	mail := c.PostForm("mail")
-	// Password for login.
-	password := c.PostForm("password")
-
-	// Use this client to remotely call the login method.
-	cli, conn, err := client.Accounts()
-	if err != nil {
-		log.Println(err)
-	}
-	defer conn.Close()
-	r, err := cli.Login(context.Background(), &pb.AuthData{
-		Mail:     mail,
-		Password: password,
-	})
-	if err != nil {
-		log.Printf("failed to send message to accounts server: %v", err)
-	}
-
-	t, err := security.GenToken(mail, r.Message, password)
-
-	c.JSON(200, gin.H{
-		"code":     "200",
-		"token":    t,
-		"message": r.Message,
-	})
 }
 
 // UploadAvatar Interface for users to upload avatars.

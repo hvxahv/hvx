@@ -22,7 +22,7 @@ func InboxHandler(c *gin.Context) {
 }
 
 func OutboxHandler(c *gin.Context) {
-	name := middleware.GetUserName(c)
+	name := middleware.GetUsername(c)
 	t := c.PostForm("type")
 	o := c.PostForm("object")
 
@@ -34,16 +34,16 @@ func OutboxHandler(c *gin.Context) {
 }
 
 func GetInboxesHandler(c *gin.Context) {
-	name := middleware.GetUserName(c)
+	name := middleware.GetUsername(c)
 	fmt.Println(name)
 	acct, err := accounts.NewAccountsUsername(name).GetAccountByUsername()
 	if err != nil {
-		return 
+		return
 	}
 	inboxes, err := activity.NewObjectID(acct.ActorID).GetInboxesByID()
 
 	if err != nil {
-		return 
+		return
 	}
 	c.JSON(200, gin.H{
 		"code":    "200",

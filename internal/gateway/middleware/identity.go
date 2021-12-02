@@ -5,9 +5,9 @@ import (
 	"log"
 )
 
-// GetUserName Get the username of the context login user through the loginUser key.
-func GetUserName(c *gin.Context) string {
-	name, ok := c.Get("loginUser")
+// GetUsername Get the username of the context login user through the username key.
+func GetUsername(c *gin.Context) string {
+	name, ok := c.Get("username")
 	if !ok {
 		c.JSON(500, gin.H{
 			"code":    500,
@@ -21,4 +21,21 @@ func GetUserName(c *gin.Context) string {
 		log.Println("failed to convert username to string.")
 	}
 	return author
+}
+
+func GetDevicesID(c *gin.Context) string {
+	device, ok := c.Get("devices")
+	if !ok {
+		c.JSON(500, gin.H{
+			"code":    500,
+			"message": "failed to get name by token!",
+		})
+		return ""
+	}
+
+	d, ok := device.(string)
+	if !ok {
+		log.Println("failed to convert username to string.")
+	}
+	return d
 }

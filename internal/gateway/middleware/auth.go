@@ -1,8 +1,8 @@
 package middleware
 
 import (
-	"github.com/hvxahv/hvxahv/pkg/security"
 	"github.com/gin-gonic/gin"
+	"github.com/hvxahv/hvxahv/pkg/security"
 	"log"
 	"strings"
 )
@@ -34,8 +34,8 @@ func Auth(c *gin.Context) {
 		if err1 != nil {
 			log.Println("failed to obtain user through token.")
 		}
-
-		c.Set("loginUser", u.User)
+		c.Set("devices", u.DevicesID)
+		c.Set("username", u.User)
 		c.Next()
 	}
 
