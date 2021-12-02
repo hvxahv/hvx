@@ -10,11 +10,11 @@ func TestAccounts_Login(t *testing.T) {
 	TestInitDB(t)
 
 	a := NewAuth("x@disism.com", "Hvxahv123")
-	login, err := a.Login()
+	id, login, err := a.SignIn()
 	if err != nil {
 		log.Println(err)
-		return 
+		return
 	}
-
+	fmt.Println(id)
 	fmt.Println(login)
 }

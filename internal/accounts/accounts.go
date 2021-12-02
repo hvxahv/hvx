@@ -65,8 +65,12 @@ func (a *Accounts) UpdateUsername(target string) error {
 }
 
 func (a *Accounts) Update() error {
+	// Indicates that the password has been changed.
 	if a.Password != "" {
 		a.Password = security.GenPassword(a.Password)
+		if err := NewDevicesByAccountID(a.ID).DeleteByDeviceID(); err != nil {
+			return err
+		}
 	}
 
 	db := cockroach.GetDB()
