@@ -64,5 +64,7 @@ func APIServer() *gin.Engine {
 
 	v1alpha1.V1Saved(v1)
 
+	v1alpha1.V1Storage(v1)
+
 	return api
 }

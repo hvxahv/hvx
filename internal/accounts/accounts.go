@@ -141,7 +141,7 @@ func (a *Accounts) Create() error {
 		return errors.Errorf("FAILED_TO_CREATE_ACCOUNT")
 	}
 
-	if err := chat.NewMatrixAuth(a.ID, a.Username, pass).Register(); err != nil {
+	if err := chat.NewAccessAuth(a.ID, a.Username, pass).Register(); err != nil {
 		fmt.Println(err)
 	}
 

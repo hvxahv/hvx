@@ -5,8 +5,9 @@ import (
 	"gorm.io/gorm"
 )
 
-type MatrixAccesses struct {
+type Matrices struct {
 	gorm.Model
+
 	AccountID  uint   `gorm:"primaryKey;type:bigint;account_id;"`
 	Token      string `gorm:"type:text;token"`
 	HomeServer string `gorm:"type:text;home_server"`
@@ -14,24 +15,41 @@ type MatrixAccesses struct {
 	DeviceID   string `gorm:"type:text;device_id"`
 }
 
-func (m *MatrixAccesses) Create() error {
+func (m *Matrices) UpdateToken() error {
 	db := cockroach.GetDB()
 
-	if err := db.AutoMigrate(&MatrixAccesses{}); err != nil {
+	if err := db.Debug().Table("matrices").Where("account_id = ?", m.AccountID).Updates(&m).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *Matrices) Create() error {
+	db := cockroach.GetDB()
+
+	if err := db.AutoMigrate(&Matrices{}); err != nil {
 		return err
 	}
 
-	if err := db.Debug().Table("matrix_accesses").Create(&m).Error; err != nil {
+	if err := db.Debug().Table("matrices").Create(&m).Error; err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func NewMatrixAccess(accountID uint, token, homeServer, userId, deviceID string) *MatrixAccesses {
-	return &MatrixAccesses{AccountID: accountID, Token: token, HomeServer: homeServer, UserId: userId, DeviceID: deviceID}
+func NewMatrixAccesses(accountID uint, token, homeServer, userId, deviceID string) *Matrices {
+	return &Matrices{AccountID: accountID, Token: token, HomeServer: homeServer, UserId: userId, DeviceID: deviceID}
 }
 
-type MatrixAccess interface {
+func NewAccessUpdateTokenByAcctID(accountID uint, token string) *Matrices {
+	return &Matrices{
+		AccountID: accountID,
+		Token:     token,
+	}
+}
+
+type Accesses interface {
 	Create() error
+	UpdateToken() error
 }
