@@ -2,6 +2,9 @@ package handlers
 
 import (
 	"fmt"
+	"log"
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	pb "github.com/hvxahv/hvxahv/api/accounts/v1alpha1"
@@ -10,8 +13,6 @@ import (
 	"github.com/hvxahv/hvxahv/pkg/microservices/client"
 	"github.com/hvxahv/hvxahv/pkg/security"
 	"golang.org/x/net/context"
-	"log"
-	"strconv"
 )
 
 func SignInHandler(c *gin.Context) {
@@ -34,15 +35,15 @@ func SignInHandler(c *gin.Context) {
 	}
 
 	devicesID := uuid.New().String()
-	t, err := security.GenToken(r.Mail, username, password, devicesID)
-	if err := accounts.NewDevices(uint(r.AccountID), ua, devicesID, t, "").Create(); err != nil {
+	token, err := security.GenToken(r.Mail, username, password, devicesID)
+	if err := accounts.NewDevices(uint(r.AccountID), ua, devicesID, token, "").Create(); err != nil {
 		fmt.Println(err)
 		return
 	}
 
 	c.JSON(200, gin.H{
 		"code":  "200",
-		"token": t,
+		"token": token,
 		"mail":  r.Mail,
 	})
 }

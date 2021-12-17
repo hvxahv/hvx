@@ -2,6 +2,9 @@ package handlers
 
 import (
 	"fmt"
+	"log"
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 	pb "github.com/hvxahv/hvxahv/api/channel/v1alpha1"
 	"github.com/hvxahv/hvxahv/internal/accounts"
@@ -9,8 +12,6 @@ import (
 	"github.com/hvxahv/hvxahv/internal/gateway/middleware"
 	"github.com/hvxahv/hvxahv/pkg/microservices/client"
 	"golang.org/x/net/context"
-	"log"
-	"strconv"
 )
 
 func GetMyChannelsHandler(c *gin.Context) {
