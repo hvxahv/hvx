@@ -6,7 +6,7 @@ import (
 )
 
 func TestGenToken(t *testing.T) {
-	token, err := GenToken("foo", "bar", "123")
+	token, err := GenToken("foo", "bar", "123", "")
 	if err != nil {
 		t.Error(err)
 	}
@@ -19,8 +19,7 @@ func TestVerifyToken(t *testing.T) {
 		t.Errorf("token parsing error: %v", err)
 	}
 	t.Log(token)
-	
-	
+
 }
 
 func TestParseToken(t *testing.T) {
@@ -34,5 +33,5 @@ func TestParseToken(t *testing.T) {
 
 func TestNewClaims(t *testing.T) {
 
-	NewClaims("foo", "bar", "123")
+	NewClaims("foo", "bar", "123", "")
 }

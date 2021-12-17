@@ -2,13 +2,14 @@ package accounts
 
 import (
 	"fmt"
+	"log"
+
 	"github.com/go-playground/validator/v10"
 	"github.com/hvxahv/hvxahv/internal/chat"
 	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"github.com/hvxahv/hvxahv/pkg/security"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
-	"log"
 )
 
 type Accounts struct {
@@ -25,8 +26,7 @@ type Accounts struct {
 	ActorID uint `gorm:"type:bigint;actor_id"`
 
 	// Whether to set as a private account
-	IsPrivate  bool   `gorm:"type:boolean;is_private"`
-	PrivateKey string `gorm:"type:text;private_key"`
+	IsPrivate bool `gorm:"type:boolean;is_private"`
 }
 
 func (a *Accounts) Delete() error {
@@ -115,6 +115,9 @@ func (a *Accounts) Create() error {
 		return errors.New("FAILED_TO_AUTOMATICALLY_CREATE_DATABASE")
 	}
 
+	// The server should not store the user's private key, and the private key should only be stored in the user's client.
+	// When registering for the first time, an asymmetric key pair will be generated.
+	// The client saves the private key in the local storage.
 	privateKey, publicKey, err := security.GenRSA()
 	if err != nil {
 		log.Printf("failed to generate public and private keys: %v", err)
@@ -132,11 +135,11 @@ func (a *Accounts) Create() error {
 	if err != nil {
 		return err
 	}
-	pass := a.Password
 
+	pass := a.Password
 	a.ActorID = acct.ID
-	a.PrivateKey = privateKey
 	a.Password = security.GenPassword(a.Password)
+
 	if err := db.Debug().Table("accounts").Create(&a).Error; err != nil {
 		return errors.Errorf("FAILED_TO_CREATE_ACCOUNT")
 	}
@@ -144,6 +147,7 @@ func (a *Accounts) Create() error {
 	if err := chat.NewAccessAuth(a.ID, a.Username, pass).Register(); err != nil {
 		fmt.Println(err)
 	}
+	fmt.Println(privateKey)
 
 	return nil
 }

@@ -2,11 +2,12 @@ package cockroach
 
 import (
 	"fmt"
+	"os"
+	"testing"
+
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"os"
-	"testing"
 )
 
 func TestInitDB(t *testing.T) {
@@ -25,9 +26,7 @@ func TestInitDB(t *testing.T) {
 		fmt.Fprintln(os.Stderr, "Using configs file:", viper.ConfigFileUsed())
 	}
 
-
-	n := NewDBAddr()
-	if err := n.InitDB(); err != nil {
+	if err := NewDBAddr().InitDB(); err != nil {
 		t.Errorf("Failed to initialize PostgreSQL : %s", err)
 	} else {
 		t.Logf("Initialize PostgreSQL success.")
@@ -35,10 +34,8 @@ func TestInitDB(t *testing.T) {
 }
 
 func TestCreateDB(t *testing.T) {
-
-	n := NewDBAddr()
 	name := "hvxahv"
-	if err := n.New(name); err != nil {
+	if err := NewDBAddr().New(name); err != nil {
 		t.Errorf("Failed to initialize PostgreSQL : %s", err)
 	} else {
 		t.Logf("Initialize PostgreSQL success.")

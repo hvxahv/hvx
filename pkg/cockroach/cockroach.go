@@ -4,13 +4,14 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log"
+	"time"
+
 	_ "github.com/lib/pq"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"log"
-	"time"
 )
 
 type DB interface {
@@ -84,10 +85,8 @@ func (d *DBAddr) New(name string) error {
 		fmt.Println(err)
 	}
 
-	if _, err2 := c.Exec("CREATE DATABASE " + name); err2 != nil {
-		panic(err2)
-		return err2
+	if _, err := c.Exec("CREATE DATABASE " + name); err != nil {
+		return err
 	}
 	return nil
 }
-
