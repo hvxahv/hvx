@@ -3,20 +3,22 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 	"github.com/hvxahv/hvxahv/internal/accounts"
 	"github.com/hvxahv/hvxahv/internal/activity"
 	"github.com/hvxahv/hvxahv/internal/gateway/middleware"
-	"strconv"
 )
 
 func FollowReqHandler(c *gin.Context) {
 	name := middleware.GetUsername(c)
-	object := c.PostForm("object")
-	id, err := strconv.Atoi(object)
+	id, err := strconv.Atoi(c.PostForm("object"))
 	if err != nil {
 		return
 	}
+
+	privateKey := c.PostForm("private_key")
 
 	f, addr := activity.NewFoAPData(name, uint(id))
 	data, err := json.Marshal(f)
@@ -24,7 +26,7 @@ func FollowReqHandler(c *gin.Context) {
 		return
 	}
 
-	if err := activity.NewAPData(name, addr, data).Send(); err != nil {
+	if err := activity.NewAPData(name, addr, privateKey, data).Send(); err != nil {
 		return
 	}
 	c.JSON(200, gin.H{
@@ -50,6 +52,8 @@ func FollowAcceptHandler(c *gin.Context) {
 		return
 	}
 
+	privateKey := c.PostForm("private_key")
+
 	fa, addr := activity.NewFoAPAccept(name, id, uint(aID))
 	data, err := json.Marshal(fa)
 	if err != nil {
@@ -58,7 +62,7 @@ func FollowAcceptHandler(c *gin.Context) {
 
 	fmt.Println(addr)
 
-	if err := activity.NewAPData(name, addr, data).Send(); err != nil {
+	if err := activity.NewAPData(name, addr, privateKey, data).Send(); err != nil {
 		return
 	}
 

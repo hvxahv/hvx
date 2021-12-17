@@ -7,8 +7,6 @@ import (
 )
 
 func TestActors_NewActor(t *testing.T) {
-	TestInitDB(t)
-	
 	a := NewActors("hvturingga", "", "", "Person")
 	actor, err := a.NewActor()
 	if err != nil {
@@ -20,8 +18,6 @@ func TestActors_NewActor(t *testing.T) {
 }
 
 func TestActors_FindActorByPreferredUsername(t *testing.T) {
-	TestInitDB(t)
-
 	a := NewActorsPreferredUsername("hvturingga")
 
 	r, err := a.FindByPreferredUsername()
@@ -32,8 +28,6 @@ func TestActors_FindActorByPreferredUsername(t *testing.T) {
 }
 
 func TestActors_FindActorByID(t *testing.T) {
-	TestInitDB(t)
-
 	a := NewActorID(696901249207894017)
 	actor, err := a.GetActorByUri()
 	if err != nil {
@@ -43,8 +37,6 @@ func TestActors_FindActorByID(t *testing.T) {
 }
 
 func TestActors_FindActorByUrl(t *testing.T) {
-	TestInitDB(t)
-
 	a := NewActorUri("https://mas.to/users/hvturinggas")
 	actor, err := a.GetActorByUri()
 	if err != nil {
@@ -54,8 +46,6 @@ func TestActors_FindActorByUrl(t *testing.T) {
 }
 
 func TestActors_Update(t *testing.T) {
-	TestInitDB(t)
-
 	a := NewActorID(698619813575491585)
 
 	a.ActorType = ""
@@ -66,6 +56,6 @@ func TestActors_Update(t *testing.T) {
 	err := a.Update()
 	if err != nil {
 		log.Println(err)
-		return 
+		return
 	}
 }

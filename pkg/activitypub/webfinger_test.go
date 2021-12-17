@@ -6,7 +6,7 @@ import (
 )
 
 func TestNewWebFinger(t *testing.T) {
-	wf := NewWebFinger("hvturingga")
+	wf := NewWebFinger("hvturingga", true)
 	fmt.Println(wf)
 }
 

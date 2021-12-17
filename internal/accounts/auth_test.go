@@ -7,8 +7,6 @@ import (
 )
 
 func TestAccounts_Login(t *testing.T) {
-	TestInitDB(t)
-
 	a := NewAuth("x@disism.com", "Hvxahv123")
 	id, login, err := a.SignIn()
 	if err != nil {

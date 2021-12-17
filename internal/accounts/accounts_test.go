@@ -2,18 +2,18 @@ package accounts
 
 import (
 	"fmt"
+	"log"
+	"os"
+	"testing"
+
 	"github.com/hvxahv/hvxahv/pkg/cache"
 	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"log"
-	"os"
-	"testing"
 )
 
-func TestInitDB(t *testing.T) {
-
+func init() {
 	home, err := homedir.Dir()
 	cobra.CheckErr(err)
 
@@ -30,22 +30,22 @@ func TestInitDB(t *testing.T) {
 
 	// Initialize the database.
 	n := cockroach.NewDBAddr()
-	if err2 := n.InitDB(); err2 != nil {
+	if err := n.InitDB(); err != nil {
+		fmt.Println(err)
 		return
 	}
 
 	// If a configs file is found, read it in.
-	if err3 := viper.ReadInConfig(); err3 == nil {
+	if err := viper.ReadInConfig(); err == nil {
+		fmt.Println(err)
 		fmt.Fprintln(os.Stderr, "Using configs file:", viper.ConfigFileUsed())
+		return
 	}
 
 	cache.InitRedis(1)
-
 }
 
 func TestAccounts_Create(t *testing.T) {
-	TestInitDB(t)
-
 	a := NewAccounts("hvturingga", "x@disism.com", "Hvxahv123")
 	if err := a.Create(); err != nil {
 		log.Println(err)
@@ -54,8 +54,6 @@ func TestAccounts_Create(t *testing.T) {
 }
 
 func TestAccounts_FindAccountByName(t *testing.T) {
-	TestInitDB(t)
-
 	a := NewAccountsUsername("hvturingga")
 	accounts, err := a.GetAccountByUsername()
 	if err != nil {
@@ -65,12 +63,9 @@ func TestAccounts_FindAccountByName(t *testing.T) {
 }
 
 func TestAccounts_Update(t *testing.T) {
-	TestInitDB(t)
-
 	a := NewAccountsUsername("hvturingga")
 	a.Password = "Hvxahv123"
 	a.Mail = "x@disism.com"
-
 
 	err := a.Update()
 	if err != nil {
@@ -81,8 +76,6 @@ func TestAccounts_Update(t *testing.T) {
 }
 
 func TestAccounts_ChangeUsername(t *testing.T) {
-	TestInitDB(t)
-
 	a := NewAcctNameANDActorID("hvturinggas", 696077920006668289)
 	err := a.UpdateUsername("hvturingga")
 	if err != nil {
@@ -92,8 +85,6 @@ func TestAccounts_ChangeUsername(t *testing.T) {
 }
 
 func TestAccounts_Delete(t *testing.T) {
-	TestInitDB(t)
-
 	a := NewAcctNameANDActorID("hvturingga", 696077920006668289)
 	err := a.Delete()
 	if err != nil {
