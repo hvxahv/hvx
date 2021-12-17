@@ -3,6 +3,7 @@ module github.com/hvxahv/hvxahv
 go 1.16
 
 require (
+	github.com/SherClockHolmes/webpush-go v1.1.3
 	github.com/gin-gonic/gin v1.7.2
 	github.com/go-playground/validator/v10 v10.4.1
 	github.com/go-redis/redis/v8 v8.10.0
