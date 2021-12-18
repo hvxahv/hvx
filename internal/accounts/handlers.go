@@ -7,7 +7,7 @@ import (
 
 func (s *server) Create(ctx context.Context, in *pb.CreateAccountData) (*pb.AccountsReply, error) {
 	a := NewAccounts(in.Username, in.Mail, in.Password)
-	if err := a.Create(); err != nil {
+	if _, err := a.Create(); err != nil {
 		return &pb.AccountsReply{Code: "500", Message: "!ok"}, err
 	}
 	return &pb.AccountsReply{Code: "200", Message: "ok"}, nil
@@ -53,7 +53,7 @@ func (s *server) GetAccountsByUsername(ctx context.Context, in *pb.AccountUserna
 
 func (s *server) FindActorByAccountsUsername(ctx context.Context, in *pb.AccountUsername) (*pb.ActorData, error) {
 	a := NewActorsPreferredUsername(in.Username)
-	actor, err := a.FindActorByAccountUsername()
+	actor, err := a.GetActorByAccountUsername()
 	if err != nil {
 		return nil, err
 	}

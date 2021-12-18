@@ -47,7 +47,7 @@ func init() {
 
 func TestAccounts_Create(t *testing.T) {
 	a := NewAccounts("hvturingga", "x@disism.com", "Hvxahv123")
-	if err := a.Create(); err != nil {
+	if _, err := a.Create(); err != nil {
 		log.Println(err)
 		return
 	}

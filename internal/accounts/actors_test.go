@@ -8,7 +8,7 @@ import (
 
 func TestActors_NewActor(t *testing.T) {
 	a := NewActors("hvturingga", "", "", "Person")
-	actor, err := a.NewActor()
+	actor, err := a.Create()
 	if err != nil {
 		log.Println(err)
 		return
@@ -46,7 +46,7 @@ func TestActors_FindActorByUrl(t *testing.T) {
 }
 
 func TestActors_Update(t *testing.T) {
-	a := NewActorID(698619813575491585)
+	a := NewActorID(720125166581710849)
 
 	a.ActorType = ""
 	a.Name = "HVTURINGGA"

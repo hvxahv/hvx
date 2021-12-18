@@ -2,17 +2,13 @@ package handlers
 
 import (
 	"fmt"
-	"log"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	pb "github.com/hvxahv/hvxahv/api/accounts/v1alpha1"
 	"github.com/hvxahv/hvxahv/internal/accounts"
 	"github.com/hvxahv/hvxahv/internal/gateway/middleware"
-	"github.com/hvxahv/hvxahv/pkg/microservices/client"
 	"github.com/hvxahv/hvxahv/pkg/security"
-	"golang.org/x/net/context"
 )
 
 func SignInHandler(c *gin.Context) {
@@ -21,30 +17,37 @@ func SignInHandler(c *gin.Context) {
 	password := c.PostForm("password")
 
 	// Use this client to remotely call the login method.
-	cli, conn, err := client.Accounts()
-	if err != nil {
-		log.Println(err)
-	}
-	defer conn.Close()
-	r, err := cli.SignIn(context.Background(), &pb.AuthData{
-		Username: username,
-		Password: password,
-	})
-	if err != nil {
-		log.Printf("failed to send message to accounts server: %v", err)
-	}
+	//cli, conn, err := client.Accounts()
+	//if err != nil {
+	//	log.Println(err)
+	//}
+	//defer conn.Close()
+	//r, err := cli.SignIn(context.Background(), &pb.AuthData{
+	//	Username: username,
+	//	Password: password,
+	//})
+	//if err != nil {
+	//	log.Printf("failed to send message to accounts server: %v", err)
+	//}
 
-	devicesID := uuid.New().String()
-	token, err := security.GenToken(r.Mail, username, password, devicesID)
-	if err := accounts.NewDevices(uint(r.AccountID), ua, devicesID, token, "").Create(); err != nil {
+	id, mail, err := accounts.NewAuth(username, password).SignIn()
+	if err != nil {
+		return
+	}
+	deviceID := uuid.New().String()
+	token, err := security.GenToken(mail, username, password, deviceID)
+	d := accounts.NewDevices(id, ua, deviceID)
+	if err := d.Create(); err != nil {
 		fmt.Println(err)
 		return
 	}
 
 	c.JSON(200, gin.H{
-		"code":  "200",
-		"token": token,
-		"mail":  r.Mail,
+		"code":      "200",
+		"token":     token,
+		"mail":      mail,
+		"deviceID":  deviceID,
+		"publicKey": d.PublicKey,
 	})
 }
 
@@ -74,7 +77,7 @@ func GetDevicesHandler(c *gin.Context) {
 		fmt.Println(err)
 		return
 	}
-	devices, err := accounts.NewDevicesByAccountID(acct.ID).Get()
+	devices, err := accounts.NewDevicesByAccountID(acct.ID).GetDevices()
 	if err != nil {
 		return
 	}

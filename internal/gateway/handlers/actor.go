@@ -3,16 +3,12 @@ package handlers
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	pb "github.com/hvxahv/hvxahv/api/accounts/v1alpha1"
 	"github.com/hvxahv/hvxahv/internal/accounts"
 	"github.com/hvxahv/hvxahv/internal/activity"
 	"github.com/hvxahv/hvxahv/internal/channels"
 	"github.com/hvxahv/hvxahv/pkg/activitypub"
-	"github.com/hvxahv/hvxahv/pkg/microservices/client"
 	"github.com/spf13/viper"
-	"golang.org/x/net/context"
 	"io/ioutil"
-	"log"
 	"time"
 )
 
@@ -24,21 +20,26 @@ func GetActorHandler(c *gin.Context) {
 
 	// Use this client to call the remote Accounts gRPC service,
 	// and then pass the username to get the queried data.
-	cli, conn, err := client.Accounts()
-	if err != nil {
-		log.Println(err)
-	}
-	defer conn.Close()
-	acct, err := cli.FindActorByAccountsUsername(context.Background(), &pb.AccountUsername{Username: name})
+	//cli, conn, err := client.Accounts()
+	//if err != nil {
+	//	log.Println(err)
+	//}
+	//defer conn.Close()
+	//acct, err := cli.FindActorByAccountsUsername(context.Background(), &pb.AccountUsername{Username: name})
+	//if err != nil {
+	//	return
+	//}
+	//
+	//if err != nil {
+	//	c.JSON(200, gin.H{
+	//		"status":  "600",
+	//		"message": "NO QUERY TO THE ACCOUNT.",
+	//	})
+	//}
+
+	acct, err := accounts.NewActorsPreferredUsername(name).GetActorByAccountUsername()
 	if err != nil {
 		return
-	}
-
-	if err != nil {
-		c.JSON(200, gin.H{
-			"status":  "600",
-			"message": "NO QUERY TO THE ACCOUNT.",
-		})
 	}
 
 	a := NewActor(acct)
@@ -80,7 +81,7 @@ func NewChannelActor(a *accounts.Actors) *activitypub.Actor {
 	var (
 		addr = viper.GetString("localhost")
 
-		id = fmt.Sprintf("https://%s/c/%s", addr, a.PreferredUsername)
+		id  = fmt.Sprintf("https://%s/c/%s", addr, a.PreferredUsername)
 		kid = fmt.Sprintf("%s#main-key", id)
 		box = fmt.Sprintf("https://%s/c/%s/", addr, a.PreferredUsername)
 	)
@@ -129,12 +130,13 @@ func NewChannelActor(a *accounts.Actors) *activitypub.Actor {
 	}
 	return actor
 }
+
 // NewActor Return standard ActivityPub protocol user data.
-func NewActor(a *pb.ActorData) *activitypub.Actor {
+func NewActor(a *accounts.Actors) *activitypub.Actor {
 	var (
 		addr = viper.GetString("localhost")
 
-		id = fmt.Sprintf("https://%s/u/%s", addr, a.PreferredUsername)
+		id  = fmt.Sprintf("https://%s/u/%s", addr, a.PreferredUsername)
 		kid = fmt.Sprintf("%s#main-key", id)
 		box = fmt.Sprintf("https://%s/u/%s/", addr, a.PreferredUsername)
 	)

@@ -1,6 +1,9 @@
 package notify
 
-import "github.com/hvxahv/hvxahv/pkg/push"
+import (
+	"github.com/hvxahv/hvxahv/internal/accounts"
+	"github.com/hvxahv/hvxahv/pkg/push"
+)
 
 type PushData struct {
 	DeviceID uint
@@ -15,12 +18,16 @@ func NewPush(deviceID uint, data []byte) *PushData {
 }
 
 func (p *PushData) Push() error {
+	d, err := accounts.NewDevicesByID(p.DeviceID).GetDevicesByID()
+	if err != nil {
+		return err
+	}
 	// Get subscription by device ID.
 	n, err := NewNotifiesByDeviceID(p.DeviceID).Get()
 	if err != nil {
 		return err
 	}
-	if err := push.NewSubscription(p.DeviceID, n.Endpoint, n.Auth, n.P256dh, n.PublicKey, n.PrivateKey).Send(); err != nil {
+	if err := push.NewSubscription(p.DeviceID, n.Endpoint, n.Auth, n.P256dh, d.PublicKey, d.PrivateKey).Send(); err != nil {
 		return err
 	}
 	return nil

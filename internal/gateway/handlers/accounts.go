@@ -3,11 +3,9 @@ package handlers
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	pb "github.com/hvxahv/hvxahv/api/accounts/v1alpha1"
-	"github.com/hvxahv/hvxahv/pkg/microservices/client"
+	"github.com/hvxahv/hvxahv/internal/accounts"
 	"github.com/hvxahv/hvxahv/pkg/storage"
 	"github.com/spf13/viper"
-	"golang.org/x/net/context"
 	"log"
 )
 
@@ -20,24 +18,30 @@ func CreateAccountsHandler(c *gin.Context) {
 	mail := c.PostForm("mail")
 
 	// Use the client to call the Accounts service to create users.
-	cli, conn, err := client.Accounts()
-	if err != nil {
-		log.Println(err)
-	}
-	defer conn.Close()
+	//cli, conn, err := client.Accounts()
+	//if err != nil {
+	//	log.Println(err)
+	//}
+	//defer conn.Close()
+	//
+	//r, err := cli.Create(context.Background(), &pb.CreateAccountData{
+	//	Username: username,
+	//	Password: password,
+	//	Mail:     mail,
+	//})
+	//if err != nil {
+	//	log.Printf("failed to send message to accounts server: %v", err)
+	//}
 
-	r, err := cli.Create(context.Background(), &pb.CreateAccountData{
-		Username: username,
-		Password: password,
-		Mail:     mail,
-	})
+	privateKey, err := accounts.NewAccounts(username, mail, password).Create()
 	if err != nil {
-		log.Printf("failed to send message to accounts server: %v", err)
+		return
 	}
 
 	c.JSON(200, gin.H{
-		"code":    r.Code,
-		"message": r.Message,
+		"code":       "200",
+		"message":    "ok",
+		"privateKey": privateKey,
 	})
 
 }
