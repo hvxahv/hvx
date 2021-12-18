@@ -78,7 +78,7 @@ func NewAddActor(PreferredUsername, Domain, Avatar, Name, Summary, Inbox, Url, P
 	}
 }
 
-func (a *Actors) FindActorByAccountUsername() (*Actors, error) {
+func (a *Actors) GetActorByAccountUsername() (*Actors, error) {
 	db := cockroach.GetDB()
 
 	acct, err := NewAccountsUsername(a.PreferredUsername).GetAccountByUsername()
@@ -156,7 +156,7 @@ func NewActors(preferredUsername, password, publicKey, actorType string) *Actors
 	}
 }
 
-func (a *Actors) NewActor() (*Actors, error) {
+func (a *Actors) Create() (*Actors, error) {
 	db := cockroach.GetDB()
 
 	if err := db.AutoMigrate(&Actors{}); err != nil {
@@ -171,15 +171,15 @@ func (a *Actors) NewActor() (*Actors, error) {
 }
 
 type Actor interface {
-	// NewActor Create new actors data and add the returned ID to the accounts field.
-	NewActor() (*Actors, error)
+	// Create new actors data and add the returned ID to the accounts field.
+	Create() (*Actors, error)
 
 	AddActor() (*Actors, error)
 
 	// FindByPreferredUsername Find the Actor collection by PreferredUsername.
 	FindByPreferredUsername() (*[]Actors, error)
 
-	FindActorByAccountUsername() (*Actors, error)
+	GetActorByAccountUsername() (*Actors, error)
 	GetByID() (*Actors, error)
 	GetActorByUri() (*Actors, error)
 

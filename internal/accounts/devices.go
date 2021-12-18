@@ -2,18 +2,28 @@ package accounts
 
 import (
 	"fmt"
+	"github.com/SherClockHolmes/webpush-go"
 	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"gorm.io/gorm"
+	"log"
 )
 
 type Devices struct {
 	gorm.Model
 
-	AccountID uint   `gorm:"primaryKey;type:bigint;account_id"`
-	Device    string `gorm:"type:text;device"`
-	DeviceID  string `gorm:"primaryKey;type:text;device_id"`
-	Token     string `gorm:"type:text;token"`
-	URL       string `gorm:"type:text;url"`
+	AccountID  uint   `gorm:"primaryKey;type:bigint;account_id"`
+	Device     string `gorm:"type:text;device"`
+	DeviceID   string `gorm:"primaryKey;type:text;device_id"`
+	PrivateKey string `gorm:"type:text;privateKey"`
+	PublicKey  string `gorm:"type:text;publicKey"`
+}
+
+func NewDevices(accountID uint, device string, deviceID string) *Devices {
+	privateKey, publicKey, err := webpush.GenerateVAPIDKeys()
+	if err != nil {
+		log.Println(err)
+	}
+	return &Devices{AccountID: accountID, Device: device, DeviceID: deviceID, PrivateKey: privateKey, PublicKey: publicKey}
 }
 
 func (d *Devices) DeleteALLByAccountID() error {
@@ -34,7 +44,23 @@ func (d *Devices) IsNotExist() bool {
 	return false
 }
 
-func (d *Devices) Get() (*[]Devices, error) {
+func (d *Devices) GetDevicesByID() (*Devices, error) {
+	db := cockroach.GetDB()
+	if err := db.Debug().Table("devices").Where("id = ?", d.ID).First(&d).Error; err != nil {
+		return nil, err
+	}
+	return d, nil
+}
+
+func (d *Devices) GetDevicesByDeviceID() (*Devices, error) {
+	db := cockroach.GetDB()
+	if err := db.Debug().Table("devices").Where("device_id = ?", d.DeviceID).First(&d).Error; err != nil {
+		return nil, err
+	}
+	return d, nil
+}
+
+func (d *Devices) GetDevices() (*[]Devices, error) {
 	db := cockroach.GetDB()
 	var devices []Devices
 	if err := db.Debug().Table("devices").Where("account_id = ?", d.AccountID).Find(&devices).Error; err != nil {
@@ -56,21 +82,16 @@ func NewDevicesID(deviceID string) *Devices {
 	}
 }
 
-func NewDevicesByID(id, accountID uint) *Devices {
+func NewDevicesByID(id uint) *Devices {
 	return &Devices{
 		Model: gorm.Model{
 			ID: id,
 		},
-		AccountID: accountID,
 	}
 }
 
 func NewDevicesByAccountID(accountID uint) *Devices {
 	return &Devices{AccountID: accountID}
-}
-
-func NewDevices(accountID uint, device string, deviceID string, token string, URL string) *Devices {
-	return &Devices{AccountID: accountID, Device: device, DeviceID: deviceID, Token: token, URL: URL}
 }
 
 func (d *Devices) Create() error {
@@ -110,11 +131,12 @@ func (d *Devices) DeleteByDeviceID() error {
 
 type Device interface {
 	Create() error
-	Get() (*[]Devices, error)
+	GetDevicesByID() (*Devices, error)
+	GetDevicesByDeviceID() (*Devices, error)
+	GetDevices() (*[]Devices, error)
 	IsNotExist() bool
 	DeleteByID() error
 	// DeleteByDeviceID This method is used when exiting the current device.
 	DeleteByDeviceID() error
-
 	DeleteALLByAccountID() error
 }

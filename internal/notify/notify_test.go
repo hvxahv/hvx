@@ -43,19 +43,17 @@ func init() {
 }
 
 func TestNotify_Create(t *testing.T) {
-	if err := NewNotifies(2131312412213312312,
-		"https://sg2p.notify.windows.com/w/?token=BQYAAAB6d7igIw1dP7TMQGZTFsdIA9uBWPaiv9od2NtnpO3Oh8wNaFUIC0Yp5yVZFv3VmCea7CTp205cGlaNaHsyb3AAltWOj8SEJ7liLwOm4o2n0bIHn0bsUFdTv3a8i6AWVciis1pIAYAvT%2baEPYkoFWUXbvtpUiSDUy0THeB0QUDMimWZvYfOXkDFbNraKMJAc0JCS0MF8oZRcxMwyH6o6oKOmKFjBp2E8NK%2b2LCUyZU7Xc6wdYTCLAD%2fvQ7K%2bq8za4%2bUAyOmfw9okKHy9%2fcYgYWlypYQ%2fkmqiEfne3Y2dF0z2P6e4YLTcWaxn9lL49cKkdA%3d",
-		"BPIKfLEeyz-DpVTLt3oQiqunnBvkbRFr500uEc9hMX52ABKcnDUyQzsnzQjaejXFVVXMhj4wC50WbcDoqVirQJ0",
-		"P-8DQm_Gwdit1RApgigAUA",
-		"BDWxbKVZjt8vWyO9fcBK8mt-48GFf_iE2wvVrU7ubW5hOHLTkpdhpIud6uUSsvK4H5xqOgoM-lNu9hM5DbN8aAQ",
-		"FK7dy8kslbJcOVx4VZ3NH-GgN7LBOOYgj0eXm3r11ho",
+	if err := NewNotifies(720140086112714753,
+		"https://sg2p.notify.windows.com/w/?token=BQYAAACwPljTW1WbNsGHH9jVFNzy3o73MaV%2bw1Im3ZKSrSQDIdJ0l%2fRMKTZ%2bJUhT44S5tncAr9VVyVBqIHpQqDFNtAEH1xjeQp1%2bjWcwQI%2bHfU%2bwcNdspTxPBKTaBiUlZVxWPK1XmslyuHXvxqGqLQqLX6eXl7vAhWrtVGk0A6z7agvQOY9d%2bmNMKakkvpPJB2rXhemdP%2fZYqc4SmEQXDjiJdN7Pg%2fWJQai8CB2gtzr%2bb1SuaQmnve%2f7SWIqN9ihHvI9oo7wagvULBS%2fAuC9sJ1IamUO45wQqbG%2f3oczBzfpjSuBM42bJ4MGqkN35ePU5rnXfYU%3d",
+		"BI5N3A_zbQPVP6W6Wo-IzgOWu1ux0FsGHAxCBf-X0grLANXfgPd5r4tOCDT7o7zHvabkLItPs2evXrd3AHB4OXY",
+		"OcHJ2-7QrDAm_Mp95TW6Hw",
 	).Create(); err != nil {
 		fmt.Println(err)
 	}
 }
 
 func TestNotify_Get(t *testing.T) {
-	r, err := NewNotifiesByDeviceID(2131312412213312312).Get()
+	r, err := NewNotifiesByDeviceID(720140086112714753).Get()
 	if err != nil {
 		fmt.Println(err)
 	}

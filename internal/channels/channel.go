@@ -31,7 +31,7 @@ func NewChannelsByLink(link string) *Channels {
 
 func (c *Channels) GetActorDataByLink() (*accounts.Actors, error) {
 	db := cockroach.GetDB()
-	
+
 	if err := db.Debug().Table("channels").Where("link = ?", c.Link).First(&c).Error; err != nil {
 		return nil, err
 	}
@@ -50,7 +50,6 @@ func (c *Channels) GetByLink() (*Channels, error) {
 	}
 	return c, nil
 }
-
 
 func (c *Channels) DeleteHistory() {
 	panic("implement me")
@@ -117,7 +116,7 @@ func (c *Channels) Create() error {
 	domain := viper.GetString("localhost")
 	url := fmt.Sprintf("https://%s/channels/%s", domain, c.Link)
 	inbox := fmt.Sprintf("https://%s/c/%s/inbox", domain, c.Link)
-	acct, err := accounts.NewAddActor(c.Link, domain, c.Avatar, c.Name, c.Bio, inbox, url, publicKey, c.Link, "Service").NewActor()
+	acct, err := accounts.NewAddActor(c.Link, domain, c.Avatar, c.Name, c.Bio, inbox, url, publicKey, c.Link, "Service").Create()
 	if err != nil {
 		return err
 	}
@@ -147,8 +146,8 @@ func (c *Channels) Create() error {
 
 func NewDeleteChannelByID(username string, id uint) *Channels {
 	return &Channels{
-		Model:         gorm.Model{
-			ID:        id,
+		Model: gorm.Model{
+			ID: id,
 		},
 		OwnerUsername: username,
 	}

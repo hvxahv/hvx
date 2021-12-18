@@ -19,22 +19,18 @@ import (
 type Notifies struct {
 	gorm.Model
 
-	DeviceID   uint   `gorm:"primaryKey;type:bigint;device_id"`
-	Endpoint   string `gorm:"type:text;endpoint"`
-	P256dh     string `gorm:"type:text;p256dh"`
-	Auth       string `gorm:"type:text;auth"`
-	PublicKey  string `gorm:"type:text;public_key"`
-	PrivateKey string `gorm:"type:text;private_key"`
+	DeviceID uint   `gorm:"primaryKey;type:bigint;device_id"`
+	Endpoint string `gorm:"type:text;endpoint"`
+	P256dh   string `gorm:"type:text;p256dh"`
+	Auth     string `gorm:"type:text;auth"`
 }
 
-func NewNotifies(deviceID uint, endpoint, p256dh, auth, public_key, private_key string) *Notifies {
+func NewNotifies(deviceID uint, endpoint, p256dh, auth string) *Notifies {
 	return &Notifies{
-		DeviceID:   deviceID,
-		Endpoint:   endpoint,
-		P256dh:     p256dh,
-		Auth:       auth,
-		PublicKey:  public_key,
-		PrivateKey: private_key,
+		DeviceID: deviceID,
+		Endpoint: endpoint,
+		P256dh:   p256dh,
+		Auth:     auth,
 	}
 }
 
