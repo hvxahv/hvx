@@ -29,7 +29,7 @@ func TestActors_FindActorByPreferredUsername(t *testing.T) {
 
 func TestActors_FindActorByID(t *testing.T) {
 	a := NewActorID(696901249207894017)
-	actor, err := a.GetActorByUri()
+	actor, err := a.GetByActorUri()
 	if err != nil {
 		log.Println(err)
 	}
@@ -37,10 +37,11 @@ func TestActors_FindActorByID(t *testing.T) {
 }
 
 func TestActors_FindActorByUrl(t *testing.T) {
-	a := NewActorUri("https://mas.to/users/hvturinggas")
-	actor, err := a.GetActorByUri()
+	a := NewActorUri("https://mas.to/users/hvturingga")
+	actor, err := a.GetByActorUri()
 	if err != nil {
-		log.Println(err)
+		fmt.Println("NOT FOUND!")
+		return
 	}
 	fmt.Println(actor)
 }

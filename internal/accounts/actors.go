@@ -36,10 +36,11 @@ func (a *Actors) Delete() error {
 	return nil
 }
 
-func (a *Actors) GetActorByUri() (*Actors, error) {
+func (a *Actors) GetByActorUri() (*Actors, error) {
 	db := cockroach.GetDB()
 
-	if err := db.Debug().Table("actors").Where("url = ?", a.Url).First(&a).Error; err != nil {
+	err := db.Debug().Table("actors").Where("url = ?", a.Url).First(&a).Error
+	if err != nil {
 		ok := cockroach.IsNotFound(err)
 		if ok {
 			return nil, err
@@ -181,7 +182,7 @@ type Actor interface {
 
 	GetActorByAccountUsername() (*Actors, error)
 	GetByID() (*Actors, error)
-	GetActorByUri() (*Actors, error)
+	GetByActorUri() (*Actors, error)
 
 	Update() error
 
