@@ -12,7 +12,6 @@ import (
 	"time"
 )
 
-
 // EXAMPLE 9
 //{
 //  "@context": ["https://www.w3.org/ns/activitystreams",
@@ -257,7 +256,7 @@ func GetRemoteActor(uri string) (*accounts.Actors, error) {
 		return nil, err
 	}
 
-	account := accounts.NewAddActor(
+	a := accounts.NewAddActor(
 		actor.PreferredUsername,
 		h.Hostname(),
 		actor.Icon.Url,
@@ -270,11 +269,10 @@ func GetRemoteActor(uri string) (*accounts.Actors, error) {
 		actor.Type,
 	)
 
-	act, err := account.AddActor()
+	act, err := a.AddActor()
 	if err != nil {
 		return nil, err
 	}
 
 	return act, nil
 }
-

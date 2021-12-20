@@ -2,8 +2,6 @@ package handlers
 
 import (
 	"fmt"
-	"strconv"
-
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/hvxahv/hvxahv/internal/accounts"
@@ -29,7 +27,7 @@ func SignInHandler(c *gin.Context) {
 	//if err != nil {
 	//	log.Printf("failed to send message to accounts server: %v", err)
 	//}
-
+	fmt.Println(username, password)
 	id, mail, err := accounts.NewAuth(username, password).SignIn()
 	if err != nil {
 		return
@@ -88,19 +86,13 @@ func GetDevicesHandler(c *gin.Context) {
 }
 
 func DeleteDevicesHandler(c *gin.Context) {
-	id, err := strconv.Atoi(c.PostForm("id"))
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	fmt.Println(c.PostForm("id"))
-	fmt.Println(id)
+	deviceID := c.PostForm("device_id")
 	acct, err := accounts.NewAccountsUsername(middleware.GetUsername(c)).GetAccountByUsername()
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	if err := accounts.NewDevicesByID(uint(id), acct.ID).DeleteByID(); err != nil {
+	if err := accounts.NewDevicesByDeviceID(acct.ID, deviceID).DeleteByDeviceID(); err != nil {
 		fmt.Println(err)
 		return
 	}

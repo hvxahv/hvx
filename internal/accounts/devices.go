@@ -107,18 +107,6 @@ func (d *Devices) Create() error {
 	return nil
 }
 
-func (d *Devices) DeleteByID() error {
-	db := cockroach.GetDB()
-	if err := db.Debug().Table("devices").
-		Where("id = ?", d.ID).
-		Where("account_id = ?", d.AccountID).
-		Unscoped().Delete(&Devices{}).Error; err != nil {
-		return err
-	}
-	// Token If it fails, notify the client to go offline.
-	return nil
-}
-
 func (d *Devices) DeleteByDeviceID() error {
 	db := cockroach.GetDB()
 	if err := db.Debug().Table("devices").Where("account_id = ?", d.AccountID).
@@ -135,7 +123,6 @@ type Device interface {
 	GetDevicesByDeviceID() (*Devices, error)
 	GetDevices() (*[]Devices, error)
 	IsNotExist() bool
-	DeleteByID() error
 	// DeleteByDeviceID This method is used when exiting the current device.
 	DeleteByDeviceID() error
 	DeleteALLByAccountID() error

@@ -41,7 +41,7 @@ func Types(name string, body []byte) {
 		fmt.Printf("UNMARSHAL ACTICITY TYPE ERROR:%v", err)
 	}
 
-	actor, err := accounts.NewActorUri(a.Actor).GetActorByUri()
+	actor, err := accounts.NewActorUri(a.Actor).GetByActorUri()
 	if err != nil {
 		resp, err2 := activitypub.GetRemoteActor(a.Actor)
 		if err2 != nil {
@@ -103,7 +103,6 @@ func Types(name string, body []byte) {
 				return
 			}
 		}
-
 
 		//case "Create":
 		//
@@ -220,7 +219,7 @@ func ChannelTypes(name string, body []byte) {
 	// Get ActorID by NAME.
 	ca, err2 := channels.NewChannelsByLink(name).GetActorDataByLink()
 	if err2 != nil {
-		return 
+		return
 	}
 
 	objectID = ca.ID
@@ -230,10 +229,11 @@ func ChannelTypes(name string, body []byte) {
 		fmt.Printf("UNMARSHAL ACTICITY TYPE ERROR:%v", err)
 	}
 
-	actor, err := accounts.NewActorUri(a.Actor).GetActorByUri()
+	actor, err := accounts.NewActorUri(a.Actor).GetByActorUri()
+	fmt.Println("没找到错误", err)
 	if err != nil {
-		resp, err2 := activitypub.GetRemoteActor(a.Actor)
-		if err2 != nil {
+		resp, err := activitypub.GetRemoteActor(a.Actor)
+		if err != nil {
 			return
 		}
 		actorID = resp.ID
@@ -289,7 +289,7 @@ func NewSubAccept(actor, activityID string, objectID uint) (*activitypub.Accept,
 	var (
 		ctx = "https://www.w3.org/ns/activitystreams"
 		id  = fmt.Sprintf("https://%s/c/%s#accepts/follows/%s", viper.GetString("localhost"), actor, uuid.New().String())
-		a = fmt.Sprintf("https://%s/c/%s", viper.GetString("localhost"), actor)
+		a   = fmt.Sprintf("https://%s/c/%s", viper.GetString("localhost"), actor)
 	)
 
 	return &activitypub.Accept{
@@ -310,4 +310,3 @@ func NewSubAccept(actor, activityID string, objectID uint) (*activitypub.Accept,
 		},
 	}, o.Inbox
 }
-
