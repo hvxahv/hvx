@@ -4,7 +4,6 @@ import (
 	"log"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/hvxahv/hvxahv/internal/chat"
 	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"github.com/hvxahv/hvxahv/pkg/security"
 	"github.com/pkg/errors"
@@ -135,7 +134,7 @@ func (a *Accounts) Create() (string, error) {
 		return "", err
 	}
 
-	pass := a.Password
+	//pass := a.Password
 	a.ActorID = acct.ID
 	a.Password = security.GenPassword(a.Password)
 
@@ -143,9 +142,9 @@ func (a *Accounts) Create() (string, error) {
 		return "", errors.Errorf("FAILED_TO_CREATE_ACCOUNT")
 	}
 
-	if err := chat.NewAccessAuth(a.ID, a.Username, pass).Register(); err != nil {
-		return "", err
-	}
+	//if err := chat.NewAccessAuth(a.ID, a.Username, pass).Register(); err != nil {
+	//	return "", err
+	//}
 
 	return privateKey, nil
 }

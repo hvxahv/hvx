@@ -7,6 +7,7 @@ import (
 	"github.com/hvxahv/hvxahv/internal/accounts"
 	"github.com/hvxahv/hvxahv/internal/gateway/middleware"
 	"github.com/hvxahv/hvxahv/pkg/security"
+	"log"
 )
 
 func SignInHandler(c *gin.Context) {
@@ -27,13 +28,17 @@ func SignInHandler(c *gin.Context) {
 	//if err != nil {
 	//	log.Printf("failed to send message to accounts server: %v", err)
 	//}
-	fmt.Println(username, password)
+
 	id, mail, err := accounts.NewAuth(username, password).SignIn()
 	if err != nil {
+		fmt.Println(err)
 		return
 	}
 	deviceID := uuid.New().String()
 	token, err := security.GenToken(mail, username, password, deviceID)
+	if err != nil {
+		log.Println(err)
+	}
 	d := accounts.NewDevices(id, ua, deviceID)
 	if err := d.Create(); err != nil {
 		fmt.Println(err)

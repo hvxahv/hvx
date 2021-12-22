@@ -30,18 +30,18 @@ type Subscription struct {
 	Data []byte
 }
 
-type PushData struct {
+type Data struct {
 	Title string `json:"title"`
 	Body  string `json:"body"`
 	Icon  string `json:"icon"`
 	Tag   string `json:"tag"`
 }
 
-func NewPushData(title string, body string, icon string, tag string) *PushData {
-	return &PushData{Title: title, Body: body, Icon: icon, Tag: tag}
+func NewData(title string, body string, icon string, tag string) *Data {
+	return &Data{Title: title, Body: body, Icon: icon, Tag: tag}
 }
 
-func NewSubscription(deviceID uint, endpoint, auth, p256dh, publicKey, privateKey string) *Subscription {
+func NewSubscription(deviceID uint, endpoint, auth, p256dh, publicKey, privateKey string, data []byte) *Subscription {
 	return &Subscription{
 		DeviceID:   deviceID,
 		Endpoint:   endpoint,
@@ -49,6 +49,7 @@ func NewSubscription(deviceID uint, endpoint, auth, p256dh, publicKey, privateKe
 		P256dh:     p256dh,
 		PublicKey:  publicKey,
 		PrivateKey: privateKey,
+		Data:       data,
 	}
 }
 
