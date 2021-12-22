@@ -26,6 +26,7 @@ func NotifySubHandler(c *gin.Context) {
 		log.Panicln(err)
 		return
 	}
+
 	c.JSON(200, gin.H{
 		"code":    "200",
 		"message": "ok",

@@ -27,7 +27,7 @@ func (p *PushData) Push() error {
 	if err != nil {
 		return err
 	}
-	if err := push.NewSubscription(p.DeviceID, n.Endpoint, n.Auth, n.P256dh, d.PublicKey, d.PrivateKey).Send(); err != nil {
+	if err := push.NewSubscription(p.DeviceID, n.Endpoint, n.Auth, n.P256dh, d.PublicKey, d.PrivateKey, p.Data).Send(); err != nil {
 		return err
 	}
 	return nil
