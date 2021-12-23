@@ -46,8 +46,12 @@ func init() {
 }
 
 func TestAccounts_Create(t *testing.T) {
-	a := NewAccounts("hvturingga", "x@disism.com", "Hvxahv123")
-	if _, err := a.Create(); err != nil {
+	actor, err := NewActors("", "", "").Create()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	if err := NewAccounts("hvturingga", "x@disism.com", "Hvxahv123", actor.ID).Create(); err != nil {
 		log.Println(err)
 		return
 	}

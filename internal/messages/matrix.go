@@ -1,4 +1,4 @@
-package chat
+package messages
 
 import (
 	"github.com/hvxahv/hvxahv/pkg/cockroach"

@@ -1,13 +1,14 @@
-package chat
+package messages
 
 import (
 	"fmt"
+	"os"
+	"testing"
+
 	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"os"
-	"testing"
 )
 
 func TestInitChatConfig(t *testing.T) {
