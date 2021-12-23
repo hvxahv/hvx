@@ -1,9 +1,10 @@
-package chat
+package messages
 
 import (
+	"log"
+
 	"github.com/hvxahv/hvxahv/pkg/matrix"
 	"github.com/matrix-org/gomatrix"
-	"log"
 )
 
 type Register struct {

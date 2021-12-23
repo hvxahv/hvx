@@ -2,11 +2,12 @@ package handlers
 
 import (
 	"fmt"
+	"log"
+
 	"github.com/gin-gonic/gin"
 	"github.com/hvxahv/hvxahv/internal/accounts"
 	"github.com/hvxahv/hvxahv/pkg/storage"
 	"github.com/spf13/viper"
-	"log"
 )
 
 func CreateAccountsHandler(c *gin.Context) {
@@ -16,6 +17,8 @@ func CreateAccountsHandler(c *gin.Context) {
 	password := c.PostForm("password")
 
 	mail := c.PostForm("mail")
+
+	publicKey := c.PostForm("publicKey")
 
 	// Use the client to call the Accounts service to create users.
 	//cli, conn, err := client.Accounts()
@@ -33,15 +36,22 @@ func CreateAccountsHandler(c *gin.Context) {
 	//	log.Printf("failed to send message to accounts server: %v", err)
 	//}
 
-	privateKey, err := accounts.NewAccounts(username, mail, password).Create()
+	// Create the Actor first, and then use the returned ActorID to create a unique account of the current instance account system.
+	// The username in the account system is unique, and the Actor may have the same username in different instances.
+	actor, err := accounts.NewActors(username, publicKey, "Person").Create()
 	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	if err := accounts.NewAccounts(username, mail, password, actor.ID).Create(); err != nil {
+		log.Panicln(err)
 		return
 	}
 
 	c.JSON(200, gin.H{
-		"code":       "200",
-		"message":    "ok",
-		"privateKey": privateKey,
+		"code":    "200",
+		"message": "ok",
 	})
 
 }

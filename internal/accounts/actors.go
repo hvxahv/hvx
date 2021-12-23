@@ -2,6 +2,7 @@ package accounts
 
 import (
 	"fmt"
+
 	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
@@ -138,13 +139,8 @@ func (a *Actors) FindByPreferredUsername() (*[]Actors, error) {
 	return &ac, nil
 }
 
-func NewActors(preferredUsername, password, publicKey, actorType string) *Actors {
+func NewActors(preferredUsername, publicKey, actorType string) *Actors {
 	domain := viper.GetString("localhost")
-
-	//id, err := matrix.NewAuth(preferredUsername, password).Register()
-	//if err != nil {
-	//	log.Println("FAILED TO REGISTER TO THE MATRIX ACCOUNT.")
-	//}
 
 	return &Actors{
 		PreferredUsername: preferredUsername,

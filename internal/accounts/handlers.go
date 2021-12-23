@@ -1,15 +1,24 @@
 package accounts
 
 import (
+	"log"
+
 	pb "github.com/hvxahv/hvxahv/api/accounts/v1alpha1"
 	"golang.org/x/net/context"
 )
 
 func (s *server) Create(ctx context.Context, in *pb.CreateAccountData) (*pb.AccountsReply, error) {
-	a := NewAccounts(in.Username, in.Mail, in.Password)
-	if _, err := a.Create(); err != nil {
-		return &pb.AccountsReply{Code: "500", Message: "!ok"}, err
+	// Create the Actor first, and then use the returned ActorID to create a unique account of the current instance account system.
+	// The username in the account system is unique, and the Actor may have the same username in different instances.
+	actor, err := NewActors(in.Username, "", "Person").Create()
+	if err != nil {
+		log.Println(err)
 	}
+
+	if err := NewAccounts(in.Username, in.Mail, in.Password, actor.ID).Create(); err != nil {
+		log.Panicln(err)
+	}
+
 	return &pb.AccountsReply{Code: "200", Message: "ok"}, nil
 }
 

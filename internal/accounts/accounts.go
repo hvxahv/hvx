@@ -1,8 +1,6 @@
 package accounts
 
 import (
-	"log"
-
 	"github.com/go-playground/validator/v10"
 	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"github.com/hvxahv/hvxahv/pkg/security"
@@ -93,13 +91,18 @@ func (a *Accounts) GetAccountByUsername() (*Accounts, error) {
 	return a, nil
 }
 
-func NewAccounts(username string, mail string, password string) *Accounts {
-	return &Accounts{Username: username, Mail: mail, Password: password}
+func NewAccounts(username, mail, password string, actorID uint) *Accounts {
+	return &Accounts{
+		Username: username,
+		Mail:     mail,
+		Password: security.GenPassword(password),
+		ActorID:  actorID,
+	}
 }
 
-func (a *Accounts) Create() (string, error) {
+func (a *Accounts) Create() error {
 	if err := validator.New().Struct(*a); err != nil {
-		return "", err
+		return err
 	}
 
 	// Before creating, first, check whether the user exists. If it does not exist, create the user.
@@ -110,47 +113,29 @@ func (a *Accounts) Create() (string, error) {
 	db := cockroach.GetDB()
 
 	if err := db.AutoMigrate(&Accounts{}); err != nil {
-		return "", errors.New("FAILED_TO_AUTOMATICALLY_CREATE_DATABASE")
+		return errors.New("FAILED_TO_AUTOMATICALLY_CREATE_DATABASE")
 	}
 
 	// The server should not store the user's private key, and the private key should only be stored in the user's client.
 	// When registering for the first time, an asymmetric key pair will be generated.
 	// The client saves the private key in the local storage.
-	privateKey, publicKey, err := security.GenRSA()
-	if err != nil {
-		log.Printf("failed to generate public and private keys: %v", err)
-		return "", errors.Errorf("FAILED_TO_CREATE_ACCOUNT")
-	}
 
 	if err := db.Debug().Table("accounts").Where("username = ? ", a.Username).Or("mail = ?", a.Mail).First(&Accounts{}); err != nil {
 		ok := cockroach.IsNotFound(err.Error)
 		if !ok {
-			return "", errors.New("THE_ACCOUNT_ALREADY_EXISTS")
+			return errors.New("THE_ACCOUNT_ALREADY_EXISTS")
 		}
 	}
 
-	acct, err := NewActors(a.Username, a.Password, publicKey, "Person").Create()
-	if err != nil {
-		return "", err
-	}
-
-	//pass := a.Password
-	a.ActorID = acct.ID
-	a.Password = security.GenPassword(a.Password)
-
 	if err := db.Debug().Table("accounts").Create(&a).Error; err != nil {
-		return "", errors.Errorf("FAILED_TO_CREATE_ACCOUNT")
+		return errors.Errorf("FAILED_TO_CREATE_ACCOUNT")
 	}
 
-	//if err := chat.NewAccessAuth(a.ID, a.Username, pass).Register(); err != nil {
-	//	return "", err
-	//}
-
-	return privateKey, nil
+	return nil
 }
 
 type Account interface {
-	Create() (string, error)
+	Create() error
 
 	GetAccountByUsername() (*Accounts, error)
 

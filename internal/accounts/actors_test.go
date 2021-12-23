@@ -7,7 +7,7 @@ import (
 )
 
 func TestActors_NewActor(t *testing.T) {
-	a := NewActors("hvturingga", "", "", "Person")
+	a := NewActors("hvturingga", "", "Person")
 	actor, err := a.Create()
 	if err != nil {
 		log.Println(err)
