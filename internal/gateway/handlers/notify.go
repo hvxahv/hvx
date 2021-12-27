@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"github.com/hvxahv/hvxahv/internal/accounts"
+	"github.com/hvxahv/hvxahv/internal/gateway/middleware"
 	"log"
 
 	"github.com/gin-gonic/gin"
@@ -9,20 +9,19 @@ import (
 )
 
 func NotifySubHandler(c *gin.Context) {
-	//  deviceID uint, endpoint, p256dh, auth, public_key, private_key string
-	// GET DEVICE ID BY ACCOUNT ID.
-	deviceID := c.PostForm("device_id")
+	// deviceID uint, endpoint, p256dh, auth, public_key, private_key string
+
+	// Use web push API to implement web message push interface.
+	// https://datatracker.ietf.org/doc/html/rfc8292
+	// https://developer.mozilla.org/en-US/docs/Web/API/Push_API
+	// https://datatracker.ietf.org/doc/html/rfc6108
+
+	deviceID := middleware.GetDevicesID(c)
 	endpoint := c.PostForm("endpoint")
 	p256dh := c.PostForm("p256dh")
 	auth := c.PostForm("auth")
 
-	device, err := accounts.NewDevicesID(deviceID).GetDevicesByDeviceID()
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-	if err := notify.NewNotifies(device.ID, endpoint, p256dh, auth).Create(); err != nil {
+	if err := notify.NewNotifies(deviceID, endpoint, p256dh, auth).Create(); err != nil {
 		log.Panicln(err)
 		return
 	}

@@ -1,31 +1,36 @@
 package handlers
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/hvxahv/hvxahv/internal/accounts"
+	"github.com/hvxahv/hvxahv/internal/gateway/middleware"
+	"github.com/hvxahv/hvxahv/internal/saved"
+	"log"
 	"mime/multipart"
 	"net/http"
 )
 
-func SavedUploadHandler(c *gin.Context) {
-	file, err := c.FormFile("file")
+func SavedHandler(c *gin.Context) {
+	a := middleware.GetUsername(c)
+	hash := c.PostForm("hash")
+	fileType := c.PostForm("type")
+
+	account, err := accounts.NewAccountsUsername(a).GetAccountByUsername()
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
-	open, err := file.Open()
-	if err != nil {
-		fmt.Println(err)
+	if err := saved.NewSaves(account.ID, hash, fileType).Create(); err != nil {
+		log.Println(err)
 		return
 	}
-	t, err := DetectContentType(open)
-	if err != nil {
-		return
-	}
-	fmt.Println(t)
+	c.JSON(200, gin.H{
+		"code":    "200",
+		"message": "ok",
+	})
 }
 
-// DetectContentType 判断文件类型返回字符串格式的文件类型名称。
+// DetectContentType Judge the file type and return the file type name in string format.
 func DetectContentType(out multipart.File) (string, error) {
 	buffer := make([]byte, 512)
 	_, err2 := out.Read(buffer)

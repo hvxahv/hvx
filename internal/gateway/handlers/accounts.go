@@ -14,6 +14,8 @@ func SignUpHandler(c *gin.Context) {
 	username := c.PostForm("username")
 	password := c.PostForm("password")
 	mail := c.PostForm("mail")
+
+	// https://datatracker.ietf.org/doc/html/rfc5208
 	publicKey := c.PostForm("publicKey")
 
 	// Use the client to call the Accounts service to create users.
