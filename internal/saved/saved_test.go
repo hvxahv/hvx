@@ -2,15 +2,16 @@ package saved
 
 import (
 	"fmt"
-	"github.com/hvxahv/hvxahv/pkg/ipfs"
+	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"log"
 	"os"
 	"testing"
 )
 
-func TestInitConfig(t *testing.T) {
+func init() {
 
 	home, err := homedir.Dir()
 	cobra.CheckErr(err)
@@ -25,13 +26,16 @@ func TestInitConfig(t *testing.T) {
 	if err2 := viper.ReadInConfig(); err2 == nil {
 		fmt.Fprintln(os.Stderr, "Using configs file:", viper.ConfigFileUsed())
 	}
+	// Initialize the database.
+	if err := cockroach.NewDBAddr().InitDB(); err != nil {
+		fmt.Println(err)
+		return
+	}
 }
 
-func TestUpload(t *testing.T) {
-	TestInitConfig(t)
-
-	ipfs.InitIPFS()
-
-	Upload()
+func TestSaved_Create(t *testing.T) {
+	if err := NewSaves(123123, "xs", "text").Create(); err != nil {
+		log.Println(err)
+		return
+	}
 }
-

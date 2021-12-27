@@ -62,9 +62,7 @@ func ChannelInboxHandler(c *gin.Context) {
 	if err != nil {
 		return
 	}
-
 	fmt.Println(string(body))
-
 	activity.ChannelTypes(name, body)
 }
 

@@ -43,7 +43,7 @@ func init() {
 }
 
 func TestNotify_Create(t *testing.T) {
-	if err := NewNotifies(3812738129491231221,
+	if err := NewNotifies("",
 		"https://sg2p.notify.windows.com/w/?token=BQYAAACdRald%2bxWeGHCX0f0vz9EI2J7l6T%2baXY4EejzsoreeDlzmhckR0vdSj%2fP%2fl6KUOocND5Tw6LZ8C5myu5ACPxiwr732KPiyHSFIfrt2TpJuSLFF4QoGPfNB5PuSRSHBcGJAKw7sASDNjbX79L7%2fa8iqDyf3S6vm51RC3WHwBaxTJ4vpBF5u0Uyho8SiBXEiTOnc6chAbKuh0%2bV3LniIsQ0lUrp6kCLCBrSS3sDdwr9Y5CYrnIfcvQ7bER2GBnrMFG7E7yJw3TWzVoFUpd5gyCSi1yPnpLUzBkB2%2fz5FHglCJj5Hqv27JDOPGkR9dZBnYME%3d",
 		"BEMYIT01WoBjyPWn035CZS5LA5hOHkXd7I42J77X2-syd9LUtVEfhuW7TbIlfSveLEUNjgWQszUeyBH0cwC_kh8",
 		"P-Hl9ObhZFViJ1sEaNyPprkw",
@@ -55,7 +55,7 @@ func TestNotify_Create(t *testing.T) {
 }
 
 func TestNotify_Get(t *testing.T) {
-	r, err := NewNotifiesByDeviceID(3812738129491231221).Get()
+	r, err := NewNotifiesByDeviceID("").Get()
 	if err != nil {
 		fmt.Println(err)
 	}

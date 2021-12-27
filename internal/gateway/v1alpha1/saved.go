@@ -7,6 +7,5 @@ import (
 
 func V1Saved(v1 *gin.RouterGroup) {
 	v1.GET("/saved")
-	v1.POST("/saved/upload", handlers.SavedUploadHandler)
-
+	v1.POST("/saved", handlers.SavedHandler)
 }
