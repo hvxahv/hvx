@@ -1,6 +1,7 @@
 package messages
 
 import (
+	"github.com/hvxahv/hvxahv/internal/accounts"
 	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"gorm.io/gorm"
 )
@@ -13,6 +14,22 @@ type Matrices struct {
 	HomeServer string `gorm:"type:text;home_server"`
 	UserId     string `gorm:"type:text;user_id"`
 	DeviceID   string `gorm:"type:text;device_id"`
+}
+
+func NewMatricesAccountID(username string) *Matrices {
+	a, err := accounts.NewAccountsUsername(username).GetAccountByUsername()
+	if err != nil {
+		return nil
+	}
+	return &Matrices{AccountID: a.ID}
+}
+
+func (m *Matrices) Get() (*Matrices, error) {
+	db := cockroach.GetDB()
+	if err := db.Debug().Table("matrices").Where("account_id = ?", m.AccountID).First(&m).Error; err != nil {
+		return nil, err
+	}
+	return m, nil
 }
 
 func (m *Matrices) UpdateToken() error {
@@ -52,4 +69,5 @@ func NewAccessUpdateTokenByAcctID(accountID uint, token string) *Matrices {
 type Accesses interface {
 	Create() error
 	UpdateToken() error
+	Get() (*Matrices, error)
 }

@@ -29,7 +29,7 @@ func (a *Accounts) SignIn() (uint, string, error) {
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(acct.Password), []byte(a.Password)); err != nil {
-		return 0, "", errors.Errorf("Password verification failed.")
+		return 0, "", errors.Errorf("PASSWORD_VERIFICATION_FAILED")
 	}
 
 	return acct.ID, acct.Mail, nil

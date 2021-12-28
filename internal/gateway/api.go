@@ -67,5 +67,7 @@ func APIServer() *gin.Engine {
 
 	v1alpha1.V1Notify(v1)
 
+	v1alpha1.V1Messages(v1)
+
 	return api
 }

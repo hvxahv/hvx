@@ -1,6 +1,7 @@
 package messages
 
 import (
+	"github.com/hvxahv/hvxahv/internal/accounts"
 	"log"
 
 	"github.com/hvxahv/hvxahv/pkg/matrix"
@@ -13,13 +14,13 @@ type Register struct {
 	Type              string `json:"type"`
 }
 
-type Access struct {
+type MatrixAccess struct {
 	AccountID uint
 	Username  string
 	Password  string
 }
 
-func (a *Access) Login() error {
+func (a *MatrixAccess) Login() error {
 	cli, err := matrix.NewClient(a.Username, a.Password)
 	if err != nil {
 		return err
@@ -41,7 +42,7 @@ func (a *Access) Login() error {
 	return nil
 }
 
-func (a *Access) Register() error {
+func (a *MatrixAccess) Register() error {
 	cli, err := matrix.NewClient("", "")
 	if err != nil {
 		return err
@@ -73,8 +74,12 @@ func (a *Access) Register() error {
 	return nil
 }
 
-func NewAccessAuth(accountID uint, username string, password string) *Access {
-	return &Access{AccountID: accountID, Username: username, Password: password}
+func NewMatrixAccessAuth(username string, password string) *MatrixAccess {
+	a, err := accounts.NewAccountsUsername(username).GetAccountByUsername()
+	if err != nil {
+		return nil
+	}
+	return &MatrixAccess{AccountID: a.ID, Username: username, Password: password}
 }
 
 type Authentication interface {
