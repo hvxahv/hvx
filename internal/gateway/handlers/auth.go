@@ -63,7 +63,7 @@ func LogoutHandler(c *gin.Context) {
 		fmt.Println(err)
 		return
 	}
-	if err := accounts.NewDevicesByDeviceID(acct.ID, devices).DeleteByDeviceID(); err != nil {
+	if err := accounts.NewDevicesByAccountIDAndDeviceID(acct.ID, devices).DeleteByDeviceID(); err != nil {
 		fmt.Println(err)
 		return
 	}
@@ -97,7 +97,7 @@ func DeleteDevicesHandler(c *gin.Context) {
 		fmt.Println(err)
 		return
 	}
-	if err := accounts.NewDevicesByDeviceID(acct.ID, deviceID).DeleteByDeviceID(); err != nil {
+	if err := accounts.NewDevicesByAccountIDAndDeviceID(acct.ID, deviceID).DeleteByDeviceID(); err != nil {
 		fmt.Println(err)
 		return
 	}
