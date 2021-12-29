@@ -69,7 +69,16 @@ func (d *Devices) GetDevices() (*[]Devices, error) {
 	return &devices, nil
 }
 
-func NewDevicesByDeviceID(accountID uint, deviceID string) *Devices {
+func (d *Devices) GetOtherDevices() (*[]Devices, error) {
+	db := cockroach.GetDB()
+	var devices []Devices
+	if err := db.Debug().Table("devices").Where("account_id = ?", d.AccountID).Not("device_id = ?", d.DeviceID).Find(&devices).Error; err != nil {
+		return nil, err
+	}
+	return &devices, nil
+}
+
+func NewDevicesByAccountIDAndDeviceID(accountID uint, deviceID string) *Devices {
 	return &Devices{
 		AccountID: accountID,
 		DeviceID:  deviceID,
@@ -119,11 +128,23 @@ func (d *Devices) DeleteByDeviceID() error {
 
 type Device interface {
 	Create() error
+
+	// GetDevicesByID Get online device details by ID.
 	GetDevicesByID() (*Devices, error)
+
+	// GetDevicesByDeviceID Obtain online device details through DeviceID.
 	GetDevicesByDeviceID() (*Devices, error)
+
+	// GetDevices Get the list of all online devices.
 	GetDevices() (*[]Devices, error)
+
+	// GetOtherDevices Use the NewDevicesByAccountIDAndDeviceID constructor to get the list of other online devices.
+	// When the device exchanges the private key, get other clients to send a request for obtaining the private key.
+	GetOtherDevices() (*[]Devices, error)
+
 	IsNotExist() bool
 	// DeleteByDeviceID This method is used when exiting the current device.
 	DeleteByDeviceID() error
+
 	DeleteALLByAccountID() error
 }
