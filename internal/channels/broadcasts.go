@@ -1,79 +1,48 @@
 package channels
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
-	pb "github.com/hvxahv/hvxahv/api/accounts/v1alpha1"
+	"github.com/hvxahv/hvxahv/internal/accounts"
 	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"github.com/hvxahv/hvxahv/pkg/ipfs"
-	"github.com/hvxahv/hvxahv/pkg/microservices/client"
 	"github.com/pkg/errors"
-	"golang.org/x/net/context"
 	"gorm.io/gorm"
 	"log"
-	"strings"
 )
 
 type Broadcasts struct {
 	gorm.Model
-	ChannelID uint   `gorm:"primaryKey;channel_id"`
-	AuthorID  uint   `gorm:"type:bigint;author_id"`
-	Title     string `gorm:"type:text;article"`
-	Summary   string `gorm:"type:text;summary"`
-	Article   string `gorm:"type:text;article"`
-	NSFW      bool   `gorm:"type:boolean;nsfw"`
-	IpfsCID   string `gorm:"type:text;ipfs_cid"`
+	ChannelID uint   `gorm:"primaryKey;type:bigint;channel_id"`
+	ActorID   uint   `gorm:"type:bigint;actor_id"`
+	CID       string `gorm:"index;type:text;cid"`
 }
 
-func (b *Broadcasts) QueryLisByCID() (*[]Broadcasts, error) {
+type BroadcastsIPFSData struct {
+	PreferredUsername string `json:"preferred_username"`
+	Avatar            string `json:"avatar"`
+	URL               string `json:"url"`
+	Title             string `json:"title"`
+	Summary           string `json:"summary"`
+	Article           string `json:"article"`
+	NSFW              bool   `json:"nsfw"`
+}
+
+func (b *Broadcasts) GetBroadcastsByChannelID() (*[]Broadcasts, error) {
 	db := cockroach.GetDB()
 
-	var br []Broadcasts
-	if err := db.Debug().Table("broadcasts").Where("channel_id = ?", b.ChannelID).Find(&br); err != nil {
+	var r []Broadcasts
+	if err := db.Debug().Table("broadcasts").Where("channel_id = ?", b.ChannelID).Find(&r); err != nil {
 		ok := cockroach.IsNotFound(err.Error)
 		if ok {
 			return nil, errors.Errorf("BROADCASTS_NOT_FOUND")
 		}
 	}
-	return &br, nil
+	return &r, nil
 }
 
 func (b *Broadcasts) Create() error {
-
-	cli, conn, err := client.Accounts()
-	if err != nil {
-		log.Println(err)
-	}
-	defer conn.Close()
-
-	r, err := cli.FindActorByID(context.Background(), &pb.ActorID{
-		ActorID: uint64(b.AuthorID),
-	})
-	if err != nil {
-		log.Printf("failed to send message to accounts server: %v", err)
-	}
-	author := r.PreferredUsername
-
-	broad := fmt.Sprintf(`
-<!doctype html>
-<html>
-<head>
-<meta charset='UTF-8'><meta name='viewport' content='width=device-width initial-scale=1'>
-</style><title></title>
-</head>
-<body>
-<div>
-<h1>%s</h1>
-<p>%s</p>
-<p>%s</p>
-</div>
-</body>
-</html>
-`, b.Title, author, b.Article)
-	cid, err := ipfs.GetIPFS().Add(strings.NewReader(broad))
-	if err != nil {
-		fmt.Printf("ipfs add error: %v", err)
-	}
-
 	// Save data and cid to database.
 	db := cockroach.GetDB()
 	err2 := db.AutoMigrate(Broadcasts{})
@@ -81,18 +50,17 @@ func (b *Broadcasts) Create() error {
 		return nil
 	}
 
-	data := Broadcasts{
+	bc := &Broadcasts{
 		ChannelID: b.ChannelID,
-		AuthorID:  b.AuthorID,
-		Article:   broad,
-		IpfsCID:   cid,
+		ActorID:   b.ActorID,
+		CID:       b.CID,
 	}
 
-	if err1 := db.Debug().Table("broadcasts").Create(&data).Error; err1 != nil {
+	if err := db.Debug().Table("broadcasts").Create(&bc).Error; err != nil {
 		log.Printf("an error occurred while creating the broadcasts: %v", err)
 	}
 
-	fmt.Printf("NEW BROADCASTS SUCCESS, CID = %s", cid)
+	fmt.Printf("NEW BROADCASTS SUCCESS, CID = %s", b.CID)
 	return nil
 }
 
@@ -101,21 +69,46 @@ type Broadcast interface {
 	// Synchronize to ipfs return ipfs id.
 	Create() error
 
-	// QueryLisByCID Fetch the content list in the channels by channels id.
-	QueryLisByCID() (*[]Broadcasts, error)
+	// GetBroadcastsByChannelID Fetch the content list in the channels by channel id.
+	GetBroadcastsByChannelID() (*[]Broadcasts, error)
 }
 
-func NewBroadcast(title, article string, channelID, actorID uint) (*Broadcasts, error) {
-	db := cockroach.GetDB()
-	if err := db.Table("administrators").Where("channel_id = ?", channelID).Where("actor_id = ?", actorID).First(&Administrators{}); err != nil {
-		if cockroach.IsNotFound(err.Error) {
-			return nil, errors.Errorf("You are not the moderator of this channels")
-		}
+func NewBroadcasts(channelID uint, actorID uint, cid string) *Broadcasts {
+	return &Broadcasts{ChannelID: channelID, ActorID: actorID, CID: cid}
+}
+
+// NewBroadcastsIPFSCID Upload Broadcasts to IPFS and return CID.
+func NewBroadcastsIPFSCID(channelID, actorID uint, title, summary, article string, NSFW bool) (string, error) {
+	if err := NewAdministrators(channelID, actorID).IsAdmin(); err != nil {
+		return "", err
 	}
 
-	return &Broadcasts{AuthorID: actorID, Title: title, Article: article, ChannelID: channelID}, nil
+	actor, err := accounts.NewActorID(actorID).GetByActorID()
+	if err != nil {
+		return "", err
+	}
+
+	broad := BroadcastsIPFSData{
+		PreferredUsername: actor.PreferredUsername,
+		Avatar:            actor.Avatar,
+		URL:               actor.Url,
+		Title:             title,
+		Summary:           summary,
+		Article:           article,
+		NSFW:              NSFW,
+	}
+	data, err := json.Marshal(broad)
+	if err != nil {
+		return "", err
+	}
+	cid, err := ipfs.GetIPFS().Add(bytes.NewReader(data))
+	if err != nil {
+		return "", fmt.Errorf("ipfs add error: %v", err)
+	}
+
+	return cid, nil
 }
 
-func NewBroadcastCID(channelId uint) *Broadcasts {
+func NewBroadcastsChannelID(channelId uint) *Broadcasts {
 	return &Broadcasts{ChannelID: channelId}
 }

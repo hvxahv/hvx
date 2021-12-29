@@ -14,7 +14,7 @@ import (
 	"golang.org/x/net/context"
 )
 
-func GetMyChannelsHandler(c *gin.Context) {
+func GetManagedChannelsHandler(c *gin.Context) {
 	name := middleware.GetUsername(c)
 
 	acct, err := accounts.NewAccountsUsername(name).GetAccountByUsername()

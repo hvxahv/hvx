@@ -14,6 +14,20 @@ type Administrators struct {
 	ActorID   uint `gorm:"primaryKey;account_id"`
 }
 
+func NewAdministrators(channelID uint, actorID uint) *Administrators {
+	return &Administrators{ChannelID: channelID, ActorID: actorID}
+}
+
+func (c *Administrators) IsAdmin() error {
+	db := cockroach.GetDB()
+	if err := db.Table("administrators").Where("channel_id = ?", c.ChannelID).Where("actor_id = ?", c.ActorID).First(&Administrators{}); err != nil {
+		if cockroach.IsNotFound(err.Error) {
+			return errors.Errorf("You are not the moderator of this channels")
+		}
+	}
+	return nil
+}
+
 func (c *Administrators) Add() error {
 	db := cockroach.GetDB()
 
@@ -79,6 +93,8 @@ type Admin interface {
 	// FindAdmLisByChannelID Fetch the list of administrators through channels id.
 	// Only channels administrators and channels owners can use this method.
 	FindAdmLisByChannelID() (*[]Administrators, error)
+
+	IsAdmin() error
 }
 
 // NewAddAdmins constructor for a new administrator.
