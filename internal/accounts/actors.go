@@ -114,7 +114,7 @@ func NewActorID(id uint) *Actors {
 	}
 }
 
-func (a *Actors) GetByID() (*Actors, error) {
+func (a *Actors) GetByActorID() (*Actors, error) {
 	db := cockroach.GetDB()
 
 	if err := db.Debug().Table("actors").Where("id = ?", a.ID).First(&a).Error; err != nil {
@@ -177,7 +177,7 @@ type Actor interface {
 	FindByPreferredUsername() (*[]Actors, error)
 
 	GetActorByAccountUsername() (*Actors, error)
-	GetByID() (*Actors, error)
+	GetByActorID() (*Actors, error)
 	GetByActorUri() (*Actors, error)
 
 	Update() error

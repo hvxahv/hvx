@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	pb "github.com/hvxahv/hvxahv/api/accounts/v1alpha1"
 	"github.com/hvxahv/hvxahv/internal/articles"
@@ -47,7 +46,6 @@ func NewArticleHandler(c *gin.Context) {
 			log.Println(err)
 		}
 	} else {
-		fmt.Println("创建状态")
 		if err := articles.NewStatus(uint(r.Id), r.Username, article, isNSFW).Create(); err != nil {
 			log.Println(err)
 		}
