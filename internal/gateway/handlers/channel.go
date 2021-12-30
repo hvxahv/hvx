@@ -64,7 +64,7 @@ func DeleteChannelHandler(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	if err := channels.NewDeleteChannelByID(name, uint(id)).Delete(); err != nil {
+	if err := channels.NewDeleteChannel(name, uint(id)).Delete(); err != nil {
 		return
 	}
 
@@ -104,27 +104,68 @@ func RemoveChannelAdminHandler(c *gin.Context) {
 	fmt.Println(name)
 }
 
-func NewSubscriberHandler(c *gin.Context) {
-	name := middleware.GetUsername(c)
-	id := c.PostForm("id")
-
-	cli, conn, err := client.Channel()
+func CreateSubscriberHandler(c *gin.Context) {
+	id, err := strconv.Atoi(c.PostForm("actor_id"))
 	if err != nil {
 		log.Println(err)
+		return
 	}
-	defer conn.Close()
 
-	r, err := cli.NewSubscriber(context.Background(), &pb.NewSubscriberData{
-		Id:   id,
-		Name: name,
-	})
+	cid, err := strconv.Atoi(c.PostForm(c.PostForm("channel_id")))
+	if err != nil {
+		log.Println(err)
+		return
+	}
 
-	c.JSON(int(r.Code), gin.H{
-		"code":    r.Code,
-		"message": r.Message,
+	if err := channels.NewChannelID(uint(cid)).IsExist(); err != nil {
+		c.JSON(500, gin.H{
+			"code":    "500",
+			"message": err,
+		})
+		return
+	}
+
+	subscribes, err := channels.NewSubscribes(uint(cid), uint(id))
+	if err != nil {
+		log.Println()
+		return
+	}
+	if err := subscribes.Create(); err != nil {
+		log.Println(err)
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"code":    "200",
+		"message": "ok",
 	})
 }
 
-func GetSubscriberListHandler(c *gin.Context) {
-
+func GetSubscribersHandler(c *gin.Context) {
+	ci, err := strconv.Atoi(c.Query("channel_id"))
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	a, err := accounts.NewAccountsUsername(middleware.GetUsername(c)).GetAccountByUsername()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	s, err := channels.NewGetSubscribersID(uint(ci), a.ID)
+	if err != nil {
+		c.JSON(401, gin.H{
+			"code":    "401",
+			"message": err,
+		})
+		return
+	}
+	subscribers, err := s.GetSubscribersByID()
+	if err != nil {
+		return
+	}
+	c.JSON(200, gin.H{
+		"code":        "200",
+		"subscribers": subscribers,
+	})
 }

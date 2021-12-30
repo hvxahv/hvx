@@ -17,7 +17,10 @@ func V1Channels(v1 *gin.RouterGroup) {
 	v1.POST("/channels/admin/new", handlers.NewChannelAdminHandler)
 	v1.POST("/channels/admin/remove", handlers.RemoveChannelAdminHandler)
 
-	v1.POST("/channels/subscriber/new", handlers.NewSubscriberHandler)
-	v1.POST("/channels/subscriber/list", handlers.GetSubscriberListHandler)
+	v1.POST("/channels/subscriber/new", handlers.CreateSubscriberHandler)
+	v1.GET("/channels/subscribers", handlers.GetSubscribersHandler)
+
+	v1.GET("/channels/broadcasts", handlers.GetBroadcastsHandler)
+	v1.POST("/channels/broadcasts/create", handlers.CreateBroadcastHandler)
 
 }
