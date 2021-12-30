@@ -8,7 +8,7 @@ import (
 func TestNewAddAdmins(t *testing.T) {
 	TestInitChannelConfig(t)
 
-	na, err := NewAddAdmins(701990339882680321, 698619813575491585,  699445624156061697)
+	na, err := NewAddAdmins(701990339882680321, 698619813575491585, 699445624156061697)
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -33,11 +33,11 @@ func TestNewRemoveAdmByName(t *testing.T) {
 func TestAdministrators_QueryAdmLisByID(t *testing.T) {
 	TestInitChannelConfig(t)
 
-	na := NewAdminsByID(701990339882680321, 698619813575491585)
+	na := NewISAdmins(701990339882680321, 698619813575491585)
 	id, err := na.FindAdmLisByChannelID()
 	if err != nil {
 		fmt.Println(err)
-		return 
+		return
 	}
 	fmt.Println(id)
 }

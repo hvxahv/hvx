@@ -25,6 +25,11 @@ type Channels struct {
 	PrivateKey    string `gorm:"type:text;private_key"`
 }
 
+func (c *Channels) IsExist() error {
+	//TODO implement me
+	panic("implement me")
+}
+
 func NewChannelsByLink(link string) *Channels {
 	return &Channels{Link: link}
 }
@@ -35,7 +40,7 @@ func (c *Channels) GetActorDataByLink() (*accounts.Actors, error) {
 	if err := db.Debug().Table("channels").Where("link = ?", c.Link).First(&c).Error; err != nil {
 		return nil, err
 	}
-	actor, err := accounts.NewActorID(c.ActorID).GetByID()
+	actor, err := accounts.NewActorID(c.ActorID).GetByActorID()
 	if err != nil {
 		return nil, err
 	}
@@ -144,7 +149,8 @@ func (c *Channels) Create() error {
 	return nil
 }
 
-func NewDeleteChannelByID(username string, id uint) *Channels {
+// NewDeleteChannel Only managers are allowed to delete Channel.
+func NewDeleteChannel(username string, id uint) *Channels {
 	return &Channels{
 		Model: gorm.Model{
 			ID: id,
@@ -162,7 +168,7 @@ type Channel interface {
 	// GetByOwnerID Find the channels created by the actor by Actor ID.
 	GetByOwnerID() (*[]Channels, error)
 
-	GetByLink() (*[]Channels, error)
+	GetByLink() (*Channels, error)
 	// Update channels information.
 	Update()
 
@@ -171,6 +177,8 @@ type Channel interface {
 	DeleteHistory()
 	DeleteUserHistory()
 	EditCreator()
+
+	IsExist() error
 }
 
 func NewChannels(name, link, avatar, bio, username string, isPrivate bool) *Channels {
@@ -196,5 +204,13 @@ func NewChannels(name, link, avatar, bio, username string, isPrivate bool) *Chan
 		OwnerUsername: username,
 		OwnerID:       acct.ID,
 		IsPrivate:     isPrivate,
+	}
+}
+
+func NewChannelID(channelID uint) *Channels {
+	return &Channels{
+		Model: gorm.Model{
+			ID: channelID,
+		},
 	}
 }

@@ -66,10 +66,9 @@ func (b *Broadcasts) Create() error {
 
 type Broadcast interface {
 	// Create broadcast Articles.
-	// Synchronize to ipfs return ipfs id.
 	Create() error
 
-	// GetBroadcastsByChannelID Fetch the content list in the channels by channel id.
+	// GetBroadcastsByChannelID Get all broadcasts through channel id.
 	GetBroadcastsByChannelID() (*[]Broadcasts, error)
 }
 

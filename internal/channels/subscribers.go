@@ -1,16 +1,18 @@
 package channels
 
 import (
+	"github.com/hvxahv/hvxahv/internal/accounts"
 	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
+	"log"
 )
 
 type Subscribes struct {
 	gorm.Model
-	ChannelID       uint   `gorm:"primaryKey;channel_id"`
-	Subscriber      string `gorm:"primaryKey;type:varchar(999);subscriber"`
-	SubscriberInbox string `gorm:"primaryKey;subscriber_inbox"`
+	ChannelID              uint   `gorm:"primaryKey;channel_id"`
+	Subscriber             uint   `gorm:"type:bigint;subscriber"`
+	SubscriberInboxAddress string `gorm:"subscriber_inbox_address"`
 }
 
 func (s *Subscribes) Unsubscribe() {
@@ -21,7 +23,7 @@ func (s *Subscribes) Remove() error {
 	panic("implement me")
 }
 
-func (s *Subscribes) QueryLisByID() (*[]Subscribes, error) {
+func (s *Subscribes) GetSubscribersByID() (*[]Subscribes, error) {
 	db := cockroach.GetDB()
 
 	var sub []Subscribes
@@ -55,36 +57,35 @@ func (s *Subscribes) Create() error {
 }
 
 type Subscriber interface {
-	// Create Add a channels subscription.
+	// Create Add a channel subscription.
 	Create() error
 
 	// Remove subscribers from a channels.
 	// This method only allows channels managers to operate.
 	Remove() error
 
-	// QueryLisByID Get the list of subscribers of the channels,
+	// GetSubscribersByID Get the list of subscribers of the channels,
 	// this method only allows the administrator of the channels to operate
-	QueryLisByID() (*[]Subscribes, error)
+	GetSubscribersByID() (*[]Subscribes, error)
 	Unsubscribe()
 }
 
-func NewSubscribes(channelId uint, subscriber, subscriberInbox string) (*Subscribes, error) {
-	db := cockroach.GetDB()
-	if err := db.Debug().Table("channels").Where("id = ?", channelId).First(&Channels{}); err != nil {
-		ok := cockroach.IsNotFound(err.Error)
-		if ok {
-			return nil, errors.Errorf("CHANNEL_DOESN'T_EXIST")
-		}
+func NewSubscribes(channelId uint, subscriber uint) (*Subscribes, error) {
+
+	actor, err := accounts.NewActorID(subscriber).GetByActorID()
+	if err != nil {
+		log.Println(err)
+		return nil, err
 	}
 
-	return &Subscribes{ChannelID: channelId, Subscriber: subscriber, SubscriberInbox: subscriberInbox}, nil
+	return &Subscribes{ChannelID: channelId, Subscriber: subscriber, SubscriberInboxAddress: actor.Inbox}, nil
 }
 
-func NewSubLisByID(channelId, accountId uint) (*Subscribes, error) {
+func NewGetSubscribersID(accountId, channelId uint) (*Subscribes, error) {
 	db := cockroach.GetDB()
 
 	if err := db.Debug().Table("administrators").Where("channel_id = ?", channelId).Where("accounts_id = ?", accountId).First(&Channels{}); err.Error != nil {
-		return nil, errors.Errorf("YOU ARE NOT THE MODERATOR OF THE CHANNEL")
+		return nil, errors.Errorf("YOU_ARE_NOT_THE_MODERATOR_OF_THE_CHANNEL")
 	}
 
 	return &Subscribes{ChannelID: channelId}, nil
