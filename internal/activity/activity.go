@@ -281,7 +281,7 @@ func SubAccept(name, activityId string, actorID, objectID uint) {
 }
 
 func NewSubAccept(actor, activityID string, objectID uint) (*activitypub.Accept, string) {
-	o, err := accounts.NewActorID(objectID).GetByID()
+	o, err := accounts.NewActorID(objectID).GetByActorID()
 	if err != nil {
 		return nil, ""
 	}

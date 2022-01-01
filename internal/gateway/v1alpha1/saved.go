@@ -6,6 +6,7 @@ import (
 )
 
 func V1Saved(v1 *gin.RouterGroup) {
-	v1.GET("/saved")
+	v1.GET("/saves")
+	v1.GET("/saved/:id", handlers.GetSavedByIDHandler)
 	v1.POST("/saved", handlers.SavedHandler)
 }

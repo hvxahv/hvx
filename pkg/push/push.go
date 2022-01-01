@@ -11,7 +11,6 @@
 package push
 
 import (
-	"fmt"
 	"strconv"
 
 	"github.com/SherClockHolmes/webpush-go"
@@ -74,12 +73,4 @@ func (s *Subscription) Send() error {
 	}
 	defer resp.Body.Close()
 	return nil
-}
-
-func GenVAPIDKey() {
-	private_key, public_key, err := webpush.GenerateVAPIDKeys()
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Printf("PUBLIC_KEY: %s, PRIVATE_KEY: %s", public_key, private_key)
 }
