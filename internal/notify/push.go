@@ -23,7 +23,7 @@ func (p *PushData) Push() error {
 		return err
 	}
 	// Get subscription by device ID.
-	n, err := NewNotifiesByDeviceID(p.DeviceID).Get()
+	n, err := NewNotifiesByDeviceID(d.DeviceID).Get()
 	if err != nil {
 		return err
 	}

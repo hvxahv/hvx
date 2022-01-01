@@ -23,12 +23,12 @@ import (
 
 // newCmd represents the new command
 var newCmd = &cobra.Command{
-	Use:                    "new",
-	Aliases:                nil,
-	SuggestFor:             nil,
-	Short:                  "A new method of hvx.",
-	Long:                   `You can use this method to create databases and microservices.`,
-	Example:                "hvx new database <name> or hvx new svc <name>",
+	Use:        "new",
+	Aliases:    nil,
+	SuggestFor: nil,
+	Short:      "A new method of hvx.",
+	Long:       `You can use this method to create databases and microservices.`,
+	Example:    "hvx new database <name> or hvx new svc <name>",
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) != 2 {
 			fmt.Println("You must enter 2 parameters. For example, hvx new <parameter> <name> .")

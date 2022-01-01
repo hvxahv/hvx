@@ -8,10 +8,12 @@ import (
 	"log"
 	"mime/multipart"
 	"net/http"
+	"strconv"
 )
 
 func SavedHandler(c *gin.Context) {
 	a := middleware.GetUsername(c)
+	name := c.PostForm("name")
 	hash := c.PostForm("hash")
 	fileType := c.PostForm("type")
 
@@ -20,7 +22,7 @@ func SavedHandler(c *gin.Context) {
 		log.Println(err)
 		return
 	}
-	if err := saved.NewSaves(account.ID, hash, fileType).Create(); err != nil {
+	if err := saved.NewSaves(account.ID, name, hash, fileType).Create(); err != nil {
 		log.Println(err)
 		return
 	}
@@ -40,4 +42,22 @@ func DetectContentType(out multipart.File) (string, error) {
 	contentType := http.DetectContentType(buffer)
 
 	return contentType, nil
+}
+
+func GetSavedByIDHandler(c *gin.Context) {
+	id := c.Param("id")
+	i, err := strconv.Atoi(id)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	s, err := saved.NewSavesID(uint(i)).GetSavedByID()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	c.JSON(200, gin.H{
+		"code":    "200",
+		"message": s,
+	})
 }

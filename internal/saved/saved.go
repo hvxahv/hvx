@@ -16,8 +16,17 @@ type Saves struct {
 	gorm.Model
 
 	AccountID uint   `gorm:"primaryKey;type:bigint;accounts_id"`
+	Name      string `gorm:"type:text;name"`
 	Hash      string `gorm:"type:text;hash"`
 	FileType  string `gorm:"type:text;file_type"`
+}
+
+func (s *Saves) GetSavedByID() (*Saves, error) {
+	db := cockroach.GetDB()
+	if err := db.Debug().Table("saves").Where("id = ?", s.ID).First(&s).Error; err != nil {
+		return nil, err
+	}
+	return s, nil
 }
 
 func (s *Saves) Create() error {
@@ -32,10 +41,19 @@ func (s *Saves) Create() error {
 	return nil
 }
 
-func NewSaves(accountID uint, hash string, fileType string) *Saves {
-	return &Saves{AccountID: accountID, Hash: hash, FileType: fileType}
+func NewSaves(accountID uint, name, hash string, fileType string) *Saves {
+	return &Saves{AccountID: accountID, Name: name, Hash: hash, FileType: fileType}
+}
+
+func NewSavesID(id uint) *Saves {
+	return &Saves{
+		Model: gorm.Model{
+			ID: id,
+		},
+	}
 }
 
 type Saved interface {
 	Create() error
+	GetSavedByID() (*Saves, error)
 }

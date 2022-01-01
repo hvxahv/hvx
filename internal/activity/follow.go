@@ -117,8 +117,8 @@ func NewFollowRequests(activityId string, actorID, objectID uint) *FollowRequest
 
 func NewFollowRequestsByID(id uint) *FollowRequests {
 	return &FollowRequests{
-		Model:      gorm.Model{
-			ID:        id,
+		Model: gorm.Model{
+			ID: id,
 		},
 	}
 }
@@ -165,7 +165,7 @@ func (f *Follows) Remove() error {
 	if err := db.Debug().Table("follows").
 		Where("actor_id = ? AND object_id = ?", f.ActorID, f.ObjectID).
 		Unscoped().Delete(&Follows{}).Error; err != nil {
-			return err
+		return err
 	}
 	return nil
 }
@@ -230,7 +230,7 @@ type Follow interface {
 // NewFoAPData Instantiate the requested follow data in ActivityPub format.
 // Return the data and the inbox address of the other party.
 func NewFoAPData(actor string, objectID uint) (*activitypub.Follow, string) {
-	o, err := accounts.NewActorID(objectID).GetByID()
+	o, err := accounts.NewActorID(objectID).GetByActorID()
 	if err != nil {
 		return nil, ""
 	}
@@ -253,7 +253,7 @@ func NewFoAPData(actor string, objectID uint) (*activitypub.Follow, string) {
 // return the data, and the recipient's inbox address.
 // Create a follow data to receive the IDs of followers and followers
 func NewFoAPAccept(actor, activityID string, objectID uint) (*activitypub.Accept, string) {
-	o, err := accounts.NewActorID(objectID).GetByID()
+	o, err := accounts.NewActorID(objectID).GetByActorID()
 	if err != nil {
 		return nil, ""
 	}
@@ -261,7 +261,7 @@ func NewFoAPAccept(actor, activityID string, objectID uint) (*activitypub.Accept
 	var (
 		ctx = "https://www.w3.org/ns/activitystreams"
 		id  = fmt.Sprintf("https://%s/u/%s#accepts/follows/%s", viper.GetString("localhost"), actor, uuid.New().String())
-		a = fmt.Sprintf("https://%s/u/%s", viper.GetString("localhost"), actor)
+		a   = fmt.Sprintf("https://%s/u/%s", viper.GetString("localhost"), actor)
 	)
 
 	return &activitypub.Accept{
