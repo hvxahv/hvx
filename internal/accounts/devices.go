@@ -52,7 +52,7 @@ func (d *Devices) GetDevicesByID() (*Devices, error) {
 	return d, nil
 }
 
-func (d *Devices) GetDevicesByDeviceID() (*Devices, error) {
+func (d *Devices) GetDevicesByDevice() (*Devices, error) {
 	db := cockroach.GetDB()
 	if err := db.Debug().Table("devices").Where("device_id = ?", d.DeviceID).First(&d).Error; err != nil {
 		return nil, err

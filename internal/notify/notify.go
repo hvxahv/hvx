@@ -24,15 +24,15 @@ import (
 type Notifies struct {
 	gorm.Model
 
-	DeviceID string `gorm:"primaryKey;type:text;device_id"`
+	Device   string `gorm:"primaryKey;type:text;device"`
 	Endpoint string `gorm:"type:text;endpoint"`
 	P256dh   string `gorm:"type:text;p256dh"`
 	Auth     string `gorm:"type:text;auth"`
 }
 
-func NewNotifies(deviceID, endpoint, p256dh, auth string) *Notifies {
+func NewNotifies(device, endpoint, p256dh, auth string) *Notifies {
 	return &Notifies{
-		DeviceID: deviceID,
+		Device:   device,
 		Endpoint: endpoint,
 		P256dh:   p256dh,
 		Auth:     auth,
@@ -40,7 +40,7 @@ func NewNotifies(deviceID, endpoint, p256dh, auth string) *Notifies {
 }
 
 func NewNotifiesByDeviceID(id string) *Notifies {
-	return &Notifies{DeviceID: id}
+	return &Notifies{Device: id}
 }
 
 func (n *Notifies) Create() error {
@@ -56,7 +56,7 @@ func (n *Notifies) Create() error {
 
 func (n *Notifies) Get() (*Notifies, error) {
 	db := cockroach.GetDB()
-	if err := db.Debug().Table("notifies").Where("device_id = ?", n.DeviceID).First(&n).Error; err != nil {
+	if err := db.Debug().Table("notifies").Where("device = ?", n.Device).First(&n).Error; err != nil {
 		return nil, err
 	}
 	return n, nil
