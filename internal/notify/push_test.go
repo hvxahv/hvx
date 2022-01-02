@@ -15,7 +15,7 @@ func TestPush(t *testing.T) {
 		log.Println(err)
 		return
 	}
-	if err := NewPush(722108865215561729, d).Push(); err != nil {
+	if err := NewPush(724349838275870721, d).Push(); err != nil {
 		fmt.Println(err)
 		return
 	}

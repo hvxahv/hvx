@@ -18,7 +18,7 @@ func NewPush(deviceID uint, data []byte) *PushData {
 }
 
 func (p *PushData) Push() error {
-	d, err := accounts.NewDevicesByID(p.DeviceID).GetDevicesByID()
+	d, err := accounts.NewDevicesByID(p.DeviceID).GetDevicesByDevice()
 	if err != nil {
 		return err
 	}
