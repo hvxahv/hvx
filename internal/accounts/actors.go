@@ -124,6 +124,9 @@ func (a *Actors) GetByActorID() (*Actors, error) {
 	return a, nil
 }
 
+func NewActorByAccountUsername(username string) *Actors {
+	return &Actors{PreferredUsername: username}
+}
 func NewActorsPreferredUsername(preferredUsername string) *Actors {
 	return &Actors{PreferredUsername: preferredUsername}
 }

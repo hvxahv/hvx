@@ -28,6 +28,7 @@ func V1Accounts(v1 *gin.RouterGroup) {
 	// Delete the logged-in device based on the device ID.
 	v1.POST("/accounts/devices/delete", handlers.DeleteDevicesHandler)
 
+	v1.GET("/accounts/rsa/public", handlers.GetPublicKeyHandlers)
 	// Exit current device.
 	v1.GET("/accounts/logout", handlers.LogoutHandler)
 }

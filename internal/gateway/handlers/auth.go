@@ -54,6 +54,19 @@ func SignInHandler(c *gin.Context) {
 	})
 }
 
+func GetPublicKeyHandlers(c *gin.Context) {
+	name := middleware.GetUsername(c)
+	actor, err := accounts.NewActorByAccountUsername(name).GetActorByAccountUsername()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	c.JSON(200, gin.H{
+		"code":       "200",
+		"public_key": actor.PublicKey,
+	})
+}
+
 func LogoutHandler(c *gin.Context) {
 	username := middleware.GetUsername(c)
 	devices := middleware.GetDevicesID(c)
