@@ -42,7 +42,7 @@ func Auth(c *gin.Context) {
 			log.Println("failed to obtain user through token.")
 			c.Abort()
 		}
-		if accounts.NewDevicesID(u.DevicesID).IsNotExist() {
+		if accounts.NewDevicesIsNotExist(u.DevicesID).IsNotExist() {
 			fmt.Println(errors.Errorf("THE_DEVICE_HAS_BEEN_BANNED"))
 			c.JSON(401, gin.H{
 				"code":    "401",

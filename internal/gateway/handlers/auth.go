@@ -1,13 +1,17 @@
 package handlers
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/hvxahv/hvxahv/internal/accounts"
 	"github.com/hvxahv/hvxahv/internal/gateway/middleware"
+	"github.com/hvxahv/hvxahv/internal/notify"
+	"github.com/hvxahv/hvxahv/pkg/push"
 	"github.com/hvxahv/hvxahv/pkg/security"
 	"log"
+	"strconv"
 )
 
 func SignInHandler(c *gin.Context) {
@@ -67,16 +71,41 @@ func GetPublicKeyHandlers(c *gin.Context) {
 	})
 }
 
-func LogoutHandler(c *gin.Context) {
-	username := middleware.GetUsername(c)
-	devices := middleware.GetDevicesID(c)
+func GetPrivateKeyHandlers(c *gin.Context) {
+	account, err := accounts.NewAccountsUsername(middleware.GetUsername(c)).GetAccountByUsername()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	i, err := strconv.Atoi(c.Query("device_id"))
+	if err != nil {
+		log.Println(err)
+		return
+	}
 
-	acct, err := accounts.NewAccountsUsername(username).GetAccountByUsername()
+	d, err := json.Marshal(push.NewData("Notify", fmt.Sprintf("%v: Signing in, requesting your private key.", i), "https://avatars.githubusercontent.com/u/94792300?s=200&v=4", "Normal"))
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	if err := notify.NewPush(account.ID, uint(i), d).Push(); err != nil {
+		log.Println(err)
+		return
+	}
+	c.JSON(200, gin.H{
+		"code":    "200",
+		"message": "The request is successful, please confirm login in the requested terminal.",
+	})
+
+}
+
+func LogoutHandler(c *gin.Context) {
+	acct, err := accounts.NewAccountsUsername(middleware.GetUsername(c)).GetAccountByUsername()
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	if err := accounts.NewDevicesByAccountIDAndDeviceID(acct.ID, devices).DeleteByDeviceID(); err != nil {
+	if err := accounts.NewDeviceByHash(acct.ID, middleware.GetDevicesID(c)).Delete(); err != nil {
 		fmt.Println(err)
 		return
 	}
@@ -93,7 +122,7 @@ func GetDevicesHandler(c *gin.Context) {
 		fmt.Println(err)
 		return
 	}
-	devices, err := accounts.NewDevicesByAccountID(acct.ID).GetDevices()
+	devices, err := accounts.NewDevicesByAccountID(acct.ID).GetDevicesByAccountID()
 	if err != nil {
 		return
 	}
@@ -104,13 +133,12 @@ func GetDevicesHandler(c *gin.Context) {
 }
 
 func DeleteDevicesHandler(c *gin.Context) {
-	deviceID := c.PostForm("device_id")
 	acct, err := accounts.NewAccountsUsername(middleware.GetUsername(c)).GetAccountByUsername()
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	if err := accounts.NewDevicesByAccountIDAndDeviceID(acct.ID, deviceID).DeleteByDeviceID(); err != nil {
+	if err := accounts.NewDeviceByHash(acct.ID, c.PostForm("device_hash")).Delete(); err != nil {
 		fmt.Println(err)
 		return
 	}

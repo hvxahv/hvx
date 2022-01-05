@@ -43,19 +43,17 @@ func init() {
 }
 
 func TestNotify_Create(t *testing.T) {
-	if err := NewNotifies("xxs",
-		"https://sg2p.notify.windows.com/w/?token=BQYAAACdRald%2bxWeGHCX0f0vz9EI2J7l6T%2baXY4EejzsoreeDlzmhckR0vdSj%2fP%2fl6KUOocND5Tw6LZ8C5myu5ACPxiwr732KPiyHSFIfrt2TpJuSLFF4QoGPfNB5PuSRSHBcGJAKw7sASDNjbX79L7%2fa8iqDyf3S6vm51RC3WHwBaxTJ4vpBF5u0Uyho8SiBXEiTOnc6chAbKuh0%2bV3LniIsQ0lUrp6kCLCBrSS3sDdwr9Y5CYrnIfcvQ7bER2GBnrMFG7E7yJw3TWzVoFUpd5gyCSi1yPnpLUzBkB2%2fz5FHglCJj5Hqv27JDOPGkR9dZBnYME%3d",
-		"BEMYIT01WoBjyPWn035CZS5LA5hOHkXd7I42J77X2-syd9LUtVEfhuW7TbIlfSveLEUNjgWQszUeyBH0cwC_kh8",
-		"P-Hl9ObhZFViJ1sEaNyPprkw",
-		// "BDWxbKVZjt8vWyO9fcBK8mt-48GFf_iE2wvVrU7ubW5hOHLTkpdhpIud6uUSsvK4H5xqOgoM-lNu9hM5DbN8aAQ",
-		// "FK7dy8kslbJcOVx4VZ3NH-GgN7LBOOYgj0eXm3r11ho",
+	if err := NewNotifies(725154968683708417,
+		"https://fcm.googleapis.com/fcm/send/fFXw2lgfA-U:APA91bH4UHigzqa2vpIHJ446QIJepIIn4u_Y53cLABwUTsEFrhDR1BAvN_t0-ApOM5CzQTVFUfNvEY0TzCSgx7xedsR-eFizI4OucFv-E1k24KISzRCQsQOVRN7nWYurxlrauS_h5sC-",
+		"BLA7yzeyG9aaqRgURqHbRPcYVX4LDyii6VkOFl8f80Wpjxt69INhqd0xflC8LZDFNZP0ze1F-4VLTEGm84bI9nc",
+		"gJwr2dSCZqORdWLajmhg1g",
 	).Create(); err != nil {
 		fmt.Println(err)
 	}
 }
 
 func TestNotify_Get(t *testing.T) {
-	r, err := NewNotifiesByDeviceID("").Get()
+	r, err := NewNotifiesByDeviceID(725154968683708417).Get()
 	if err != nil {
 		fmt.Println(err)
 	}
