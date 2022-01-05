@@ -15,10 +15,20 @@ import (
 type Saves struct {
 	gorm.Model
 
-	AccountID uint   `gorm:"primaryKey;type:bigint;accounts_id"`
+	ID        uint   `gorm:"primaryKey" json:"ID,string"`
+	AccountID uint   `gorm:"primaryKey;type:bigint;accounts_id" json:"account_id,string"`
 	Name      string `gorm:"type:text;name"`
 	Hash      string `gorm:"type:text;hash"`
 	FileType  string `gorm:"type:text;file_type"`
+}
+
+func (s *Saves) GetSaves() (*[]Saves, error) {
+	db := cockroach.GetDB()
+	var saves []Saves
+	if err := db.Debug().Table("saves").Where("account_id = ?", s.AccountID).Find(&saves).Error; err != nil {
+		return nil, err
+	}
+	return &saves, nil
 }
 
 func (s *Saves) GetSavedByID() (*Saves, error) {
@@ -53,7 +63,12 @@ func NewSavesID(id uint) *Saves {
 	}
 }
 
+func NewSavesByAccountID(accountID uint) *Saves {
+	return &Saves{AccountID: accountID}
+}
+
 type Saved interface {
+	GetSaves() (*[]Saves, error)
 	Create() error
 	GetSavedByID() (*Saves, error)
 }

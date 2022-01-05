@@ -6,8 +6,6 @@ import (
 	"github.com/hvxahv/hvxahv/internal/gateway/middleware"
 	"github.com/hvxahv/hvxahv/internal/saved"
 	"log"
-	"mime/multipart"
-	"net/http"
 	"strconv"
 )
 
@@ -32,18 +30,6 @@ func SavedHandler(c *gin.Context) {
 	})
 }
 
-// DetectContentType Judge the file type and return the file type name in string format.
-func DetectContentType(out multipart.File) (string, error) {
-	buffer := make([]byte, 512)
-	_, err2 := out.Read(buffer)
-	if err2 != nil {
-		return "", err2
-	}
-	contentType := http.DetectContentType(buffer)
-
-	return contentType, nil
-}
-
 func GetSavedByIDHandler(c *gin.Context) {
 	id := c.Param("id")
 	i, err := strconv.Atoi(id)
@@ -59,5 +45,22 @@ func GetSavedByIDHandler(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"code":    "200",
 		"message": s,
+	})
+}
+
+func GetSavesHandler(c *gin.Context) {
+	account, err := accounts.NewAccountsUsername(middleware.GetUsername(c)).GetAccountByUsername()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	saves, err := saved.NewSavesByAccountID(account.ID).GetSaves()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	c.JSON(200, gin.H{
+		"code":  "200",
+		"saves": saves,
 	})
 }
