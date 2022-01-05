@@ -64,7 +64,8 @@ func (a *Accounts) Update() error {
 	// Indicates that the password has been changed.
 	if a.Password != "" {
 		a.Password = security.GenPassword(a.Password)
-		if err := NewDevicesByAccountID(a.ID).DeleteByDeviceID(); err != nil {
+		// Because the password is reset, all logged-in devices should be deleted
+		if err := NewDevicesByAccountID(a.ID).DeleteAll(); err != nil {
 			return err
 		}
 	}

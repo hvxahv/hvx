@@ -11,22 +11,15 @@ import (
 type Devices struct {
 	gorm.Model
 
-	AccountID  uint   `gorm:"primaryKey;type:bigint;account_id"`
+	ID         uint   `gorm:"primaryKey" json:"ID,string"`
+	AccountID  uint   `gorm:"primaryKey;type:bigint;account_id" json:"account_id,string"`
 	Device     string `gorm:"type:text;device"`
-	DeviceID   string `gorm:"primaryKey;type:text;device_id"`
+	Hash       string `gorm:"primaryKey;type:text;hash"`
 	PrivateKey string `gorm:"type:text;privateKey"`
 	PublicKey  string `gorm:"type:text;publicKey"`
 }
 
-func NewDevices(accountID uint, device string, deviceID string) *Devices {
-	privateKey, publicKey, err := webpush.GenerateVAPIDKeys()
-	if err != nil {
-		log.Println(err)
-	}
-	return &Devices{AccountID: accountID, Device: device, DeviceID: deviceID, PrivateKey: privateKey, PublicKey: publicKey}
-}
-
-func (d *Devices) DeleteALLByAccountID() error {
+func (d *Devices) DeleteAll() error {
 	db := cockroach.GetDB()
 	if err := db.Debug().Table("devices").Where("account_id = ?", d.AccountID).Unscoped().Delete(&Devices{}); err != nil {
 		return err.Error
@@ -34,9 +27,33 @@ func (d *Devices) DeleteALLByAccountID() error {
 	return nil
 }
 
+func (d *Devices) GetDeviceByHash() (*Devices, error) {
+	db := cockroach.GetDB()
+	if err := db.Debug().Table("devices").Where("account_id = ? AND hash = ?", d.AccountID, d.Hash).First(&d).Error; err != nil {
+		return nil, err
+	}
+	return d, nil
+}
+
+func (d *Devices) Delete() error {
+	db := cockroach.GetDB()
+	if err := db.Debug().Table("devices").Where("account_id = ? AND hash = ?", d.AccountID, d.Hash).Unscoped().Delete(&Devices{}).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func NewDevices(accountID uint, device string, deviceID string) *Devices {
+	privateKey, publicKey, err := webpush.GenerateVAPIDKeys()
+	if err != nil {
+		log.Println(err)
+	}
+	return &Devices{AccountID: accountID, Device: device, Hash: deviceID, PrivateKey: privateKey, PublicKey: publicKey}
+}
+
 func (d *Devices) IsNotExist() bool {
 	db := cockroach.GetDB()
-	if err := db.Debug().Table("devices").Where("device_id = ?", d.DeviceID).First(&Devices{}); err != nil {
+	if err := db.Debug().Table("devices").Where("device_hash = ?", d.Hash).First(&Devices{}); err != nil {
 		if cockroach.IsNotFound(err.Error) {
 			return cockroach.IsNotFound(err.Error)
 		}
@@ -44,63 +61,25 @@ func (d *Devices) IsNotExist() bool {
 	return false
 }
 
-func (d *Devices) GetDevicesByID() (*Devices, error) {
+func (d *Devices) GetDevice() (*Devices, error) {
 	db := cockroach.GetDB()
-	if err := db.Debug().Table("devices").Where("id = ?", d.ID).First(&d).Error; err != nil {
+	if err := db.Debug().Table("devices").Where("id = ? AND account_id = ?", d.ID, d.AccountID).First(&d).Error; err != nil {
 		return nil, err
 	}
 	return d, nil
 }
 
-func (d *Devices) GetDevicesByDevice() (*Devices, error) {
-	db := cockroach.GetDB()
-	if err := db.Debug().Table("devices").Where("id = ?", d.ID).First(&d).Error; err != nil {
-		return nil, err
-	}
-	return d, nil
-}
-
-func (d *Devices) GetDevices() (*[]Devices, error) {
+func (d *Devices) GetDevicesByAccountID() (*[]Devices, error) {
 	db := cockroach.GetDB()
 	var devices []Devices
 	if err := db.Debug().Table("devices").Where("account_id = ?", d.AccountID).Find(&devices).Error; err != nil {
 		return nil, err
 	}
-	return &devices, nil
-}
-
-func (d *Devices) GetOtherDevices() (*[]Devices, error) {
-	db := cockroach.GetDB()
-	var devices []Devices
-	if err := db.Debug().Table("devices").Where("account_id = ?", d.AccountID).Not("device_id = ?", d.DeviceID).Find(&devices).Error; err != nil {
-		return nil, err
+	for _, i := range devices {
+		log.Println(i.ID)
+		devices = append(devices)
 	}
 	return &devices, nil
-}
-
-func NewDevicesByAccountIDAndDeviceID(accountID uint, deviceID string) *Devices {
-	return &Devices{
-		AccountID: accountID,
-		DeviceID:  deviceID,
-	}
-}
-
-func NewDevicesID(deviceID string) *Devices {
-	return &Devices{
-		DeviceID: deviceID,
-	}
-}
-
-func NewDevicesByID(id uint) *Devices {
-	return &Devices{
-		Model: gorm.Model{
-			ID: id,
-		},
-	}
-}
-
-func NewDevicesByAccountID(accountID uint) *Devices {
-	return &Devices{AccountID: accountID}
 }
 
 func (d *Devices) Create() error {
@@ -116,35 +95,44 @@ func (d *Devices) Create() error {
 	return nil
 }
 
-func (d *Devices) DeleteByDeviceID() error {
-	db := cockroach.GetDB()
-	if err := db.Debug().Table("devices").Where("account_id = ?", d.AccountID).
-		Where("device_id = ?", d.DeviceID).
-		Unscoped().Delete(&Devices{}).Error; err != nil {
-		return err
+func NewDevicesIsNotExist(hash string) *Devices {
+	return &Devices{Hash: hash}
+}
+
+func NewDeviceByHash(accountID uint, hash string) *Devices {
+	return &Devices{
+		AccountID: accountID,
+		Hash:      hash,
 	}
-	return nil
+}
+
+func NewDevicesByID(accountID, id uint) *Devices {
+	return &Devices{
+		ID:        id,
+		AccountID: accountID,
+	}
+}
+
+func NewDevicesByAccountID(accountID uint) *Devices {
+	return &Devices{AccountID: accountID}
 }
 
 type Device interface {
 	Create() error
 
-	// GetDevicesByID Get online device details by ID.
-	GetDevicesByID() (*Devices, error)
+	// GetDevice Get online device details by ID.
+	GetDevice() (*Devices, error)
 
-	// GetDevicesByDeviceID Obtain online device details through DeviceID.
-	GetDevicesByDeviceID() (*Devices, error)
+	// GetDeviceByHash Get the device through hash.
+	GetDeviceByHash() (*Devices, error)
 
-	// GetDevices Get the list of all online devices.
-	GetDevices() (*[]Devices, error)
+	// GetDevicesByAccountID Get all logged-in devices of the account.
+	GetDevicesByAccountID() (*[]Devices, error)
 
-	// GetOtherDevices Use the NewDevicesByAccountIDAndDeviceID constructor to get the list of other online devices.
-	// When the device exchanges the private key, get other clients to send a request for obtaining the private key.
-	GetOtherDevices() (*[]Devices, error)
-
+	// IsNotExist Confirm whether the device HASH exists in the middleware. Should only be used for HTTP middleware.
 	IsNotExist() bool
-	// DeleteByDeviceID This method is used when exiting the current device.
-	DeleteByDeviceID() error
 
-	DeleteALLByAccountID() error
+	Delete() error
+
+	DeleteAll() error
 }

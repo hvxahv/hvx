@@ -29,6 +29,8 @@ func V1Accounts(v1 *gin.RouterGroup) {
 	v1.POST("/accounts/devices/delete", handlers.DeleteDevicesHandler)
 
 	v1.GET("/accounts/rsa/public", handlers.GetPublicKeyHandlers)
+	v1.GET("/accounts/rsa/private", handlers.GetPrivateKeyHandlers)
+
 	// Exit current device.
 	v1.GET("/accounts/logout", handlers.LogoutHandler)
 }

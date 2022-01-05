@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"github.com/hvxahv/hvxahv/internal/accounts"
 	"github.com/hvxahv/hvxahv/internal/gateway/middleware"
 	"log"
 
@@ -9,12 +10,19 @@ import (
 )
 
 func NotifySubHandler(c *gin.Context) {
-	deviceID := middleware.GetDevicesID(c)
+	account, err := accounts.NewAccountsUsername(middleware.GetUsername(c)).GetAccountByUsername()
+	if err != nil {
+		log.Println(err)
+		return
+	}
 	endpoint := c.PostForm("endpoint")
 	p256dh := c.PostForm("p256dh")
 	auth := c.PostForm("auth")
+	device, err := accounts.NewDeviceByHash(account.ID, middleware.GetDevicesID(c)).GetDeviceByHash()
+	if err != nil {
 
-	if err := notify.NewNotifies(deviceID, endpoint, p256dh, auth).Create(); err != nil {
+	}
+	if err := notify.NewNotifies(device.ID, endpoint, p256dh, auth).Create(); err != nil {
 		log.Panicln(err)
 		return
 	}
