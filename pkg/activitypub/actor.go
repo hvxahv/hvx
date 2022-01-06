@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/go-resty/resty/v2"
 	"github.com/google/uuid"
-	"github.com/hvxahv/hvxahv/internal/accounts"
+	"github.com/hvxahv/hvxahv/internal/account"
 	"github.com/spf13/viper"
 	"net/url"
 	"strings"
@@ -234,7 +234,7 @@ func GetHost(resource string) string {
 }
 
 // GetRemoteActor Get remote Actor data and save it locally.
-func GetRemoteActor(uri string) (*accounts.Actors, error) {
+func GetRemoteActor(uri string) (*account.Actors, error) {
 	resp, err := resty.New().R().
 		SetHeader("Content-Type", "application/activity+json; charset=utf-8").
 		SetHeader("Accept", "application/ld+json").
@@ -256,7 +256,7 @@ func GetRemoteActor(uri string) (*accounts.Actors, error) {
 		return nil, err
 	}
 
-	a := accounts.NewAddActor(
+	a := account.NewAddActor(
 		actor.PreferredUsername,
 		h.Hostname(),
 		actor.Icon.Url,

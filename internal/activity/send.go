@@ -8,7 +8,7 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/hvxahv/hvxahv/internal/channels"
+	"github.com/hvxahv/hvxahv/internal/channel"
 	"github.com/hvxahv/hvxahv/pkg/activitypub"
 	"github.com/spf13/viper"
 	"golang.org/x/net/context"
@@ -22,7 +22,7 @@ type APData struct {
 }
 
 func NewChannelAPData(link, inbox string, data []byte) *APData {
-	ca, err := channels.NewChannelsByLink(link).GetByLink()
+	ca, err := channel.NewChannelsByLink(link).GetByLink()
 	if err != nil {
 		fmt.Println(err)
 	}

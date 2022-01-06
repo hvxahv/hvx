@@ -9,14 +9,14 @@ import (
 )
 
 func Articles() (pb.ArticlesClient, error) {
-	name := "articles"
+	name := "article"
 
 	host := viper.GetString(fmt.Sprintf("microservices.%s.host", name))
 	port := viper.GetString(fmt.Sprintf("microservices.%s.port", name))
 	addr := fmt.Sprintf("%s:%s", host, port)
 	conn, err := grpc.Dial(addr, grpc.WithInsecure())
 	if err != nil {
-		log.Printf("Failed to connect to %s service: %v", name , err)
+		log.Printf("Failed to connect to %s service: %v", name, err)
 		return nil, err
 	}
 
