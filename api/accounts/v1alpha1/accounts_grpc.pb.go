@@ -393,5 +393,5 @@ var Accounts_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "api/accounts/v1alpha1/accounts.proto",
+	Metadata: "api/account/v1alpha1/account.proto",
 }

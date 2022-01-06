@@ -20,13 +20,12 @@ func NewClient(name string) *client {
 	port := viper.GetString(fmt.Sprintf("microservices.%s.port", name))
 	addr := fmt.Sprintf("%s:%s", host, port)
 
-
 	return &client{name: name, host: host, port: port, addr: addr}
 }
 
 // Accounts Microservice client for Accounts.
 func Accounts() (pb.AccountsClient, *grpc.ClientConn, error) {
-	name := "accounts"
+	name := "account"
 
 	host := viper.GetString(fmt.Sprintf("microservices.%s.host", name))
 	port := viper.GetString(fmt.Sprintf("microservices.%s.port", name))
@@ -35,7 +34,7 @@ func Accounts() (pb.AccountsClient, *grpc.ClientConn, error) {
 	// Connect to gPRC service.
 	conn, err := grpc.Dial(addr, grpc.WithInsecure())
 	if err != nil {
-		log.Printf("Failed to connect to %s service: %v", name , err)
+		log.Printf("Failed to connect to %s service: %v", name, err)
 		return nil, nil, nil
 	}
 
