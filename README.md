@@ -64,8 +64,8 @@ We have implemented a simple end-to-end encrypted chat application based on the 
 
 DEPLOY:
 
-- DEVLOPMENT: [DEVLOPMENT_ENV](./deploy/PRODUCTION_ENV.md)
-- PRODUCTION: [PRODUCTION_ENV](./deploy/PRODUCTION_ENV.md)
+- DEVLOPMENT: [DEVLOPMENT_ENV](build/PRODUCTION_ENV.md)
+- PRODUCTION: [PRODUCTION_ENV](build/PRODUCTION_ENV.md)
 
 FOR CLIENT DEVELOPERS: 
 

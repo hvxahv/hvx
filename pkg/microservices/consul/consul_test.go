@@ -32,10 +32,10 @@ func TestInit(t *testing.T) {
 
 func TestRegister_Register(t *testing.T) {
 	TestInit(t)
-	p := viper.GetString("microservices.gateway.port")
+	p := viper.GetString("microservices.hvx.port")
 
-	tags := []string{"gateway", "http", "RESTFul"}
-	nr := NewRegister("gateway", p, tags, "localhost")
+	tags := []string{"hvx", "http", "RESTFul"}
+	nr := NewRegister("hvx", p, tags, "localhost")
 	err := nr.Register()
 	if err != nil {
 		fmt.Println(err)

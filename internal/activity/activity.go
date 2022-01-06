@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/google/uuid"
-	"github.com/hvxahv/hvxahv/internal/accounts"
-	"github.com/hvxahv/hvxahv/internal/channels"
+	"github.com/hvxahv/hvxahv/internal/account"
+	"github.com/hvxahv/hvxahv/internal/channel"
 	"github.com/hvxahv/hvxahv/pkg/activitypub"
 	"github.com/spf13/viper"
 )
@@ -30,7 +30,7 @@ func Types(name string, body []byte) {
 	var actorID uint
 
 	// Get ActorID by NAME.
-	account, err := accounts.NewAccountsUsername(name).GetAccountByUsername()
+	account, err := account.NewAccountsUsername(name).GetAccountByUsername()
 	if err != nil {
 		return
 	}
@@ -41,15 +41,15 @@ func Types(name string, body []byte) {
 		fmt.Printf("UNMARSHAL ACTICITY TYPE ERROR:%v", err)
 	}
 
-	actor, err := accounts.NewActorUri(a.Actor).GetByActorUri()
-	if err != nil {
-		resp, err2 := activitypub.GetRemoteActor(a.Actor)
-		if err2 != nil {
-			return
-		}
-		actorID = resp.ID
-	}
-	actorID = actor.ID
+	//actor, err := account.NewActorUri(a.Actor).GetByActorUri()
+	//if err != nil {
+	//	resp, err2 := activitypub.GetRemoteActor(a.Actor)
+	//	if err2 != nil {
+	//		return
+	//	}
+	//	actorID = resp.ID
+	//}
+	//actorID = actor.ID
 
 	switch a.Type {
 	case "Follow":
@@ -142,7 +142,7 @@ func Types(name string, body []byte) {
 		//	case "Note":
 		//		fmt.Println("得到了一条 Note")
 		//
-		//		la := accounts.NewActorUrl(c.Actor)
+		//		la := account.NewActorUrl(c.Actor)
 		//		LID, err3 := la.FindActorByUrl()
 		//		if err3 != nil {
 		//			return
@@ -157,7 +157,7 @@ func Types(name string, body []byte) {
 		//
 		//			if c.Object.InReplyTo != "" {
 		//				fmt.Println("这是一条评论消息，对于：", c.Object.InReplyTo)
-		//				nc := articles.NewConversations(c.Id, LID.ID, c.Object.InReplyTo, c.Object.Content, remoteActor.ID)
+		//				nc := article.NewConversations(c.Id, LID.ID, c.Object.InReplyTo, c.Object.Content, remoteActor.ID)
 		//				if err := nc.New(); err != nil {
 		//					log.Println(err)
 		//					return
@@ -166,15 +166,15 @@ func Types(name string, body []byte) {
 		//			}
 		//		}
 		//
-		//		n := articles.Articles{
+		//		n := article.Articles{
 		//			AuthorID:   LID.ID,
 		//			URL:        c.Object.Url,
 		//			Article:    c.Object.Content,
-		//			//Attachment: &articles.Attachment{
+		//			//Attachment: &article.Attachment{
 		//			//	Attachment: c.Object.Attachment,
 		//			//},
 		//			TO: to,
-		//			//CC:         &articles.CC{CC: c.Object.Cc},
+		//			//CC:         &article.CC{CC: c.Object.Cc},
 		//			Statuses:   true,
 		//			NSFW:       false,
 		//			Visibility: false,
@@ -192,7 +192,7 @@ func Types(name string, body []byte) {
 		//	if err := json.Unmarshal(body, &d); err != nil {
 		//		log.Println(err)
 		//	}
-		//	da := articles.NewArticleURL(d.Object.Id)
+		//	da := article.NewArticleURL(d.Object.Id)
 		//	if err := da.DeleteByURL(); err != nil {
 		//		log.Println(err)
 		//		return
@@ -217,7 +217,7 @@ func ChannelTypes(name string, body []byte) {
 	var actorID uint
 
 	// Get ActorID by NAME.
-	ca, err2 := channels.NewChannelsByLink(name).GetActorDataByLink()
+	ca, err2 := channel.NewChannelsByLink(name).GetActorDataByLink()
 	if err2 != nil {
 		return
 	}
@@ -229,7 +229,7 @@ func ChannelTypes(name string, body []byte) {
 		fmt.Printf("UNMARSHAL ACTICITY TYPE ERROR:%v", err)
 	}
 
-	actor, err := accounts.NewActorUri(a.Actor).GetByActorUri()
+	actor, err := account.NewActorUri(a.Actor).GetByActorUri()
 	fmt.Println("没找到错误", err)
 	if err != nil {
 		resp, err := activitypub.GetRemoteActor(a.Actor)
@@ -281,7 +281,7 @@ func SubAccept(name, activityId string, actorID, objectID uint) {
 }
 
 func NewSubAccept(actor, activityID string, objectID uint) (*activitypub.Accept, string) {
-	o, err := accounts.NewActorID(objectID).GetByActorID()
+	o, err := account.NewActorID(objectID).GetByActorID()
 	if err != nil {
 		return nil, ""
 	}

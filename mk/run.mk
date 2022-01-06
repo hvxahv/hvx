@@ -1,5 +1,5 @@
-gw:
-	go run ./app/gateway/main.go run
+run:
+	go run ./hvx/main.go run
 
 acct:
 	go run ./app/accounts/main.go run

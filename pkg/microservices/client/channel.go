@@ -10,7 +10,7 @@ import (
 
 // Channel Microservice client for Channel.
 func Channel() (pb.ChannelClient, *grpc.ClientConn, error) {
-	name := "channels"
+	name := "channel"
 
 	host := viper.GetString(fmt.Sprintf("microservices.%s.host", name))
 	port := viper.GetString(fmt.Sprintf("microservices.%s.port", name))
@@ -18,7 +18,7 @@ func Channel() (pb.ChannelClient, *grpc.ClientConn, error) {
 	fmt.Println(addr)
 	conn, err := grpc.Dial(addr, grpc.WithInsecure())
 	if err != nil {
-		log.Printf("failed to connect to %s service: %v", name , err)
+		log.Printf("failed to connect to %s service: %v", name, err)
 		return nil, nil, nil
 	}
 

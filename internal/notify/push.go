@@ -1,7 +1,7 @@
 package notify
 
 import (
-	"github.com/hvxahv/hvxahv/internal/accounts"
+	"github.com/hvxahv/hvxahv/internal/device"
 	"github.com/hvxahv/hvxahv/pkg/push"
 )
 
@@ -20,7 +20,7 @@ func NewPush(accountID, deviceID uint, data []byte) *PushData {
 }
 
 func (p *PushData) Push() error {
-	d, err := accounts.NewDevicesByID(p.AccountID, p.DeviceID).GetDevice()
+	d, err := device.NewDevicesByID(p.AccountID, p.DeviceID).GetDevice()
 	if err != nil {
 		return err
 	}
