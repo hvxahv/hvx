@@ -6,7 +6,7 @@ import (
 )
 
 // Submit the client-registered data to hvxahv, and the pushed endpoint,
-// p256dh and auth. hvxahv will send user notification messages through the address.
+// p256dh and auth. hvxahv will send user notification message through the address.
 // https://datatracker.ietf.org/doc/html/rfc6108
 
 // https://developer.mozilla.org/en-US/docs/Web/API/Push_API

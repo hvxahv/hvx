@@ -97,4 +97,4 @@ func TestNewDelete(t *testing.T) {
 		"to": "https://www.w3.org/ns/activitystreams#Public"
 	}
 }
- */
+*/

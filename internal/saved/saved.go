@@ -8,7 +8,7 @@ import (
 
 // Change the upload logic.
 // The upload should be encrypted in the client and uploaded to the IPFS API,
-// and then the returned hash should be submitted to the hvxahv server for storage.
+// and then the returned hash should be submitted to the hvxahv hvx for storage.
 // hvxahv should not store the user's file key,
 // only the saved hash value is used to format the storage list.
 

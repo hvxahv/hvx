@@ -24,7 +24,6 @@ func SETAcct(k string, v []byte, exp time.Duration) error {
 	return nil
 }
 
-
 // SETAcctMail After successful registration,
 // put the email the cache collection.
 func SETAcctMail(mail string) error {

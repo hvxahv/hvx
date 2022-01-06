@@ -38,7 +38,7 @@ func (c *articlesClient) NewArticles(ctx context.Context, in *NewArticlesData, o
 	return out, nil
 }
 
-// ArticlesServer is the server API for Articles service.
+// ArticlesServer is the hvx API for Articles service.
 // All implementations must embed UnimplementedArticlesServer
 // for forward compatibility
 type ArticlesServer interface {
@@ -97,5 +97,5 @@ var Articles_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "api/articles/v1alpha1/articles.proto",
+	Metadata: "api/article/v1alpha1/article.proto",
 }

@@ -14,5 +14,3 @@ func GenPassword(password string) string {
 	}
 	return string(hash)
 }
-
-

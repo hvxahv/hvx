@@ -72,7 +72,7 @@ func (c *channelClient) GetSubscribers(ctx context.Context, in *NewChannelByID, 
 	return out, nil
 }
 
-// ChannelServer is the server API for Channel service.
+// ChannelServer is the hvx API for Channel service.
 // All implementations must embed UnimplementedChannelServer
 // for forward compatibility
 type ChannelServer interface {

@@ -21,7 +21,7 @@ import (
 // https://www.w3.org/wiki/SocialCG/ActivityPub/Authentication_Authorization
 
 // When communicating over the Internet using the HTTP protocol, it can
-// be desirable for a server or client to authenticate the sender of a
+// be desirable for a hvx or client to authenticate the sender of a
 // particular message.  It can also be desirable to ensure that the
 // message was not tampered with during transit.  This document
 // describes a way for servers and clients to simultaneously add
@@ -89,7 +89,6 @@ func BS642SHA256(data []byte) string {
 	return BS64(h.Sum(nil))
 }
 
-
 func (key *PriKEY) Sign(msg []byte) []byte {
 	block, _ := pem.Decode(key.Key)
 	privateKey, err := x509.ParsePKCS1PrivateKey(block.Bytes)
@@ -155,7 +154,7 @@ func BuildSignatureHeader(req *http.Request, headers []string, data []byte) stri
 			values = append(values, fmt.Sprintf("%s: %s", h, req.Header.Get(h)))
 		case "digest":
 			if req.Header.Get(h) == "" {
-				req.Header.Set(h, "SHA-256=" + BS642SHA256(data))
+				req.Header.Set(h, "SHA-256="+BS642SHA256(data))
 			}
 			values = append(values, fmt.Sprintf("%s: %s", h, req.Header.Get(h)))
 		default:

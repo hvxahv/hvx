@@ -1,0 +1,57 @@
+---
+version: "3.3"
+
+services:
+  redis:
+    image: redis
+    container_name: cache
+    restart: always
+    volumes:
+      - "./cache/data:/data"
+    command: cache-hvx --requirepass hvxahv123 --appendonly yes
+    ports:
+      - 6379:6379
+
+  nats:
+    image: nats
+    container_name: nats
+    restart: always
+    command: "-m 8222"
+    ports:
+      - 4222:4222
+      - 8222:8222
+
+  mongodb:
+    image: mongo
+    container_name: mongo
+    restart: always
+    volumes:
+      - "./mongo/:/data/mongo"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: hvxahv123
+    ports:
+      - 27017:27017
+
+  postgres:
+    image: postgres
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: hvxahv123
+      POSTGRES_DB: hvxahv
+    ports:
+      - 5432:5432
+
+  minio:
+    image: minio
+    container_name: minio
+    restart: always
+    environment:
+      MINIO_ACCESS_KEY: hvxahv
+      MINIO_SECRET_KEY: hvxahv123
+    volumes:
+      - "$HOME/docker/volumes/minio-data:/data"
+      - "$HOME/docker/volumes/minio-config:/root/.minio"
+    ports:
+      - 9000:9000

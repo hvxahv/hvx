@@ -38,7 +38,7 @@ func (c *activityClient) NewMessage(ctx context.Context, in *ActivityData, opts 
 	return out, nil
 }
 
-// ActivityServer is the server API for Activity service.
+// ActivityServer is the hvx API for Activity service.
 // All implementations must embed UnimplementedActivityServer
 // for forward compatibility
 type ActivityServer interface {

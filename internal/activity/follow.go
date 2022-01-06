@@ -3,7 +3,7 @@ package activity
 import (
 	"fmt"
 	"github.com/google/uuid"
-	"github.com/hvxahv/hvxahv/internal/accounts"
+	"github.com/hvxahv/hvxahv/internal/account"
 	"github.com/hvxahv/hvxahv/pkg/activitypub"
 	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"github.com/pkg/errors"
@@ -230,30 +230,31 @@ type Follow interface {
 // NewFoAPData Instantiate the requested follow data in ActivityPub format.
 // Return the data and the inbox address of the other party.
 func NewFoAPData(actor string, objectID uint) (*activitypub.Follow, string) {
-	o, err := accounts.NewActorID(objectID).GetByActorID()
-	if err != nil {
-		return nil, ""
-	}
-
-	var (
-		ctx = "https://www.w3.org/ns/activitystreams"
-		id  = fmt.Sprintf("https://%s/%s", viper.GetString("localhost"), uuid.New().String())
-	)
-
-	return &activitypub.Follow{
-		Context: ctx,
-		Id:      id,
-		Type:    "Follow",
-		Actor:   fmt.Sprintf("https://%s/u/%s", viper.GetString("localhost"), actor),
-		Object:  o.Url,
-	}, o.Inbox
+	//o, err := account.NewActorID(objectID).GetByActorID()
+	//if err != nil {
+	//	return nil, ""
+	//}
+	//
+	//var (
+	//	ctx = "https://www.w3.org/ns/activitystreams"
+	//	id  = fmt.Sprintf("https://%s/%s", viper.GetString("localhost"), uuid.New().String())
+	//)
+	//
+	//return &activitypub.Follow{
+	//	Context: ctx,
+	//	Id:      id,
+	//	Type:    "Follow",
+	//	Actor:   fmt.Sprintf("https://%s/u/%s", viper.GetString("localhost"), actor),
+	//	Object:  o.Url,
+	//}, o.Inbox
+	return nil, ""
 }
 
 // NewFoAPAccept Instantiate the ActivityPub format data that agrees to follow the request,
 // return the data, and the recipient's inbox address.
 // Create a follow data to receive the IDs of followers and followers
 func NewFoAPAccept(actor, activityID string, objectID uint) (*activitypub.Accept, string) {
-	o, err := accounts.NewActorID(objectID).GetByActorID()
+	o, err := account.NewActorID(objectID).GetByActorID()
 	if err != nil {
 		return nil, ""
 	}

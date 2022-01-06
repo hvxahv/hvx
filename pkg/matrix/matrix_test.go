@@ -31,7 +31,7 @@ func TestClient(t *testing.T) {
 
 	client, err := NewClient("", "")
 	if err != nil {
-		return 
+		return
 	}
 	fmt.Println(client)
 }

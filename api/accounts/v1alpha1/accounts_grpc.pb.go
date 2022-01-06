@@ -122,7 +122,7 @@ func (c *accountsClient) SignIn(ctx context.Context, in *AuthData, opts ...grpc.
 	return out, nil
 }
 
-// AccountsServer is the server API for Accounts service.
+// AccountsServer is the hvx API for Accounts service.
 // All implementations must embed UnimplementedAccountsServer
 // for forward compatibility
 type AccountsServer interface {
@@ -393,5 +393,5 @@ var Accounts_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "api/accounts/v1alpha1/accounts.proto",
+	Metadata: "api/account/v1alpha1/account.proto",
 }

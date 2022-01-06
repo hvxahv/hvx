@@ -5,7 +5,7 @@
 	Abstract
 
 	A simple protocol for the delivery of real-time events to user agents
-	is described.  This scheme uses HTTP/2 server push.
+	is described.  This scheme uses HTTP/2 hvx push.
 	https://datatracker.ietf.org/doc/html/draft-ietf-webpush-protocol-12
 */
 package push

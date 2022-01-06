@@ -12,4 +12,3 @@ func TestGenRSA(t *testing.T) {
 	}
 	fmt.Println(privateKey, publicKey)
 }
-

@@ -10,7 +10,7 @@ import (
 )
 
 type bot struct {
-	bot *tgbotapi.BotAPI
+	bot     *tgbotapi.BotAPI
 	level   string
 	message string
 }

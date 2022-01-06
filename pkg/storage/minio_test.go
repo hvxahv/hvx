@@ -8,6 +8,7 @@ import (
 	"os"
 	"testing"
 )
+
 func TestGetConfig(t *testing.T) {
 
 	home, err := homedir.Dir()
@@ -29,4 +30,3 @@ func TestInitMinio(t *testing.T) {
 	TestGetConfig(t)
 	InitMinio()
 }
-

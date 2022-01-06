@@ -26,12 +26,12 @@ func TestFollowAccepts_Create(t *testing.T) {
 func TestFollows_Create(t *testing.T) {
 	IniTestConfig(t)
 
-	f := NewFollows(710444110081654785,698619813575491585)
+	f := NewFollows(710444110081654785, 698619813575491585)
 	if err := f.Create(); err != nil {
 		fmt.Println(err)
 	}
 
-	f2 := NewFollows(698619813575491585,710444110081654785)
+	f2 := NewFollows(698619813575491585, 710444110081654785)
 	if err := f2.Create(); err != nil {
 		fmt.Println(err)
 	}
@@ -62,7 +62,7 @@ func TestFollowRequests_Delete(t *testing.T) {
 
 	if err := NewFollowRequestsActivityID("https://mas.to/2d7db601-f78e-40f8-b9cb-5fc3e285883f").Delete(); err != nil {
 		fmt.Println(err)
-		return 
+		return
 	}
 }
 
