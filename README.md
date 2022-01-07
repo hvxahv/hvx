@@ -62,6 +62,8 @@ We have implemented a simple end-to-end encrypted chat application based on the 
 
 ## For developers
 
+CONFIG EXAMPLE: [CONFIG_FILE](build/CONFIG_FILE.md)
+
 DEPLOY:
 
 - DEVLOPMENT: [DEVLOPMENT_ENV](build/PRODUCTION_ENV.md)
