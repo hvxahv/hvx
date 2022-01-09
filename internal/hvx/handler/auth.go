@@ -143,6 +143,7 @@ func RequestPrivateKeyHandlers(c *gin.Context) {
 		log.Println(err)
 		return
 	}
+
 	d, err := json.Marshal(push.NewData(
 		"Notify",
 		fmt.Sprintf("You are preparing to login on another device: %s.", deviceID),
