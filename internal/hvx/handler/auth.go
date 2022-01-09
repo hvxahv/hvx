@@ -143,7 +143,13 @@ func RequestPrivateKeyHandlers(c *gin.Context) {
 		log.Println(err)
 		return
 	}
-	d, err := json.Marshal(push.NewData("Notify", fmt.Sprintf("%v: Signing in, requesting your private key.", hash.ID), "https://avatars.githubusercontent.com/u/94792300?s=200&v=4", "Normal"))
+
+	d, err := json.Marshal(push.NewData(
+		"Notify",
+		fmt.Sprintf("You are preparing to login on another device: %s.", deviceID),
+		"https://avatars.githubusercontent.com/u/94792300?s=200&v=4",
+		"Authorized"),
+	)
 	if err != nil {
 		log.Println(err)
 		return
