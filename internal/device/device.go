@@ -53,7 +53,7 @@ func NewDevices(accountID uint, device string, deviceID string) *Devices {
 
 func (d *Devices) IsNotExist() bool {
 	db := cockroach.GetDB()
-	if err := db.Debug().Table("devices").Where("device_hash = ?", d.Hash).First(&Devices{}); err != nil {
+	if err := db.Debug().Table("devices").Where("hash = ?", d.Hash).First(&Devices{}); err != nil {
 		if cockroach.IsNotFound(err.Error) {
 			return cockroach.IsNotFound(err.Error)
 		}

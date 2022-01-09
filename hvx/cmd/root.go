@@ -17,6 +17,7 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/hvxahv/hvxahv/pkg/cache"
 	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"github.com/spf13/cobra"
 	"os"
@@ -88,5 +89,5 @@ func initConfig() {
 	if err := n.InitDB(); err != nil {
 		return
 	}
-
+	cache.InitRedis(3)
 }
