@@ -23,7 +23,7 @@ func (a *Accounts) SignIn() (uint, string, error) {
 	db := cockroach.GetDB()
 
 	var acct *Accounts
-	if err := db.Debug().Table("account").Where("username = ?", a.Username).First(&acct).Error; err != nil {
+	if err := db.Debug().Table("accounts").Where("username = ?", a.Username).First(&acct).Error; err != nil {
 		log.Println(gorm.ErrMissingWhereClause)
 		return 0, "", err
 	}

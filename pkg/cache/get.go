@@ -7,3 +7,12 @@ func GetAccount(username string) (string, error) {
 	}
 	return r, nil
 }
+
+func GETDHData(deviceID string) ([]byte, error) {
+	rd := GetRDB()
+	d, err := rd.Get(ctx, deviceID).Bytes()
+	if err != nil {
+		return d, err
+	}
+	return d, nil
+}

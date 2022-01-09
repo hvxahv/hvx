@@ -29,7 +29,7 @@ type Accounts struct {
 func (a *Accounts) Delete() error {
 	db := cockroach.GetDB()
 
-	if err := db.Debug().Table("account").Where("username = ?", a.Username).Unscoped().Delete(&Accounts{}).Error; err != nil {
+	if err := db.Debug().Table("accounts").Where("username = ?", a.Username).Unscoped().Delete(&Accounts{}).Error; err != nil {
 		return err
 	}
 
@@ -50,7 +50,7 @@ func NewAcctNameANDActorID(username string, id uint) *Accounts {
 func (a *Accounts) UpdateUsername(target string) error {
 	db := cockroach.GetDB()
 
-	if err := db.Debug().Table("account").Where("username = ?", a.Username).Update("username", target).Error; err != nil {
+	if err := db.Debug().Table("accounts").Where("username = ?", a.Username).Update("username", target).Error; err != nil {
 		return err
 	}
 
@@ -73,7 +73,7 @@ func (a *Accounts) Update() error {
 
 	db := cockroach.GetDB()
 
-	err := db.Debug().Table("account").Where("username = ?", a.Username).Updates(&a).Error
+	err := db.Debug().Table("accounts").Where("username = ?", a.Username).Updates(&a).Error
 	if err != nil {
 		return err
 	}
@@ -87,7 +87,7 @@ func NewAccountsUsername(username string) *Accounts {
 func (a *Accounts) GetAccountByUsername() (*Accounts, error) {
 	db := cockroach.GetDB()
 
-	if err := db.Debug().Table("account").Where("username = ? ", a.Username).First(&a).Error; err != nil {
+	if err := db.Debug().Table("accounts").Where("username = ? ", a.Username).First(&a).Error; err != nil {
 		return nil, err
 	}
 	return a, nil
@@ -122,7 +122,7 @@ func (a *Accounts) Create() error {
 	// When registering for the first time, an asymmetric key pair will be generated.
 	// The client saves the private key in the local storage.
 
-	if err := db.Debug().Table("account").Where("username = ? ", a.Username).Or("mail = ?", a.Mail).First(&Accounts{}); err != nil {
+	if err := db.Debug().Table("accounts").Where("username = ? ", a.Username).Or("mail = ?", a.Mail).First(&Accounts{}); err != nil {
 		ok := cockroach.IsNotFound(err.Error)
 		if !ok {
 			return errors.New("THE_ACCOUNT_ALREADY_EXISTS")

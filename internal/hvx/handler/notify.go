@@ -18,11 +18,11 @@ func NotifySubHandler(c *gin.Context) {
 	endpoint := c.PostForm("endpoint")
 	p256dh := c.PostForm("p256dh")
 	auth := c.PostForm("auth")
-	device, err := device.NewDeviceByHash(a.ID, middleware.GetDevicesID(c)).GetDeviceByHash()
+	d, err := device.NewDeviceByHash(a.ID, middleware.GetDevicesID(c)).GetDeviceByHash()
 	if err != nil {
 
 	}
-	if err := notify.NewNotifies(device.ID, endpoint, p256dh, auth).Create(); err != nil {
+	if err := notify.NewNotifies(d.ID, endpoint, p256dh, auth).Create(); err != nil {
 		log.Panicln(err)
 		return
 	}

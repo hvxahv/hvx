@@ -24,7 +24,6 @@ func SETAcct(k string, v []byte, exp time.Duration) error {
 	return nil
 }
 
-
 // SETAcctMail After successful registration,
 // put the email the cache collection.
 func SETAcctMail(mail string) error {
@@ -33,5 +32,13 @@ func SETAcctMail(mail string) error {
 		return errors.Errorf("failed to store mail in cache collection.")
 	}
 
+	return nil
+}
+
+func SETDHData(deviceID string, data []byte) error {
+	rd := GetRDB()
+	if err := rd.Set(ctx, deviceID, data, 120*time.Second).Err(); err != nil {
+		return err
+	}
 	return nil
 }
