@@ -2,65 +2,51 @@
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/hvxahv/hvxahv)](https://goreportcard.com/report/github.com/hvxahv/hvxahv) [![Go](https://github.com/hvxahv/hvxahv/actions/workflows/lint.yml/badge.svg)](https://github.com/hvxahv/hvxahv/actions/workflows/lint.yml)
 
-Instance: [halfmemories.com](https://halfmemories.com)
+Currently, the first version of hvxahv is being implemented, and the current plan is to make the program work first, and then optimize the performance, so the current program code will be very confusing, please pay attention.
 
-Preview version: [dev.halfmemories.com](https://dev.halfmemories.com)
+If you have any questions, please submit ISSUES.
 
-## Next plan
+Or enter the community discussion of the project: [Discussions hvxahv/community (github.com)](https://github.com/hvxahv/community/discussions)
 
-- In the process of implementation, the developer believes that the user's private key and some personal sensitive data should not be stored in the server, even if the instance custodian is not allowed to see it, so hvxahv is revamping the design of user privacy.
-- The current hvxahv does not represent the final design. The developer is pursuing the best solution for user privacy and security.
-- The current hvxahv is under active development and cannot be used as any production environment for the time being. The source code will be frequently modified or rewritten, please be aware.
-- hvxahv pursuit of privacy is the ultimate, please believe that the future hvxahv will become safe and reliable.
+## Next plans:
 
-## Introduction
+- In the process of implementation, the developer believes that the user's key and some personal sensitive data should not be stored in the server, even the instance custodian should not see it, so hvxahv is changing the design about user privacy.
+- The current hvxahv does not represent the final design, the developers are pursuing the best solution for user privacy and security.
+- The current hvxahv is under active development and cannot be used as any production environment for the time being. The source code will be modified or rewritten frequently, please pay attention.
+- hvxahv's pursuit of privacy is the ultimate, please believe that the future hvxahv will become safe and reliable.
 
-A completely decentralized social network implementation.
+## A fully decentralized social network implementation, building an open source, free, decentralized open network.
 
-Based on the decentralized [activitypub](https://www.w3.org/TR/activitypub/) decentralized social network protocol, [ipfs](https://ipfs.io/) distributed persistent storage protocol and [matrix.org](https://matrix.org/) real time communication protocol social platform, an open source decentralized social network where the data is really in your hands.
+A social platform based on the decentralized ActivityPub decentralized social network protocol, the ipfs distributed persistent storage protocol and the matrix.org real-time communication protocol, an open source decentralized social network with data really in its own hands.
 
-- Find and add your social network friends as easily as an email format (`name@domain`) address.
-- Cross-server content publishing channel (channel), the content can not be deleted or modified.
-- End-to-end encrypted instant messaging directly with your friends.
-- They are all decentralized.
+1. Find and add your social network friends as easy as an email format (`name@domain`) address.
+2. Cross-server content publishing channel (channel), the content cannot be deleted or modified.
+3. Directly communicate end-to-end encrypted instant messaging with friends.
+4. Direct end-to-end encrypted instant messaging with friends.
 
-## Build an open source, decentralized open network.
+It is a platform for content publishing, social networking, and instant messaging. Anyone can build their own instance and design their own interface. Social communication is possible with all platforms that implement the ActivityPub protocol. Store broadcast channel data in the IPFS file system, persistent and non-deletable and unmodifiable. Can communicate with end-to-end encryption programs on all platforms that implement the Matrix.org protocol.
 
-It's a platform for content distribution, social networking, and instant messaging all in one.
+## Half Memories is an officially maintained instance of hvxahv.
 
-Anyone can build their own instance and design their own interface.
+Instance: [halfmemories.com](https://halfmemories.com) is currently offline and will be released soon.
 
-You can communicate socially with each other and all platforms that implement the Activitypub protocol.
+Preview version: [dev.halfmemories.com](https://dev.halfmemories.com) is currently offline and will be released soon.
 
-Store broadcast channel data in the ipfs file system, which is persistent and cannot be deleted or modified.
+## Security Policy Report:
 
-Communicate with all platforms that implement Matrix protocol with end-to-end encryption.
-
-## Easy to use
-
-Find and add your friends just like email.
-
-### Find friends
-
-You only need to know the ID of the other person, i.e. search for friends like an email format (example: `name@domain`). It is decentralized and you can easily find friends under any instance.
-
-### Socializing
-
-Share your life, interests, and some things between you and your friends.
-
-### Channels
-
-Find public channels across servers.
-
-It provides a decentralized channel feature, you can create or find the broadcast channels you are interested in, the search is as easy as just searching the public index or directly for the keywords of the channels you are interested in, it is IPFS based, once published, the content will not be changed and deleted.
-
-### Instant Messaging
-
-End-to-end encrypted communication directly with your friends. Protect your instant messaging privacy and keep your chat messages away from third parties.
-
-We have implemented a simple end-to-end encrypted chat application based on the matrix protocol, which simplifies the matrix search function, since you can just click on a friend in your address book to start sending messages since the backend already does the rest of the necessary things for you, and you can manually add other chatters from the matrix client, as long as you pass the matrix format `@name:domain` to add friends and talk to them.
+[SECURITY.md](./SECURITY.md)
 
 ## For developers
+
+APP:
+
+- ACCOUNT: [ACCOUNT](docs/ACCOUNT.md)
+- ACTIVITY: [ACTIVITY](docs/ACTIVITY.md)
+- ARTICLE: [ARTICLE](docs/ARTICLE.md)
+- CHANNEL: [CHANNEL](docs/CHANNEL.md)
+- MESSAGE: [MESSAGE](docs/MESSAGE.md)
+- NOTIFY: [NOTIFY](docs/NOTIFY.md)
+- SAVED: [SAVED](docs/SAVED.md)
 
 CONFIG EXAMPLE: [CONFIG_FILE](build/CONFIG_FILE.md)
 
