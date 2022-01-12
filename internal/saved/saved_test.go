@@ -2,13 +2,14 @@ package saved
 
 import (
 	"fmt"
+	"log"
+	"os"
+	"testing"
+
 	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"log"
-	"os"
-	"testing"
 )
 
 func init() {
@@ -34,7 +35,7 @@ func init() {
 }
 
 func TestSaved_Create(t *testing.T) {
-	if err := NewSaves(123123, "xs", "text").Create(); err != nil {
+	if err := NewSaves(123123, "xs", "hash", "text").Create(); err != nil {
 		log.Println(err)
 		return
 	}

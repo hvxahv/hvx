@@ -129,7 +129,7 @@ func (a *Accounts) Create() error {
 		}
 	}
 
-	if err := db.Debug().Table("account").Create(&a).Error; err != nil {
+	if err := db.Debug().Table("accounts").Create(&a).Error; err != nil {
 		return errors.Errorf("FAILED_TO_CREATE_ACCOUNT")
 	}
 
