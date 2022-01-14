@@ -15,7 +15,7 @@ type Conversations struct {
 	ToActorID  uint   `gorm:"type:bigint;actor_id"`
 }
 
-func (c *Conversations) New() error {
+func (c *Conversations) Create() error {
 	db := cockroach.GetDB()
 	if err := db.AutoMigrate(&Conversations{}); err != nil {
 		return err
@@ -31,5 +31,5 @@ func NewConversations(activityID string, actorID uint, articleURl string, conten
 }
 
 type Conversation interface {
-	New() error
+	Create() error
 }

@@ -12,7 +12,7 @@ import (
 	"testing"
 )
 
-func TestInitDB(t *testing.T) {
+func init() {
 
 	home, err := homedir.Dir()
 	cobra.CheckErr(err)
@@ -44,7 +44,6 @@ func TestInitDB(t *testing.T) {
 }
 
 func TestNewArticles(t *testing.T) {
-	TestInitDB(t)
 
 	na := NewArticles(696901249244790785, "HVTURINGGA", "二人セゾン", "僕もセゾン", `
 <p>
@@ -125,9 +124,11 @@ Ha
 }
 
 func TestNewArticles2(t *testing.T) {
-	TestInitDB(t)
+	to := []string{"hvturingga@halfmemories.com", "hvturingga@disism.com"}
+	cc := []string{"hvx@disism.com"}
+	attachments := []int64{727762028403556353, 727764223608717313, 727764513167015937, 727764549160140801}
 
-	na := NewStatus(696901249244790785, "HVTURINGGA", `
+	na := NewStatus(727491255195172865, "HVTURINGGA", `
 <p>
 二人セゾン 二人セゾン
 春夏で恋をして
@@ -136,7 +137,7 @@ func TestNewArticles2(t *testing.T) {
 一緒に過ごした季節よ
 後悔はしてないか?
 </p>
-`, false)
+`, attachments, to, cc, false)
 	err := na.Create()
 	if err != nil {
 		return
@@ -145,8 +146,6 @@ func TestNewArticles2(t *testing.T) {
 }
 
 func TestArticles_FindArticlesByAccountID(t *testing.T) {
-	TestInitDB(t)
-
 	n := NewArticlesByAccountID(696901249244790785)
 	articles, err := n.FindByAccountID()
 	if err != nil {
@@ -157,8 +156,6 @@ func TestArticles_FindArticlesByAccountID(t *testing.T) {
 }
 
 func TestArticles_FindArticleByID(t *testing.T) {
-	TestInitDB(t)
-
 	n := NewArticleID(701716343427432449)
 	article, err := n.FindByID()
 	if err != nil {
@@ -168,8 +165,6 @@ func TestArticles_FindArticleByID(t *testing.T) {
 }
 
 func TestArticles_DeleteByURL(t *testing.T) {
-	TestInitDB(t)
-
 	d := NewArticleURL("https://mas.to/users/hvturingga/statuses/107043507276353003")
 	err := d.DeleteByURL()
 	if err != nil {

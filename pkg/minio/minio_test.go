@@ -1,14 +1,16 @@
-package storage
+package minio
 
 import (
 	"fmt"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"log"
 	"os"
 	"testing"
 )
-func TestGetConfig(t *testing.T) {
+
+func init() {
 
 	home, err := homedir.Dir()
 	cobra.CheckErr(err)
@@ -23,10 +25,24 @@ func TestGetConfig(t *testing.T) {
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Fprintln(os.Stderr, "Using configs file:", viper.ConfigFileUsed())
 	}
-
-}
-func TestInitMinio(t *testing.T) {
-	TestGetConfig(t)
-	InitMinio()
 }
 
+func TestInitMinIO(t *testing.T) {
+	minio, err := InitMinIO()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	log.Println(minio)
+}
+
+func TestMinIO_CreateMinIOBucket(t *testing.T) {
+	nb := NewBucket("avatar", "ap-northeast-3")
+	if nb == nil {
+		fmt.Printf("failed to connect to minio")
+	}
+	if err := nb.Create(); err != nil {
+		log.Println(err)
+		return
+	}
+}
