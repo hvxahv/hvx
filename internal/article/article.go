@@ -8,61 +8,32 @@ package article
 import (
 	"fmt"
 	"github.com/hvxahv/hvxahv/pkg/cockroach"
+	"github.com/lib/pq"
 	"github.com/pkg/errors"
-	"gorm.io/datatypes"
 	"gorm.io/gorm"
 )
-
-type TO struct {
-	TO []string `gorm:"type:jsonb;to"`
-}
-
-type Attachment struct {
-	Attachment []struct {
-		Type      string      `json:"type"`
-		MediaType string      `json:"mediaType"`
-		Url       string      `json:"url"`
-		Name      interface{} `json:"name"`
-		Blurhash  string      `json:"blurhash"`
-		Width     int         `json:"width"`
-		Height    int         `json:"height"`
-	} `json:"attachment"`
-}
-
-type CC struct {
-	CC []string `gorm:"type:jsonb;to"`
-}
 
 type Articles struct {
 	gorm.Model
 
-	AuthorID uint `gorm:"primaryKey;author_id"`
-
-	// AuthorID   uint   `gorm:"index;author_id"`
-	AuthorName string `gorm:"type:text;author_name"`
-	URL        string `gorm:"type:text;url"`
-	Title      string `gorm:"type:text;title"`
-	Summary    string `gorm:"type:text;summary"`
-	Article    string `gorm:"type:text;article"`
-
-	// Attachment *Attachment `gorm:"type:jsonb;attachment"`
-
-	TO datatypes.JSONMap `gorm:"type:jsonb;to"`
-	//CC *CC `gorm:"type:jsonb;cc"`
-
-	// Whether the setting is status.
-	Statuses bool `gorm:"type:boolean;statuses"`
-	NSFW     bool `gorm:"type:boolean;nsfw"`
-
-	// If it is set to the public state, the article data will be combined into data traversal
-	// and sent to everyone in the follower list.
-	Visibility bool `gorm:"type:boolean;visibility"`
+	AccountID   uint           `gorm:"primaryKey;account_id"`
+	AuthorName  string         `gorm:"type:text;author_name"`
+	URL         string         `gorm:"type:text;url"`
+	Title       string         `gorm:"type:text;title"`
+	Summary     string         `gorm:"type:text;summary"`
+	Article     string         `gorm:"type:text;article"`
+	Attachments pq.Int64Array  `gorm:"type:integer[];attachments"`
+	TO          pq.StringArray `gorm:"type:text[];to"`
+	CC          pq.StringArray `gorm:"type:text[];cc"`
+	Statuses    bool           `gorm:"type:boolean;statuses"`
+	NSFW        bool           `gorm:"type:boolean;nsfw"`
+	Visibility  bool           `gorm:"type:boolean;visibility"`
 }
 
 func (a *Articles) DeleteByURL() error {
 	db := cockroach.GetDB()
 
-	if err := db.Debug().Table("article").Where("url = ?", a.URL).Unscoped().Delete(&Articles{}).Error; err != nil {
+	if err := db.Debug().Table("articles").Where("url = ?", a.URL).Unscoped().Delete(&Articles{}).Error; err != nil {
 		return err
 	}
 	return nil
@@ -75,7 +46,7 @@ func NewArticleURL(url string) *Articles {
 func (a *Articles) DeleteByAccountID() error {
 	db := cockroach.GetDB()
 
-	if err := db.Debug().Table("article").Where("author_id = ?", a.AuthorID).Unscoped().Delete(&Articles{}).Error; err != nil {
+	if err := db.Debug().Table("articles").Where("author_id = ?", a.AccountID).Unscoped().Delete(&Articles{}).Error; err != nil {
 		return err
 	}
 	return nil
@@ -87,7 +58,7 @@ func (a *Articles) Create() error {
 	if err := db.AutoMigrate(&Articles{}); err != nil {
 		return errors.Errorf("failed to automatically create database: %v", err)
 	}
-	if err := db.Debug().Table("article").Create(&a); err != nil {
+	if err := db.Debug().Table("articles").Create(&a); err != nil {
 		return errors.Errorf("failed to create article: %v", err)
 	}
 
@@ -98,7 +69,7 @@ func (a *Articles) Create() error {
 func (a *Articles) Update() error {
 	db := cockroach.GetDB()
 
-	if err := db.Debug().Table("article").Where("id = ?", a.ID).Updates(&a).Error; err != nil {
+	if err := db.Debug().Table("articles").Where("id = ?", a.ID).Updates(&a).Error; err != nil {
 		return err
 	}
 	return nil
@@ -107,7 +78,7 @@ func (a *Articles) Update() error {
 func (a *Articles) DeleteByID() error {
 	db := cockroach.GetDB()
 
-	if err := db.Debug().Table("article").Where("id = ?", a.ID).Unscoped().Delete(&Articles{}).Error; err != nil {
+	if err := db.Debug().Table("articles").Where("id = ?", a.ID).Unscoped().Delete(&Articles{}).Error; err != nil {
 		return err
 	}
 	return nil
@@ -116,7 +87,7 @@ func (a *Articles) DeleteByID() error {
 func (a *Articles) FindByID() (*Articles, error) {
 	db := cockroach.GetDB()
 
-	if err := db.Debug().Table("article").Where("id", a.ID).First(&a).Error; err != nil {
+	if err := db.Debug().Table("articles").Where("id", a.ID).First(&a).Error; err != nil {
 		return nil, err
 	}
 	return a, nil
@@ -134,7 +105,7 @@ func (a *Articles) FindByAccountID() (*[]Articles, error) {
 	db := cockroach.GetDB()
 
 	var articles []Articles
-	if err := db.Debug().Table("article").Where("author_id", a.AuthorID).Find(&articles).Error; err != nil {
+	if err := db.Debug().Table("articles").Where("author_id", a.AccountID).Find(&articles).Error; err != nil {
 		return nil, err
 	}
 	for _, i := range articles {
@@ -144,7 +115,7 @@ func (a *Articles) FindByAccountID() (*[]Articles, error) {
 }
 
 func NewArticlesByAccountID(id uint) *Articles {
-	return &Articles{AuthorID: id}
+	return &Articles{AccountID: id}
 }
 
 type Article interface {
@@ -172,10 +143,10 @@ type Article interface {
 	DeleteByAccountID() error
 }
 
-func NewArticles(authorID uint, name, title, summary, article string, isNSFW bool) *Articles {
+func NewArticles(accountID uint, name, title, summary, article string, isNSFW bool) *Articles {
 
 	return &Articles{
-		AuthorID:   authorID,
+		AccountID:  accountID,
 		AuthorName: name,
 		Title:      title,
 		Summary:    summary,
@@ -185,18 +156,16 @@ func NewArticles(authorID uint, name, title, summary, article string, isNSFW boo
 	}
 }
 
-func NewStatus(actorID uint, name, content string, isNSFW bool) *Articles {
-	//to := []string{"https://mas.to/users/hvturingga"}
-	to := map[string]interface{}{
-		"to": []string{"https://mas.to/users/hvturingga"},
-	}
+func NewStatus(accountID uint, name, content string, attachmentsID []int64, to []string, cc []string, isNSFW bool) *Articles {
 
 	return &Articles{
-		AuthorID:   actorID,
-		AuthorName: name,
-		Article:    content,
-		TO:         to,
-		Statuses:   true,
-		NSFW:       isNSFW,
+		AccountID:   accountID,
+		AuthorName:  name,
+		Article:     content,
+		Attachments: attachmentsID,
+		TO:          to,
+		CC:          cc,
+		Statuses:    true,
+		NSFW:        isNSFW,
 	}
 }

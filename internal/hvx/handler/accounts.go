@@ -2,12 +2,12 @@ package handler
 
 import (
 	"fmt"
+	"github.com/hvxahv/hvxahv/internal/hvx/middleware"
+	"github.com/hvxahv/hvxahv/pkg/minio"
 	"log"
 
 	"github.com/gin-gonic/gin"
 	"github.com/hvxahv/hvxahv/internal/account"
-	"github.com/hvxahv/hvxahv/pkg/storage"
-	"github.com/spf13/viper"
 )
 
 func SignUpHandler(c *gin.Context) {
@@ -56,7 +56,7 @@ func SignUpHandler(c *gin.Context) {
 
 // UploadAvatar Interface for users to upload avatars.
 func UploadAvatar(c *gin.Context) {
-	file, err := c.FormFile("file")
+	avatar, err := c.FormFile("avatar")
 	if err != nil {
 		fmt.Println("File read failed！" + err.Error())
 		c.JSON(500, gin.H{
@@ -66,7 +66,7 @@ func UploadAvatar(c *gin.Context) {
 		return
 	}
 
-	fileType := file.Header.Get("Content-Type")
+	fileType := avatar.Header.Get("Content-Type")
 	if fileType != "image/jpeg" && fileType != "image/png" {
 		c.JSON(500, gin.H{
 			"status":  500,
@@ -75,54 +75,50 @@ func UploadAvatar(c *gin.Context) {
 		return
 	}
 
-	bucket := "avatar"
-	m := storage.NewMinio(file, bucket, viper.GetString("minio.location"), fileType)
-	url, err := m.Uploader()
+	file, err := avatar.Open()
 	if err != nil {
-		log.Println(err)
-		c.JSON(500, gin.H{
-			"status":  500,
-			"message": "server receiving file error!",
-		})
+		fmt.Println(err)
 		return
 	}
 
-	var link string
-	if viper.GetBool("storage.minio.useSSL") {
-		link = fmt.Sprintf("https://%s/%s/%s", viper.GetString("minio.addr"), bucket, url)
-	} else {
-		link = fmt.Sprintf("http://%s/%s/%s", viper.GetString("minio.addr"), bucket, url)
+	info, err := minio.NewFilesUploader("avatar", avatar.Filename, fileType, file).Uploader()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	log.Println(info.Location)
+
+	actor, err := account.NewActorByAccountUsername(middleware.GetUsername(c)).GetActorByAccountUsername()
+	if err != nil {
+		return
+	}
+	a := account.NewActorID(actor.ID)
+	a.Avatar = info.Location
+	if err := a.Update(); err != nil {
+		log.Println(err)
+		return
 	}
 	c.JSON(200, gin.H{
 		"status":  200,
 		"message": "avatar uploaded successfully.",
-		"url":     link,
+		"url":     info.Location,
 	})
 }
 
-// FetchAccountsHandler Obtain personal account information,
+// GetAccountHandler Obtain personal account information,
 // analyze the user through TOKEN and return user data.
-//func GetAccountsHandler(c *gin.Context) {
-//	name := middleware.GetUserName(c)
-//
-//	cli, conn, err := client.Accounts()
-//	if err != nil {
-//		log.Println(err)
-//	}
-//	defer conn.Close()
-//
-//	r, err := cli.QueryByName(context.Background(), &pb.NewAccountByName{
-//		Username: name,
-//	})
-//	if err != nil {
-//		log.Printf("failed to send message to account server: %v", err)
-//	}
-//
-//	c.JSON(200, gin.H{
-//		"code":     200,
-//		"activity": r,
-//	})
-//}
+func GetAccountHandler(c *gin.Context) {
+	actor, err := account.NewActorByAccountUsername(middleware.GetUsername(c)).GetActorByAccountUsername()
+	if err != nil {
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"code":     200,
+		"activity": actor,
+	})
+}
 
 //func DeleteAccount(c *gin.Context) {
 //	password := c.PostForm("password")

@@ -24,7 +24,6 @@ require (
 	golang.org/x/net v0.0.0-20211029224645-99673261e6eb
 	google.golang.org/grpc v1.38.0
 	google.golang.org/protobuf v1.26.0
-	gorm.io/datatypes v1.0.2
 	gorm.io/driver/postgres v1.1.0
 	gorm.io/gorm v1.21.15
 )

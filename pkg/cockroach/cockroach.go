@@ -15,7 +15,7 @@ import (
 )
 
 type DB interface {
-	// InitDB Initialize the PostgreSQL database.
+	// InitDB Initialize the Postgres database.
 	InitDB() error
 
 	// New a database, receive the name and return an error.
