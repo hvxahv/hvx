@@ -6,11 +6,12 @@ import (
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"log"
 	"os"
 	"testing"
 )
 
-func IniTestConfig(t *testing.T) {
+func init() {
 	home, err := homedir.Dir()
 	cobra.CheckErr(err)
 
@@ -36,18 +37,11 @@ func IniTestConfig(t *testing.T) {
 	}
 }
 
-func TestNewMessages(t *testing.T) {
-	IniTestConfig(t)
-	//nm := NewInbox("https://mas.to/users/hvturingga", "Follow", "https://mas.to/9dc74aa1-9f24-4514-b6e4-00ebd6be012f", "hvturingga")
-	//nm.NewInbox()
-}
-
-func TestInboxes_GetInboxesByObjectID(t *testing.T) {
-	IniTestConfig(t)
-
-	r, err := NewObjectID(698619813575491585).GetInboxesByID()
+func TestInboxes_GetInboxes(t *testing.T) {
+	inboxes, err := NewInboxesAccountID(727491255195172865).GetInboxes()
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
+		return
 	}
-	fmt.Println(r)
+	log.Println(inboxes)
 }

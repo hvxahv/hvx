@@ -2,68 +2,70 @@ package activity
 
 import (
 	"github.com/hvxahv/hvxahv/pkg/cockroach"
-	"github.com/pkg/errors"
 	"gorm.io/gorm"
-	"log"
 )
 
 type Inboxes struct {
 	gorm.Model
+
+	AccountID    uint   `gorm:"primaryKey;type:bigint;account_id"`
+	FromID       uint   `gorm:"type:bigint;form_id"`
 	ActivityType string `gorm:"type:text;activity_type"`
-	ActorID      uint   `gorm:"type:bigint;actor_id"`
-	ObjectID     uint   `gorm:"primaryKey;type:bigint;object_id"`
-	SourceID     uint   `gorm:"index;type:bigint;source_id"`
+	ActivityID   string `gorm:"primaryKey;type:text;activity_id"`
+	Body         string `gorm:"type:text;activity_id"`
 }
 
-func (i *Inboxes) Delete() error {
-	panic("implement me")
-}
-
-func (i *Inboxes) GetInboxesByID() (*[]Inboxes, error) {
+func (a *Inboxes) GetInboxes() (*[]Inboxes, error) {
 	db := cockroach.GetDB()
-
-	var inboxes []Inboxes
-	if err := db.Debug().Table("inboxes").Where("object_id = ?", i.ObjectID).Find(&inboxes).Error; err != nil {
-		return nil, errors.Errorf("an error occurred while creating the activity: %v", err)
+	ibx := &[]Inboxes{}
+	if err := db.Debug().Table("inboxes").Where("account_id = ?", a.AccountID).Find(&ibx).Error; err != nil {
+		return nil, err
 	}
-
-	return &inboxes, nil
+	return ibx, nil
 }
 
-func (i *Inboxes) Create() error {
+func (a *Inboxes) DeleteByActivityID() error {
 	db := cockroach.GetDB()
-
-	if err := db.AutoMigrate(&Inboxes{}); err != nil {
-		log.Println(err)
+	if err := db.Debug().Table("inboxes").Where("activity_id = ?", a.ActivityID).Unscoped().Delete(&Inboxes{}).Error; err != nil {
 		return err
 	}
-
-	if err := db.Debug().Table("inboxes").Create(&i).Error; err != nil {
-		return errors.Errorf("an error occurred while creating the activity: %v", err)
-	}
-
 	return nil
 }
 
-func NewObjectID(id uint) *Inboxes {
-	return &Inboxes{ObjectID: id}
+func (a *Inboxes) GetByActivityID() (*Inboxes, error) {
+	db := cockroach.GetDB()
+	if err := db.Debug().Table("inboxes").Where("activity_id = ?", a.ActivityID).First(&Inboxes{}).Error; err != nil {
+		return nil, err
+	}
+	return a, nil
 }
 
-func NewInboxes(activityType string, actorID uint, objectID uint, sourceID uint) *Inboxes {
-	return &Inboxes{ActivityType: activityType, ActorID: actorID, ObjectID: objectID, SourceID: sourceID}
+func (a *Inboxes) Create() error {
+	db := cockroach.GetDB()
+	if err := db.AutoMigrate(&Inboxes{}); err != nil {
+		return err
+	}
+	if err := db.Debug().Table("inboxes").Create(&a).Error; err != nil {
+		return err
+	}
+	return nil
 }
 
-func NewInboxDetails(a string, id uint) *Inboxes {
-	return &Inboxes{ActivityType: a, ObjectID: id}
+func NewInboxesActorID(activityID string) *Inboxes {
+	return &Inboxes{ActivityID: activityID}
+}
+
+func NewInboxesAccountID(accountID uint) *Inboxes {
+	return &Inboxes{AccountID: accountID}
+}
+
+func NewInboxes(accountID uint, fromID uint, activityType string, activityID string, body string) *Inboxes {
+	return &Inboxes{AccountID: accountID, FromID: fromID, ActivityType: activityType, ActivityID: activityID, Body: body}
 }
 
 type Inbox interface {
-	// Create an inbox data, SourceID corresponds to the specific primary key ID of the table data.
 	Create() error
-
-	// GetInboxesByID Get the user's inbox list through the inbox ID.
-	GetInboxesByID() (*[]Inboxes, error)
-
-	// Delete a piece of inbox data.
-	Delete() error
+	GetInboxes() (*[]Inboxes, error)
+	GetByActivityID() (*Inboxes, error)
+	DeleteByActivityID() error
 }

@@ -1,7 +1,6 @@
 package activity
 
 import (
-	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"gorm.io/gorm"
 )
 
@@ -14,18 +13,18 @@ type Mentions struct {
 }
 
 func (m *Mentions) Create() error {
-	db := cockroach.GetDB()
-	if err := db.AutoMigrate(&Mentions{}); err != nil {
-		return err
-	}
-
-	if err := db.Debug().Table("mentions").Create(&m).Error; err != nil {
-		return err
-	}
-
-	if err := NewInboxes("Mention", m.ActorID, m.ObjectID, m.ID).Create(); err != nil {
-		return err
-	}
+	//db := cockroach.GetDB()
+	//if err := db.AutoMigrate(&Mentions{}); err != nil {
+	//	return err
+	//}
+	//
+	//if err := db.Debug().Table("mentions").Create(&m).Error; err != nil {
+	//	return err
+	//}
+	//
+	//if err := NewInboxes("Mention", m.ActorID, m.ObjectID, m.ID).Create(); err != nil {
+	//	return err
+	//}
 
 	return nil
 }

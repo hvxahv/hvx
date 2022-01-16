@@ -33,39 +33,39 @@ type FollowAccepts struct {
 }
 
 func (f *FollowAccepts) Create() error {
-	db := cockroach.GetDB()
-
-	if err := db.AutoMigrate(&FollowAccepts{}); err != nil {
-		return err
-	}
-	if err := db.Debug().Table("follow_accepts").Create(&f).Error; err != nil {
-		return err
-	}
-
-	if err := NewInboxes("Accept", f.ActorID, f.ObjectID, f.ID).Create(); err != nil {
-		return err
-	}
-
-	if err := NewFollows(f.ActorID, f.ObjectID).Create(); err != nil {
-		return err
-	}
+	//db := cockroach.GetDB()
+	//
+	//if err := db.AutoMigrate(&FollowAccepts{}); err != nil {
+	//	return err
+	//}
+	//if err := db.Debug().Table("follow_accepts").Create(&f).Error; err != nil {
+	//	return err
+	//}
+	//
+	//if err := NewInboxes("Accept", f.ActorID, f.ObjectID, f.ID).Create(); err != nil {
+	//	return err
+	//}
+	//
+	//if err := NewFollows(f.ActorID, f.ObjectID).Create(); err != nil {
+	//	return err
+	//}
 
 	return nil
 }
 
 func (f *FollowRequests) Create() error {
-	db := cockroach.GetDB()
-
-	if err := db.AutoMigrate(&FollowRequests{}); err != nil {
-		return err
-	}
-	if err := db.Debug().Table("follow_requests").Create(&f).Error; err != nil {
-		return err
-	}
-
-	if err := NewInboxes("Follow", f.ActorID, f.ObjectID, f.ID).Create(); err != nil {
-		return err
-	}
+	//db := cockroach.GetDB()
+	//
+	//if err := db.AutoMigrate(&FollowRequests{}); err != nil {
+	//	return err
+	//}
+	//if err := db.Debug().Table("follow_requests").Create(&f).Error; err != nil {
+	//	return err
+	//}
+	//
+	//if err := NewInboxes("Follow", f.ActorID, f.ObjectID, f.ID).Create(); err != nil {
+	//	return err
+	//}
 
 	return nil
 }
