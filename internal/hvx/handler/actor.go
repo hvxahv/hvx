@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/hvxahv/hvxahv/internal/account"
-	"github.com/hvxahv/hvxahv/internal/activity"
 	"github.com/hvxahv/hvxahv/internal/channel"
 	"github.com/hvxahv/hvxahv/pkg/activitypub"
 	"github.com/spf13/viper"
@@ -57,13 +56,13 @@ func GetChannelHandler(c *gin.Context) {
 }
 
 func ChannelInboxHandler(c *gin.Context) {
-	name := c.Param("actor")
+	//name := c.Param("actor")
 	body, err := ioutil.ReadAll(c.Request.Body)
 	if err != nil {
 		return
 	}
 	fmt.Println(string(body))
-	activity.ChannelTypes(name, body)
+	//activity.ChannelTypes(name, body)
 }
 
 func NewContext() []interface{} {

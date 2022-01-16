@@ -5,19 +5,11 @@ import (
 	"github.com/hvxahv/hvxahv/internal/account"
 	"github.com/hvxahv/hvxahv/internal/channel"
 	"github.com/hvxahv/hvxahv/pkg/activitypub"
+	"log"
 )
 
 func WebFingerHandler(c *gin.Context) {
 	resource := c.Query("resource")
-
-	//cli, conn, err := client.Accounts()
-	//if err != nil {
-	//	log.Println(err)
-	//}
-	//defer conn.Close()
-
-	// Determine whether it is a user of this instance,
-	// if you do not search for a user of this instance, go to the remote request.
 	ok := activitypub.IsRemote(resource)
 	if ok {
 		actor := activitypub.GetWebFinger(resource)
@@ -31,16 +23,8 @@ func WebFingerHandler(c *gin.Context) {
 	// Use this client to call the remote Accounts gRPC service,
 	// and then pass the username to get the queried data.
 
-	//account, err := cli.GetAccountsByUsername(context.Background(), &pb.AccountUsername{Username: activitypub.GetActorName(resource)})
-	//if err != nil {
-	//	ch, err := channel.NewChannelsByLink(activitypub.GetActorName(resource)).GetActorDataByLink()
-	//	if err != nil {
-	//		return
-	//	}
-	//	c.JSON(200, activitypub.NewWebFinger(ch.PreferredUsername, true))
-	//	return
-	//}
 	acct, err := account.NewAccountsUsername(activitypub.GetActorName(resource)).GetAccountByUsername()
+	log.Println(acct)
 	if err != nil {
 		ch, err := channel.NewChannelsByLink(activitypub.GetActorName(resource)).GetActorDataByLink()
 		if err != nil {
