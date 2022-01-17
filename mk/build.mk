@@ -1,5 +1,5 @@
-windows := go build -o ./build
-linux := SET CGO_ENABLED=0 SET GOOS=linux SET GOARCH=arm64 go build -o ./build
+windows := go build -o ./.release
+linux := SET CGO_ENABLED=0 SET GOOS=linux SET GOARCH=arm64 go build -o ./.release
 
 build: windows linux
 
@@ -7,7 +7,9 @@ clear:
 	rm build/*
 
 windows:
-	$(windows) ./app/accounts
+	$(windows) ./hvx
+	$(windows) ./cmd/account
 
 linux:
-	$(linux) ./app/accounts
+	$(linux) ./cmd/hvx
+	$(linux) ./cmd/account

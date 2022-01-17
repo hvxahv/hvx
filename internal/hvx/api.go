@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/hvxahv/hvxahv/internal/hvx/handler"
 	"github.com/hvxahv/hvxahv/internal/hvx/middleware"
+	"github.com/hvxahv/hvxahv/internal/hvx/public"
 	"github.com/hvxahv/hvxahv/internal/hvx/v1alpha1"
 )
 
@@ -20,6 +21,8 @@ func APIServer() *gin.Engine {
 			"message": "pong!",
 		})
 	})
+
+	api.GET("/public/accounts/count", public.GetPublicAccountCountHandler)
 
 	// Open API routing for the ActivityPub protocol.
 	// ActivityPub https://www.w3.org/TR/activitypub/

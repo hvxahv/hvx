@@ -13,7 +13,7 @@ import (
 
 func FollowReqHandler(c *gin.Context) {
 	name := middleware.GetUsername(c)
-	id, err := strconv.Atoi(c.PostForm("object"))
+	id, err := strconv.Atoi(c.PostForm("activity_id"))
 	if err != nil {
 		return
 	}
