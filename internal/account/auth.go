@@ -8,14 +8,14 @@ import (
 	"log"
 )
 
-// AccountAuth The interface for account authorization,
+// Auth The interface for account authorization,
 // including method interfaces for login or developer API permissions.
-type AccountAuth interface {
+type Auth interface {
 	// SignIn to the account and generate token, Return token and custom error message.
 	SignIn() (uint, string, error)
 }
 
-func NewAuth(username string, password string) AccountAuth {
+func NewAuth(username string, password string) Auth {
 	return &Accounts{Username: username, Password: password}
 }
 

@@ -13,7 +13,10 @@ func GetMessageAccessHandler(c *gin.Context) {
 
 	matrix, err := message.NewMatricesAccountID(name).Get()
 	if err != nil {
-		log.Println(err)
+		c.JSON(200, gin.H{
+			"code":   "401",
+			"matrix": "UNREGISTERED",
+		})
 		return
 	}
 
@@ -31,6 +34,13 @@ func NewMessagesAccessHandler(c *gin.Context) {
 	_, _, err := account.NewAuth(name, password).SignIn()
 	if err != nil {
 		log.Println(err)
+		if err.Error() == "PASSWORD_VERIFICATION_FAILED" {
+			c.JSON(401, gin.H{
+				"code":    "401",
+				"message": "PASSWORD_VERIFICATION_FAILED",
+			})
+			return
+		}
 		c.JSON(401, gin.H{
 			"code":    "401",
 			"message": "USERNAME_OR_PASSWORD_ERROR",
