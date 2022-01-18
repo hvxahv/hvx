@@ -22,7 +22,7 @@ A social platform based on the decentralized ActivityPub decentralized social ne
 1. Find and add your social network friends as easy as an email format (`name@domain`) address.
 2. Cross-server content publishing channel (channel), the content cannot be deleted or modified.
 3. Directly communicate end-to-end encrypted instant messaging with friends.
-4. Direct end-to-end encrypted instant messaging with friends.
+4. An unlimited space encrypted cloud storage with interplanetary file system.
 
 It is a platform for content publishing, social networking, and instant messaging. Anyone can build their own instance and design their own interface. Social communication is possible with all platforms that implement the ActivityPub protocol. Store broadcast channel data in the IPFS file system, persistent and non-deletable and unmodifiable. Can communicate with end-to-end encryption programs on all platforms that implement the Matrix.org protocol.
 
