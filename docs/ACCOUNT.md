@@ -1,111 +1,176 @@
 # Accounts
 
-Accounts is the account service of this project, which is used to manage accounts.
+---
 
-About WebFinger Production Standards
+Accounts is the account system of hvxahv. The account system is divided into two data tables.
 
-[https://datatracker.ietf.org/doc/html/rfc7033](https://datatracker.ietf.org/doc/html/rfc7033)
+## Accounts objects
 
-About the HTTP Signatures Production Standard
-
-[https://datatracker.ietf.org/doc/html/draft-cavage-http-signatures-10](https://datatracker.ietf.org/doc/html/draft-cavage-http-signatures-10)
-
-## Account system design:
-
-The account system is divided into two sets of account systems.
-1. Accounts data, for the internal personal account system, used for internal verification such as login and registration of the current instance.
+1. Accounts table, for the personal account system of the current instance, used for login, registration and verification.
     
-     2.0. Modify the structure → do not store private keys in the account system.
+    https://github.com/hvxahv/hvxahv/blob/89ded9bde8b4e00a0499654c43f430de5aca36cb/internal/account/account.go#L12
+    
+    STRUCT:
+    
+    1.0. Split the Actor into a second data table.
+    
+    2.0. Private keys are not stored in the account system.
+    
+2. Actor https://www.w3.org/TR/activitypub/#actor-objects data sheet for ActivityPub.
+    
+    https://github.com/hvxahv/hvxahv/blob/89ded9bde8b4e00a0499654c43f430de5aca36cb/internal/account/actor.go#L12
+    
 
-```Go
-type Accounts struct {
-	gorm.Model
+## WebFinger
 
-	Username string `gorm:"primaryKey;type:text;preferredUsername;" validate:"required,min=4,max=16"`
-	Mail     string `gorm:"index;type:text;mail;unique" validate:"required,email"`
-	Password string `gorm:"type:text;password" validate:"required,min=8,max=100"`
+Use Actor information to combine WebFinger [rfc7033 (ietf.org)](https://datatracker.ietf.org/doc/html/rfc7033) to address and open to the outside world.
 
-	// When creating an account, first verify the username, email address, and password.
-	// After the verification is successful, store the username and key in the actors table,
-	// then use the returned ActorID in this field, and then store the data in the account table .
-	// At this time, the context of creating the user is complete.
-	ActorID uint `gorm:"type:bigint;actor_id"`
+Example:
 
-	// Whether to set as a private account
-	IsPrivate bool `gorm:"type:boolean;is_private"`
+````yaml
+{
+  "subject": "acct:hvturingga@helfmemories.com",
+  "links": [
+	{
+		"rel": "self",
+		"type": "application/activity+json",
+		"href": "https://helfmemories.com/u/hvturingga"
+    }
+  ]
 }
-```
-2. Actor data, for Activitypub's actor information system, used when interacting with activitypub instances.
-```Go
-type Actors struct {
-	gorm.Model
+````
 
-	PreferredUsername string `gorm:"primaryKey;type:text;preferredUsername;"`
-	Domain            string `gorm:"index;type:text;domain"`
-	Avatar            string `gorm:"type:text;avatar"`
-	Name              string `gorm:"type:text;name"`
-	Summary           string `gorm:"type:text;summary"`
-	Inbox             string `gorm:"type:text;inbox"`
-	Url               string `gorm:"index;test;url"`
-	PublicKey         string `gorm:"type:text;public_key"`
+## Actors
+Actor not only stores the user's personal data (including public key) of this instance, but also stores the user data of other instances related to the user of this instance, and updates the user data of other instances through the Update event of activitypub.
 
-	// Whether it is a robot or other type of account
-	ActorType string `gorm:"type:text;actor_type"`
+[https://www.w3.org/TR/activitypub/#actor-objects](https://www.w3.org/TR/activitypub/#actor-objects)
 
-	// Set whether it is a remote actor.
-	IsRemote bool `gorm:"type:boolean;is_remote"`
-}
-```
+## Registration/Authorization
 
 **register:**
 
 When a user registers, they will query the Accounts table to confirm whether there is a user. Accounts only stores the account information of the instance, the unique user name, and the unique email address.
 
-**storage:**
+**Login:**
+
+After the user logs in, a Token will be issued, and the Token will have a unique device ID, which is used to manage the device.
+
+**Actor object storage:**
 
 Actor not only stores the user's personal data (including public key) of this instance, but also stores the user data of other instances related to the user of this instance, and updates the user data of other instances through the Update event of activityPub.
 
 **Inquire:**
 
-When obtaining the WebFinger query request of other instances, it will check whether there is a user by querying the Username in Accounts, and then when obtaining the Actor request, it will query the information in the corresponding Actor table by querying the ActorID returned by Accounts.
+When obtaining WebFinger query requests from other instances, it will determine whether there is a user by querying the Username in Accounts.
 
-## search
+When an Actor request is obtained, the information in the corresponding Actor table will be queried by querying the ActorID returned by Accounts.
 
-When searching for users in this instance, use the user name query to query all existing users in the actor table (fuzzy query). Sending an http request to get WebFinger information for other instances will return all users found.
+The id of the Actor field is used as the primary key, so the ActorID will be used to query the data when you need to query the user details. For example, when viewing the user's user profile or obtaining a list of follower relationships, ActorID will be used for query.
 
-example:
+When updating the user information of the local instance, if you update the username, you need to update the data in two tables, username in Accounts and PreferredUsername in Actors.
+
+**search:**
+
+When searching for users in this example, use the user name query to query all existing users in the actor table (a list of multiple users will be returned). If the `@` symbol exists in the query, it means that the specified user needs to be searched. , if the user data does not exist in the local instance, send an HTTP request to obtain the WebFinger information of other instances, and return all the found users.
+
+Example:
 ```Go
 // If it contains a remote query (judging that the query string contains an @ symbol), it represents an exact query.
-if remote {
-	http.request(hostname)
+func IsLocal(address: string) {
+	QUERY Actor WHERE address FIRST
+	if Actor == nil {
+		HTTP.GET(address)
+	}
 }
-
 // Querying directly by username returns a collection of actors that already exist in the database.
-func FindActor(username string) {
-	QUERY ACCOUNTS WHERE preferred_username FIND 
-	return []actor{}
+func FindActor(username string) *[]Actor {
+	QUERY Actor WHERE preferred_username FIND 
+	return &[]Actor{}
 }
 ```
-The actor's id is used as the user's unique identifier, so use ActorID to query data when querying. For example, when searching for the list of articles published by the user, or obtaining the user's following relationship, ActorID will be used as the primary key for query.
+## User relationship design
 
-- When updating user information, if you update the username, you need to update the data in two tables, username in Accounts and PreferredUsername in Actors.
-- When setting user information, it is divided into privacy settings and personal information settings.
+pay attention to
 
+followed
+
+mutual concern
+
+Following relationships are not publicly visible
 
 ## privacy
 
-Regarding the storage of keys, the public key should be stored on the server, and the private key should not be stored on its own server, but there is no better way to store the private key, so it can only be stored in the database of the running instance.
+Regarding the storage of keys, the public key should be stored on the server, and the private key should not be stored on your own server, please check https://github.com/hvxahv/hvxahv/blob/main/SECURITY.md Privacy Policy Report Get hvxahv's implementation of personal key storage.
 
 ## Friendship and status display
 
-Only friends who follow each other can see the status sent by each other
+Different from Twitter and mastodon, you can only see the status sent by the other party after you follow. The status and articles sent by users will not be publicly displayed to the society. Only after sending a follow request, the other party can view the other party's postings with consent.
 
-Notes:
+---
 
-- When a user registers, he will query the Accounts table to confirm whether there is a user. Accounts only stores the account information of this instance, including the unique user name, the unique email address, and the private key password of the account.
-- Actor not only stores the user's personal data (including the public key) of this instance, but also stores the user data of other instances related to the user of this instance, and updates the user data of other instances through the Update event of activitypub.
-- When obtaining the WebFinger query request of other instances, it will determine whether there is a user by querying the Username in Accounts, and then when obtaining the Actor request, it will query the information in the corresponding Actor table by querying the ActorID returned by Accounts.
-- When searching for users in this instance, use username query to query all existing users in the actor table (fuzzy query). If the `@` symbol is present in the query, it means that the query is for information about other instances, use remote Query and send http request to obtain WebFinger information of other instances, so that all the users found will be returned.
-- Use the id of the actor as the unique identifier of the user. When it is associated with other tables, use the ActorID to query data. For example, when searching the list of articles published by the user, or obtaining the user's following relationship, the ActorID will be used as the primary key for query.
-- When updating user information, if you update the user name, you need to update the data in two tables, username in Accounts and PreferredUsername in Actors.
-- When setting user information, it is divided into privacy setting and personal information setting.
+## set up
+
+- [ ] name
+- [ ] username
+- [ ] Bio
+- [ ] Avatar
+- [ ] Private setting Private / Public
+- [ ] Change E-Mail
+- [ ] Password setting
+- [ ] Delete account
+- [ ] Push type
+    - [ ] Channel update notification
+    - [ ] New post notification
+    - [ ] Follow updates
+    - [ ] follow request
+    - [ ] export follow
+
+## Cache:
+
+Store account data in the cache when registering an account.
+
+When registering, check whether the user name of e-mail and username exists, and whether the user's email is used.
+
+Then when registering, updating the data to the redis data will never expire.
+
+You should log in with your email when logging in.
+
+## Block User:
+
+## Delete your account:
+
+Deleting your account will delete it permanently, and there will be no data retention and cannot be recovered.
+
+When someone finds it, it will show that there is no such user, and there will be no prompt that the account has been deleted.
+
+---
+
+## APIs
+
+`SingUp` | Create Account
+
+`Signin` | Login account
+
+`UpdateProfile` | account update
+
+`UpdateUsername` | update username
+
+`ResetPassword` | reset password
+
+`logout` | logout
+
+`DeleteAccount` | delete account
+
+## requires attention
+
+Please take care to prevent sql injection and deduplicate when updating personal data
+
+## Client management
+
+The device unique ID should be saved.
+
+When logging in, write the authenticated device ID into the database as a whitelist, and when logging out (signup) the device, remove this piece of data.
+
+At the time of request, it is judged whether the Token carried by the user exists under the authentication device.
+
+In the account settings, there should be a client management function that displays a list of authorized clients and provides the client offline function.
