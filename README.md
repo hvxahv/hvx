@@ -32,6 +32,10 @@ Instance: [halfmemories.com](https://halfmemories.com) is currently offline and 
 
 Preview version: [dev.halfmemories.com](https://dev.halfmemories.com) is currently offline and will be released soon.
 
+## FAQ
+
+[HVXAHV community discussions FAQ.](https://github.com/hvxahv/community/discussions/2)
+
 ## Security Policy Report:
 
 [SECURITY.md](./SECURITY.md)
