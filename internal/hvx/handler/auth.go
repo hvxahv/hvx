@@ -10,31 +10,45 @@ import (
 	"github.com/hvxahv/hvxahv/internal/account"
 	"github.com/hvxahv/hvxahv/internal/device"
 	"github.com/hvxahv/hvxahv/internal/hvx/middleware"
+	"github.com/hvxahv/hvxahv/internal/hvx/policy"
 	"github.com/hvxahv/hvxahv/internal/notify"
 	"github.com/hvxahv/hvxahv/pkg/cache"
 	"github.com/hvxahv/hvxahv/pkg/push"
-	"github.com/hvxahv/hvxahv/pkg/security"
 	"log"
 )
+
+func SignUpHandler(c *gin.Context) {
+	username := c.PostForm("username")
+	password := c.PostForm("password")
+	mail := c.PostForm("mail")
+
+	// https://datatracker.ietf.org/doc/html/rfc5208
+	publicKey := c.PostForm("publicKey")
+
+	// Create the Actor first, and then use the returned ActorID to create a unique account of the current instance account system.
+	// The username in the account system is unique, and the Actor may have the same username in different instances.
+	actor, err := account.NewActors(username, publicKey, "Person").Create()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	if err := account.NewAccounts(username, mail, password, actor.ID).Create(); err != nil {
+		log.Panicln(err)
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"code":    "200",
+		"message": "ok",
+	})
+
+}
 
 func SignInHandler(c *gin.Context) {
 	ua := c.GetHeader("User-Agent")
 	username := c.PostForm("username")
 	password := c.PostForm("password")
-
-	// Use this client to remotely call the login method.
-	//cli, conn, err := client.Accounts()
-	//if err != nil {
-	//	log.Println(err)
-	//}
-	//defer conn.Close()
-	//r, err := cli.SignIn(context.Background(), &pb.AuthData{
-	//	Username: username,
-	//	Password: password,
-	//})
-	//if err != nil {
-	//	log.Printf("failed to send message to account server: %v", err)
-	//}
 
 	id, mail, err := account.NewAuth(username, password).SignIn()
 	if err != nil {
@@ -42,7 +56,7 @@ func SignInHandler(c *gin.Context) {
 		return
 	}
 	deviceID := uuid.New().String()
-	token, err := security.GenToken(mail, username, password, deviceID)
+	token, err := policy.GenToken(mail, username, password, deviceID)
 	if err != nil {
 		log.Println(err)
 	}
@@ -217,11 +231,11 @@ func GetDHPrivateJWKHandlers(c *gin.Context) {
 		log.Fatal("decode error:", err)
 	}
 	c.JSON(200, gin.H{
-		"code":             "200",
-		"actor_public_key": actor.PublicKey,
-		"device_id":        e.DeviceID,
-		"public_jwk":       e.PublicJWK,
-		"private_jwk":      e.PrivateJWK,
+		"code":        "200",
+		"public_key":  actor.PublicKey,
+		"device_id":   e.DeviceID,
+		"public_jwk":  e.PublicJWK,
+		"private_jwk": e.PrivateJWK,
 	})
 }
 

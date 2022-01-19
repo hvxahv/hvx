@@ -4,7 +4,6 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/hvxahv/hvxahv/internal/device"
 	"github.com/hvxahv/hvxahv/pkg/cockroach"
-	"github.com/hvxahv/hvxahv/pkg/security"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
 )
@@ -64,7 +63,7 @@ func (a *Accounts) UpdateUsername(target string) error {
 func (a *Accounts) Update() error {
 	// Indicates that the password has been changed.
 	if a.Password != "" {
-		a.Password = security.GenPassword(a.Password)
+		a.Password = GenPassword(a.Password)
 		// Because the password is reset, all logged-in devices should be deleted
 		if err := device.NewDevicesByAccountID(a.ID).DeleteAll(); err != nil {
 			return err
@@ -97,7 +96,7 @@ func NewAccounts(username, mail, password string, actorID uint) *Accounts {
 	return &Accounts{
 		Username: username,
 		Mail:     mail,
-		Password: security.GenPassword(password),
+		Password: GenPassword(password),
 		ActorID:  actorID,
 	}
 }

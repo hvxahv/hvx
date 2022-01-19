@@ -1,15 +1,17 @@
 package channel
 
 import (
+	"crypto/rand"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/hvxahv/hvxahv/internal/account"
 	"github.com/hvxahv/hvxahv/pkg/cockroach"
-	"github.com/hvxahv/hvxahv/pkg/security"
+	"github.com/hvxahv/hvxahv/pkg/rsa"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	"gorm.io/gorm"
 	"log"
+	"math/big"
 )
 
 type Channels struct {
@@ -108,7 +110,7 @@ func (c *Channels) Create() error {
 		return errors.Errorf("failed to automatically create database: %v", err)
 	}
 
-	privateKey, publicKey, err := security.GenRSA()
+	privateKey, publicKey, err := rsa.GenRSA()
 	if err != nil {
 		log.Printf("failed to generate public and private keys: %v", err)
 		log.Println(err)
@@ -181,10 +183,25 @@ type Channel interface {
 	IsExist() error
 }
 
+// randomString Generate a random string and receive a parameter with a set length (INT).
+func randomString(n int) (string, error) {
+	const letters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-"
+	ret := make([]byte, n)
+	for i := 0; i < n; i++ {
+		num, err := rand.Int(rand.Reader, big.NewInt(int64(len(letters))))
+		if err != nil {
+			return "", err
+		}
+		ret[i] = letters[num.Int64()]
+	}
+
+	return string(ret), nil
+}
+
 func NewChannels(name, link, avatar, bio, username string, isPrivate bool) *Channels {
 	// Generated if the set link is empty.
 	if isPrivate || link == "" {
-		random, err := security.GenerateRandomString(15)
+		random, err := randomString(15)
 		if err != nil {
 			link = uuid.New().String()
 		}
