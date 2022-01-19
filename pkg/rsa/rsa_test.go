@@ -1,4 +1,4 @@
-package security
+package rsa
 
 import (
 	"fmt"
@@ -12,4 +12,3 @@ func TestGenRSA(t *testing.T) {
 	}
 	fmt.Println(privateKey, publicKey)
 }
-

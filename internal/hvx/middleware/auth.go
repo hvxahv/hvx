@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/hvxahv/hvxahv/internal/device"
-	"github.com/hvxahv/hvxahv/pkg/security"
+	"github.com/hvxahv/hvxahv/internal/hvx/policy"
 	"github.com/pkg/errors"
 	"log"
 	"strings"
@@ -29,7 +29,7 @@ func Auth(c *gin.Context) {
 	// the device id obtained by the token is used to query whether the device exists.
 	// If the device does not exist, the device will be returned as unregistered.
 	// This method is used to revoke the issued token when resetting the password or deleting the device.
-	_, err := security.VerifyToken(t)
+	_, err := policy.VerifyToken(t)
 	if err != nil {
 		c.JSON(500, gin.H{
 			"state":   "500",
@@ -37,7 +37,7 @@ func Auth(c *gin.Context) {
 		})
 		c.Abort()
 	} else {
-		u, err := security.ParseToken(t)
+		u, err := policy.ParseToken(t)
 		if err != nil {
 			log.Println("failed to obtain user through token.")
 			c.Abort()
