@@ -2,10 +2,10 @@ package hvx
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/hvxahv/hvxahv/api/hvx/v1alpha1"
 	"github.com/hvxahv/hvxahv/internal/hvx/handler"
 	"github.com/hvxahv/hvxahv/internal/hvx/middleware"
 	"github.com/hvxahv/hvxahv/internal/hvx/public"
-	"github.com/hvxahv/hvxahv/internal/hvx/v1alpha1"
 )
 
 // APIServer Used to provide routing for RESTful access,
