@@ -2,17 +2,15 @@ package account
 
 import (
 	"fmt"
-	"log"
 	"testing"
 )
 
-func TestAccounts_Login(t *testing.T) {
-	a := NewAuth("x@disism.com", "Hvxahv123")
-	id, login, err := a.SignIn()
+func TestAccounts_VerifyAccount(t *testing.T) {
+	a := NewAuth("hvturingga", "hvxahv123")
+	reply, err := a.VerifyAccount()
 	if err != nil {
-		log.Println(err)
+		t.Log(err)
 		return
 	}
-	fmt.Println(id)
-	fmt.Println(login)
+	fmt.Println(reply.AccountID, reply.Mail)
 }

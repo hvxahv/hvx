@@ -47,15 +47,16 @@ func NewActivities(name string, body []byte) *Activities {
 }
 
 func GetFromActorByURL(url string) uint {
-	actor, err := account.NewActorUri(url).GetByActorUri()
-	if err != nil {
-		newActor, err := activitypub.GetRemoteActor(url)
-		if err != nil {
-			return 0
-		}
-		return newActor.ID
-	}
-	return actor.ID
+	//actor, err := account.NewActorUri(url).GetByActorUri()
+	//if err != nil {
+	//	newActor, err := activitypub.GetRemoteActor(url)
+	//	if err != nil {
+	//		return 0
+	//	}
+	//	return newActor.ID
+	//}
+	//return actor.ID
+	return 0
 }
 
 func (i *Activities) Handler() {

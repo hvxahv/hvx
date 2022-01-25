@@ -18,7 +18,6 @@ func TestInitRedis(t *testing.T) {
 	viper.AddConfigPath(home)
 	viper.SetConfigName(".hvxahv")
 
-
 	viper.AutomaticEnv() // read in environment variables that match
 
 	// If a configs file is found, read it in.
@@ -26,10 +25,8 @@ func TestInitRedis(t *testing.T) {
 		fmt.Fprintln(os.Stderr, "Using configs file:", viper.ConfigFileUsed())
 	}
 
-
 	InitRedis(1)
 }
-
 
 func TestNewResult(t *testing.T) {
 	TestInitRedis(t)

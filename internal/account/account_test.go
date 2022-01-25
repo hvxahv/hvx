@@ -2,7 +2,6 @@ package account
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"testing"
 
@@ -46,53 +45,49 @@ func init() {
 }
 
 func TestAccounts_Create(t *testing.T) {
-	actor, err := NewActors("", "", "").Create()
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	if err := NewAccounts("hvturingga", "x@disism.com", "Hvxahv123", actor.ID).Create(); err != nil {
-		log.Println(err)
+	username := "hvxahv"
+	password := "hvxahv123"
+
+	if err := NewAccounts(username, "x@disism.com", password).Create(); err != nil {
 		return
 	}
 }
 
-func TestAccounts_FindAccountByName(t *testing.T) {
-	a := NewAccountsUsername("hvturingga")
-	accounts, err := a.GetAccountByUsername()
+func TestAccounts_GetAccountByID(t *testing.T) {
+	account, err := NewAccountsID(730870058436296705).GetAccountByID()
 	if err != nil {
-		log.Println(err)
-	}
-	fmt.Println(accounts)
-}
-
-func TestAccounts_Update(t *testing.T) {
-	a := NewAccountsUsername("hvturingga")
-	a.Password = "Hvxahv123"
-	a.Mail = "x@disism.com"
-
-	err := a.Update()
-	if err != nil {
-		log.Println(err)
+		t.Log(err)
 		return
 	}
-
+	fmt.Println(account)
 }
 
-func TestAccounts_ChangeUsername(t *testing.T) {
-	a := NewAcctNameANDActorID("hvturinggas", 696077920006668289)
-	err := a.UpdateUsername("hvturingga")
+func TestAccounts_GetAccountByUsername(t *testing.T) {
+	account, err := NewAccountsUsername("hvxahv").GetAccountByUsername()
 	if err != nil {
-		log.Println(err)
+		t.Log(err)
+		return
+	}
+	fmt.Println(account)
+}
+
+func TestAccounts_EditUsername(t *testing.T) {
+	if err := NewAccountsID(730872664500731905).SetAccountUsername("hvturingga").EditUsername(); err != nil {
+		t.Log(err)
+		return
+	}
+}
+
+func TestAccounts_EditPassword(t *testing.T) {
+	if err := NewAccountsID(730870058436296705).SetAccountPassword("Hvxahv123").EditPassword(); err != nil {
+		t.Log(err)
 		return
 	}
 }
 
 func TestAccounts_Delete(t *testing.T) {
-	a := NewAcctNameANDActorID("hvturingga", 696077920006668289)
-	err := a.Delete()
-	if err != nil {
-		log.Println(err)
+	if err := NewAccountsID(730872483513204737).Delete(); err != nil {
+		t.Log(err)
 		return
 	}
 }

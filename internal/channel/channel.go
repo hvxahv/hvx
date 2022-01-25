@@ -6,11 +6,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/hvxahv/hvxahv/internal/account"
 	"github.com/hvxahv/hvxahv/pkg/cockroach"
-	"github.com/hvxahv/hvxahv/pkg/rsa"
 	"github.com/pkg/errors"
-	"github.com/spf13/viper"
 	"gorm.io/gorm"
-	"log"
 	"math/big"
 )
 
@@ -37,16 +34,17 @@ func NewChannelsByLink(link string) *Channels {
 }
 
 func (c *Channels) GetActorDataByLink() (*account.Actors, error) {
-	db := cockroach.GetDB()
+	//db := cockroach.GetDB()
 
-	if err := db.Debug().Table("channel").Where("link = ?", c.Link).First(&c).Error; err != nil {
-		return nil, err
-	}
-	actor, err := account.NewActorID(c.ActorID).GetByActorID()
-	if err != nil {
-		return nil, err
-	}
-	return actor, nil
+	//if err := db.Debug().Table("channel").Where("link = ?", c.Link).First(&c).Error; err != nil {
+	//	return nil, err
+	//}
+	//actor, err := account.NewActorID(c.ActorID).GetByActorID()
+	//if err != nil {
+	//	return nil, err
+	//}
+	//return actor, nil
+	return nil, nil
 }
 
 func (c *Channels) GetByLink() (*Channels, error) {
@@ -80,9 +78,9 @@ func (c *Channels) Delete() error {
 	if err := db.Debug().Table("administrators").Where("channel_id = ?", c.ID).Unscoped().Delete(&Administrators{}).Error; err != nil {
 		return err
 	}
-	if err := account.NewActorID(c.ActorID).Delete(); err != nil {
-		return err
-	}
+	//if err := account.NewActorID(c.ActorID).Delete(); err != nil {
+	//	return err
+	//}
 	return nil
 }
 
@@ -104,49 +102,49 @@ func (c *Channels) Update() {
 }
 
 func (c *Channels) Create() error {
-	db := cockroach.GetDB()
-
-	if err := db.AutoMigrate(&Channels{}); err != nil {
-		return errors.Errorf("failed to automatically create database: %v", err)
-	}
-
-	privateKey, publicKey, err := rsa.GenRSA()
-	if err != nil {
-		log.Printf("failed to generate public and private keys: %v", err)
-		log.Println(err)
-	}
-
-	// Channel is an extension of ActivityPub. When subscribing to a channel,
-	// ActivityPub is called follow and hvxahv is called subscription.
-	// The type of Channel is a service in Activitypub. Details:
-	// https://www.w3.org/TR/activitystreams-vocabulary/#actor-types
-	domain := viper.GetString("localhost")
-	url := fmt.Sprintf("https://%s/channel/%s", domain, c.Link)
-	inbox := fmt.Sprintf("https://%s/c/%s/inbox", domain, c.Link)
-	acct, err := account.NewAddActor(c.Link, domain, c.Avatar, c.Name, c.Bio, inbox, url, publicKey, c.Link, "Service").Create()
-	if err != nil {
-		return err
-	}
-	fmt.Println(acct)
-
-	c.PrivateKey = privateKey
-	c.ActorID = acct.ID
-
-	if err := db.Debug().Table("channel").Create(&c).Error; err != nil {
-		return errors.Errorf("failed to create channel: %v", err)
-	}
-
-	if err := db.AutoMigrate(&Administrators{}); err != nil {
-		return errors.Errorf("failed to create channel admin database automatically: %s", err)
-	}
-	adm := &Administrators{
-		ChannelID: c.ID,
-		ActorID:   c.OwnerID,
-	}
-
-	if err := db.Debug().Table("administrators").Create(&adm).Error; err != nil {
-		return errors.Errorf("failed to create channel: %v", err)
-	}
+	//db := cockroach.GetDB()
+	//
+	//if err := db.AutoMigrate(&Channels{}); err != nil {
+	//	return errors.Errorf("failed to automatically create database: %v", err)
+	//}
+	//
+	//privateKey, publicKey, err := rsa.GenRSA()
+	//if err != nil {
+	//	log.Printf("failed to generate public and private keys: %v", err)
+	//	log.Println(err)
+	//}
+	//
+	//// Channel is an extension of ActivityPub. When subscribing to a channel,
+	//// ActivityPub is called follow and hvxahv is called subscription.
+	//// The type of Channel is a service in Activitypub. Details:
+	//// https://www.w3.org/TR/activitystreams-vocabulary/#actor-types
+	//domain := viper.GetString("localhost")
+	//url := fmt.Sprintf("https://%s/channel/%s", domain, c.Link)
+	//inbox := fmt.Sprintf("https://%s/c/%s/inbox", domain, c.Link)
+	//acct, err := account.NewAddActor(c.Link, domain, c.Avatar, c.Name, c.Bio, inbox, url, publicKey, c.Link, "Service").Create()
+	//if err != nil {
+	//	return err
+	//}
+	//fmt.Println(acct)
+	//
+	//c.PrivateKey = privateKey
+	//c.ActorID = acct.ID
+	//
+	//if err := db.Debug().Table("channels").Create(&c).Error; err != nil {
+	//	return errors.Errorf("failed to create channel: %v", err)
+	//}
+	//
+	//if err := db.AutoMigrate(&Administrators{}); err != nil {
+	//	return errors.Errorf("failed to create channel admin database automatically: %s", err)
+	//}
+	//adm := &Administrators{
+	//	ChannelID: c.ID,
+	//	ActorID:   c.OwnerID,
+	//}
+	//
+	//if err := db.Debug().Table("administrators").Create(&adm).Error; err != nil {
+	//	return errors.Errorf("failed to create channel: %v", err)
+	//}
 
 	return nil
 }

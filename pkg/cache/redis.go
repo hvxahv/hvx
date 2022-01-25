@@ -11,6 +11,7 @@ import (
 )
 
 var ctx = context.Background()
+
 // rdb_Once is executed when the called, and it is executed only once.
 var once sync.Once
 var rdb *redis.Client

@@ -37,8 +37,7 @@ var runCmd = &cobra.Command{
 
 		tags := []string{"account", "gRPC"}
 		nr := consul.NewRegister("account", port, tags, "localhost")
-		err := nr.Register()
-		if err != nil {
+		if err := nr.Register(); err != nil {
 			fmt.Println(err)
 			return
 		}
@@ -47,16 +46,16 @@ var runCmd = &cobra.Command{
 		signal.Notify(c, syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT)
 
 		if err := account.Run(); err != nil {
-			_ = fmt.Errorf("failed to start account gRPC service: %v", err)
+			fmt.Printf("failed to start account gRPC service: %v", err)
+			return
 		}
 		log.Printf("Port: %s, The %s gRPC service is running...", port, "account")
 
 		s := <-c
 		switch s {
 		case syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT:
-			err := consul.Deregister(nr.ID)
-			if err != nil {
-				log.Println(err)
+			if err := consul.Deregister(nr.ID); err != nil {
+				fmt.Println(err)
 			}
 			return
 		default:

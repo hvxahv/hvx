@@ -26,4 +26,3 @@ func SISAcctMail(mail string) bool {
 	return m
 
 }
-
