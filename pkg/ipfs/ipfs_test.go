@@ -9,7 +9,6 @@ import (
 	"testing"
 )
 
-
 func TestInitConfig(t *testing.T) {
 
 	home, err := homedir.Dir()

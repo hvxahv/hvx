@@ -1,11 +1,9 @@
 package channel
 
 import (
-	"github.com/hvxahv/hvxahv/internal/account"
 	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
-	"log"
 )
 
 type Subscribes struct {
@@ -72,13 +70,14 @@ type Subscriber interface {
 
 func NewSubscribes(channelId uint, subscriber uint) (*Subscribes, error) {
 
-	actor, err := account.NewActorID(subscriber).GetByActorID()
-	if err != nil {
-		log.Println(err)
-		return nil, err
-	}
-
-	return &Subscribes{ChannelID: channelId, Subscriber: subscriber, SubscriberInboxAddress: actor.Inbox}, nil
+	//actor, err := account.NewActorID(subscriber).GetByActorID()
+	//if err != nil {
+	//	log.Println(err)
+	//	return nil, err
+	//}
+	//
+	//return &Subscribes{ChannelID: channelId, Subscriber: subscriber, SubscriberInboxAddress: actor.Inbox}, nil
+	return nil, nil
 }
 
 func NewGetSubscribersID(accountId, channelId uint) (*Subscribes, error) {

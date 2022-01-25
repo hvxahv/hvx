@@ -12,20 +12,76 @@ import (
 type Actors struct {
 	gorm.Model
 
-	PreferredUsername string `gorm:"primaryKey;type:text;preferredUsername;"`
+	PreferredUsername string `gorm:"primaryKey;type:text;preferred_username;"`
 	Domain            string `gorm:"index;type:text;domain"`
 	Avatar            string `gorm:"type:text;avatar"`
 	Name              string `gorm:"type:text;name"`
 	Summary           string `gorm:"type:text;summary"`
 	Inbox             string `gorm:"type:text;inbox"`
-	Url               string `gorm:"index;test;url"`
+	Address           string `gorm:"index;test;address"`
 	PublicKey         string `gorm:"type:text;public_key"`
+	ActorType         string `gorm:"type:text;actor_type"`
+	IsRemote          bool   `gorm:"type:boolean;is_remote"`
+}
 
-	// Whether it is a robot or other type of account
-	ActorType string `gorm:"type:text;actor_type"`
+func (a *Actors) SetActorPreferredUsername(preferredUsername string) *Actors {
+	a.PreferredUsername = preferredUsername
+	return a
+}
 
-	// Set whether it is a remote actor.
-	IsRemote bool `gorm:"type:boolean;is_remote"`
+func (a *Actors) SetActorName(name string) *Actors {
+	a.Name = name
+	return a
+}
+
+func (a *Actors) SetActorAvatar(avatar string) *Actors {
+	a.Avatar = avatar
+	return a
+}
+
+func (a *Actors) SetActorSummary(summary string) *Actors {
+	a.Summary = summary
+	return a
+}
+
+func (a *Actors) Create() (*Actors, error) {
+	db := cockroach.GetDB()
+
+	if err := db.AutoMigrate(&Actors{}); err != nil {
+		return nil, errors.New("FAILED_TO_AUTOMATICALLY_CREATE_ACTOR_DATABASE")
+	}
+
+	if err := db.Debug().Table("actors").Create(&a).Error; err != nil {
+		return nil, errors.Errorf("FAILED_TO_CREATE_ACTOR")
+	}
+
+	if err := db.Debug().Table("accounts").Where("username = ?", a.PreferredUsername).Update("actor_id", a.ID).Error; err != nil {
+		return nil, err
+	}
+	return a, nil
+}
+
+func (a *Actors) Update() error {
+	if a.PreferredUsername != "" {
+		return errors.New("PLEASE_USE_THE_SET_ACTOR_PREFERRED_USERNAME_METHOD_TO_UPDATE_THE_PREFERRED_USERNAME")
+	}
+	db := cockroach.GetDB()
+	err := db.Debug().Table("actors").Where("id = ?", a.ID).Updates(&a).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (a *Actors) EditActorPreferredUsername() error {
+	db := cockroach.GetDB()
+	err := db.Debug().Table("actors").Where("id = ?", a.ID).Update("preferred_username", a.PreferredUsername).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (a *Actors) Delete() error {
@@ -37,47 +93,15 @@ func (a *Actors) Delete() error {
 	return nil
 }
 
-func (a *Actors) GetByActorUri() (*Actors, error) {
+func (a *Actors) GetActorsByPreferredUsername() (*[]Actors, error) {
 	db := cockroach.GetDB()
 
-	err := db.Debug().Table("actors").Where("url = ?", a.Url).First(&a).Error
-	if err != nil {
-		ok := cockroach.IsNotFound(err)
-		if ok {
-			return nil, err
-		}
-	}
-	return a, nil
-}
-
-func NewActorUri(uri string) *Actors {
-	return &Actors{Url: uri}
-}
-
-func (a *Actors) AddActor() (*Actors, error) {
-	db := cockroach.GetDB()
-
-	if err := db.Debug().Table("actors").Create(&a).Error; err != nil {
-		return nil, errors.Errorf("FAILED_TO_CREATE_ACTOR")
+	var ac []Actors
+	if err := db.Debug().Table("actors").Where("preferred_username = ?", a.PreferredUsername).Find(&ac).Error; err != nil {
+		return nil, err
 	}
 
-	return a, nil
-}
-
-// NewAddActor Add an Actor from remote and set IsRemote to true.
-func NewAddActor(PreferredUsername, Domain, Avatar, Name, Summary, Inbox, Url, PublicKey, MatrixID, ActorType string) *Actors {
-	return &Actors{
-		PreferredUsername: PreferredUsername,
-		Domain:            Domain,
-		Avatar:            Avatar,
-		Name:              Name,
-		Summary:           Summary,
-		Inbox:             Inbox,
-		Url:               Url,
-		PublicKey:         PublicKey,
-		ActorType:         ActorType,
-		IsRemote:          true,
-	}
+	return &ac, nil
 }
 
 func (a *Actors) GetActorByAccountUsername() (*Actors, error) {
@@ -95,26 +119,7 @@ func (a *Actors) GetActorByAccountUsername() (*Actors, error) {
 	return a, nil
 }
 
-func (a *Actors) Update() error {
-	db := cockroach.GetDB()
-
-	err := db.Debug().Table("actors").Where("id = ?", a.ID).Updates(&a).Error
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func NewActorID(id uint) *Actors {
-	return &Actors{
-		Model: gorm.Model{
-			ID: id,
-		},
-	}
-}
-
-func (a *Actors) GetByActorID() (*Actors, error) {
+func (a *Actors) GetActorByID() (*Actors, error) {
 	db := cockroach.GetDB()
 
 	if err := db.Debug().Table("actors").Where("id = ?", a.ID).First(&a).Error; err != nil {
@@ -124,22 +129,53 @@ func (a *Actors) GetByActorID() (*Actors, error) {
 	return a, nil
 }
 
-func NewActorByAccountUsername(username string) *Actors {
+func (a *Actors) GetActorByAddress() (*Actors, error) {
+	db := cockroach.GetDB()
+
+	err := db.Debug().Table("actors").Where("address = ?", a.Address).First(&a).Error
+	if err != nil {
+		ok := cockroach.IsNotFound(err)
+		if ok {
+			return nil, err
+		}
+	}
+	return a, nil
+}
+
+func NewActorsAddress(address string) *Actors {
+	return &Actors{Address: address}
+}
+
+func NewActorsAccountUsername(username string) *Actors {
 	return &Actors{PreferredUsername: username}
 }
+
 func NewActorsPreferredUsername(preferredUsername string) *Actors {
 	return &Actors{PreferredUsername: preferredUsername}
 }
 
-func (a *Actors) FindByPreferredUsername() (*[]Actors, error) {
-	db := cockroach.GetDB()
-
-	var ac []Actors
-	if err := db.Debug().Table("actors").Where("preferred_username = ?", a.PreferredUsername).Find(&ac).Error; err != nil {
-		return nil, err
+// NewAddActors Add an Actor from remote and set IsRemote to true.
+func NewAddActors(preferredUsername, Domain, Avatar, Name, Summary, Inbox, address, PublicKey, ActorType string) *Actors {
+	return &Actors{
+		PreferredUsername: preferredUsername,
+		Domain:            Domain,
+		Avatar:            Avatar,
+		Name:              Name,
+		Summary:           Summary,
+		Inbox:             Inbox,
+		Address:           address,
+		PublicKey:         PublicKey,
+		ActorType:         ActorType,
+		IsRemote:          true,
 	}
+}
 
-	return &ac, nil
+func NewActorsID(id uint) *Actors {
+	return &Actors{
+		Model: gorm.Model{
+			ID: id,
+		},
+	}
 }
 
 func NewActors(preferredUsername, publicKey, actorType string) *Actors {
@@ -149,41 +185,33 @@ func NewActors(preferredUsername, publicKey, actorType string) *Actors {
 		PreferredUsername: preferredUsername,
 		Domain:            domain,
 		Inbox:             fmt.Sprintf("https://%s/u/%s/inbox", domain, preferredUsername),
-		Url:               fmt.Sprintf("https://%s/u/%s", domain, preferredUsername),
+		Address:           fmt.Sprintf("https://%s/u/%s", domain, preferredUsername),
 		PublicKey:         publicKey,
 		ActorType:         actorType,
 		IsRemote:          false,
 	}
 }
 
-func (a *Actors) Create() (*Actors, error) {
-	db := cockroach.GetDB()
-
-	if err := db.AutoMigrate(&Actors{}); err != nil {
-		return nil, errors.New("FAILED_TO_AUTOMATICALLY_CREATE_DATABASE")
-	}
-
-	if err := db.Debug().Table("actors").Create(&a).Error; err != nil {
-		return nil, errors.Errorf("FAILED_TO_CREATE_ACTOR")
-	}
-
-	return a, nil
-}
-
 type Actor interface {
-	// Create new actors data and add the returned ID to the account field.
+
+	// Create actors field.
 	Create() (*Actors, error)
 
-	AddActor() (*Actors, error)
-
-	// FindByPreferredUsername Find the Actor collection by PreferredUsername.
-	FindByPreferredUsername() (*[]Actors, error)
-
-	GetActorByAccountUsername() (*Actors, error)
-	GetByActorID() (*Actors, error)
-	GetByActorUri() (*Actors, error)
-
+	// Update Edit actors fields.
 	Update() error
 
+	EditActorPreferredUsername() error
+
+	// Delete actor data by actor ID is usually called by account delete  method.
 	Delete() error
+
+	// GetActorsByPreferredUsername Get the Actor collection by PreferredUsername.
+	GetActorsByPreferredUsername() (*[]Actors, error)
+
+	// GetActorByAccountUsername Get unique Actor by username.
+	GetActorByAccountUsername() (*Actors, error)
+
+	GetActorByID() (*Actors, error)
+
+	GetActorByAddress() (*Actors, error)
 }

@@ -89,7 +89,6 @@ func BS642SHA256(data []byte) string {
 	return BS64(h.Sum(nil))
 }
 
-
 func (key *PriKEY) Sign(msg []byte) []byte {
 	block, _ := pem.Decode(key.Key)
 	privateKey, err := x509.ParsePKCS1PrivateKey(block.Bytes)
@@ -155,7 +154,7 @@ func BuildSignatureHeader(req *http.Request, headers []string, data []byte) stri
 			values = append(values, fmt.Sprintf("%s: %s", h, req.Header.Get(h)))
 		case "digest":
 			if req.Header.Get(h) == "" {
-				req.Header.Set(h, "SHA-256=" + BS642SHA256(data))
+				req.Header.Set(h, "SHA-256="+BS642SHA256(data))
 			}
 			values = append(values, fmt.Sprintf("%s: %s", h, req.Header.Get(h)))
 		default:

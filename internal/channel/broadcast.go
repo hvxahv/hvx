@@ -1,12 +1,8 @@
 package channel
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
-	"github.com/hvxahv/hvxahv/internal/account"
 	"github.com/hvxahv/hvxahv/pkg/cockroach"
-	"github.com/hvxahv/hvxahv/pkg/ipfs"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
 	"log"
@@ -82,30 +78,30 @@ func NewBroadcastsIPFSCID(channelID, actorID uint, title, summary, article strin
 		return "", err
 	}
 
-	actor, err := account.NewActorID(actorID).GetByActorID()
-	if err != nil {
-		return "", err
-	}
+	//actor, err := account.NewActorID(actorID).GetByActorID()
+	//if err != nil {
+	//	return "", err
+	//}
+	//
+	//broad := BroadcastsIPFSData{
+	//	PreferredUsername: actor.PreferredUsername,
+	//	Avatar:            actor.Avatar,
+	//	URL:               actor.Url,
+	//	Title:             title,
+	//	Summary:           summary,
+	//	Article:           article,
+	//	NSFW:              NSFW,
+	//}
+	//data, err := json.Marshal(broad)
+	//if err != nil {
+	//	return "", err
+	//}
+	//cid, err := ipfs.GetIPFS().Add(bytes.NewReader(data))
+	//if err != nil {
+	//	return "", fmt.Errorf("ipfs add error: %v", err)
+	//}
 
-	broad := BroadcastsIPFSData{
-		PreferredUsername: actor.PreferredUsername,
-		Avatar:            actor.Avatar,
-		URL:               actor.Url,
-		Title:             title,
-		Summary:           summary,
-		Article:           article,
-		NSFW:              NSFW,
-	}
-	data, err := json.Marshal(broad)
-	if err != nil {
-		return "", err
-	}
-	cid, err := ipfs.GetIPFS().Add(bytes.NewReader(data))
-	if err != nil {
-		return "", fmt.Errorf("ipfs add error: %v", err)
-	}
-
-	return cid, nil
+	return "", nil
 }
 
 func NewBroadcastsChannelID(channelId uint) *Broadcasts {

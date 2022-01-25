@@ -6,57 +6,59 @@ import (
 	"testing"
 )
 
-func TestActors_NewActor(t *testing.T) {
+func TestActors_Create(t *testing.T) {
 	a := NewActors("hvturingga", "", "Person")
 	actor, err := a.Create()
 	if err != nil {
-		log.Println(err)
+		t.Error(err)
 		return
 	}
 
-	fmt.Println(actor)
-}
-
-func TestActors_FindActorByPreferredUsername(t *testing.T) {
-	a := NewActorsPreferredUsername("hvturingga")
-
-	r, err := a.FindByPreferredUsername()
-	if err != nil {
-		log.Println(err)
-	}
-	fmt.Println(r)
-}
-
-func TestActors_FindActorByID(t *testing.T) {
-	a := NewActorID(696901249207894017)
-	actor, err := a.GetByActorUri()
-	if err != nil {
-		log.Println(err)
-	}
-	fmt.Println(actor)
-}
-
-func TestActors_FindActorByUrl(t *testing.T) {
-	a := NewActorUri("https://mas.to/users/hvturingga")
-	actor, err := a.GetByActorUri()
-	if err != nil {
-		fmt.Println("NOT FOUND!")
-		return
-	}
 	fmt.Println(actor)
 }
 
 func TestActors_Update(t *testing.T) {
-	a := NewActorID(720125166581710849)
-
-	a.ActorType = ""
-	a.Name = "HVTURINGGA"
-	a.Summary = "我正在拍摄一个短片，欢迎关注我的 YouTube 频道...."
-	a.Avatar = "http://stage48.net/wiki/images/5/5b/KobayashiYui8th.jpg"
-
-	err := a.Update()
-	if err != nil {
-		log.Println(err)
+	a := NewActorsID(730822679860805633).SetActorName("HVTURINGGA").SetActorSummary("Aha ...")
+	log.Println(a.ID)
+	if err := a.Update(); err != nil {
+		t.Error(err)
 		return
 	}
+}
+
+func TestNewAddActors(t *testing.T) {
+	a := NewAddActors("xxs", "halfmemories.com", "", "", "", "https://halfmemories.com/u/xxs/inbox", "https://halfmemories.com/u/xxs", "", "Services")
+	actor, err := a.Create()
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	fmt.Println(actor)
+}
+
+func TestActors_GetActorByAccountUsername(t *testing.T) {
+	account, err := NewActorsAccountUsername("hvturingga").GetActorByAccountUsername()
+	if err != nil {
+		t.Log(err)
+		return
+	}
+	fmt.Println(account)
+}
+
+func TestActors_GetActorByID(t *testing.T) {
+	actor, err := NewActorsID(730799720355201025).GetActorByID()
+	if err != nil {
+		t.Log(err)
+		return
+	}
+	fmt.Println(actor)
+}
+
+func TestActors_GetActorByAddress(t *testing.T) {
+	actor, err := NewActorsAddress("https://hvxahv.halfmemories.com/u/hvturingga").GetActorByAddress()
+	if err != nil {
+		t.Log(err)
+		return
+	}
+	fmt.Println(actor)
 }

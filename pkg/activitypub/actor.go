@@ -1,13 +1,8 @@
 package activitypub
 
 import (
-	"encoding/json"
-	"fmt"
-	"github.com/go-resty/resty/v2"
-	"github.com/google/uuid"
 	"github.com/hvxahv/hvxahv/internal/account"
 	"github.com/spf13/viper"
-	"net/url"
 	"strings"
 	"time"
 )
@@ -235,44 +230,45 @@ func GetHost(resource string) string {
 
 // GetRemoteActor Get remote Actor data and save it locally.
 func GetRemoteActor(uri string) (*account.Actors, error) {
-	resp, err := resty.New().R().
-		SetHeader("Content-Type", "application/activity+json; charset=utf-8").
-		SetHeader("Accept", "application/ld+json").
-		EnableTrace().
-		Get(uri)
-	if err != nil {
-		return nil, err
-	}
-
-	fmt.Println(string(resp.Body()))
-	var actor *Actor
-
-	if err = json.Unmarshal(resp.Body(), &actor); err != nil {
-		return nil, err
-	}
-
-	h, err := url.Parse(uri)
-	if err != nil {
-		return nil, err
-	}
-
-	a := account.NewAddActor(
-		actor.PreferredUsername,
-		h.Hostname(),
-		actor.Icon.Url,
-		actor.Name,
-		actor.Summary,
-		actor.Inbox,
-		uri,
-		actor.PublicKey.PublicKeyPem,
-		uuid.New().String(),
-		actor.Type,
-	)
-
-	act, err := a.AddActor()
-	if err != nil {
-		return nil, err
-	}
-
-	return act, nil
+	//resp, err := resty.New().R().
+	//	SetHeader("Content-Type", "application/activity+json; charset=utf-8").
+	//	SetHeader("Accept", "application/ld+json").
+	//	EnableTrace().
+	//	Get(uri)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//
+	//fmt.Println(string(resp.Body()))
+	//var actor *Actor
+	//
+	//if err = json.Unmarshal(resp.Body(), &actor); err != nil {
+	//	return nil, err
+	//}
+	//
+	//h, err := url.Parse(uri)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//
+	//a := account.NewAddActor(
+	//	actor.PreferredUsername,
+	//	h.Hostname(),
+	//	actor.Icon.Url,
+	//	actor.Name,
+	//	actor.Summary,
+	//	actor.Inbox,
+	//	uri,
+	//	actor.PublicKey.PublicKeyPem,
+	//	uuid.New().String(),
+	//	actor.Type,
+	//)
+	//
+	//act, err := a.AddActor()
+	//if err != nil {
+	//	return nil, err
+	//}
+	//
+	//return act, nil
+	return nil, nil
 }

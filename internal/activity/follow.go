@@ -1,13 +1,8 @@
 package activity
 
 import (
-	"fmt"
-	"github.com/google/uuid"
-	"github.com/hvxahv/hvxahv/internal/account"
-	"github.com/hvxahv/hvxahv/pkg/activitypub"
 	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"github.com/pkg/errors"
-	"github.com/spf13/viper"
 	"gorm.io/gorm"
 )
 
@@ -227,58 +222,58 @@ type Follow interface {
 	GetFollowing() (*[]uint, error)
 }
 
-// NewFoAPData Instantiate the requested follow data in ActivityPub format.
-// Return the data and the inbox address of the other party.
-func NewFoAPData(actor string, objectID uint) (*activitypub.Follow, string) {
-	o, err := account.NewActorID(objectID).GetByActorID()
-	if err != nil {
-		return nil, ""
-	}
-
-	var (
-		ctx = "https://www.w3.org/ns/activitystreams"
-		id  = fmt.Sprintf("https://%s/%s", viper.GetString("localhost"), uuid.New().String())
-	)
-
-	return &activitypub.Follow{
-		Context: ctx,
-		Id:      id,
-		Type:    "Follow",
-		Actor:   fmt.Sprintf("https://%s/u/%s", viper.GetString("localhost"), actor),
-		Object:  o.Url,
-	}, o.Inbox
-}
-
-// NewFoAPAccept Instantiate the ActivityPub format data that agrees to follow the request,
-// return the data, and the recipient's inbox address.
-// Create a follow data to receive the IDs of followers and followers
-func NewFoAPAccept(actor, activityID string, objectID uint) (*activitypub.Accept, string) {
-	o, err := account.NewActorID(objectID).GetByActorID()
-	if err != nil {
-		return nil, ""
-	}
-
-	var (
-		ctx = "https://www.w3.org/ns/activitystreams"
-		id  = fmt.Sprintf("https://%s/u/%s#accepts/follows/%s", viper.GetString("localhost"), actor, uuid.New().String())
-		a   = fmt.Sprintf("https://%s/u/%s", viper.GetString("localhost"), actor)
-	)
-
-	return &activitypub.Accept{
-		Context: ctx,
-		Id:      id,
-		Type:    "Accept",
-		Actor:   a,
-		Object: struct {
-			Id     string `json:"id"`
-			Type   string `json:"type"`
-			Actor  string `json:"actor"`
-			Object string `json:"object"`
-		}{
-			Id:     activityID,
-			Type:   "Follow",
-			Actor:  o.Url,
-			Object: a,
-		},
-	}, o.Inbox
-}
+//// NewFoAPData Instantiate the requested follow data in ActivityPub format.
+//// Return the data and the inbox address of the other party.
+//func NewFoAPData(actor string, objectID uint) (*activitypub.Follow, string) {
+//	o, err := account.NewActorID(objectID).GetByActorID()
+//	if err != nil {
+//		return nil, ""
+//	}
+//
+//	var (
+//		ctx = "https://www.w3.org/ns/activitystreams"
+//		id  = fmt.Sprintf("https://%s/%s", viper.GetString("localhost"), uuid.New().String())
+//	)
+//
+//	return &activitypub.Follow{
+//		Context: ctx,
+//		Id:      id,
+//		Type:    "Follow",
+//		Actor:   fmt.Sprintf("https://%s/u/%s", viper.GetString("localhost"), actor),
+//		Object:  o.Url,
+//	}, o.Inbox
+//}
+//
+//// NewFoAPAccept Instantiate the ActivityPub format data that agrees to follow the request,
+//// return the data, and the recipient's inbox address.
+//// Create a follow data to receive the IDs of followers and followers
+//func NewFoAPAccept(actor, activityID string, objectID uint) (*activitypub.Accept, string) {
+//	o, err := account.NewActorID(objectID).GetByActorID()
+//	if err != nil {
+//		return nil, ""
+//	}
+//
+//	var (
+//		ctx = "https://www.w3.org/ns/activitystreams"
+//		id  = fmt.Sprintf("https://%s/u/%s#accepts/follows/%s", viper.GetString("localhost"), actor, uuid.New().String())
+//		a   = fmt.Sprintf("https://%s/u/%s", viper.GetString("localhost"), actor)
+//	)
+//
+//	return &activitypub.Accept{
+//		Context: ctx,
+//		Id:      id,
+//		Type:    "Accept",
+//		Actor:   a,
+//		Object: struct {
+//			Id     string `json:"id"`
+//			Type   string `json:"type"`
+//			Actor  string `json:"actor"`
+//			Object string `json:"object"`
+//		}{
+//			Id:     activityID,
+//			Type:   "Follow",
+//			Actor:  o.Url,
+//			Object: a,
+//		},
+//	}, o.Inbox
+//}

@@ -15,14 +15,13 @@ type server struct {
 	pb.AccountsServer
 }
 
-// Run account gRPC service.
 func Run() error {
 	name := "account"
 	port := viper.GetString("microservices.account.port")
-
 	log.Printf("App %s Started at %s\n", name, time.Now())
 
 	s := grpc.NewServer()
+
 	pb.RegisterAccountsServer(s, &server{})
 	reflection.Register(s)
 
@@ -32,9 +31,8 @@ func Run() error {
 	}
 
 	go func() {
-		err2 := s.Serve(lis)
-		if err2 != nil {
-			log.Println(err2)
+		if err := s.Serve(lis); err != nil {
+			log.Println(err)
 			return
 		}
 	}()

@@ -3,96 +3,33 @@ syntax = "proto3";
 package hvxahv.v1alpha1.proto;
 option go_package = "github.com/hvxahv/hvxahv/api/account/v1alpha1";
 
-// Accounts List of account gRPC service.
 service Accounts {
-
-  // Create an account through the NewAccountData data structure.
-  rpc Create (CreateAccountData) returns (AccountsReply) {}
-
-  // Update Update the account through AccountData data.
-  rpc Update (AccountData) returns (AccountsReply) {}
-  rpc UpdatePassword (UpdatePasswordData) returns (AccountsReply) {}
-  rpc UpdateUsername (UpdateUsernameData) returns (AccountsReply) {}
-
-  // Delete Delete the specified account by user name.
-  rpc Delete (DeleteData) returns (AccountsReply) {}
-
-  rpc GetAccountsByUsername(AccountUsername) returns (AccountData) {}
-  rpc FindActorByAccountsUsername(AccountUsername) returns (ActorData) {}
-  rpc FindActorByID(ActorID) returns (ActorData) {}
-
-  // SignIn ...
-  rpc SignIn (AuthData) returns (SignInReply) {}
+  // Create the Actor first, and then use the returned ActorID to create a unique account of the current instance account system.
+  // The username in the account system is unique, and the Actor may have the same username in different instances.
+  rpc Create (CreateData) returns (CreateReply) {}
+  //  rpc Update (AccountData) returns (AccountsReply) {}
+  //  rpc UpdatePassword (UpdatePasswordData) returns (AccountsReply) {}
+  //  rpc UpdateUsername (UpdateUsernameData) returns (AccountsReply) {}
+  //
+  //  // Delete Delete the specified account by user name.
+  //  rpc Delete (DeleteData) returns (AccountsReply) {}
+  //
+  //  rpc GetAccountsByUsername(AccountUsername) returns (AccountData) {}
+  //  rpc FindActorByAccountsUsername(AccountUsername) returns (ActorData) {}
+  //  rpc FindActorByID(ActorID) returns (ActorData) {}
+  //
+  //  // SignIn ...
+  //  rpc SignIn (AuthData) returns (SignInReply) {}
 }
 
-message DeleteData {
+message CreateData {
   string username = 1;
-  uint64 actorID = 2;
+  string mail = 2;
+  string password = 3;
+  string publicKey = 4;
 }
 
-message UpdatePasswordData {
-  string username = 1;
-  string password = 2;
-}
-
-message UpdateUsernameData {
-  string username = 1;
-  string targetUsername = 2;
-  uint64 actorID = 3;
-}
-
-message ActorID {
-  uint64 actorID = 1;
-}
-
-message ActorData {
-  uint64 id = 1;
-  string preferredUsername = 2;
-  string domain = 3;
-  string avatar = 4;
-  string name = 5;
-  string summary = 6;
-  string inbox = 7;
-  string publicKey = 8;
-  string actorType = 9;
-}
-
-// NewAccountData Data needed to create a new account.
-message CreateAccountData {
-  string username = 1;
-  string password = 2;
-  string mail = 3;
-}
-
-// AccountsReply The return value, code and message of the Accounts operation.
-message AccountsReply {
+message CreateReply {
   string code = 1;
-  string message = 2;
-}
-
-// AccountUsername Functions operated by username.
-message AccountUsername{
-  string username = 1;
-}
-
-// AccountsData List of all data of the account service
-message AccountData {
-  uint64 id = 1;
-  string username = 2;
-  string mail = 3;
-  uint64 actorId = 5;
-  bool   isPrivate = 6;
-}
-
-
-// AuthReply Account login, use email and password.
-message AuthData {
-  string username = 1;
-  string password = 2;
-}
-
-message SignInReply {
-  string code = 1;
-  uint64 accountID = 2;
-  string mail = 3;
+  string reply = 2;
 }

@@ -97,5 +97,5 @@ var Articles_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "api/article/v1alpha1/article.proto",
+	Metadata: "api/articles/v1alpha1/articles.proto",
 }

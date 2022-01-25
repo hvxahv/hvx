@@ -77,6 +77,7 @@ type Place struct {
 	Radius    int     `json:"radius"`
 	Units     string  `json:"units"`
 }
+
 // Video Represents a video document of any kind.
 // https://www.w3.org/TR/activitystreams-vocabulary/#dfn-video
 type Video struct {

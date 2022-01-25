@@ -7,7 +7,7 @@ import (
 
 var is *ipfs.Shell
 
-func InitIPFS()  {
+func InitIPFS() {
 	sh := ipfs.NewShell(viper.GetString("ipfs_addr"))
 	is = sh
 }
@@ -15,4 +15,3 @@ func InitIPFS()  {
 func GetIPFS() *ipfs.Shell {
 	return is
 }
-
