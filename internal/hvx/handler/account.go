@@ -1,5 +1,12 @@
 package handler
 
+import (
+	"github.com/gin-gonic/gin"
+	pb "github.com/hvxahv/hvxahv/api/accounts/v1alpha1"
+	"github.com/hvxahv/hvxahv/internal/account"
+	"github.com/hvxahv/hvxahv/internal/hvx/middleware"
+)
+
 // UploadAvatar Interface for users to upload avatars.
 //func UploadAvatar(c *gin.Context) {
 //	avatar, err := c.FormFile("avatar")
@@ -52,52 +59,46 @@ package handler
 //	})
 //}
 
-// GetAccountHandler Obtain personal account information,
-// analyze the user through TOKEN and return user data.
-//func GetAccountHandler(c *gin.Context) {
-//	// Set up a connection to the server.
-//	conn, err := grpc.Dial("localhost:7041", grpc.WithInsecure())
-//	if err != nil {
-//		log.Fatalf("did not connect: %v", err)
-//	}
-//	defer conn.Close()
-//	cli := pb.NewAccountsClient(conn)
-//	cli.Create()
-//	actor, err := account.NewActorByAccountUsername(middleware.GetUsername(c)).GetActorByAccountUsername()
-//	if err != nil {
-//		return
-//	}
-//
-//	c.JSON(200, gin.H{
-//		"code":  200,
-//		"actor": actor,
-//	})
-//}
+//GetAccountHandler Obtain personal account information,
+//analyze the user through TOKEN and return user data.
+func GetAccountHandler(c *gin.Context) {
+	client, err := account.NewClient()
+	if err != nil {
+		return
+	}
+	d := &pb.NewAccountUsername{Username: middleware.GetUsername(c)}
+	actor, err := client.GetActorByAccountUsername(c, d)
+	if err != nil {
+		return
+	}
 
-//func DeleteAccount(c *gin.Context) {
-//	password := c.PostForm("password")
-//	mail := c.PostForm("mail")
-//
-//	cli, conn, err := client.Accounts()
-//	if err != nil {
-//		log.Println(err)
-//	}
-//	defer conn.Close()
-//
-//	r, err := cli.Delete(context.Background(), &pb.AuthData{
-//		Mail:     mail,
-//		Password: password,
-//	})
-//	if err != nil {
-//		log.Printf("failed to send message to account server: %v", err)
-//	}
-//
-//	c.JSON(int(r.Code), gin.H{
-//		"code":    r.Code,
-//		"message": r.Message,
-//	})
-//
-//}
+	c.JSON(200, gin.H{
+		"code":  200,
+		"actor": actor,
+	})
+}
+
+func DeleteAccount(c *gin.Context) {
+	username := middleware.GetUsername(c)
+	password := c.PostForm("password")
+	client, err := account.NewClient()
+	if err != nil {
+		return
+	}
+	d := &pb.NewAccountDelete{Username: username, Password: password}
+	da, err := client.DeleteAccount(c, d)
+	if err != nil {
+		c.JSON(500, gin.H{
+			"code":    "500",
+			"message": err.Error(),
+		})
+		return
+	}
+	c.JSON(200, gin.H{
+		"code":    "200",
+		"message": da.Reply,
+	})
+}
 
 //func UpdateAccount(c *gin.Context) {
 //	username := middleware.GetUserName(c)

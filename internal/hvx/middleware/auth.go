@@ -50,8 +50,10 @@ func Auth(c *gin.Context) {
 			})
 			c.Abort()
 		}
+
 		c.Set("devices", u.DevicesID)
-		c.Set("username", u.User)
+		c.Set("username", u.Username)
+		c.Set("id", u.ID)
 		c.Next()
 	}
 

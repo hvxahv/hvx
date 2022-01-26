@@ -30,12 +30,12 @@ func Run() error {
 		return err
 	}
 
-	go func() {
-		if err := s.Serve(lis); err != nil {
-			log.Println(err)
-			return
-		}
-	}()
+	//go func() {
+	if err := s.Serve(lis); err != nil {
+		log.Println(err)
+
+	}
+	//}()
 
 	return nil
 }

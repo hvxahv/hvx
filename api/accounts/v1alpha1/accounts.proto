@@ -6,7 +6,17 @@ option go_package = "github.com/hvxahv/hvxahv/api/account/v1alpha1";
 service Accounts {
   // Create the Actor first, and then use the returned ActorID to create a unique account of the current instance account system.
   // The username in the account system is unique, and the Actor may have the same username in different instances.
-  rpc Create (CreateData) returns (CreateReply) {}
+  rpc Create (NewCreate) returns (CreateReply) {}
+
+  //  Log in to the account system interface.
+  rpc Verify (NewVerify) returns (VerifyReply) {}
+
+  rpc GetActorByAccountUsername (NewAccountUsername) returns (ActorData) {}
+
+  rpc GetAccountByUsername (NewAccountUsername) returns (AccountData) {}
+
+  rpc DeleteAccount (NewAccountDelete) returns (DeleteAccountReply) {}
+
   //  rpc Update (AccountData) returns (AccountsReply) {}
   //  rpc UpdatePassword (UpdatePasswordData) returns (AccountsReply) {}
   //  rpc UpdateUsername (UpdateUsernameData) returns (AccountsReply) {}
@@ -22,7 +32,30 @@ service Accounts {
   //  rpc SignIn (AuthData) returns (SignInReply) {}
 }
 
-message CreateData {
+message AccountData {
+  string account_id = 1;
+  string username = 2;
+  string mail = 3;
+  string password = 4;
+  string actor_id = 5;
+  string is_private = 6;
+}
+
+message ActorData {
+  string id = 1;
+  string preferred_username = 2;
+  string domain = 3;
+  string avatar = 4;
+  string name = 5;
+  string summary = 6;
+  string inbox = 7;
+  string address = 8;
+  string public_key = 9;
+  string actor_type = 10;
+  string is_remote = 11;
+}
+
+message NewCreate {
   string username = 1;
   string mail = 2;
   string password = 3;
@@ -30,6 +63,36 @@ message CreateData {
 }
 
 message CreateReply {
+  string code = 1;
+  string reply = 2;
+}
+
+message NewVerify {
+  string username = 1;
+  string password = 2;
+  string ua = 3;
+}
+
+message VerifyReply {
+  string code = 1;
+  string id = 2;
+  string reply = 3;
+  string token = 4;
+  string mail = 5;
+  string device_id = 6;
+  string public_key = 7;
+}
+
+message NewAccountUsername {
+  string username = 1;
+}
+
+message NewAccountDelete {
+  string username = 1;
+  string password = 2;
+}
+
+message DeleteAccountReply {
   string code = 1;
   string reply = 2;
 }
