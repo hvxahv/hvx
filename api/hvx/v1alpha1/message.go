@@ -7,5 +7,5 @@ import (
 
 func V1Messages(v1 *gin.RouterGroup) {
 	v1.GET("/message/access", handler.GetMessageAccessHandler)
-	v1.POST("/message/access", handler.NewMessagesAccessHandler)
+	//v1.POST("/message/access", handler.NewMessagesAccessHandler)
 }

@@ -2,10 +2,9 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
+	pb "github.com/hvxahv/hvxahv/api/accounts/v1alpha1"
 	"github.com/hvxahv/hvxahv/internal/account"
-	"github.com/hvxahv/hvxahv/internal/channel"
 	"github.com/hvxahv/hvxahv/pkg/activitypub"
-	"log"
 )
 
 func WebFingerHandler(c *gin.Context) {
@@ -23,17 +22,25 @@ func WebFingerHandler(c *gin.Context) {
 	// Use this client to call the remote Accounts gRPC service,
 	// and then pass the username to get the queried data.
 
-	acct, err := account.NewAccountsUsername(activitypub.GetActorName(resource)).GetAccountByUsername()
-	log.Println(acct)
+	client, err := account.NewClient()
 	if err != nil {
-		ch, err := channel.NewChannelsByLink(activitypub.GetActorName(resource)).GetActorDataByLink()
-		if err != nil {
-			return
-		}
-		c.JSON(200, activitypub.NewWebFinger(ch.PreferredUsername, true))
+		return
+	}
+	d := &pb.NewAccountUsername{Username: activitypub.GetActorName(resource)}
+	a, err := client.GetAccountByUsername(c, d)
+	if err != nil {
 		return
 	}
 
-	c.JSON(200, activitypub.NewWebFinger(acct.Username, false))
+	//if err != nil {
+	//	ch, err := channel.NewChannelsByLink(activitypub.GetActorName(resource)).GetActorDataByLink()
+	//	if err != nil {
+	//		return
+	//	}
+	//	c.JSON(200, activitypub.NewWebFinger(ch.PreferredUsername, true))
+	//	return
+	//}
+
+	c.JSON(200, activitypub.NewWebFinger(a.Username, false))
 
 }

@@ -1,8 +1,8 @@
 run:
 	go run ./hvx/main.go run
 
-acct:
-	go run ./app/accounts/main.go run
+account:
+	go run ./cmd/account/main.go run
 
 articles:
 	go run ./app/articles/main.go run

@@ -3,20 +3,11 @@ package handler
 import (
 	"github.com/gin-gonic/gin"
 	pb "github.com/hvxahv/hvxahv/api/accounts/v1alpha1"
-	"google.golang.org/grpc"
+	"github.com/hvxahv/hvxahv/internal/account"
 	"log"
 )
 
 func CreateAccountHandler(c *gin.Context) {
-	conn, err := grpc.Dial("localhost:7041", grpc.WithInsecure())
-	if err != nil {
-		log.Fatalf("did not connect: %v", err)
-	}
-	defer func(conn *grpc.ClientConn) {
-		_ = conn.Close()
-	}(conn)
-	cli := pb.NewAccountsClient(conn)
-
 	username := c.PostForm("username")
 	password := c.PostForm("password")
 	mail := c.PostForm("mail")
@@ -24,14 +15,22 @@ func CreateAccountHandler(c *gin.Context) {
 	// https://datatracker.ietf.org/doc/html/rfc5208
 	publicKey := c.PostForm("public_key")
 
-	d := &pb.CreateData{
+	d := &pb.NewCreate{
 		Username:  username,
 		Mail:      mail,
 		Password:  password,
 		PublicKey: publicKey,
 	}
+
+	cli, err := account.NewClient()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
 	create, err := cli.Create(c, d)
 	if err != nil {
+		log.Println(err)
 		return
 	}
 
@@ -42,35 +41,28 @@ func CreateAccountHandler(c *gin.Context) {
 
 }
 
-//func SignInHandler(c *gin.Context) {
-//	ua := c.GetHeader("User-Agent")
-//	username := c.PostForm("username")
-//	password := c.PostForm("password")
-//
-//	id, mail, err := account.NewAuth(username, password).SignIn()
-//	if err != nil {
-//		fmt.Println(err)
-//		return
-//	}
-//	deviceID := uuid.New().String()
-//	token, err := policy.GenToken(mail, username, password, deviceID)
-//	if err != nil {
-//		log.Println(err)
-//	}
-//	d := device.NewDevices(id, ua, deviceID)
-//	if err := d.Create(); err != nil {
-//		fmt.Println(err)
-//		return
-//	}
-//
-//	c.JSON(200, gin.H{
-//		"code":      "200",
-//		"token":     token,
-//		"mail":      mail,
-//		"deviceID":  deviceID,
-//		"publicKey": d.PublicKey,
-//	})
-//}
+func SignInHandler(c *gin.Context) {
+	cli, err := account.NewClient()
+	if err != nil {
+		return
+	}
+	d := &pb.NewVerify{
+		Username: c.PostForm("username"),
+		Password: c.PostForm("password"),
+		Ua:       c.GetHeader("User-Agent"),
+	}
+	verify, err := cli.Verify(c, d)
+	if err != nil {
+		return
+	}
+	c.JSON(200, gin.H{
+		"code":       "200",
+		"token":      verify.Token,
+		"mail":       verify.Mail,
+		"device_id":  verify.DeviceId,
+		"public_key": verify.PublicKey,
+	})
+}
 
 //func GetPublicKeyHandlers(c *gin.Context) {
 //	name := middleware.GetUsername(c)

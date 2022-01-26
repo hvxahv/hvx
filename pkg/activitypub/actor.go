@@ -1,6 +1,8 @@
 package activitypub
 
 import (
+	"fmt"
+	pb "github.com/hvxahv/hvxahv/api/accounts/v1alpha1"
 	"github.com/hvxahv/hvxahv/internal/account"
 	"github.com/spf13/viper"
 	"strings"
@@ -271,4 +273,122 @@ func GetRemoteActor(uri string) (*account.Actors, error) {
 	//
 	//return act, nil
 	return nil, nil
+}
+
+//func NewChannelActor(a *account.Actors) *Actor {
+//	var (
+//		addr = viper.GetString("localhost")
+//
+//		id  = fmt.Sprintf("https://%s/c/%s", addr, a.PreferredUsername)
+//		kid = fmt.Sprintf("%s#main-key", id)
+//		box = fmt.Sprintf("https://%s/c/%s/", addr, a.PreferredUsername)
+//	)
+//
+//	actor := &activitypub.Actor{
+//		Context:                   NewContext(),
+//		Id:                        id,
+//		Type:                      "Person",
+//		Following:                 "",
+//		Followers:                 "",
+//		Inbox:                     box + "inbox",
+//		Outbox:                    box + "outbox",
+//		Featured:                  "",
+//		FeaturedTags:              "",
+//		PreferredUsername:         a.PreferredUsername,
+//		Name:                      a.Name,
+//		Summary:                   a.Summary,
+//		Url:                       "",
+//		ManuallyApprovesFollowers: false,
+//		Discoverable:              false,
+//		Published:                 time.Time{},
+//		Devices:                   "",
+//		PublicKey: struct {
+//			Id           string `json:"id"`
+//			Owner        string `json:"owner"`
+//			PublicKeyPem string `json:"publicKeyPem"`
+//		}{
+//			Id:           kid,
+//			Owner:        id,
+//			PublicKeyPem: a.PublicKey,
+//		},
+//		Tag:        nil,
+//		Attachment: nil,
+//		Endpoints: struct {
+//			SharedInbox string `json:"sharedInbox"`
+//		}{},
+//		Icon: struct {
+//			Type      string `json:"type"`
+//			MediaType string `json:"mediaType"`
+//			Url       string `json:"url"`
+//		}{
+//			Type:      "Image",
+//			MediaType: "image/jpg",
+//			Url:       a.Avatar,
+//		},
+//	}
+//	return actor
+//}
+
+func NewActorContext() []interface{} {
+	arr := make([]interface{}, 0)
+	ctx := []string{"https://www.w3.org/ns/activitystreams", "https://w3id.org/security/v1alpha1"}
+	for _, i := range ctx {
+		arr = append(arr, i)
+	}
+	return arr
+}
+
+// NewActor Return standard ActivityPub protocol user data.
+func NewActor(a *pb.ActorData) *Actor {
+	var (
+		addr = viper.GetString("localhost")
+
+		id  = fmt.Sprintf("https://%s/u/%s", addr, a.PreferredUsername)
+		kid = fmt.Sprintf("%s#main-key", id)
+		box = fmt.Sprintf("https://%s/u/%s/", addr, a.PreferredUsername)
+	)
+
+	actor := &Actor{
+		Context:                   NewActorContext(),
+		Id:                        id,
+		Type:                      "Person",
+		Following:                 "",
+		Followers:                 "",
+		Inbox:                     box + "inbox",
+		Outbox:                    box + "outbox",
+		Featured:                  "",
+		FeaturedTags:              "",
+		PreferredUsername:         a.PreferredUsername,
+		Name:                      a.Name,
+		Summary:                   a.Summary,
+		Url:                       "",
+		ManuallyApprovesFollowers: false,
+		Discoverable:              false,
+		Published:                 time.Time{},
+		Devices:                   "",
+		PublicKey: struct {
+			Id           string `json:"id"`
+			Owner        string `json:"owner"`
+			PublicKeyPem string `json:"publicKeyPem"`
+		}{
+			Id:           kid,
+			Owner:        id,
+			PublicKeyPem: a.PublicKey,
+		},
+		Tag:        nil,
+		Attachment: nil,
+		Endpoints: struct {
+			SharedInbox string `json:"sharedInbox"`
+		}{},
+		Icon: struct {
+			Type      string `json:"type"`
+			MediaType string `json:"mediaType"`
+			Url       string `json:"url"`
+		}{
+			Type:      "Image",
+			MediaType: "image/jpg",
+			Url:       a.Avatar,
+		},
+	}
+	return actor
 }

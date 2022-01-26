@@ -8,7 +8,6 @@ type Inboxes struct {
 	ActivityID   string `json:"activity_id"`
 }
 
-//
 //func GetInboxesHandler(c *gin.Context) {
 //	a, err := account.NewAccountsUsername(middleware.GetUsername(c)).GetAccountByUsername()
 //	if err != nil {
