@@ -20,6 +20,8 @@ func NewAuth(username string, password string) Authorization {
 type VerifyAccountReply struct {
 	AccountID uint
 	Mail      string
+	Username  string
+	Password  string
 }
 
 func (a *Accounts) VerifyAccount() (*VerifyAccountReply, error) {
@@ -37,5 +39,7 @@ func (a *Accounts) VerifyAccount() (*VerifyAccountReply, error) {
 	return &VerifyAccountReply{
 		AccountID: acct.ID,
 		Mail:      acct.Mail,
+		Username:  acct.Username,
+		Password:  acct.Password,
 	}, nil
 }
