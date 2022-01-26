@@ -10,34 +10,21 @@ import (
 	"strconv"
 )
 
-func (s *server) Create(ctx context.Context, in *pb.NewCreate) (*pb.CreateReply, error) {
-	if err := NewAccounts(in.Username, in.Mail, in.Password).Create(); err != nil {
-		return &pb.CreateReply{Code: "202", Reply: err.Error()}, nil
-	}
-
-	_, err := NewActors(in.Username, in.PublicKey, "Person").Create()
-	if err != nil {
-		return &pb.CreateReply{Code: "202", Reply: err.Error()}, nil
-	}
-
-	return &pb.CreateReply{Code: "200", Reply: "ok"}, nil
-}
-
-func (s *server) Verify(ctx context.Context, in *pb.NewVerify) (*pb.VerifyReply, error) {
+func (a *account) Verify(ctx context.Context, in *pb.NewVerify) (*pb.VerifyReply, error) {
 	verify, err := NewAuth(in.Username, in.Password).VerifyAccount()
 	if err != nil {
 		fmt.Println(err)
 	}
 
 	deviceID := uuid.New().String()
-	token, err := policy.GenToken(verify.AccountID, verify.Mail, verify.Username, verify.Password, deviceID)
+	token, err := policy.GenToken(strconv.Itoa(int(verify.AccountID)), verify.Mail, verify.Username, verify.Password, deviceID)
 	if err != nil {
-		return &pb.VerifyReply{Code: "401", Reply: err.Error()}, nil
+		return &pb.VerifyReply{Code: "401", Reply: err.Error()}, err
 	}
 
 	d := device.NewDevices(verify.AccountID, in.Ua, deviceID)
 	if err := d.Create(); err != nil {
-		return &pb.VerifyReply{Code: "500", Reply: err.Error()}, nil
+		return &pb.VerifyReply{Code: "500", Reply: err.Error()}, err
 	}
 
 	return &pb.VerifyReply{
@@ -50,11 +37,12 @@ func (s *server) Verify(ctx context.Context, in *pb.NewVerify) (*pb.VerifyReply,
 	}, nil
 }
 
-func (s *server) GetActorByAccountUsername(ctx context.Context, in *pb.NewAccountUsername) (*pb.ActorData, error) {
+func (a *account) GetActorByAccountUsername(ctx context.Context, in *pb.NewAccountUsername) (*pb.ActorData, error) {
 	actor, err := NewActorsPreferredUsername(in.Username).GetActorByAccountUsername()
 	if err != nil {
 		return nil, err
 	}
+
 	return &pb.ActorData{
 		Id:                strconv.Itoa(int(actor.ID)),
 		PreferredUsername: actor.PreferredUsername,
@@ -70,7 +58,7 @@ func (s *server) GetActorByAccountUsername(ctx context.Context, in *pb.NewAccoun
 	}, nil
 }
 
-func (s *server) GetAccountByUsername(ctx context.Context, in *pb.NewAccountUsername) (*pb.AccountData, error) {
+func (a *account) GetAccountByUsername(ctx context.Context, in *pb.NewAccountUsername) (*pb.AccountData, error) {
 	account, err := NewAccountsUsername(in.Username).GetAccountByUsername()
 	if err != nil {
 		return nil, err
@@ -85,14 +73,36 @@ func (s *server) GetAccountByUsername(ctx context.Context, in *pb.NewAccountUser
 	}, nil
 }
 
-func (s *server) DeleteAccount(ctx context.Context, in *pb.NewAccountDelete) (*pb.DeleteAccountReply, error) {
+func (a *account) DeleteAccount(ctx context.Context, in *pb.NewAccountDelete) (*pb.Reply, error) {
 	account, err := NewAuth(in.Username, in.Password).VerifyAccount()
 	if err != nil {
-		return nil, err
+		return &pb.Reply{Code: "401", Reply: err.Error()}, err
 	}
 
 	if err := NewAccountsID(account.AccountID).Delete(); err != nil {
+		return &pb.Reply{Code: "500", Reply: err.Error()}, err
+	}
+	return &pb.Reply{Code: "200", Reply: "ok"}, nil
+}
+
+func (a *account) EditAccountUsername(ctx context.Context, in *pb.NewEditAccountUsername) (*pb.Reply, error) {
+	id, err := strconv.Atoi(in.Id)
+	if err != nil {
 		return nil, err
 	}
-	return &pb.DeleteAccountReply{Code: "200", Reply: "ok"}, nil
+	if err := NewAccountsID(uint(id)).SetAccountUsername(in.Username).EditUsername(); err != nil {
+		return &pb.Reply{Code: "200", Reply: err.Error()}, err
+	}
+	return &pb.Reply{Code: "200", Reply: "ok"}, nil
+}
+
+func (a *account) EditAccountPassword(ctx context.Context, in *pb.NewEditAccountPassword) (*pb.Reply, error) {
+	id, err := strconv.Atoi(in.Id)
+	if err != nil {
+		return nil, err
+	}
+	if err := NewAccountsID(uint(id)).SetAccountPassword(in.Password).EditPassword(); err != nil {
+		return &pb.Reply{Code: "200", Reply: err.Error()}, err
+	}
+	return &pb.Reply{Code: "200", Reply: "ok"}, nil
 }

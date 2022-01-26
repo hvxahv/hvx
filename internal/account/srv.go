@@ -11,8 +11,9 @@ import (
 	"time"
 )
 
-type server struct {
+type account struct {
 	pb.AccountsServer
+	*Accounts
 }
 
 func Run() error {
@@ -22,7 +23,7 @@ func Run() error {
 
 	s := grpc.NewServer()
 
-	pb.RegisterAccountsServer(s, &server{})
+	pb.RegisterAccountsServer(s, &account{})
 	reflection.Register(s)
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", port))

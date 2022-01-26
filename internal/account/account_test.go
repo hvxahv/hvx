@@ -2,6 +2,8 @@ package account
 
 import (
 	"fmt"
+	"github.com/hvxahv/hvxahv/api/accounts/v1alpha1"
+	"golang.org/x/net/context"
 	"os"
 	"testing"
 
@@ -44,14 +46,14 @@ func init() {
 	cache.InitRedis(1)
 }
 
-func TestAccounts_Create(t *testing.T) {
-	username := "hvxahv"
-	password := "hvxahv123"
-
-	if err := NewAccounts(username, "x@disism.com", password).Create(); err != nil {
-		return
-	}
-}
+//func TestAccounts_Create(t *testing.T) {
+//	username := "hvxahv"
+//	password := "hvxahv123"
+//
+//	if err := NewAccounts(username, "x@disism.com", password).Create(); err != nil {
+//		return
+//	}
+//}
 
 func TestAccounts_GetAccountByID(t *testing.T) {
 	account, err := NewAccountsID(730870058436296705).GetAccountByID()
@@ -90,4 +92,20 @@ func TestAccounts_Delete(t *testing.T) {
 		t.Log(err)
 		return
 	}
+}
+
+func TestAccount_Create(t *testing.T) {
+	d := &v1alpha1.NewCreate{
+		Username:  "hvturingga",
+		Mail:      "hvturingga@disism.com",
+		Password:  "hvxahv123",
+		PublicKey: "p",
+	}
+	s := &account{}
+	create, err := s.Create(context.Background(), d)
+	if err != nil {
+		t.Log(err)
+		return
+	}
+	fmt.Println(create)
 }

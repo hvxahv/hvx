@@ -6,7 +6,7 @@ option go_package = "github.com/hvxahv/hvxahv/api/account/v1alpha1";
 service Accounts {
   // Create the Actor first, and then use the returned ActorID to create a unique account of the current instance account system.
   // The username in the account system is unique, and the Actor may have the same username in different instances.
-  rpc Create (NewCreate) returns (CreateReply) {}
+  rpc Create (NewCreate) returns (Reply) {}
 
   //  Log in to the account system interface.
   rpc Verify (NewVerify) returns (VerifyReply) {}
@@ -15,8 +15,11 @@ service Accounts {
 
   rpc GetAccountByUsername (NewAccountUsername) returns (AccountData) {}
 
-  rpc DeleteAccount (NewAccountDelete) returns (DeleteAccountReply) {}
+  rpc DeleteAccount (NewAccountDelete) returns (Reply) {}
 
+  // EditAccountUsername The account username will be updated with the account ID, along with the Actor preferred username.
+  rpc EditAccountUsername (NewEditAccountUsername) returns (Reply) {}
+  rpc EditAccountPassword (NewEditAccountPassword) returns (Reply) {}
   //  rpc Update (AccountData) returns (AccountsReply) {}
   //  rpc UpdatePassword (UpdatePasswordData) returns (AccountsReply) {}
   //  rpc UpdateUsername (UpdateUsernameData) returns (AccountsReply) {}
@@ -55,16 +58,16 @@ message ActorData {
   string is_remote = 11;
 }
 
+message Reply {
+  string code = 1;
+  string reply = 2;
+}
+
 message NewCreate {
   string username = 1;
   string mail = 2;
   string password = 3;
   string publicKey = 4;
-}
-
-message CreateReply {
-  string code = 1;
-  string reply = 2;
 }
 
 message NewVerify {
@@ -92,7 +95,12 @@ message NewAccountDelete {
   string password = 2;
 }
 
-message DeleteAccountReply {
-  string code = 1;
-  string reply = 2;
+message NewEditAccountUsername {
+  string id = 1;
+  string username = 2;
+}
+
+message NewEditAccountPassword {
+  string id = 1;
+  string password = 2;
 }

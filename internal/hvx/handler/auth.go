@@ -35,8 +35,8 @@ func CreateAccountHandler(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{
-		"code":    create.Code,
-		"message": create.Reply,
+		"code":  create.Code,
+		"reply": create.Reply,
 	})
 
 }
@@ -51,8 +51,13 @@ func SignInHandler(c *gin.Context) {
 		Password: c.PostForm("password"),
 		Ua:       c.GetHeader("User-Agent"),
 	}
+
 	verify, err := cli.Verify(c, d)
 	if err != nil {
+		c.JSON(401, gin.H{
+			"code":  "401",
+			"reply": "Unauthorized",
+		})
 		return
 	}
 	c.JSON(200, gin.H{

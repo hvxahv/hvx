@@ -18,6 +18,7 @@ func GetActorHandler(c *gin.Context) {
 	d := &pb.NewAccountUsername{
 		Username: c.Param("actor"),
 	}
+
 	actor, err := client.GetActorByAccountUsername(c, d)
 	if err != nil {
 		return

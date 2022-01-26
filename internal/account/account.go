@@ -2,10 +2,12 @@ package account
 
 import (
 	"github.com/go-playground/validator/v10"
+	pb "github.com/hvxahv/hvxahv/api/accounts/v1alpha1"
 	"github.com/hvxahv/hvxahv/internal/device"
 	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
+	"golang.org/x/net/context"
 	"gorm.io/gorm"
 )
 
@@ -19,6 +21,41 @@ type Accounts struct {
 	IsPrivate bool   `gorm:"type:boolean;is_private"`
 }
 
+func (a *account) Create(ctx context.Context, in *pb.NewCreate) (*pb.Reply, error) {
+	if err := validator.New().Struct(in); err != nil {
+		return nil, errors.New("FAILED_TO_VALIDATOR")
+	}
+
+	db := cockroach.GetDB()
+
+	if err := db.AutoMigrate(&Actors{}); err != nil {
+		return nil, errors.New("FAILED_TO_AUTOMATICALLY_CREATE_ACTOR_DATABASE")
+	}
+
+	if err := db.AutoMigrate(&Accounts{}); err != nil {
+		return nil, errors.New("FAILED_TO_AUTOMATICALLY_CREATE_ACCOUNT_DATABASE")
+	}
+
+	n := NewActors(in.Username, in.PublicKey, "Person")
+	if err := db.Debug().Table("actors").Create(&n).Error; err != nil {
+		return nil, errors.Errorf("FAILED_TO_CREATE_ACTOR")
+	}
+
+	if err := db.Debug().Table("accounts").Where("username = ? ", in.Username).Or("mail = ?", in.Mail).First(&Accounts{}); err != nil {
+		ok := cockroach.IsNotFound(err.Error)
+		if !ok {
+			return nil, errors.New("THE_USERNAME_OR_MAIL_ALREADY_EXISTS")
+		}
+	}
+
+	v := NewAccounts(n.ID, in.Username, in.Mail, in.Password)
+	if err := db.Debug().Table("accounts").Create(&v).Error; err != nil {
+		return nil, errors.Errorf("FAILED_TO_CREATE_ACCOUNT")
+	}
+
+	return &pb.Reply{Code: "200", Reply: "ok"}, nil
+}
+
 func (a *Accounts) SetAccountPassword(password string) *Accounts {
 	hash, _ := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	a.Password = string(hash)
@@ -28,31 +65,6 @@ func (a *Accounts) SetAccountPassword(password string) *Accounts {
 func (a *Accounts) SetAccountUsername(username string) *Accounts {
 	a.Username = username
 	return a
-}
-
-func (a *Accounts) Create() error {
-	if err := validator.New().Struct(*a); err != nil {
-		return err
-	}
-
-	db := cockroach.GetDB()
-
-	if err := db.AutoMigrate(&Accounts{}); err != nil {
-		return errors.New("FAILED_TO_AUTOMATICALLY_CREATE_ACCOUNT_DATABASE")
-	}
-
-	if err := db.Debug().Table("accounts").Where("username = ? ", a.Username).Or("mail = ?", a.Mail).First(&Accounts{}); err != nil {
-		ok := cockroach.IsNotFound(err.Error)
-		if !ok {
-			return errors.New("THE_USERNAME_OR_MAIL_ALREADY_EXISTS")
-		}
-	}
-
-	if err := db.Debug().Table("accounts").Create(&a).Error; err != nil {
-		return errors.Errorf("FAILED_TO_CREATE_ACCOUNT")
-	}
-
-	return nil
 }
 
 func (a *Accounts) Update() error {
@@ -140,12 +152,13 @@ func NewAccountsUsername(username string) *Accounts {
 	return &Accounts{Username: username}
 }
 
-func NewAccounts(username, mail, password string) *Accounts {
+func NewAccounts(actorID uint, username, mail, password string) *Accounts {
 	hash, _ := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	return &Accounts{
 		Username: username,
 		Mail:     mail,
 		Password: string(hash),
+		ActorID:  actorID,
 	}
 }
 

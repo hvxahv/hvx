@@ -86,57 +86,67 @@ func DeleteAccount(c *gin.Context) {
 		return
 	}
 	d := &pb.NewAccountDelete{Username: username, Password: password}
-	da, err := client.DeleteAccount(c, d)
+	r, err := client.DeleteAccount(c, d)
 	if err != nil {
 		c.JSON(500, gin.H{
-			"code":    "500",
-			"message": err.Error(),
+			"code":  "500",
+			"reply": err.Error(),
 		})
 		return
 	}
 	c.JSON(200, gin.H{
-		"code":    "200",
-		"message": da.Reply,
+		"code":  "200",
+		"reply": r.Reply,
 	})
 }
 
-//func UpdateAccount(c *gin.Context) {
-//	username := middleware.GetUserName(c)
-//	password := c.PostForm("password")
-//	bio := c.PostForm("bio")
-//	name := c.PostForm("name")
-//	mail := c.PostForm("mail")
-//	phone := c.PostForm("phone")
-//	is_private := c.PostForm("is_private")
-//
-//	cli, conn, err := client.Accounts()
-//	if err != nil {
-//		log.Println(err)
-//	}
-//	defer conn.Close()
-//
-//	parseBool, err := strconv.ParseBool(is_private)
-//	if err != nil {
-//		log.Println(err)
-//	}
-//
-//	r, err := cli.Update(context.Background(), &pb.AccountData{
-//		Username:  username,
-//		Password:  password,
-//		Mail:      mail,
-//		Bio:       bio,
-//		Name:      name,
-//		Phone:     phone,
-//		IsPrivate: parseBool,
-//	})
-//
-//	if err != nil {
-//		log.Printf("failed to send message to account server: %v", err)
-//	}
-//
-//	c.JSON(int(r.Code), gin.H{
-//		"code":    r.Code,
-//		"message": r.Message,
-//	})
-//
-//}
+func UpdateAccount(c *gin.Context) {
+	//username := middleware.GetUsername(c)
+	//password := c.PostForm("password")
+	//bio := c.PostForm("bio")
+	//name := c.PostForm("name")
+	//mail := c.PostForm("mail")
+	//phone := c.PostForm("phone")
+	//isPrivate := c.PostForm("is_private")
+
+}
+
+func EditAccountUsernameHandler(c *gin.Context) {
+	username := c.PostForm("username")
+	client, err := account.NewClient()
+	if err != nil {
+		return
+	}
+	d := &pb.NewEditAccountUsername{
+		Id:       middleware.GetAccountID(c),
+		Username: username,
+	}
+	r, err := client.EditAccountUsername(c, d)
+	if err != nil {
+		return
+	}
+	c.JSON(200, gin.H{
+		"code":  "200",
+		"reply": r.Reply,
+	})
+}
+
+func EditAccountPasswordHandler(c *gin.Context) {
+	password := c.PostForm("password")
+	client, err := account.NewClient()
+	if err != nil {
+		return
+	}
+	d := &pb.NewEditAccountPassword{
+		Id:       middleware.GetAccountID(c),
+		Password: password,
+	}
+	r, err := client.EditAccountPassword(c, d)
+	if err != nil {
+		return
+	}
+	c.JSON(200, gin.H{
+		"code":  "200",
+		"reply": r.Reply,
+	})
+}

@@ -16,8 +16,8 @@ func WebFingerHandler(c *gin.Context) {
 		return
 	}
 
-	// Perform some filtering operations from the request to obtain the user name,
-	// and then search for the user name to find whether the user exists in the database.
+	// Perform some filtering operations from the request to obtain the username,
+	// and then search for the username to find whether the user exists in the database.
 	// Currently only tested mastodon has not supported other ActivityPub implementations.
 	// Use this client to call the remote Accounts gRPC service,
 	// and then pass the username to get the queried data.

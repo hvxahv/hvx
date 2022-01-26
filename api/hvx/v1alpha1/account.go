@@ -14,6 +14,9 @@ func V1Accounts(v1 *gin.RouterGroup) {
 	// Delete account
 	v1.DELETE("/account", handler.DeleteAccount)
 	//v1.POST("/account/update", handler.UpdateAccount)
+
+	v1.PATCH("/account/username", handler.EditAccountUsernameHandler)
+	v1.PATCH("/account/password", handler.EditAccountPasswordHandler)
 	//
 	//v1.POST("/account/avatar", handler.UploadAvatar)
 	//
