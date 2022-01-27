@@ -75,8 +75,8 @@ func NewWebFinger(name string, isChan bool) *WebFingerData {
 	return wf
 }
 
-// GetWebFinger Obtain the WebFinger of the remote instance through the email address format.
-func GetWebFinger(resource string) *WebFingerData {
+// GetRemoteWebFinger Obtain the WebFinger of the remote instance through the email address format.
+func GetRemoteWebFinger(resource string) *WebFingerData {
 	w, err := resty.New().R().Get(NewWebFingerUrl(GetHost(resource), resource))
 	if err != nil {
 		log.Fatal(err)

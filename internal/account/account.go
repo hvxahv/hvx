@@ -3,12 +3,12 @@ package account
 import (
 	"github.com/go-playground/validator/v10"
 	pb "github.com/hvxahv/hvxahv/api/accounts/v1alpha1"
-	"github.com/hvxahv/hvxahv/internal/device"
 	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
 	"golang.org/x/net/context"
 	"gorm.io/gorm"
+	"strconv"
 )
 
 type Accounts struct {
@@ -21,7 +21,18 @@ type Accounts struct {
 	IsPrivate bool   `gorm:"type:boolean;is_private"`
 }
 
-func (a *account) Create(ctx context.Context, in *pb.NewCreate) (*pb.Reply, error) {
+func (a *account) IsExist(ctx context.Context, in *pb.NewAccountUsername) (*pb.IsExistReply, error) {
+	db := cockroach.GetDB()
+	if err := db.Debug().Table("accounts").Where("username = ? ", in.Username).First(&Accounts{}); err != nil {
+		ok := cockroach.IsNotFound(err.Error)
+		if ok {
+			return &pb.IsExistReply{IsExist: ok}, errors.New("THE_USERNAME_NOT_EXISTS")
+		}
+	}
+	return &pb.IsExistReply{IsExist: true}, nil
+}
+
+func (a *account) Create(ctx context.Context, in *pb.NewAccountCreate) (*pb.Reply, error) {
 	if err := validator.New().Struct(in); err != nil {
 		return nil, errors.New("FAILED_TO_VALIDATOR")
 	}
@@ -56,88 +67,96 @@ func (a *account) Create(ctx context.Context, in *pb.NewCreate) (*pb.Reply, erro
 	return &pb.Reply{Code: "200", Reply: "ok"}, nil
 }
 
-func (a *Accounts) SetAccountPassword(password string) *Accounts {
-	hash, _ := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	a.Password = string(hash)
-	return a
-}
+func (a *account) Delete(ctx context.Context, in *pb.NewAccountDelete) (*pb.Reply, error) {
+	v := NewAuthorization(in.Username, in.Password)
 
-func (a *Accounts) SetAccountUsername(username string) *Accounts {
-	a.Username = username
-	return a
-}
-
-func (a *Accounts) Update() error {
-	if a.Username != "" {
-		return errors.New("PLEASE_USE_THE_SET_ACCOUNT_PASSWORD_METHOD_TO_UPDATE_THE_USERNAME")
-	}
 	db := cockroach.GetDB()
-	err := db.Debug().Table("accounts").Where("id = ?", a.ID).Updates(&a).Error
+	if err := db.Debug().Table("accounts").Where("username = ?", in.Username).First(&v).Error; err != nil {
+		return nil, err
+	}
+
+	if err := bcrypt.CompareHashAndPassword([]byte(v.Password), []byte(in.Password)); err != nil {
+		return nil, errors.Errorf("PASSWORD_VERIFICATION_FAILED")
+	}
+
+	if err := db.Debug().Table("actors").Where("id = ?", v.ActorID).Unscoped().Delete(&Actors{}).Error; err != nil {
+		return nil, err
+	}
+
+	if err := db.Debug().Table("accounts").Where("id = ?", v.ID).Unscoped().Delete(&Accounts{}).Error; err != nil {
+		return nil, err
+	}
+
+	return &pb.Reply{Code: "200", Reply: "ok"}, nil
+}
+
+func (a *account) EditUsername(ctx context.Context, in *pb.NewEditAccountUsername) (*pb.Reply, error) {
+	id, err := strconv.Atoi(in.Id)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
-}
-
-func (a *Accounts) EditPassword() error {
-	if err := NewAccountsID(a.ID).Update(); err != nil {
-		return err
-	}
-
-	// Because the password is reset, all logged-in devices should be deleted
-	if err := device.NewDevicesByAccountID(a.ID).DeleteAll(); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (a *Accounts) EditUsername() error {
 	db := cockroach.GetDB()
 
 	var acct Accounts
-	if err := db.Debug().Table("accounts").Where("id = ?", a.ID).First(&acct).Update("username", a.Username).Error; err != nil {
-		return err
-	}
-	if err := NewActorsID(acct.ActorID).SetActorPreferredUsername(a.Username).EditActorPreferredUsername(); err != nil {
-		return err
+	if err := db.Debug().Table("accounts").Where("id = ?", uint(id)).First(&acct).Update("username", in.Username).Error; err != nil {
+		return &pb.Reply{Code: "500", Reply: err.Error()}, err
 	}
 
-	return nil
+	if err := db.Debug().Table("actors").Where("id = ?", acct.ActorID).Update("preferred_username", in.Username).Error; err != nil {
+		return &pb.Reply{Code: "500", Reply: err.Error()}, err
+	}
+
+	return &pb.Reply{Code: "200", Reply: "ok"}, nil
 }
 
-func (a *Accounts) Delete() error {
-	db := cockroach.GetDB()
-
-	var acct Accounts
-	if err := db.Debug().Table("accounts").Where("id = ?", a.ID).First(&acct).Unscoped().Delete(&Accounts{}).Error; err != nil {
-		return err
+func (a *account) EditPassword(ctx context.Context, in *pb.NewEditAccountPassword) (*pb.Reply, error) {
+	id, err := strconv.Atoi(in.Id)
+	if err != nil {
+		return nil, err
 	}
-
-	if err := NewActorsID(acct.ActorID).Delete(); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (a *Accounts) GetAccountByID() (*Accounts, error) {
+	hash, _ := bcrypt.GenerateFromPassword([]byte(in.Password), bcrypt.DefaultCost)
 	db := cockroach.GetDB()
-
-	if err := db.Debug().Table("accounts").Where("id = ?", a.ID).First(&a).Error; err != nil {
+	if err := db.Debug().Table("accounts").Where("id = ?", id).Update("password", hash).Error; err != nil {
 		return nil, err
 	}
 
-	return a, nil
+	//// Because the password is reset, all logged-in devices should be deleted
+	//if err := device.NewDevicesByAccountID(a.ID).DeleteAll(); err != nil {
+	//	return nil, err
+	//}
+
+	return &pb.Reply{Code: "200", Reply: "ok"}, nil
 }
 
-func (a *Accounts) GetAccountByUsername() (*Accounts, error) {
+func (a *account) GetAccountByUsername(ctx context.Context, in *pb.NewAccountUsername) (*pb.AccountData, error) {
 	db := cockroach.GetDB()
 
-	if err := db.Debug().Table("accounts").Where("username = ?", a.Username).First(&a).Error; err != nil {
+	if err := db.Debug().Table("accounts").Where("username = ?", in.Username).First(&a.Accounts).Error; err != nil {
 		return nil, err
 	}
 
-	return a, nil
+	return &pb.AccountData{
+		AccountId: strconv.Itoa(int(a.Accounts.ID)),
+		Username:  a.Accounts.Username,
+		Mail:      a.Accounts.Mail,
+		Password:  a.Accounts.Password,
+		ActorId:   strconv.Itoa(int(a.Accounts.ActorID)),
+		IsPrivate: strconv.FormatBool(a.Accounts.IsPrivate),
+	}, nil
+}
+
+func (a *account) EditMail(ctx context.Context, in *pb.NewEditAccountMail) (*pb.Reply, error) {
+	id, err := strconv.Atoi(in.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	db := cockroach.GetDB()
+	if err := db.Debug().Table("accounts").Where("id = ?", id).Update("mail", in.Mail).Error; err != nil {
+		return nil, err
+	}
+
+	return &pb.Reply{Code: "200", Reply: "ok"}, nil
 }
 
 func NewAccountsID(id uint) *Accounts {
@@ -148,10 +167,6 @@ func NewAccountsID(id uint) *Accounts {
 	}
 }
 
-func NewAccountsUsername(username string) *Accounts {
-	return &Accounts{Username: username}
-}
-
 func NewAccounts(actorID uint, username, mail, password string) *Accounts {
 	hash, _ := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	return &Accounts{
@@ -160,27 +175,4 @@ func NewAccounts(actorID uint, username, mail, password string) *Accounts {
 		Password: string(hash),
 		ActorID:  actorID,
 	}
-}
-
-type Account interface {
-	// Create When creating a user, you need to create an Actor that supports the ActivityPub protocol at the same time.
-	// First, need to verify the username and email address of the account are unique.
-	Create() error
-
-	Update() error
-
-	// EditPassword Edit the account password, encrypt the password again, and exit all online clients.
-	EditPassword() error
-
-	// EditUsername Edit the account name will change both the
-	// Account username field
-	// and the Actor PreferredUsername field.
-	EditUsername() error
-
-	// Delete The account will be deleted by AccountID and the Actor data will be deleted at the same time.
-	Delete() error
-
-	GetAccountByID() (*Accounts, error)
-
-	GetAccountByUsername() (*Accounts, error)
 }

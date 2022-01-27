@@ -212,6 +212,7 @@ func IsRemote(resource string) bool {
 	if !strings.Contains(resource, "@") {
 		return false
 	}
+
 	if host != viper.GetString("localhost") {
 		return true
 	}

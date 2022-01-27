@@ -7,14 +7,14 @@ import (
 )
 
 func TestActors_Create(t *testing.T) {
-	a := NewActors("hvturingga", "", "Person")
-	actor, err := a.Create()
-	if err != nil {
-		t.Error(err)
-		return
-	}
-
-	fmt.Println(actor)
+	//a := NewActors("hvturingga", "", "Person")
+	//actor, err := a.Create()
+	//if err != nil {
+	//	t.Error(err)
+	//	return
+	//}
+	//
+	//fmt.Println(actor)
 }
 
 func TestActors_Update(t *testing.T) {
@@ -27,22 +27,22 @@ func TestActors_Update(t *testing.T) {
 }
 
 func TestNewAddActors(t *testing.T) {
-	a := NewAddActors("xxs", "halfmemories.com", "", "", "", "https://halfmemories.com/u/xxs/inbox", "https://halfmemories.com/u/xxs", "", "Services")
-	actor, err := a.Create()
-	if err != nil {
-		t.Error(err)
-		return
-	}
-	fmt.Println(actor)
+	//a := NewAddActors("xxs", "halfmemories.com", "", "", "", "https://halfmemories.com/u/xxs/inbox", "https://halfmemories.com/u/xxs", "", "Services")
+	//actor, err := a.Create()
+	//if err != nil {
+	//	t.Error(err)
+	//	return
+	//}
+	//fmt.Println(actor)
 }
 
 func TestActors_GetActorByAccountUsername(t *testing.T) {
-	account, err := NewActorsAccountUsername("hvturingga").GetActorByAccountUsername()
-	if err != nil {
-		t.Log(err)
-		return
-	}
-	fmt.Println(account)
+	//account, err := NewActorsAccountUsername("hvturingga").GetActorByAccountUsername()
+	//if err != nil {
+	//	t.Log(err)
+	//	return
+	//}
+	//fmt.Println(account)
 }
 
 func TestActors_GetActorByID(t *testing.T) {

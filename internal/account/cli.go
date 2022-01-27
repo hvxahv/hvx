@@ -7,7 +7,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-func NewClient() (pb.AccountsClient, error) {
+func NewAccountClient() (pb.AccountsClient, error) {
 	address := fmt.Sprintf("%s:%s", viper.GetString("microservices.account.localhost"), viper.GetString("microservices.account.port"))
 	conn, err := grpc.Dial(address, grpc.WithInsecure())
 	if err != nil {
@@ -15,4 +15,14 @@ func NewClient() (pb.AccountsClient, error) {
 	}
 
 	return pb.NewAccountsClient(conn), nil
+}
+
+func NewActorClient() (pb.ActorsClient, error) {
+	address := fmt.Sprintf("%s:%s", viper.GetString("microservices.account.localhost"), viper.GetString("microservices.account.port"))
+	conn, err := grpc.Dial(address, grpc.WithInsecure())
+	if err != nil {
+		return nil, err
+	}
+
+	return pb.NewActorsClient(conn), nil
 }

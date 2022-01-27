@@ -3,7 +3,6 @@ package activity
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/hvxahv/hvxahv/internal/account"
 	"github.com/hvxahv/hvxahv/pkg/activitypub"
 	"log"
 )
@@ -31,20 +30,21 @@ type Activities struct {
 	ActivityID   string
 }
 
-func NewActivities(name string, body []byte) *Activities {
-	a := Activity{}
-	if err := json.Unmarshal(body, &a); err != nil {
-		fmt.Printf("UNMARSHAL_ACTICITY_TYPE_ERROR:%v", err)
-	}
-
-	fromID := GetFromActorByURL(a.Actor)
-	to, err := account.NewAccountsUsername(name).GetAccountByUsername()
-	if err != nil {
-		log.Println(err)
-	}
-
-	return &Activities{AccountID: to.ID, Name: name, Body: body, FromID: fromID, ActivityType: a.Type, ActivityID: a.ID}
-}
+//
+//func NewActivities(name string, body []byte) *Activities {
+//	a := Activity{}
+//	if err := json.Unmarshal(body, &a); err != nil {
+//		fmt.Printf("UNMARSHAL_ACTICITY_TYPE_ERROR:%v", err)
+//	}
+//
+//	fromID := GetFromActorByURL(a.Actor)
+//	to, err := account.NewAccountsUsername(name).GetAccountByUsername()
+//	if err != nil {
+//		log.Println(err)
+//	}
+//
+//	return &Activities{AccountID: to.ID, Name: name, Body: body, FromID: fromID, ActivityType: a.Type, ActivityID: a.ID}
+//}
 
 func GetFromActorByURL(url string) uint {
 	//actor, err := account.NewActorUri(url).GetByActorUri()

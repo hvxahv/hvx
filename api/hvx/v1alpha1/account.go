@@ -6,8 +6,7 @@ import (
 )
 
 func V1Accounts(v1 *gin.RouterGroup) {
-
-	v1.GET("/account/iam", handler.GetAccountHandler)
+	v1.GET("/account/iam")
 	//v1.GET("/inbox", handler.GetInboxesHandler)
 	//v1.GET("/iam/timelines")
 
@@ -17,7 +16,8 @@ func V1Accounts(v1 *gin.RouterGroup) {
 
 	v1.PATCH("/account/username", handler.EditAccountUsernameHandler)
 	v1.PATCH("/account/password", handler.EditAccountPasswordHandler)
-	//
+	v1.PATCH("/account/mail", handler.EditAccountMailHandler)
+
 	//v1.POST("/account/avatar", handler.UploadAvatar)
 	//
 	////v1alpha1.GET("/u/:user", v1alpha1.GetActorHandler)

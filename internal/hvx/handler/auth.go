@@ -15,14 +15,14 @@ func CreateAccountHandler(c *gin.Context) {
 	// https://datatracker.ietf.org/doc/html/rfc5208
 	publicKey := c.PostForm("public_key")
 
-	d := &pb.NewCreate{
+	d := &pb.NewAccountCreate{
 		Username:  username,
 		Mail:      mail,
 		Password:  password,
 		PublicKey: publicKey,
 	}
 
-	cli, err := account.NewClient()
+	cli, err := account.NewAccountClient()
 	if err != nil {
 		log.Println(err)
 		return
@@ -42,11 +42,11 @@ func CreateAccountHandler(c *gin.Context) {
 }
 
 func SignInHandler(c *gin.Context) {
-	cli, err := account.NewClient()
+	cli, err := account.NewAccountClient()
 	if err != nil {
 		return
 	}
-	d := &pb.NewVerify{
+	d := &pb.NewAccountVerify{
 		Username: c.PostForm("username"),
 		Password: c.PostForm("password"),
 		Ua:       c.GetHeader("User-Agent"),

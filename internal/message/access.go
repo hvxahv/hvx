@@ -1,7 +1,6 @@
 package message
 
 import (
-	"github.com/hvxahv/hvxahv/internal/account"
 	"log"
 
 	"github.com/hvxahv/hvxahv/pkg/matrix"
@@ -74,13 +73,13 @@ func (a *MatrixAccess) Register() error {
 	return nil
 }
 
-func NewMatrixAccessAuth(username string, password string) *MatrixAccess {
-	a, err := account.NewAccountsUsername(username).GetAccountByUsername()
-	if err != nil {
-		return nil
-	}
-	return &MatrixAccess{AccountID: a.ID, Username: username, Password: password}
-}
+//func NewMatrixAccessAuth(username string, password string) *MatrixAccess {
+//	a, err := account.NewAccountsUsername(username).GetAccountByUsername()
+//	if err != nil {
+//		return nil
+//	}
+//	return &MatrixAccess{AccountID: a.ID, Username: username, Password: password}
+//}
 
 type Authentication interface {
 	// Register When registering an account, you need to call this method to register an account of the matrix protocol.

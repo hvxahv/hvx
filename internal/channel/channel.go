@@ -2,8 +2,6 @@ package channel
 
 import (
 	"crypto/rand"
-	"fmt"
-	"github.com/google/uuid"
 	"github.com/hvxahv/hvxahv/internal/account"
 	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"github.com/pkg/errors"
@@ -196,31 +194,31 @@ func randomString(n int) (string, error) {
 	return string(ret), nil
 }
 
-func NewChannels(name, link, avatar, bio, username string, isPrivate bool) *Channels {
-	// Generated if the set link is empty.
-	if isPrivate || link == "" {
-		random, err := randomString(15)
-		if err != nil {
-			link = uuid.New().String()
-		}
-		link = random
-	}
-
-	acct, err := account.NewAccountsUsername(username).GetAccountByUsername()
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	return &Channels{
-		Name:          name,
-		Link:          link,
-		Avatar:        avatar,
-		Bio:           bio,
-		OwnerUsername: username,
-		OwnerID:       acct.ID,
-		IsPrivate:     isPrivate,
-	}
-}
+//func NewChannels(name, link, avatar, bio, username string, isPrivate bool) *Channels {
+//	// Generated if the set link is empty.
+//	if isPrivate || link == "" {
+//		random, err := randomString(15)
+//		if err != nil {
+//			link = uuid.New().String()
+//		}
+//		link = random
+//	}
+//
+//	acct, err := account.NewAccountsUsername(username).GetAccountByUsername()
+//	if err != nil {
+//		fmt.Println(err)
+//	}
+//
+//	return &Channels{
+//		Name:          name,
+//		Link:          link,
+//		Avatar:        avatar,
+//		Bio:           bio,
+//		OwnerUsername: username,
+//		OwnerID:       acct.ID,
+//		IsPrivate:     isPrivate,
+//	}
+//}
 
 func NewChannelID(channelID uint) *Channels {
 	return &Channels{

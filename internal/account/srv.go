@@ -13,7 +13,9 @@ import (
 
 type account struct {
 	pb.AccountsServer
+	pb.ActorsServer
 	*Accounts
+	*Actors
 }
 
 func Run() error {

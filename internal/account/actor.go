@@ -2,6 +2,9 @@ package account
 
 import (
 	"fmt"
+	pb "github.com/hvxahv/hvxahv/api/accounts/v1alpha1"
+	"golang.org/x/net/context"
+	"strconv"
 
 	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"github.com/pkg/errors"
@@ -44,23 +47,6 @@ func (a *Actors) SetActorSummary(summary string) *Actors {
 	return a
 }
 
-func (a *Actors) Create() (*Actors, error) {
-	db := cockroach.GetDB()
-
-	if err := db.AutoMigrate(&Actors{}); err != nil {
-		return nil, errors.New("FAILED_TO_AUTOMATICALLY_CREATE_ACTOR_DATABASE")
-	}
-
-	if err := db.Debug().Table("actors").Create(&a).Error; err != nil {
-		return nil, errors.Errorf("FAILED_TO_CREATE_ACTOR")
-	}
-
-	if err := db.Debug().Table("accounts").Where("username = ?", a.PreferredUsername).Update("actor_id", a.ID).Error; err != nil {
-		return nil, err
-	}
-	return a, nil
-}
-
 func (a *Actors) Update() error {
 	if a.PreferredUsername != "" {
 		return errors.New("PLEASE_USE_THE_SET_ACTOR_PREFERRED_USERNAME_METHOD_TO_UPDATE_THE_PREFERRED_USERNAME")
@@ -91,32 +77,6 @@ func (a *Actors) Delete() error {
 		return err
 	}
 	return nil
-}
-
-func (a *Actors) GetActorsByPreferredUsername() (*[]Actors, error) {
-	db := cockroach.GetDB()
-
-	var ac []Actors
-	if err := db.Debug().Table("actors").Where("preferred_username = ?", a.PreferredUsername).Find(&ac).Error; err != nil {
-		return nil, err
-	}
-
-	return &ac, nil
-}
-
-func (a *Actors) GetActorByAccountUsername() (*Actors, error) {
-	db := cockroach.GetDB()
-
-	acct, err := NewAccountsUsername(a.PreferredUsername).GetAccountByUsername()
-	if err != nil {
-		return nil, err
-	}
-
-	if err := db.Debug().Table("actors").Where("id = ?", acct.ActorID).First(&a).Error; err != nil {
-		return nil, err
-	}
-
-	return a, nil
 }
 
 func (a *Actors) GetActorByID() (*Actors, error) {
@@ -192,26 +152,68 @@ func NewActors(preferredUsername, publicKey, actorType string) *Actors {
 	}
 }
 
-type Actor interface {
+/****
 
-	// Create actors field.
-	Create() (*Actors, error)
 
-	// Update Edit actors fields.
-	Update() error
+grpc
+*/
 
-	EditActorPreferredUsername() error
+func (a *account) GetActorByAccountUsername(ctx context.Context, in *pb.NewAccountUsername) (*pb.ActorData, error) {
+	d := &pb.NewAccountUsername{Username: in.Username}
+	acct, err := a.GetAccountByUsername(context.Background(), d)
+	if err != nil {
+		return nil, err
+	}
 
-	// Delete actor data by actor ID is usually called by account delete  method.
-	Delete() error
+	db := cockroach.GetDB()
 
-	// GetActorsByPreferredUsername Get the Actor collection by PreferredUsername.
-	GetActorsByPreferredUsername() (*[]Actors, error)
+	id, err := strconv.Atoi(acct.ActorId)
+	if err != nil {
+		return nil, err
+	}
+	if err := db.Debug().Table("actors").Where("id = ?", uint(id)).First(&a.Actors).Error; err != nil {
+		return nil, err
+	}
 
-	// GetActorByAccountUsername Get unique Actor by username.
-	GetActorByAccountUsername() (*Actors, error)
+	return &pb.ActorData{
+		Id:                acct.AccountId,
+		PreferredUsername: a.Actors.PreferredUsername,
+		Domain:            a.Actors.Domain,
+		Avatar:            a.Actors.Avatar,
+		Name:              a.Actors.Name,
+		Summary:           a.Actors.Summary,
+		Inbox:             a.Actors.Inbox,
+		Address:           a.Actors.Address,
+		PublicKey:         a.Actors.PublicKey,
+		ActorType:         a.Actors.ActorType,
+		IsRemote:          strconv.FormatBool(a.Actors.IsRemote),
+	}, nil
+}
 
-	GetActorByID() (*Actors, error)
+func (a *account) GetActorsByPreferredUsername(ctx context.Context, in *pb.NewActorPreferredUsername) (*pb.ActorsData, error) {
+	db := cockroach.GetDB()
 
-	GetActorByAddress() (*Actors, error)
+	var actors []*pb.ActorData
+	if err := db.Debug().Table("actors").Where("preferred_username = ?", in.PreferredUsername).Find(&actors).Error; err != nil {
+		return nil, err
+	}
+
+	//for _, i := range actors {
+	//	from, err := account.NewActorID(i.FromID).GetByActorID()
+	//	if err != nil {
+	//		log.Println(err)
+	//	}
+	//	inboxes := Inboxes{
+	//		ID:           strconv.FormatUint(uint64(i.ID), 10),
+	//		From:         from.Name,
+	//		FromID:       strconv.FormatUint(uint64(i.FromID), 10),
+	//		ActivityType: i.ActivityType,
+	//		ActivityID:   i.ActivityID,
+	//	}
+	//	ibx = append(ibx, inboxes)
+	//}
+
+	fmt.Println(actors)
+
+	return &pb.ActorsData{Code: "200", Actors: actors}, nil
 }

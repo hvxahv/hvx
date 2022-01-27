@@ -59,34 +59,15 @@ import (
 //	})
 //}
 
-//GetAccountHandler Obtain personal account information,
-//analyze the user through TOKEN and return user data.
-func GetAccountHandler(c *gin.Context) {
-	client, err := account.NewClient()
-	if err != nil {
-		return
-	}
-	d := &pb.NewAccountUsername{Username: middleware.GetUsername(c)}
-	actor, err := client.GetActorByAccountUsername(c, d)
-	if err != nil {
-		return
-	}
-
-	c.JSON(200, gin.H{
-		"code":  200,
-		"actor": actor,
-	})
-}
-
 func DeleteAccount(c *gin.Context) {
 	username := middleware.GetUsername(c)
 	password := c.PostForm("password")
-	client, err := account.NewClient()
+	client, err := account.NewAccountClient()
 	if err != nil {
 		return
 	}
 	d := &pb.NewAccountDelete{Username: username, Password: password}
-	r, err := client.DeleteAccount(c, d)
+	r, err := client.Delete(c, d)
 	if err != nil {
 		c.JSON(500, gin.H{
 			"code":  "500",
@@ -100,20 +81,9 @@ func DeleteAccount(c *gin.Context) {
 	})
 }
 
-func UpdateAccount(c *gin.Context) {
-	//username := middleware.GetUsername(c)
-	//password := c.PostForm("password")
-	//bio := c.PostForm("bio")
-	//name := c.PostForm("name")
-	//mail := c.PostForm("mail")
-	//phone := c.PostForm("phone")
-	//isPrivate := c.PostForm("is_private")
-
-}
-
 func EditAccountUsernameHandler(c *gin.Context) {
 	username := c.PostForm("username")
-	client, err := account.NewClient()
+	client, err := account.NewAccountClient()
 	if err != nil {
 		return
 	}
@@ -121,7 +91,7 @@ func EditAccountUsernameHandler(c *gin.Context) {
 		Id:       middleware.GetAccountID(c),
 		Username: username,
 	}
-	r, err := client.EditAccountUsername(c, d)
+	r, err := client.EditUsername(c, d)
 	if err != nil {
 		return
 	}
@@ -133,7 +103,7 @@ func EditAccountUsernameHandler(c *gin.Context) {
 
 func EditAccountPasswordHandler(c *gin.Context) {
 	password := c.PostForm("password")
-	client, err := account.NewClient()
+	client, err := account.NewAccountClient()
 	if err != nil {
 		return
 	}
@@ -141,12 +111,29 @@ func EditAccountPasswordHandler(c *gin.Context) {
 		Id:       middleware.GetAccountID(c),
 		Password: password,
 	}
-	r, err := client.EditAccountPassword(c, d)
+	r, err := client.EditPassword(c, d)
 	if err != nil {
 		return
 	}
 	c.JSON(200, gin.H{
 		"code":  "200",
 		"reply": r.Reply,
+	})
+}
+
+func EditAccountMailHandler(c *gin.Context) {
+	mail := c.PostForm("mail")
+	client, err := account.NewAccountClient()
+	if err != nil {
+		return
+	}
+	d := &pb.NewEditAccountMail{Id: middleware.GetAccountID(c), Mail: mail}
+	edit, err := client.EditMail(c, d)
+	if err != nil {
+		return
+	}
+	c.JSON(200, gin.H{
+		"code":  "200",
+		"reply": edit.Reply,
 	})
 }

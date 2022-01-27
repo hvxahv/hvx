@@ -46,56 +46,8 @@ func init() {
 	cache.InitRedis(1)
 }
 
-//func TestAccounts_Create(t *testing.T) {
-//	username := "hvxahv"
-//	password := "hvxahv123"
-//
-//	if err := NewAccounts(username, "x@disism.com", password).Create(); err != nil {
-//		return
-//	}
-//}
-
-func TestAccounts_GetAccountByID(t *testing.T) {
-	account, err := NewAccountsID(730870058436296705).GetAccountByID()
-	if err != nil {
-		t.Log(err)
-		return
-	}
-	fmt.Println(account)
-}
-
-func TestAccounts_GetAccountByUsername(t *testing.T) {
-	account, err := NewAccountsUsername("hvxahv").GetAccountByUsername()
-	if err != nil {
-		t.Log(err)
-		return
-	}
-	fmt.Println(account)
-}
-
-func TestAccounts_EditUsername(t *testing.T) {
-	if err := NewAccountsID(730872664500731905).SetAccountUsername("hvturingga").EditUsername(); err != nil {
-		t.Log(err)
-		return
-	}
-}
-
-func TestAccounts_EditPassword(t *testing.T) {
-	if err := NewAccountsID(730870058436296705).SetAccountPassword("Hvxahv123").EditPassword(); err != nil {
-		t.Log(err)
-		return
-	}
-}
-
-func TestAccounts_Delete(t *testing.T) {
-	if err := NewAccountsID(730872483513204737).Delete(); err != nil {
-		t.Log(err)
-		return
-	}
-}
-
 func TestAccount_Create(t *testing.T) {
-	d := &v1alpha1.NewCreate{
+	d := &v1alpha1.NewAccountCreate{
 		Username:  "hvturingga",
 		Mail:      "hvturingga@disism.com",
 		Password:  "hvxahv123",

@@ -11,7 +11,7 @@ import (
 // then call the gRPC service by the username,
 // and return the JsonLD of the standard activitypub protocol.
 func GetActorHandler(c *gin.Context) {
-	client, err := account.NewClient()
+	client, err := account.NewActorClient()
 	if err != nil {
 		return
 	}
@@ -46,3 +46,7 @@ func GetActorHandler(c *gin.Context) {
 //	fmt.Println(string(body))
 //	//activity.ChannelTypes(name, body)
 //}
+
+func SearchActorsHandler(c *gin.Context) {
+
+}

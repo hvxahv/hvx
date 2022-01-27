@@ -24,11 +24,13 @@ func APIServer() *gin.Engine {
 	// ActivityPub https://www.w3.org/TR/activitypub/
 	// HTTP API for public query of ActivityPub.
 	// ActivityPub WebFinger https://github.com/w3c/activitypub/issues/194 .
-	api.GET("/.well-known/webfinger", handler.WebFingerHandler)
+	api.GET("/.well-known/webfinger", handler.GetWebFingerHandler)
 
 	// Get the actors in the activityPub protocol.
 	// https://www.w3.org/TR/activitypub/#actor-objects
 	api.GET("/u/:actor", handler.GetActorHandler)
+
+	api.GET("/search/:actor", handler.SearchActorsHandler)
 
 	//// The type of Channel is a service in Activitypub. Details:
 	//// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-service
