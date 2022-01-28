@@ -7,7 +7,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	pb "github.com/hvxahv/hvxahv/api/channel/v1alpha1"
-	"github.com/hvxahv/hvxahv/internal/account"
 	"github.com/hvxahv/hvxahv/internal/channel"
 	"github.com/hvxahv/hvxahv/internal/hvx/middleware"
 	"github.com/hvxahv/hvxahv/pkg/microservices/client"
@@ -15,42 +14,42 @@ import (
 )
 
 func GetManagedChannelsHandler(c *gin.Context) {
-	name := middleware.GetUsername(c)
-
-	acct, err := account.NewAccountsUsername(name).GetAccountByUsername()
-	if err != nil {
-		return
-	}
-	ch, err := channel.NewChannelsOwnerID(acct.ID).GetByOwnerID()
-	if err != nil {
-		return
-	}
-	c.JSON(200, gin.H{
-		"code":    200,
-		"message": ch,
-	})
+	//name := middleware.GetUsername(c)
+	//
+	//acct, err := account.NewAccountsUsername(name).GetAccountByUsername()
+	//if err != nil {
+	//	return
+	//}
+	//ch, err := channel.NewChannelsOwnerID(acct.ID).GetByOwnerID()
+	//if err != nil {
+	//	return
+	//}
+	//c.JSON(200, gin.H{
+	//	"code":    200,
+	//	"message": ch,
+	//})
 }
 
 func CreateChannelHandler(c *gin.Context) {
-	name := middleware.GetUsername(c)
-
-	id := c.PostForm("id")
-	cn := c.PostForm("name")
-	bio := c.PostForm("bio")
-	avatar := c.PostForm("avatar")
-
-	isPrivate, err := strconv.ParseBool(c.PostForm("is_private"))
-	if err != nil {
-		return
-	}
-	if err := channel.NewChannels(cn, id, avatar, bio, name, isPrivate).Create(); err != nil {
-		return
-	}
-
-	c.JSON(200, gin.H{
-		"code":    200,
-		"message": "ok",
-	})
+	//name := middleware.GetUsername(c)
+	//
+	//id := c.PostForm("id")
+	//cn := c.PostForm("name")
+	//bio := c.PostForm("bio")
+	//avatar := c.PostForm("avatar")
+	//
+	//isPrivate, err := strconv.ParseBool(c.PostForm("is_private"))
+	//if err != nil {
+	//	return
+	//}
+	//if err := channel.NewChannels(cn, id, avatar, bio, name, isPrivate).Create(); err != nil {
+	//	return
+	//}
+	//
+	//c.JSON(200, gin.H{
+	//	"code":    200,
+	//	"message": "ok",
+	//})
 }
 
 func UpdateChannelHandler(c *gin.Context) {
@@ -142,30 +141,30 @@ func CreateSubscriberHandler(c *gin.Context) {
 }
 
 func GetSubscribersHandler(c *gin.Context) {
-	ci, err := strconv.Atoi(c.Query("channel_id"))
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	a, err := account.NewAccountsUsername(middleware.GetUsername(c)).GetAccountByUsername()
-	if err != nil {
-		log.Println(err)
-		return
-	}
-	s, err := channel.NewGetSubscribersID(uint(ci), a.ID)
-	if err != nil {
-		c.JSON(401, gin.H{
-			"code":    "401",
-			"message": err,
-		})
-		return
-	}
-	subscribers, err := s.GetSubscribersByID()
-	if err != nil {
-		return
-	}
-	c.JSON(200, gin.H{
-		"code":        "200",
-		"subscribers": subscribers,
-	})
+	//ci, err := strconv.Atoi(c.Query("channel_id"))
+	//if err != nil {
+	//	log.Println(err)
+	//	return
+	//}
+	//a, err := account.NewAccountsUsername(middleware.GetUsername(c)).GetAccountByUsername()
+	//if err != nil {
+	//	log.Println(err)
+	//	return
+	//}
+	//s, err := channel.NewGetSubscribersID(uint(ci), a.ID)
+	//if err != nil {
+	//	c.JSON(401, gin.H{
+	//		"code":    "401",
+	//		"message": err,
+	//	})
+	//	return
+	//}
+	//subscribers, err := s.GetSubscribersByID()
+	//if err != nil {
+	//	return
+	//}
+	//c.JSON(200, gin.H{
+	//	"code":        "200",
+	//	"subscribers": subscribers,
+	//})
 }

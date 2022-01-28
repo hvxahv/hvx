@@ -2,7 +2,7 @@ package activitypub
 
 import (
 	"fmt"
-	pb "github.com/hvxahv/hvxahv/api/accounts/v1alpha1"
+	pb "github.com/hvxahv/hvxahv/api/account/v1alpha1"
 	"github.com/hvxahv/hvxahv/internal/account"
 	"github.com/spf13/viper"
 	"strings"
@@ -212,6 +212,7 @@ func IsRemote(resource string) bool {
 	if !strings.Contains(resource, "@") {
 		return false
 	}
+
 	if host != viper.GetString("localhost") {
 		return true
 	}

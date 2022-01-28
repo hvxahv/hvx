@@ -3,7 +3,6 @@ package handler
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/hvxahv/hvxahv/internal/activity"
 	"github.com/hvxahv/hvxahv/internal/hvx/middleware"
 	"io/ioutil"
 )
@@ -30,7 +29,7 @@ func InboxHandler(c *gin.Context) {
 	//}
 
 	//activity.Types(name, body)
-	activity.NewActivities(name, body).Handler()
+	//activity.NewActivities(name, body).Handler()
 }
 
 func OutboxHandler(c *gin.Context) {

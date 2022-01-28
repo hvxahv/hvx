@@ -2,32 +2,29 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
-	pb "github.com/hvxahv/hvxahv/api/accounts/v1alpha1"
+	pb "github.com/hvxahv/hvxahv/api/account/v1alpha1"
 	"github.com/hvxahv/hvxahv/internal/account"
 	"github.com/hvxahv/hvxahv/pkg/activitypub"
 )
 
-func WebFingerHandler(c *gin.Context) {
+func GetWebFingerHandler(c *gin.Context) {
 	resource := c.Query("resource")
 	ok := activitypub.IsRemote(resource)
 	if ok {
-		actor := activitypub.GetWebFinger(resource)
+		actor := activitypub.GetRemoteWebFinger(resource)
 		c.JSON(200, actor)
 		return
 	}
 
-	// Perform some filtering operations from the request to obtain the user name,
-	// and then search for the user name to find whether the user exists in the database.
-	// Currently only tested mastodon has not supported other ActivityPub implementations.
-	// Use this client to call the remote Accounts gRPC service,
-	// and then pass the username to get the queried data.
-
-	client, err := account.NewClient()
+	name := activitypub.GetActorName(resource)
+	client, err := account.NewAccountClient()
 	if err != nil {
 		return
 	}
-	d := &pb.NewAccountUsername{Username: activitypub.GetActorName(resource)}
-	a, err := client.GetAccountByUsername(c, d)
+
+	d := &pb.NewAccountUsername{Username: name}
+
+	ex, err := client.IsExist(c, d)
 	if err != nil {
 		return
 	}
@@ -41,6 +38,8 @@ func WebFingerHandler(c *gin.Context) {
 	//	return
 	//}
 
-	c.JSON(200, activitypub.NewWebFinger(a.Username, false))
-
+	if !ex.IsExist {
+		c.JSON(200, activitypub.NewWebFinger(name, false))
+		return
+	}
 }

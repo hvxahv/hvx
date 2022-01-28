@@ -1,7 +1,6 @@
 package message
 
 import (
-	"github.com/hvxahv/hvxahv/internal/account"
 	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"gorm.io/gorm"
 )
@@ -16,13 +15,13 @@ type Matrices struct {
 	DeviceID   string `gorm:"type:text;device_id"`
 }
 
-func NewMatricesAccountID(username string) *Matrices {
-	a, err := account.NewAccountsUsername(username).GetAccountByUsername()
-	if err != nil {
-		return nil
-	}
-	return &Matrices{AccountID: a.ID}
-}
+//func NewMatricesAccountID(username string) *Matrices {
+//a, err := account.NewAccountsUsername(username).GetAccountByUsername()
+//if err != nil {
+//	return nil
+//}
+//return &Matrices{AccountID: a.ID}
+//}
 
 func (m *Matrices) Get() (*Matrices, error) {
 	db := cockroach.GetDB()

@@ -2,6 +2,8 @@ package account
 
 import (
 	"fmt"
+	"github.com/hvxahv/hvxahv/api/account/v1alpha1"
+	"golang.org/x/net/context"
 	"os"
 	"testing"
 
@@ -44,50 +46,112 @@ func init() {
 	cache.InitRedis(1)
 }
 
-func TestAccounts_Create(t *testing.T) {
-	username := "hvxahv"
-	password := "hvxahv123"
-
-	if err := NewAccounts(username, "x@disism.com", password).Create(); err != nil {
-		return
+func TestAccount_IsExist(t *testing.T) {
+	// Output: false if Exist in database.
+	d := &v1alpha1.NewAccountUsername{
+		Username: "hvturingga",
 	}
-}
-
-func TestAccounts_GetAccountByID(t *testing.T) {
-	account, err := NewAccountsID(730870058436296705).GetAccountByID()
+	s := &account{}
+	a, err := s.IsExist(context.Background(), d)
 	if err != nil {
-		t.Log(err)
+		t.Error(err)
 		return
 	}
-	fmt.Println(account)
-}
+	fmt.Println(a.IsExist)
 
-func TestAccounts_GetAccountByUsername(t *testing.T) {
-	account, err := NewAccountsUsername("hvxahv").GetAccountByUsername()
+	// Output: true if not found in database.
+	d2 := &v1alpha1.NewAccountUsername{
+		Username: "isNotExist",
+	}
+	s2 := &account{}
+	a2, err := s2.IsExist(context.Background(), d2)
 	if err != nil {
-		t.Log(err)
+		t.Error(err)
 		return
 	}
-	fmt.Println(account)
+	fmt.Println(a2.IsExist)
 }
 
-func TestAccounts_EditUsername(t *testing.T) {
-	if err := NewAccountsID(730872664500731905).SetAccountUsername("hvturingga").EditUsername(); err != nil {
-		t.Log(err)
+func TestAccount_Create(t *testing.T) {
+	d := &v1alpha1.NewAccountCreate{
+		Username:  "hvturingga",
+		Mail:      "hvturingga@disism.com",
+		Password:  "hvxahv123",
+		PublicKey: "p",
+	}
+	s := &account{}
+	create, err := s.Create(context.Background(), d)
+	if err != nil {
+		t.Error(err)
 		return
 	}
+	fmt.Println(create)
 }
 
-func TestAccounts_EditPassword(t *testing.T) {
-	if err := NewAccountsID(730870058436296705).SetAccountPassword("Hvxahv123").EditPassword(); err != nil {
-		t.Log(err)
+func TestAccount_Delete(t *testing.T) {
+	d := &v1alpha1.NewAccountDelete{
+		Username: "hvxahv",
+		Password: "hvxahv123",
+	}
+	s := &account{}
+	r, err := s.Delete(context.Background(), d)
+	if err != nil {
+		t.Error(err)
 		return
 	}
+	fmt.Println(r.Code, r.Reply)
 }
 
-func TestAccounts_Delete(t *testing.T) {
-	if err := NewAccountsID(730872483513204737).Delete(); err != nil {
-		t.Log(err)
+func TestAccount_EditUsername(t *testing.T) {
+	d := &v1alpha1.NewEditAccountUsername{
+		Id:       "731607090811043841",
+		Username: "hvturingga",
+	}
+	s := &account{}
+	r, err := s.EditUsername(context.Background(), d)
+	if err != nil {
+		t.Error(err)
 		return
 	}
+	fmt.Println(r.Code, r.Reply)
+}
+
+func TestAccount_EditPassword(t *testing.T) {
+	d := &v1alpha1.NewEditAccountPassword{
+		Id:       "731607090811043841",
+		Password: "Hvxahv123",
+	}
+	s := &account{}
+	r, err := s.EditPassword(context.Background(), d)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	fmt.Println(r.Code, r.Reply)
+}
+
+func TestAccount_EditMail(t *testing.T) {
+	d := &v1alpha1.NewEditAccountMail{
+		Id:   "731607090811043841",
+		Mail: "x@disism.com",
+	}
+	s := &account{}
+	r, err := s.EditMail(context.Background(), d)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	fmt.Println(r.Code, r.Reply)
+}
+func TestAccount_GetAccountByUsername(t *testing.T) {
+	d := &v1alpha1.NewAccountUsername{
+		Username: "hvturingga",
+	}
+	s := &account{}
+	a, err := s.GetAccountByUsername(context.Background(), d)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	fmt.Println(a)
 }

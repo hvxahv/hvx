@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package hvxahv.v1alpha1.proto;
+option go_package = "github.com/hvxahv/hvxahv/api/device/v1alpha1";
+
+service Devices {
+  rpc GetDevicesByAccountID (NewAccountID) returns (DevicesData) {}
+}
+
+message NewAccountID {
+  string account_id = 1;
+}
+
+message DeviceData {
+  string id = 1;
+  string account_id = 2;
+  string device = 3;
+  string hash = 4;
+  string private_key = 5;
+  string public_key = 6;
+}
+
+message DevicesData {
+  string code = 1;
+  repeated DeviceData devices = 2;
+}

@@ -2,26 +2,24 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hvxahv/hvxahv/internal/hvx/middleware"
-	"github.com/hvxahv/hvxahv/internal/message"
 )
 
 func GetMessageAccessHandler(c *gin.Context) {
-	name := middleware.GetUsername(c)
+	//name := middleware.GetUsername(c)
 
-	matrix, err := message.NewMatricesAccountID(name).Get()
-	if err != nil {
-		c.JSON(200, gin.H{
-			"code":   "401",
-			"matrix": "UNREGISTERED",
-		})
-		return
-	}
+	//matrix, err := message.NewMatricesAccountID(name).Get()
+	//if err != nil {
+	//	c.JSON(200, gin.H{
+	//		"code":   "401",
+	//		"matrix": "UNREGISTERED",
+	//	})
+	//	return
+	//}
 
-	c.JSON(200, gin.H{
-		"code":   "200",
-		"matrix": matrix,
-	})
+	//c.JSON(200, gin.H{
+	//	"code":   "200",
+	//	"matrix": matrix,
+	//})
 }
 
 //

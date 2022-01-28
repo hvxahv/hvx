@@ -19,7 +19,7 @@ func Auth(c *gin.Context) {
 	if ht == "" {
 		c.JSON(500, gin.H{
 			"state":   "500",
-			"message": "TOKEN IS NOT CARRIED IN THE REQUEST.",
+			"message": "TOKEN IS NOT CARRIED IN THE REQUEST",
 		})
 		c.Abort()
 		return

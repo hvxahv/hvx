@@ -4,32 +4,41 @@ package hvxahv.v1alpha1.proto;
 option go_package = "github.com/hvxahv/hvxahv/api/account/v1alpha1";
 
 service Accounts {
+  // IsExist If not found Error, return true else return false.
+  rpc IsExist (NewAccountUsername) returns (IsExistReply) {}
+
   // Create the Actor first, and then use the returned ActorID to create a unique account of the current instance account system.
   // The username in the account system is unique, and the Actor may have the same username in different instances.
-  rpc Create (NewCreate) returns (CreateReply) {}
+  rpc Create (NewAccountCreate) returns (Reply) {}
 
   //  Log in to the account system interface.
-  rpc Verify (NewVerify) returns (VerifyReply) {}
-
-  rpc GetActorByAccountUsername (NewAccountUsername) returns (ActorData) {}
+  rpc Verify (NewAccountVerify) returns (VerifyAccountReply) {}
 
   rpc GetAccountByUsername (NewAccountUsername) returns (AccountData) {}
 
-  rpc DeleteAccount (NewAccountDelete) returns (DeleteAccountReply) {}
+  rpc Delete (NewAccountDelete) returns (Reply) {}
 
-  //  rpc Update (AccountData) returns (AccountsReply) {}
-  //  rpc UpdatePassword (UpdatePasswordData) returns (AccountsReply) {}
-  //  rpc UpdateUsername (UpdateUsernameData) returns (AccountsReply) {}
-  //
-  //  // Delete Delete the specified account by user name.
-  //  rpc Delete (DeleteData) returns (AccountsReply) {}
-  //
-  //  rpc GetAccountsByUsername(AccountUsername) returns (AccountData) {}
-  //  rpc FindActorByAccountsUsername(AccountUsername) returns (ActorData) {}
-  //  rpc FindActorByID(ActorID) returns (ActorData) {}
-  //
-  //  // SignIn ...
-  //  rpc SignIn (AuthData) returns (SignInReply) {}
+  // EditUsername The account username will be updated. The username in the account system is unique, and the Actor may have the same username.
+  rpc EditUsername (NewEditAccountUsername) returns (Reply) {}
+
+  // EditPassword The account password will be updated.
+  rpc EditPassword (NewEditAccountPassword) returns (Reply) {}
+
+  // EditEmail The account email will be updated.
+  rpc EditMail (NewEditAccountMail) returns (Reply) {}
+
+  rpc GetPublicKeyByAccountUsername (NewAccountUsername) returns (GetPublicKeyReply) {}
+}
+
+service Actors {
+  rpc GetActorByAccountUsername (NewAccountUsername) returns (ActorData) {}
+  rpc GetActorsByPreferredUsername(NewActorPreferredUsername) returns (ActorsData) {}
+  rpc AddActor (ActorData) returns (Reply) {}
+  rpc EditActor (NewEditActor) returns (Reply) {}
+}
+
+message IsExistReply {
+  bool is_exist = 1;
 }
 
 message AccountData {
@@ -55,28 +64,28 @@ message ActorData {
   string is_remote = 11;
 }
 
-message NewCreate {
+message Reply {
+  string code = 1;
+  string reply = 2;
+}
+
+message NewAccountCreate {
   string username = 1;
   string mail = 2;
   string password = 3;
   string publicKey = 4;
 }
 
-message CreateReply {
-  string code = 1;
-  string reply = 2;
-}
-
-message NewVerify {
+message NewAccountVerify {
   string username = 1;
   string password = 2;
   string ua = 3;
 }
 
-message VerifyReply {
+message VerifyAccountReply {
   string code = 1;
-  string id = 2;
-  string reply = 3;
+  string reply = 2;
+  string id = 3;
   string token = 4;
   string mail = 5;
   string device_id = 6;
@@ -92,7 +101,38 @@ message NewAccountDelete {
   string password = 2;
 }
 
-message DeleteAccountReply {
+message NewEditAccountUsername {
+  string id = 1;
+  string username = 2;
+}
+
+message NewEditAccountPassword {
+  string id = 1;
+  string password = 2;
+}
+
+message NewEditAccountMail {
+  string id = 1;
+  string mail = 2;
+}
+
+message NewActorPreferredUsername {
+  string preferred_username = 1;
+}
+
+message ActorsData {
   string code = 1;
-  string reply = 2;
+  repeated ActorData actors = 2;
+}
+
+message NewEditActor {
+  string AccountUsername = 1;
+  string name = 2;
+  string avatar = 3;
+  string summary = 4;
+}
+
+message GetPublicKeyReply {
+  string code = 1;
+  string public_key = 2;
 }
