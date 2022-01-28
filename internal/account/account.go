@@ -1,10 +1,12 @@
 package account
 
 import (
+	"fmt"
 	"github.com/go-playground/validator/v10"
-	pb "github.com/hvxahv/hvxahv/api/accounts/v1alpha1"
+	pb "github.com/hvxahv/hvxahv/api/account/v1alpha1"
 	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"github.com/pkg/errors"
+	"github.com/spf13/viper"
 	"golang.org/x/crypto/bcrypt"
 	"golang.org/x/net/context"
 	"gorm.io/gorm"
@@ -23,13 +25,12 @@ type Accounts struct {
 
 func (a *account) IsExist(ctx context.Context, in *pb.NewAccountUsername) (*pb.IsExistReply, error) {
 	db := cockroach.GetDB()
+
 	if err := db.Debug().Table("accounts").Where("username = ? ", in.Username).First(&Accounts{}); err != nil {
 		ok := cockroach.IsNotFound(err.Error)
-		if ok {
-			return &pb.IsExistReply{IsExist: ok}, errors.New("THE_USERNAME_NOT_EXISTS")
-		}
+		return &pb.IsExistReply{IsExist: ok}, nil
 	}
-	return &pb.IsExistReply{IsExist: true}, nil
+	return &pb.IsExistReply{IsExist: false}, nil
 }
 
 func (a *account) Create(ctx context.Context, in *pb.NewAccountCreate) (*pb.Reply, error) {
@@ -47,11 +48,7 @@ func (a *account) Create(ctx context.Context, in *pb.NewAccountCreate) (*pb.Repl
 		return nil, errors.New("FAILED_TO_AUTOMATICALLY_CREATE_ACCOUNT_DATABASE")
 	}
 
-	n := NewActors(in.Username, in.PublicKey, "Person")
-	if err := db.Debug().Table("actors").Create(&n).Error; err != nil {
-		return nil, errors.Errorf("FAILED_TO_CREATE_ACTOR")
-	}
-
+	// Check if the username and mail is exist.
 	if err := db.Debug().Table("accounts").Where("username = ? ", in.Username).Or("mail = ?", in.Mail).First(&Accounts{}); err != nil {
 		ok := cockroach.IsNotFound(err.Error)
 		if !ok {
@@ -59,6 +56,13 @@ func (a *account) Create(ctx context.Context, in *pb.NewAccountCreate) (*pb.Repl
 		}
 	}
 
+	// Create the actor.
+	n := NewActors(in.Username, in.PublicKey, "Person")
+	if err := db.Debug().Table("actors").Create(&n).Error; err != nil {
+		return nil, errors.Errorf("FAILED_TO_CREATE_ACTOR")
+	}
+
+	// Create the account.
 	v := NewAccounts(n.ID, in.Username, in.Mail, in.Password)
 	if err := db.Debug().Table("accounts").Create(&v).Error; err != nil {
 		return nil, errors.Errorf("FAILED_TO_CREATE_ACCOUNT")
@@ -95,14 +99,29 @@ func (a *account) EditUsername(ctx context.Context, in *pb.NewEditAccountUsernam
 	if err != nil {
 		return nil, err
 	}
+
+	exist, err := a.IsExist(ctx, &pb.NewAccountUsername{Username: in.Username})
+	if err != nil {
+		return nil, err
+	}
+
+	// If the username is Exist, return error.
+	if !exist.IsExist {
+		return &pb.Reply{Code: "401", Reply: "THE_USERNAME_ALREADY_EXISTS"}, nil
+	}
+
 	db := cockroach.GetDB()
 
-	var acct Accounts
-	if err := db.Debug().Table("accounts").Where("id = ?", uint(id)).First(&acct).Update("username", in.Username).Error; err != nil {
+	if err := db.Debug().Table("accounts").Where("id = ?", uint(id)).First(&a.Accounts).Update("username", in.Username).Error; err != nil {
 		return &pb.Reply{Code: "500", Reply: err.Error()}, err
 	}
 
-	if err := db.Debug().Table("actors").Where("id = ?", acct.ActorID).Update("preferred_username", in.Username).Error; err != nil {
+	address := fmt.Sprintf("https://%s/u/%s", viper.GetString("localhost"), in.Username)
+	inbox := fmt.Sprintf("%s/inbox", address)
+	if err := db.Debug().Table("actors").Where("id = ?", a.Accounts.ActorID).
+		Update("preferred_username", in.Username).
+		Update("inbox", inbox).
+		Update("address", address).Error; err != nil {
 		return &pb.Reply{Code: "500", Reply: err.Error()}, err
 	}
 
@@ -128,6 +147,20 @@ func (a *account) EditPassword(ctx context.Context, in *pb.NewEditAccountPasswor
 	return &pb.Reply{Code: "200", Reply: "ok"}, nil
 }
 
+func (a *account) EditMail(ctx context.Context, in *pb.NewEditAccountMail) (*pb.Reply, error) {
+	id, err := strconv.Atoi(in.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	db := cockroach.GetDB()
+	if err := db.Debug().Table("accounts").Where("id = ?", id).Update("mail", in.Mail).Error; err != nil {
+		return nil, err
+	}
+
+	return &pb.Reply{Code: "200", Reply: "ok"}, nil
+}
+
 func (a *account) GetAccountByUsername(ctx context.Context, in *pb.NewAccountUsername) (*pb.AccountData, error) {
 	db := cockroach.GetDB()
 
@@ -143,20 +176,6 @@ func (a *account) GetAccountByUsername(ctx context.Context, in *pb.NewAccountUse
 		ActorId:   strconv.Itoa(int(a.Accounts.ActorID)),
 		IsPrivate: strconv.FormatBool(a.Accounts.IsPrivate),
 	}, nil
-}
-
-func (a *account) EditMail(ctx context.Context, in *pb.NewEditAccountMail) (*pb.Reply, error) {
-	id, err := strconv.Atoi(in.Id)
-	if err != nil {
-		return nil, err
-	}
-
-	db := cockroach.GetDB()
-	if err := db.Debug().Table("accounts").Where("id = ?", id).Update("mail", in.Mail).Error; err != nil {
-		return nil, err
-	}
-
-	return &pb.Reply{Code: "200", Reply: "ok"}, nil
 }
 
 func NewAccountsID(id uint) *Accounts {

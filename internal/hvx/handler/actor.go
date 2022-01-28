@@ -2,8 +2,9 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
-	pb "github.com/hvxahv/hvxahv/api/accounts/v1alpha1"
+	pb "github.com/hvxahv/hvxahv/api/account/v1alpha1"
 	"github.com/hvxahv/hvxahv/internal/account"
+	"github.com/hvxahv/hvxahv/internal/hvx/middleware"
 	"github.com/hvxahv/hvxahv/pkg/activitypub"
 )
 
@@ -27,26 +28,43 @@ func GetActorHandler(c *gin.Context) {
 	c.JSON(200, a)
 }
 
-//func GetChannelHandler(c *gin.Context) {
-//	name := c.Param("actor")
-//	ch, err := channel.NewChannelsByLink(name).GetActorDataByLink()
-//	if err != nil {
-//		return
-//	}
-//	a := NewChannelActor(ch)
-//	c.JSON(200, a)
-//}
-//
-//func ChannelInboxHandler(c *gin.Context) {
-//	//name := c.Param("actor")
-//	body, err := ioutil.ReadAll(c.Request.Body)
-//	if err != nil {
-//		return
-//	}
-//	fmt.Println(string(body))
-//	//activity.ChannelTypes(name, body)
-//}
-
 func SearchActorsHandler(c *gin.Context) {
+	client, err := account.NewActorClient()
+	if err != nil {
+		return
+	}
+	d := &pb.NewActorPreferredUsername{
+		PreferredUsername: c.Param("actor"),
+	}
 
+	actors, err := client.GetActorsByPreferredUsername(c, d)
+	if err != nil {
+		return
+	}
+	c.JSON(200, actors)
+}
+
+func EditActorHandler(c *gin.Context) {
+	name := c.PostForm("name")
+	summary := c.PostForm("summary")
+	avatar := c.PostForm("avatar")
+
+	client, err := account.NewActorClient()
+	if err != nil {
+		return
+	}
+	d := &pb.NewEditActor{
+		AccountUsername: middleware.GetUsername(c),
+		Avatar:          avatar,
+		Name:            name,
+		Summary:         summary,
+	}
+	reply, err := client.EditActor(c, d)
+	if err != nil {
+		return
+	}
+	c.JSON(200, gin.H{
+		"code":  "200",
+		"reply": reply.Reply,
+	})
 }

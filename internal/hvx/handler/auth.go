@@ -2,9 +2,9 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
-	pb "github.com/hvxahv/hvxahv/api/accounts/v1alpha1"
+	pb "github.com/hvxahv/hvxahv/api/account/v1alpha1"
 	"github.com/hvxahv/hvxahv/internal/account"
-	"log"
+	"github.com/hvxahv/hvxahv/internal/hvx/middleware"
 )
 
 func CreateAccountHandler(c *gin.Context) {
@@ -24,13 +24,19 @@ func CreateAccountHandler(c *gin.Context) {
 
 	cli, err := account.NewAccountClient()
 	if err != nil {
-		log.Println(err)
+		c.JSON(500, gin.H{
+			"code":  "500",
+			"error": err.Error(),
+		})
 		return
 	}
 
 	create, err := cli.Create(c, d)
 	if err != nil {
-		log.Println(err)
+		c.JSON(500, gin.H{
+			"code":  "500",
+			"error": err.Error(),
+		})
 		return
 	}
 
@@ -69,18 +75,20 @@ func SignInHandler(c *gin.Context) {
 	})
 }
 
-//func GetPublicKeyHandlers(c *gin.Context) {
-//	name := middleware.GetUsername(c)
-//	actor, err := account.NewActorByAccountUsername(name).GetActorByAccountUsername()
-//	if err != nil {
-//		log.Println(err)
-//		return
-//	}
-//	c.JSON(200, gin.H{
-//		"code":       "200",
-//		"public_key": actor.PublicKey,
-//	})
-//}
+func GetPublicKeyHandlers(c *gin.Context) {
+	cli, err := account.NewAccountClient()
+	if err != nil {
+		return
+	}
+	d := &pb.NewAccountUsername{
+		Username: middleware.GetUsername(c),
+	}
+	reply, err := cli.GetPublicKeyByAccountUsername(c, d)
+	c.JSON(200, gin.H{
+		"code":       "200",
+		"public_key": reply.PublicKey,
+	})
+}
 
 //type ECDHDerive struct {
 //	DeviceID    string `json:"device_id"`
@@ -249,22 +257,7 @@ func SignInHandler(c *gin.Context) {
 //	})
 //}
 //
-//func GetDevicesHandler(c *gin.Context) {
-//	username := middleware.GetUsername(c)
-//	acct, err := account.NewAccountsUsername(username).GetAccountByUsername()
-//	if err != nil {
-//		fmt.Println(err)
-//		return
-//	}
-//	devices, err := device.NewDevicesByAccountID(acct.ID).GetDevicesByAccountID()
-//	if err != nil {
-//		return
-//	}
-//	c.JSON(200, gin.H{
-//		"code":    "200",
-//		"devices": devices,
-//	})
-//}
+
 //
 //func DeleteDevicesHandler(c *gin.Context) {
 //	acct, err := account.NewAccountsUsername(middleware.GetUsername(c)).GetAccountByUsername()

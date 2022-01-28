@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             v3.19.3
-// source: api/accounts/v1alpha1/accounts.proto
+// source: api/account/v1alpha1/account.proto
 
 package v1alpha1
 
@@ -22,6 +22,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AccountsClient interface {
+	// IsExist If not found Error, return true else return false.
 	IsExist(ctx context.Context, in *NewAccountUsername, opts ...grpc.CallOption) (*IsExistReply, error)
 	// Create the Actor first, and then use the returned ActorID to create a unique account of the current instance account system.
 	// The username in the account system is unique, and the Actor may have the same username in different instances.
@@ -30,10 +31,13 @@ type AccountsClient interface {
 	Verify(ctx context.Context, in *NewAccountVerify, opts ...grpc.CallOption) (*VerifyAccountReply, error)
 	GetAccountByUsername(ctx context.Context, in *NewAccountUsername, opts ...grpc.CallOption) (*AccountData, error)
 	Delete(ctx context.Context, in *NewAccountDelete, opts ...grpc.CallOption) (*Reply, error)
-	// EditUsername The account username will be updated with the account ID, along with the Actor preferred username.
+	// EditUsername The account username will be updated. The username in the account system is unique, and the Actor may have the same username.
 	EditUsername(ctx context.Context, in *NewEditAccountUsername, opts ...grpc.CallOption) (*Reply, error)
+	// EditPassword The account password will be updated.
 	EditPassword(ctx context.Context, in *NewEditAccountPassword, opts ...grpc.CallOption) (*Reply, error)
+	// EditEmail The account email will be updated.
 	EditMail(ctx context.Context, in *NewEditAccountMail, opts ...grpc.CallOption) (*Reply, error)
+	GetPublicKeyByAccountUsername(ctx context.Context, in *NewAccountUsername, opts ...grpc.CallOption) (*GetPublicKeyReply, error)
 }
 
 type accountsClient struct {
@@ -116,10 +120,20 @@ func (c *accountsClient) EditMail(ctx context.Context, in *NewEditAccountMail, o
 	return out, nil
 }
 
+func (c *accountsClient) GetPublicKeyByAccountUsername(ctx context.Context, in *NewAccountUsername, opts ...grpc.CallOption) (*GetPublicKeyReply, error) {
+	out := new(GetPublicKeyReply)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Accounts/GetPublicKeyByAccountUsername", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AccountsServer is the server API for Accounts service.
 // All implementations must embed UnimplementedAccountsServer
 // for forward compatibility
 type AccountsServer interface {
+	// IsExist If not found Error, return true else return false.
 	IsExist(context.Context, *NewAccountUsername) (*IsExistReply, error)
 	// Create the Actor first, and then use the returned ActorID to create a unique account of the current instance account system.
 	// The username in the account system is unique, and the Actor may have the same username in different instances.
@@ -128,10 +142,13 @@ type AccountsServer interface {
 	Verify(context.Context, *NewAccountVerify) (*VerifyAccountReply, error)
 	GetAccountByUsername(context.Context, *NewAccountUsername) (*AccountData, error)
 	Delete(context.Context, *NewAccountDelete) (*Reply, error)
-	// EditUsername The account username will be updated with the account ID, along with the Actor preferred username.
+	// EditUsername The account username will be updated. The username in the account system is unique, and the Actor may have the same username.
 	EditUsername(context.Context, *NewEditAccountUsername) (*Reply, error)
+	// EditPassword The account password will be updated.
 	EditPassword(context.Context, *NewEditAccountPassword) (*Reply, error)
+	// EditEmail The account email will be updated.
 	EditMail(context.Context, *NewEditAccountMail) (*Reply, error)
+	GetPublicKeyByAccountUsername(context.Context, *NewAccountUsername) (*GetPublicKeyReply, error)
 	mustEmbedUnimplementedAccountsServer()
 }
 
@@ -162,6 +179,9 @@ func (UnimplementedAccountsServer) EditPassword(context.Context, *NewEditAccount
 }
 func (UnimplementedAccountsServer) EditMail(context.Context, *NewEditAccountMail) (*Reply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method EditMail not implemented")
+}
+func (UnimplementedAccountsServer) GetPublicKeyByAccountUsername(context.Context, *NewAccountUsername) (*GetPublicKeyReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPublicKeyByAccountUsername not implemented")
 }
 func (UnimplementedAccountsServer) mustEmbedUnimplementedAccountsServer() {}
 
@@ -320,6 +340,24 @@ func _Accounts_EditMail_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Accounts_GetPublicKeyByAccountUsername_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NewAccountUsername)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountsServer).GetPublicKeyByAccountUsername(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/hvxahv.v1alpha1.proto.Accounts/GetPublicKeyByAccountUsername",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountsServer).GetPublicKeyByAccountUsername(ctx, req.(*NewAccountUsername))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Accounts_ServiceDesc is the grpc.ServiceDesc for Accounts service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -359,9 +397,13 @@ var Accounts_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "EditMail",
 			Handler:    _Accounts_EditMail_Handler,
 		},
+		{
+			MethodName: "GetPublicKeyByAccountUsername",
+			Handler:    _Accounts_GetPublicKeyByAccountUsername_Handler,
+		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "api/accounts/v1alpha1/accounts.proto",
+	Metadata: "api/account/v1alpha1/account.proto",
 }
 
 // ActorsClient is the client API for Actors service.
@@ -370,6 +412,8 @@ var Accounts_ServiceDesc = grpc.ServiceDesc{
 type ActorsClient interface {
 	GetActorByAccountUsername(ctx context.Context, in *NewAccountUsername, opts ...grpc.CallOption) (*ActorData, error)
 	GetActorsByPreferredUsername(ctx context.Context, in *NewActorPreferredUsername, opts ...grpc.CallOption) (*ActorsData, error)
+	AddActor(ctx context.Context, in *ActorData, opts ...grpc.CallOption) (*Reply, error)
+	EditActor(ctx context.Context, in *NewEditActor, opts ...grpc.CallOption) (*Reply, error)
 }
 
 type actorsClient struct {
@@ -398,12 +442,32 @@ func (c *actorsClient) GetActorsByPreferredUsername(ctx context.Context, in *New
 	return out, nil
 }
 
+func (c *actorsClient) AddActor(ctx context.Context, in *ActorData, opts ...grpc.CallOption) (*Reply, error) {
+	out := new(Reply)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Actors/AddActor", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *actorsClient) EditActor(ctx context.Context, in *NewEditActor, opts ...grpc.CallOption) (*Reply, error) {
+	out := new(Reply)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Actors/EditActor", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ActorsServer is the server API for Actors service.
 // All implementations must embed UnimplementedActorsServer
 // for forward compatibility
 type ActorsServer interface {
 	GetActorByAccountUsername(context.Context, *NewAccountUsername) (*ActorData, error)
 	GetActorsByPreferredUsername(context.Context, *NewActorPreferredUsername) (*ActorsData, error)
+	AddActor(context.Context, *ActorData) (*Reply, error)
+	EditActor(context.Context, *NewEditActor) (*Reply, error)
 	mustEmbedUnimplementedActorsServer()
 }
 
@@ -416,6 +480,12 @@ func (UnimplementedActorsServer) GetActorByAccountUsername(context.Context, *New
 }
 func (UnimplementedActorsServer) GetActorsByPreferredUsername(context.Context, *NewActorPreferredUsername) (*ActorsData, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetActorsByPreferredUsername not implemented")
+}
+func (UnimplementedActorsServer) AddActor(context.Context, *ActorData) (*Reply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddActor not implemented")
+}
+func (UnimplementedActorsServer) EditActor(context.Context, *NewEditActor) (*Reply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method EditActor not implemented")
 }
 func (UnimplementedActorsServer) mustEmbedUnimplementedActorsServer() {}
 
@@ -466,6 +536,42 @@ func _Actors_GetActorsByPreferredUsername_Handler(srv interface{}, ctx context.C
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Actors_AddActor_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ActorData)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ActorsServer).AddActor(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/hvxahv.v1alpha1.proto.Actors/AddActor",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ActorsServer).AddActor(ctx, req.(*ActorData))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Actors_EditActor_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NewEditActor)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ActorsServer).EditActor(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/hvxahv.v1alpha1.proto.Actors/EditActor",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ActorsServer).EditActor(ctx, req.(*NewEditActor))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Actors_ServiceDesc is the grpc.ServiceDesc for Actors service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -481,7 +587,15 @@ var Actors_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "GetActorsByPreferredUsername",
 			Handler:    _Actors_GetActorsByPreferredUsername_Handler,
 		},
+		{
+			MethodName: "AddActor",
+			Handler:    _Actors_AddActor_Handler,
+		},
+		{
+			MethodName: "EditActor",
+			Handler:    _Actors_EditActor_Handler,
+		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "api/accounts/v1alpha1/accounts.proto",
+	Metadata: "api/account/v1alpha1/account.proto",
 }

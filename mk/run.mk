@@ -4,6 +4,9 @@ run:
 account:
 	go run ./cmd/account/main.go run
 
+device:
+	go run ./cmd/device/main.go run
+
 articles:
 	go run ./app/articles/main.go run
 

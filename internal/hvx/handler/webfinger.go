@@ -2,7 +2,7 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
-	pb "github.com/hvxahv/hvxahv/api/accounts/v1alpha1"
+	pb "github.com/hvxahv/hvxahv/api/account/v1alpha1"
 	"github.com/hvxahv/hvxahv/internal/account"
 	"github.com/hvxahv/hvxahv/pkg/activitypub"
 )
@@ -21,10 +21,10 @@ func GetWebFingerHandler(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	
+
 	d := &pb.NewAccountUsername{Username: name}
 
-	e, err := client.IsExist(c, d)
+	ex, err := client.IsExist(c, d)
 	if err != nil {
 		return
 	}
@@ -38,7 +38,7 @@ func GetWebFingerHandler(c *gin.Context) {
 	//	return
 	//}
 
-	if e.IsExist {
+	if !ex.IsExist {
 		c.JSON(200, activitypub.NewWebFinger(name, false))
 		return
 	}

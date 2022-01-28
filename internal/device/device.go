@@ -3,9 +3,12 @@ package device
 import (
 	"fmt"
 	"github.com/SherClockHolmes/webpush-go"
+	pb "github.com/hvxahv/hvxahv/api/device/v1alpha1"
 	"github.com/hvxahv/hvxahv/pkg/cockroach"
+	"golang.org/x/net/context"
 	"gorm.io/gorm"
 	"log"
+	"strconv"
 )
 
 type Devices struct {
@@ -17,6 +20,19 @@ type Devices struct {
 	Hash       string `gorm:"primaryKey;type:text;hash"`
 	PrivateKey string `gorm:"type:text;privateKey"`
 	PublicKey  string `gorm:"type:text;publicKey"`
+}
+
+func (d *device) GetDevicesByAccountID(ctx context.Context, in *pb.NewAccountID) (*pb.DevicesData, error) {
+	id, err := strconv.Atoi(in.AccountId)
+	if err != nil {
+		return nil, err
+	}
+	var devices []*pb.DeviceData
+	db := cockroach.GetDB()
+	if err := db.Debug().Table("devices").Where("account_id = ?", id).Find(&devices).Error; err != nil {
+		return nil, err
+	}
+	return &pb.DevicesData{Code: "200", Devices: devices}, nil
 }
 
 func (d *Devices) DeleteAll() error {

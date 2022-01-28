@@ -2,7 +2,7 @@ package account
 
 import (
 	"github.com/google/uuid"
-	pb "github.com/hvxahv/hvxahv/api/accounts/v1alpha1"
+	pb "github.com/hvxahv/hvxahv/api/account/v1alpha1"
 	"github.com/hvxahv/hvxahv/internal/device"
 	"github.com/hvxahv/hvxahv/internal/hvx/policy"
 	"github.com/hvxahv/hvxahv/pkg/cockroach"
@@ -45,6 +45,23 @@ func (a *account) Verify(ctx context.Context, in *pb.NewAccountVerify) (*pb.Veri
 		Mail:      v.Mail,
 		DeviceId:  d.Hash,
 		PublicKey: d.PublicKey,
+	}, nil
+}
+
+func (a *account) GetPublicKeyByAccountUsername(ctx context.Context, in *pb.NewAccountUsername) (*pb.GetPublicKeyReply, error) {
+	db := cockroach.GetDB()
+
+	if err := db.Debug().Table("accounts").Where("username = ?", in.Username).First(&a.Accounts).Error; err != nil {
+		return nil, err
+	}
+
+	if err := db.Debug().Table("actors").Where("id = ?", a.Accounts.ActorID).First(&a.Actors).Error; err != nil {
+		return nil, err
+	}
+
+	return &pb.GetPublicKeyReply{
+		Code:      "200",
+		PublicKey: a.Actors.PublicKey,
 	}, nil
 }
 

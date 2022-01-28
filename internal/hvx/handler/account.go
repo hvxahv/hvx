@@ -2,62 +2,10 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
-	pb "github.com/hvxahv/hvxahv/api/accounts/v1alpha1"
+	pb "github.com/hvxahv/hvxahv/api/account/v1alpha1"
 	"github.com/hvxahv/hvxahv/internal/account"
 	"github.com/hvxahv/hvxahv/internal/hvx/middleware"
 )
-
-// UploadAvatar Interface for users to upload avatars.
-//func UploadAvatar(c *gin.Context) {
-//	avatar, err := c.FormFile("avatar")
-//	if err != nil {
-//		fmt.Println("File read failed！" + err.Error())
-//		c.JSON(500, gin.H{
-//			"status":  500,
-//			"message": "file read failed！",
-//		})
-//		return
-//	}
-//
-//	fileType := avatar.Header.Get("Content-Type")
-//	if fileType != "image/jpeg" && fileType != "image/png" {
-//		c.JSON(500, gin.H{
-//			"status":  500,
-//			"message": "unsupported image format!",
-//		})
-//		return
-//	}
-//
-//	file, err := avatar.Open()
-//	if err != nil {
-//		fmt.Println(err)
-//		return
-//	}
-//
-//	info, err := minio.NewFilesUploader("avatar", avatar.Filename, fileType, file).Uploader()
-//	if err != nil {
-//		log.Println(err)
-//		return
-//	}
-//
-//	log.Println(info.Location)
-//
-//	actor, err := account.NewActorByAccountUsername(middleware.GetUsername(c)).GetActorByAccountUsername()
-//	if err != nil {
-//		return
-//	}
-//	a := account.NewActorID(actor.ID)
-//	a.Avatar = info.Location
-//	if err := a.Update(); err != nil {
-//		log.Println(err)
-//		return
-//	}
-//	c.JSON(200, gin.H{
-//		"status":  200,
-//		"message": "avatar uploaded successfully.",
-//		"url":     info.Location,
-//	})
-//}
 
 func DeleteAccount(c *gin.Context) {
 	username := middleware.GetUsername(c)

@@ -29,7 +29,7 @@ func APIServer() *gin.Engine {
 	// Get the actors in the activityPub protocol.
 	// https://www.w3.org/TR/activitypub/#actor-objects
 	api.GET("/u/:actor", handler.GetActorHandler)
-
+	// Get the actors in the activityPub protocol.
 	api.GET("/search/:actor", handler.SearchActorsHandler)
 
 	//// The type of Channel is a service in Activitypub. Details:
@@ -55,8 +55,7 @@ func APIServer() *gin.Engine {
 
 	// INTERNAL API GROUP.
 	v1alpha1.V1Accounts(v1)
-	//
-	//v1alpha1.V1Channels(v1)
+	v1alpha1.V1Devices(v1)
 	//
 	//v1alpha1.V1Articles(v1)
 	//

@@ -4,7 +4,9 @@ package hvxahv.v1alpha1.proto;
 option go_package = "github.com/hvxahv/hvxahv/api/account/v1alpha1";
 
 service Accounts {
+  // IsExist If not found Error, return true else return false.
   rpc IsExist (NewAccountUsername) returns (IsExistReply) {}
+
   // Create the Actor first, and then use the returned ActorID to create a unique account of the current instance account system.
   // The username in the account system is unique, and the Actor may have the same username in different instances.
   rpc Create (NewAccountCreate) returns (Reply) {}
@@ -16,15 +18,23 @@ service Accounts {
 
   rpc Delete (NewAccountDelete) returns (Reply) {}
 
-  // EditUsername The account username will be updated with the account ID, along with the Actor preferred username.
+  // EditUsername The account username will be updated. The username in the account system is unique, and the Actor may have the same username.
   rpc EditUsername (NewEditAccountUsername) returns (Reply) {}
+
+  // EditPassword The account password will be updated.
   rpc EditPassword (NewEditAccountPassword) returns (Reply) {}
+
+  // EditEmail The account email will be updated.
   rpc EditMail (NewEditAccountMail) returns (Reply) {}
+
+  rpc GetPublicKeyByAccountUsername (NewAccountUsername) returns (GetPublicKeyReply) {}
 }
 
 service Actors {
   rpc GetActorByAccountUsername (NewAccountUsername) returns (ActorData) {}
   rpc GetActorsByPreferredUsername(NewActorPreferredUsername) returns (ActorsData) {}
+  rpc AddActor (ActorData) returns (Reply) {}
+  rpc EditActor (NewEditActor) returns (Reply) {}
 }
 
 message IsExistReply {
@@ -113,4 +123,16 @@ message NewActorPreferredUsername {
 message ActorsData {
   string code = 1;
   repeated ActorData actors = 2;
+}
+
+message NewEditActor {
+  string AccountUsername = 1;
+  string name = 2;
+  string avatar = 3;
+  string summary = 4;
+}
+
+message GetPublicKeyReply {
+  string code = 1;
+  string public_key = 2;
 }

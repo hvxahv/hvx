@@ -2,7 +2,7 @@ package account
 
 import (
 	"fmt"
-	"github.com/hvxahv/hvxahv/api/accounts/v1alpha1"
+	"github.com/hvxahv/hvxahv/api/account/v1alpha1"
 	"golang.org/x/net/context"
 	"os"
 	"testing"
@@ -46,6 +46,32 @@ func init() {
 	cache.InitRedis(1)
 }
 
+func TestAccount_IsExist(t *testing.T) {
+	// Output: false if Exist in database.
+	d := &v1alpha1.NewAccountUsername{
+		Username: "hvturingga",
+	}
+	s := &account{}
+	a, err := s.IsExist(context.Background(), d)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	fmt.Println(a.IsExist)
+
+	// Output: true if not found in database.
+	d2 := &v1alpha1.NewAccountUsername{
+		Username: "isNotExist",
+	}
+	s2 := &account{}
+	a2, err := s2.IsExist(context.Background(), d2)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	fmt.Println(a2.IsExist)
+}
+
 func TestAccount_Create(t *testing.T) {
 	d := &v1alpha1.NewAccountCreate{
 		Username:  "hvturingga",
@@ -56,8 +82,76 @@ func TestAccount_Create(t *testing.T) {
 	s := &account{}
 	create, err := s.Create(context.Background(), d)
 	if err != nil {
-		t.Log(err)
+		t.Error(err)
 		return
 	}
 	fmt.Println(create)
+}
+
+func TestAccount_Delete(t *testing.T) {
+	d := &v1alpha1.NewAccountDelete{
+		Username: "hvxahv",
+		Password: "hvxahv123",
+	}
+	s := &account{}
+	r, err := s.Delete(context.Background(), d)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	fmt.Println(r.Code, r.Reply)
+}
+
+func TestAccount_EditUsername(t *testing.T) {
+	d := &v1alpha1.NewEditAccountUsername{
+		Id:       "731607090811043841",
+		Username: "hvturingga",
+	}
+	s := &account{}
+	r, err := s.EditUsername(context.Background(), d)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	fmt.Println(r.Code, r.Reply)
+}
+
+func TestAccount_EditPassword(t *testing.T) {
+	d := &v1alpha1.NewEditAccountPassword{
+		Id:       "731607090811043841",
+		Password: "Hvxahv123",
+	}
+	s := &account{}
+	r, err := s.EditPassword(context.Background(), d)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	fmt.Println(r.Code, r.Reply)
+}
+
+func TestAccount_EditMail(t *testing.T) {
+	d := &v1alpha1.NewEditAccountMail{
+		Id:   "731607090811043841",
+		Mail: "x@disism.com",
+	}
+	s := &account{}
+	r, err := s.EditMail(context.Background(), d)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	fmt.Println(r.Code, r.Reply)
+}
+func TestAccount_GetAccountByUsername(t *testing.T) {
+	d := &v1alpha1.NewAccountUsername{
+		Username: "hvturingga",
+	}
+	s := &account{}
+	a, err := s.GetAccountByUsername(context.Background(), d)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	fmt.Println(a)
 }

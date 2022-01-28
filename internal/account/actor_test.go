@@ -2,63 +2,66 @@ package account
 
 import (
 	"fmt"
-	"log"
+	pb "github.com/hvxahv/hvxahv/api/account/v1alpha1"
+	"golang.org/x/net/context"
 	"testing"
 )
 
-func TestActors_Create(t *testing.T) {
-	//a := NewActors("hvturingga", "", "Person")
-	//actor, err := a.Create()
-	//if err != nil {
-	//	t.Error(err)
-	//	return
-	//}
-	//
-	//fmt.Println(actor)
-}
-
-func TestActors_Update(t *testing.T) {
-	a := NewActorsID(730822679860805633).SetActorName("HVTURINGGA").SetActorSummary("Aha ...")
-	log.Println(a.ID)
-	if err := a.Update(); err != nil {
-		t.Error(err)
-		return
-	}
-}
-
-func TestNewAddActors(t *testing.T) {
-	//a := NewAddActors("xxs", "halfmemories.com", "", "", "", "https://halfmemories.com/u/xxs/inbox", "https://halfmemories.com/u/xxs", "", "Services")
-	//actor, err := a.Create()
-	//if err != nil {
-	//	t.Error(err)
-	//	return
-	//}
-	//fmt.Println(actor)
-}
-
 func TestActors_GetActorByAccountUsername(t *testing.T) {
-	//account, err := NewActorsAccountUsername("hvturingga").GetActorByAccountUsername()
-	//if err != nil {
-	//	t.Log(err)
-	//	return
-	//}
-	//fmt.Println(account)
-}
-
-func TestActors_GetActorByID(t *testing.T) {
-	actor, err := NewActorsID(730799720355201025).GetActorByID()
+	n := &pb.NewAccountUsername{Username: "hvxahv"}
+	s := &account{}
+	a, err := s.GetActorByAccountUsername(context.Background(), n)
 	if err != nil {
-		t.Log(err)
+		t.Errorf("Error getting actors: %v", err)
 		return
 	}
-	fmt.Println(actor)
+	fmt.Println(a)
 }
 
-func TestActors_GetActorByAddress(t *testing.T) {
-	actor, err := NewActorsAddress("https://hvxahv.halfmemories.com/u/hvturingga").GetActorByAddress()
+func TestAccount_GetActorsByPreferredUsername(t *testing.T) {
+	n := &pb.NewActorPreferredUsername{PreferredUsername: "hvxahv"}
+	s := &account{}
+	a, err := s.GetActorsByPreferredUsername(context.Background(), n)
 	if err != nil {
-		t.Log(err)
+		t.Errorf("Error getting actors: %v", err)
 		return
 	}
-	fmt.Println(actor)
+	fmt.Println(a.Code, a.Actors)
+}
+
+func TestAccount_AddActor(t *testing.T) {
+	actor := &pb.ActorData{
+		PreferredUsername: "xxs",
+		Domain:            "https://halfmemories.com",
+		Avatar:            "https://www.halfmemories.com/avatar.png",
+		Name:              "HVTURINGGA",
+		Summary:           "Aha...",
+		Inbox:             "https://halfmemories.com/u/xxs/inbox",
+		Address:           "https://halfmemories.com/u/xxs",
+		PublicKey:         "public_key",
+		ActorType:         "Person",
+	}
+	s := &account{}
+	a, err := s.AddActor(context.Background(), actor)
+	if err != nil {
+		t.Errorf("Error adding actor: %v", err)
+		return
+	}
+	fmt.Println(a.Code, a.Reply)
+}
+
+func TestAccount_UpdateActor(t *testing.T) {
+	actor := &pb.NewEditActor{
+		AccountUsername: "hvxahv",
+		Avatar:          "https://www.halfmemories.com/kobayashi.png",
+		Name:            "KOBAYASHI YUI",
+		Summary:         "Bio...",
+	}
+	s := &account{}
+	a, err := s.EditActor(context.Background(), actor)
+	if err != nil {
+		t.Errorf("Error updating actor: %v", err)
+		return
+	}
+	fmt.Println(a.Code, a.Reply)
 }

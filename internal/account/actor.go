@@ -2,13 +2,12 @@ package account
 
 import (
 	"fmt"
-	pb "github.com/hvxahv/hvxahv/api/accounts/v1alpha1"
+	pb "github.com/hvxahv/hvxahv/api/account/v1alpha1"
+	"github.com/spf13/viper"
 	"golang.org/x/net/context"
 	"strconv"
 
 	"github.com/hvxahv/hvxahv/pkg/cockroach"
-	"github.com/pkg/errors"
-	"github.com/spf13/viper"
 	"gorm.io/gorm"
 )
 
@@ -27,11 +26,6 @@ type Actors struct {
 	IsRemote          bool   `gorm:"type:boolean;is_remote"`
 }
 
-func (a *Actors) SetActorPreferredUsername(preferredUsername string) *Actors {
-	a.PreferredUsername = preferredUsername
-	return a
-}
-
 func (a *Actors) SetActorName(name string) *Actors {
 	a.Name = name
 	return a
@@ -46,117 +40,6 @@ func (a *Actors) SetActorSummary(summary string) *Actors {
 	a.Summary = summary
 	return a
 }
-
-func (a *Actors) Update() error {
-	if a.PreferredUsername != "" {
-		return errors.New("PLEASE_USE_THE_SET_ACTOR_PREFERRED_USERNAME_METHOD_TO_UPDATE_THE_PREFERRED_USERNAME")
-	}
-	db := cockroach.GetDB()
-	err := db.Debug().Table("actors").Where("id = ?", a.ID).Updates(&a).Error
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (a *Actors) EditActorPreferredUsername() error {
-	db := cockroach.GetDB()
-	err := db.Debug().Table("actors").Where("id = ?", a.ID).Update("preferred_username", a.PreferredUsername).Error
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (a *Actors) Delete() error {
-	db := cockroach.GetDB()
-
-	if err := db.Debug().Table("actors").Where("id = ?", a.ID).Unscoped().Delete(&Actors{}).Error; err != nil {
-		return err
-	}
-	return nil
-}
-
-func (a *Actors) GetActorByID() (*Actors, error) {
-	db := cockroach.GetDB()
-
-	if err := db.Debug().Table("actors").Where("id = ?", a.ID).First(&a).Error; err != nil {
-		return nil, err
-	}
-
-	return a, nil
-}
-
-func (a *Actors) GetActorByAddress() (*Actors, error) {
-	db := cockroach.GetDB()
-
-	err := db.Debug().Table("actors").Where("address = ?", a.Address).First(&a).Error
-	if err != nil {
-		ok := cockroach.IsNotFound(err)
-		if ok {
-			return nil, err
-		}
-	}
-	return a, nil
-}
-
-func NewActorsAddress(address string) *Actors {
-	return &Actors{Address: address}
-}
-
-func NewActorsAccountUsername(username string) *Actors {
-	return &Actors{PreferredUsername: username}
-}
-
-func NewActorsPreferredUsername(preferredUsername string) *Actors {
-	return &Actors{PreferredUsername: preferredUsername}
-}
-
-// NewAddActors Add an Actor from remote and set IsRemote to true.
-func NewAddActors(preferredUsername, Domain, Avatar, Name, Summary, Inbox, address, PublicKey, ActorType string) *Actors {
-	return &Actors{
-		PreferredUsername: preferredUsername,
-		Domain:            Domain,
-		Avatar:            Avatar,
-		Name:              Name,
-		Summary:           Summary,
-		Inbox:             Inbox,
-		Address:           address,
-		PublicKey:         PublicKey,
-		ActorType:         ActorType,
-		IsRemote:          true,
-	}
-}
-
-func NewActorsID(id uint) *Actors {
-	return &Actors{
-		Model: gorm.Model{
-			ID: id,
-		},
-	}
-}
-
-func NewActors(preferredUsername, publicKey, actorType string) *Actors {
-	domain := viper.GetString("localhost")
-
-	return &Actors{
-		PreferredUsername: preferredUsername,
-		Domain:            domain,
-		Inbox:             fmt.Sprintf("https://%s/u/%s/inbox", domain, preferredUsername),
-		Address:           fmt.Sprintf("https://%s/u/%s", domain, preferredUsername),
-		PublicKey:         publicKey,
-		ActorType:         actorType,
-		IsRemote:          false,
-	}
-}
-
-/****
-
-
-grpc
-*/
 
 func (a *account) GetActorByAccountUsername(ctx context.Context, in *pb.NewAccountUsername) (*pb.ActorData, error) {
 	d := &pb.NewAccountUsername{Username: in.Username}
@@ -198,22 +81,66 @@ func (a *account) GetActorsByPreferredUsername(ctx context.Context, in *pb.NewAc
 		return nil, err
 	}
 
-	//for _, i := range actors {
-	//	from, err := account.NewActorID(i.FromID).GetByActorID()
-	//	if err != nil {
-	//		log.Println(err)
-	//	}
-	//	inboxes := Inboxes{
-	//		ID:           strconv.FormatUint(uint64(i.ID), 10),
-	//		From:         from.Name,
-	//		FromID:       strconv.FormatUint(uint64(i.FromID), 10),
-	//		ActivityType: i.ActivityType,
-	//		ActivityID:   i.ActivityID,
-	//	}
-	//	ibx = append(ibx, inboxes)
-	//}
-
-	fmt.Println(actors)
-
 	return &pb.ActorsData{Code: "200", Actors: actors}, nil
+}
+
+func (a *account) AddActor(ctx context.Context, in *pb.ActorData) (*pb.Reply, error) {
+	db := cockroach.GetDB()
+
+	if err := db.Debug().Table("actors").Create(&Actors{
+		PreferredUsername: in.PreferredUsername,
+		Domain:            in.Domain,
+		Avatar:            in.Avatar,
+		Name:              in.Name,
+		Summary:           in.Summary,
+		Inbox:             in.Inbox,
+		Address:           in.Address,
+		PublicKey:         in.PublicKey,
+		ActorType:         in.ActorType,
+		IsRemote:          true,
+	}).Error; err != nil {
+		return nil, err
+	}
+	return &pb.Reply{Code: "200", Reply: "ok"}, nil
+}
+
+func (a *account) EditActor(ctx context.Context, in *pb.NewEditActor) (*pb.Reply, error) {
+
+	d := &pb.NewAccountUsername{Username: in.AccountUsername}
+	acct, err := a.GetAccountByUsername(context.Background(), d)
+	if err != nil {
+		return nil, err
+	}
+
+	actor := new(Actors)
+	if in.Avatar != "" {
+		actor.SetActorAvatar(in.Avatar)
+	}
+	if in.Name != "" {
+		actor.SetActorName(in.Name)
+	}
+	if in.Summary != "" {
+		actor.SetActorSummary(in.Summary)
+	}
+
+	db := cockroach.GetDB()
+
+	if err := db.Debug().Table("actors").Where("id = ?", acct.ActorId).Updates(&actor).Error; err != nil {
+		return nil, err
+	}
+	return &pb.Reply{Code: "200", Reply: "ok"}, nil
+}
+
+func NewActors(preferredUsername, publicKey, actorType string) *Actors {
+	domain := viper.GetString("localhost")
+
+	return &Actors{
+		PreferredUsername: preferredUsername,
+		Domain:            domain,
+		Inbox:             fmt.Sprintf("https://%s/u/%s/inbox", domain, preferredUsername),
+		Address:           fmt.Sprintf("https://%s/u/%s", domain, preferredUsername),
+		PublicKey:         publicKey,
+		ActorType:         actorType,
+		IsRemote:          false,
+	}
 }

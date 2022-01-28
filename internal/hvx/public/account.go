@@ -10,7 +10,7 @@ import (
 func GetPublicAccountCountHandler(c *gin.Context) {
 	db := cockroach.GetDB()
 	var count int64
-	if err := db.Debug().Table("accounts").Count(&count).Error; err != nil {
+	if err := db.Debug().Table("account").Count(&count).Error; err != nil {
 		log.Println(err)
 		return
 	}
