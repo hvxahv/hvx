@@ -7,7 +7,6 @@ import (
 	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"golang.org/x/net/context"
 	"gorm.io/gorm"
-	"log"
 	"strconv"
 )
 
@@ -22,7 +21,45 @@ type Devices struct {
 	PublicKey  string `gorm:"type:text;publicKey"`
 }
 
-func (d *device) GetDevicesByAccountID(ctx context.Context, in *pb.NewAccountID) (*pb.DevicesData, error) {
+func (d *device) IsExist(ctx context.Context, in *pb.NewDeviceHash) (*pb.IsDeviceExistReply, error) {
+	db := cockroach.GetDB()
+	if err := db.Debug().Table("devices").Where("hash = ?", in.Hash).First(&Devices{}); err != nil {
+		if cockroach.IsNotFound(err.Error) {
+			return &pb.IsDeviceExistReply{IsExist: false}, nil
+		}
+	}
+
+	return &pb.IsDeviceExistReply{IsExist: true}, nil
+}
+
+func (d *device) Create(ctx context.Context, in *pb.NewDeviceCreate) (*pb.DeviceCreateReply, error) {
+	db := cockroach.GetDB()
+	if err := db.AutoMigrate(&Devices{}); err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+
+	id, err := strconv.Atoi(in.AccountId)
+	if err != nil {
+		return nil, err
+	}
+
+	privateKey, publicKey, err := webpush.GenerateVAPIDKeys()
+	if err != nil {
+		return nil, err
+	}
+
+	v := NewDevices(uint(id), in.Ua, in.Hash, privateKey, publicKey)
+	if err := db.Debug().Where("devices").Create(&v).Error; err != nil {
+		return nil, err
+	}
+
+	return &pb.DeviceCreateReply{
+		PublicKey: publicKey,
+	}, nil
+}
+
+func (d *device) GetDevicesByAccountID(ctx context.Context, in *pb.NewDeviceAccountID) (*pb.DevicesData, error) {
 	id, err := strconv.Atoi(in.AccountId)
 	if err != nil {
 		return nil, err
@@ -35,120 +72,38 @@ func (d *device) GetDevicesByAccountID(ctx context.Context, in *pb.NewAccountID)
 	return &pb.DevicesData{Code: "200", Devices: devices}, nil
 }
 
-func (d *Devices) DeleteAll() error {
-	db := cockroach.GetDB()
-	if err := db.Debug().Table("devices").Where("account_id = ?", d.AccountID).Unscoped().Delete(&Devices{}); err != nil {
-		return err.Error
-	}
-	return nil
-}
-
-func (d *Devices) GetDeviceByHash() (*Devices, error) {
-	db := cockroach.GetDB()
-	if err := db.Debug().Table("devices").Where("account_id = ? AND hash = ?", d.AccountID, d.Hash).First(&d).Error; err != nil {
-		return nil, err
-	}
-	return d, nil
-}
-
-func (d *Devices) Delete() error {
-	db := cockroach.GetDB()
-	if err := db.Debug().Table("devices").Where("account_id = ? AND hash = ?", d.AccountID, d.Hash).Unscoped().Delete(&Devices{}).Error; err != nil {
-		return err
-	}
-	return nil
-}
-
-func NewDevices(accountID uint, device string, deviceID string) *Devices {
-	privateKey, publicKey, err := webpush.GenerateVAPIDKeys()
+func (d *device) DeleteAllByAccountID(ctx context.Context, in *pb.NewDeviceAccountID) (*pb.DeviceReply, error) {
+	id, err := strconv.Atoi(in.AccountId)
 	if err != nil {
-		log.Println(err)
-	}
-	return &Devices{AccountID: accountID, Device: device, Hash: deviceID, PrivateKey: privateKey, PublicKey: publicKey}
-}
-
-func (d *Devices) IsNotExist() bool {
-	db := cockroach.GetDB()
-	if err := db.Debug().Table("devices").Where("hash = ?", d.Hash).First(&Devices{}); err != nil {
-		if cockroach.IsNotFound(err.Error) {
-			return cockroach.IsNotFound(err.Error)
-		}
-	}
-	return false
-}
-
-func (d *Devices) GetDevice() (*Devices, error) {
-	db := cockroach.GetDB()
-	if err := db.Debug().Table("devices").Where("id = ? AND account_id = ?", d.ID, d.AccountID).First(&d).Error; err != nil {
 		return nil, err
 	}
-	return d, nil
-}
-
-func (d *Devices) GetDevicesByAccountID() (*[]Devices, error) {
 	db := cockroach.GetDB()
-	var devices []Devices
-	if err := db.Debug().Table("devices").Where("account_id = ?", d.AccountID).Find(&devices).Error; err != nil {
+	if err := db.Debug().Table("devices").Where("account_id = ?", id).Unscoped().Delete(&Devices{}).Error; err != nil {
 		return nil, err
 	}
-	for _, i := range devices {
-		log.Println(i.ID)
-		devices = append(devices)
-	}
-	return &devices, nil
+	return &pb.DeviceReply{Code: "200", Reply: "ok"}, nil
 }
 
-func (d *Devices) Create() error {
+func (d *device) Delete(ctx context.Context, in *pb.NewDeviceID) (*pb.DeviceReply, error) {
+	id, err := strconv.Atoi(in.Id)
+	if err != nil {
+		return nil, err
+	}
 	db := cockroach.GetDB()
-	if err := db.AutoMigrate(&Devices{}); err != nil {
-		fmt.Println(err)
-		return err
+	if err := db.Debug().Table("devices").Where("id = ?", id).Unscoped().Delete(&Devices{}).Error; err != nil {
+		return nil, err
 	}
+	return &pb.DeviceReply{Code: "200"}, nil
+}
 
-	if err := db.Debug().Where("devices").Create(&d).Error; err != nil {
-		return err
+func (d *device) DeleteByDeviceHash(ctx context.Context, in *pb.NewDeviceHash) (*pb.DeviceReply, error) {
+	db := cockroach.GetDB()
+	if err := db.Debug().Table("devices").Where("hash = ?", in.Hash).Unscoped().Delete(&Devices{}).Error; err != nil {
+		return nil, err
 	}
-	return nil
+	return &pb.DeviceReply{Code: "200"}, nil
 }
 
-func NewDevicesIsNotExist(hash string) *Devices {
-	return &Devices{Hash: hash}
-}
-
-func NewDeviceByHash(accountID uint, hash string) *Devices {
-	return &Devices{
-		AccountID: accountID,
-		Hash:      hash,
-	}
-}
-
-func NewDevicesByID(accountID, id uint) *Devices {
-	return &Devices{
-		ID:        id,
-		AccountID: accountID,
-	}
-}
-
-func NewDevicesByAccountID(accountID uint) *Devices {
-	return &Devices{AccountID: accountID}
-}
-
-type Device interface {
-	Create() error
-
-	// GetDevice Get online device details by ID.
-	GetDevice() (*Devices, error)
-
-	// GetDeviceByHash Get the device through hash.
-	GetDeviceByHash() (*Devices, error)
-
-	// GetDevicesByAccountID Get all logged-in devices of the account.
-	GetDevicesByAccountID() (*[]Devices, error)
-
-	// IsNotExist Confirm whether the device HASH exists in the middleware. Should only be used for HTTP middleware.
-	IsNotExist() bool
-
-	Delete() error
-
-	DeleteAll() error
+func NewDevices(accountID uint, ua, hash, privateKey, publicKey string) *Devices {
+	return &Devices{AccountID: accountID, Device: ua, Hash: hash, PrivateKey: privateKey, PublicKey: publicKey}
 }

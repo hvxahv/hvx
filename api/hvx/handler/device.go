@@ -12,7 +12,7 @@ func GetDevicesHandler(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	d := &pb.NewAccountID{AccountId: middleware.GetAccountID(c)}
+	d := &pb.NewDeviceAccountID{AccountId: middleware.GetAccountID(c)}
 	devices, err := client.GetDevicesByAccountID(c, d)
 	if err != nil {
 		return

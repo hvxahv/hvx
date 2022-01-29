@@ -22,7 +22,13 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type DevicesClient interface {
-	GetDevicesByAccountID(ctx context.Context, in *NewAccountID, opts ...grpc.CallOption) (*DevicesData, error)
+	// Whether there is a device hash.
+	IsExist(ctx context.Context, in *NewDeviceHash, opts ...grpc.CallOption) (*IsDeviceExistReply, error)
+	Create(ctx context.Context, in *NewDeviceCreate, opts ...grpc.CallOption) (*DeviceCreateReply, error)
+	GetDevicesByAccountID(ctx context.Context, in *NewDeviceAccountID, opts ...grpc.CallOption) (*DevicesData, error)
+	DeleteAllByAccountID(ctx context.Context, in *NewDeviceAccountID, opts ...grpc.CallOption) (*DeviceReply, error)
+	Delete(ctx context.Context, in *NewDeviceID, opts ...grpc.CallOption) (*DeviceReply, error)
+	DeleteByDeviceHash(ctx context.Context, in *NewDeviceHash, opts ...grpc.CallOption) (*DeviceReply, error)
 }
 
 type devicesClient struct {
@@ -33,9 +39,54 @@ func NewDevicesClient(cc grpc.ClientConnInterface) DevicesClient {
 	return &devicesClient{cc}
 }
 
-func (c *devicesClient) GetDevicesByAccountID(ctx context.Context, in *NewAccountID, opts ...grpc.CallOption) (*DevicesData, error) {
+func (c *devicesClient) IsExist(ctx context.Context, in *NewDeviceHash, opts ...grpc.CallOption) (*IsDeviceExistReply, error) {
+	out := new(IsDeviceExistReply)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Devices/IsExist", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *devicesClient) Create(ctx context.Context, in *NewDeviceCreate, opts ...grpc.CallOption) (*DeviceCreateReply, error) {
+	out := new(DeviceCreateReply)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Devices/Create", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *devicesClient) GetDevicesByAccountID(ctx context.Context, in *NewDeviceAccountID, opts ...grpc.CallOption) (*DevicesData, error) {
 	out := new(DevicesData)
 	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Devices/GetDevicesByAccountID", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *devicesClient) DeleteAllByAccountID(ctx context.Context, in *NewDeviceAccountID, opts ...grpc.CallOption) (*DeviceReply, error) {
+	out := new(DeviceReply)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Devices/DeleteAllByAccountID", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *devicesClient) Delete(ctx context.Context, in *NewDeviceID, opts ...grpc.CallOption) (*DeviceReply, error) {
+	out := new(DeviceReply)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Devices/Delete", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *devicesClient) DeleteByDeviceHash(ctx context.Context, in *NewDeviceHash, opts ...grpc.CallOption) (*DeviceReply, error) {
+	out := new(DeviceReply)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Devices/DeleteByDeviceHash", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +97,13 @@ func (c *devicesClient) GetDevicesByAccountID(ctx context.Context, in *NewAccoun
 // All implementations must embed UnimplementedDevicesServer
 // for forward compatibility
 type DevicesServer interface {
-	GetDevicesByAccountID(context.Context, *NewAccountID) (*DevicesData, error)
+	// Whether there is a device hash.
+	IsExist(context.Context, *NewDeviceHash) (*IsDeviceExistReply, error)
+	Create(context.Context, *NewDeviceCreate) (*DeviceCreateReply, error)
+	GetDevicesByAccountID(context.Context, *NewDeviceAccountID) (*DevicesData, error)
+	DeleteAllByAccountID(context.Context, *NewDeviceAccountID) (*DeviceReply, error)
+	Delete(context.Context, *NewDeviceID) (*DeviceReply, error)
+	DeleteByDeviceHash(context.Context, *NewDeviceHash) (*DeviceReply, error)
 	mustEmbedUnimplementedDevicesServer()
 }
 
@@ -54,8 +111,23 @@ type DevicesServer interface {
 type UnimplementedDevicesServer struct {
 }
 
-func (UnimplementedDevicesServer) GetDevicesByAccountID(context.Context, *NewAccountID) (*DevicesData, error) {
+func (UnimplementedDevicesServer) IsExist(context.Context, *NewDeviceHash) (*IsDeviceExistReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method IsExist not implemented")
+}
+func (UnimplementedDevicesServer) Create(context.Context, *NewDeviceCreate) (*DeviceCreateReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
+}
+func (UnimplementedDevicesServer) GetDevicesByAccountID(context.Context, *NewDeviceAccountID) (*DevicesData, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetDevicesByAccountID not implemented")
+}
+func (UnimplementedDevicesServer) DeleteAllByAccountID(context.Context, *NewDeviceAccountID) (*DeviceReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteAllByAccountID not implemented")
+}
+func (UnimplementedDevicesServer) Delete(context.Context, *NewDeviceID) (*DeviceReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
+}
+func (UnimplementedDevicesServer) DeleteByDeviceHash(context.Context, *NewDeviceHash) (*DeviceReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteByDeviceHash not implemented")
 }
 func (UnimplementedDevicesServer) mustEmbedUnimplementedDevicesServer() {}
 
@@ -70,8 +142,44 @@ func RegisterDevicesServer(s grpc.ServiceRegistrar, srv DevicesServer) {
 	s.RegisterService(&Devices_ServiceDesc, srv)
 }
 
+func _Devices_IsExist_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NewDeviceHash)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DevicesServer).IsExist(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/hvxahv.v1alpha1.proto.Devices/IsExist",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DevicesServer).IsExist(ctx, req.(*NewDeviceHash))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Devices_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NewDeviceCreate)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DevicesServer).Create(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/hvxahv.v1alpha1.proto.Devices/Create",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DevicesServer).Create(ctx, req.(*NewDeviceCreate))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Devices_GetDevicesByAccountID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(NewAccountID)
+	in := new(NewDeviceAccountID)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -83,7 +191,61 @@ func _Devices_GetDevicesByAccountID_Handler(srv interface{}, ctx context.Context
 		FullMethod: "/hvxahv.v1alpha1.proto.Devices/GetDevicesByAccountID",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DevicesServer).GetDevicesByAccountID(ctx, req.(*NewAccountID))
+		return srv.(DevicesServer).GetDevicesByAccountID(ctx, req.(*NewDeviceAccountID))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Devices_DeleteAllByAccountID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NewDeviceAccountID)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DevicesServer).DeleteAllByAccountID(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/hvxahv.v1alpha1.proto.Devices/DeleteAllByAccountID",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DevicesServer).DeleteAllByAccountID(ctx, req.(*NewDeviceAccountID))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Devices_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NewDeviceID)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DevicesServer).Delete(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/hvxahv.v1alpha1.proto.Devices/Delete",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DevicesServer).Delete(ctx, req.(*NewDeviceID))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Devices_DeleteByDeviceHash_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NewDeviceHash)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DevicesServer).DeleteByDeviceHash(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/hvxahv.v1alpha1.proto.Devices/DeleteByDeviceHash",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DevicesServer).DeleteByDeviceHash(ctx, req.(*NewDeviceHash))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -96,8 +258,28 @@ var Devices_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*DevicesServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
+			MethodName: "IsExist",
+			Handler:    _Devices_IsExist_Handler,
+		},
+		{
+			MethodName: "Create",
+			Handler:    _Devices_Create_Handler,
+		},
+		{
 			MethodName: "GetDevicesByAccountID",
 			Handler:    _Devices_GetDevicesByAccountID_Handler,
+		},
+		{
+			MethodName: "DeleteAllByAccountID",
+			Handler:    _Devices_DeleteAllByAccountID_Handler,
+		},
+		{
+			MethodName: "Delete",
+			Handler:    _Devices_Delete_Handler,
+		},
+		{
+			MethodName: "DeleteByDeviceHash",
+			Handler:    _Devices_DeleteByDeviceHash_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -27,3 +27,13 @@ func NewActorClient() (pb.ActorsClient, error) {
 
 	return pb.NewActorsClient(conn), nil
 }
+
+func NewECDHClient() (pb.ECDHClient, error) {
+	address := fmt.Sprintf("%s:%s", viper.GetString("microservices.account.localhost"), viper.GetString("microservices.account.port"))
+	conn, err := grpc.Dial(address, grpc.WithInsecure())
+	if err != nil {
+		return nil, err
+	}
+
+	return pb.NewECDHClient(conn), nil
+}

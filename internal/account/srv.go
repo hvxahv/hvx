@@ -14,6 +14,7 @@ import (
 type account struct {
 	pb.AccountsServer
 	pb.ActorsServer
+	pb.ECDHServer
 	*Accounts
 	*Actors
 }
@@ -31,6 +32,7 @@ func Run() error {
 	// Create a new account and actor server.
 	pb.RegisterAccountsServer(s, &account{})
 	pb.RegisterActorsServer(s, &account{})
+	pb.RegisterECDHServer(s, &account{})
 	reflection.Register(s)
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", port))

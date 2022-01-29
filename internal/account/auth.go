@@ -3,13 +3,13 @@ package account
 import (
 	"github.com/google/uuid"
 	pb "github.com/hvxahv/hvxahv/api/account/v1alpha1"
+	"github.com/hvxahv/hvxahv/api/device/v1alpha1"
 	"github.com/hvxahv/hvxahv/internal/device"
 	"github.com/hvxahv/hvxahv/internal/hvx/policy"
 	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
 	"golang.org/x/net/context"
-	"log"
 	"strconv"
 )
 
@@ -21,30 +21,40 @@ func (a *account) Verify(ctx context.Context, in *pb.NewAccountVerify) (*pb.Veri
 		return nil, err
 	}
 
-	log.Println(v)
 	if err := bcrypt.CompareHashAndPassword([]byte(v.Password), []byte(in.Password)); err != nil {
 		return nil, errors.Errorf("PASSWORD_VERIFICATION_FAILED")
 	}
-	deviceID := uuid.New().String()
+	hash := uuid.New().String()
 
-	t, err := policy.GenToken(strconv.Itoa(int(v.ID)), v.Mail, v.Username, v.Password, deviceID)
+	// Creating an authorization token.
+	k, err := policy.GenToken(strconv.Itoa(int(v.ID)), v.Mail, v.Username, v.Password, hash)
 	if err != nil {
 		return &pb.VerifyAccountReply{Code: "401", Reply: err.Error()}, err
 	}
 
-	d := device.NewDevices(v.ID, in.Ua, deviceID)
-	if err := d.Create(); err != nil {
-		return &pb.VerifyAccountReply{Code: "500", Reply: err.Error()}, err
+	client, err := device.NewDeviceClient()
+	if err != nil {
+		return nil, err
+	}
+
+	d := &v1alpha1.NewDeviceCreate{
+		AccountId: strconv.Itoa(int(v.ID)),
+		Ua:        in.Ua,
+		Hash:      hash,
+	}
+	create, err := client.Create(ctx, d)
+	if err != nil {
+		return nil, err
 	}
 
 	return &pb.VerifyAccountReply{
-		Code:      "200",
-		Reply:     "ok",
-		Id:        strconv.Itoa(int(v.ID)),
-		Token:     t,
-		Mail:      v.Mail,
-		DeviceId:  d.Hash,
-		PublicKey: d.PublicKey,
+		Code:       "200",
+		Reply:      "ok",
+		Id:         strconv.Itoa(int(v.ID)),
+		Token:      k,
+		Mail:       v.Mail,
+		DeviceHash: hash,
+		PublicKey:  create.PublicKey,
 	}, nil
 }
 

@@ -2,7 +2,7 @@ package v1alpha1
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hvxahv/hvxahv/internal/hvx/handler"
+	"github.com/hvxahv/hvxahv/api/hvx/handler"
 )
 
 func V1Accounts(v1 *gin.RouterGroup) {
@@ -21,24 +21,18 @@ func V1Accounts(v1 *gin.RouterGroup) {
 
 	v1.GET("/account/rsa/public", handler.GetPublicKeyHandlers)
 
+	v1.GET("/account/logout", handler.LogoutHandler)
+
 	/**
 	 * Actor for v1 version of the server api endpoints for the account resource type (hvx.hvxahv.com/v1/actors).
 	 */
 	v1.PATCH("/actor/edit", handler.EditActorHandler)
 
 	/**
-	 * Devices for v1 version of the server api endpoints for the account resource type (hvx.hvxahv.com/v1/account).
+	 * ECDH for v1 version of the server api endpoints for the account resource type (hvx.hvxahv.com/v1/account).
 	 */
-	//v1.GET("/account/devices", handler.GetDevicesHandler)
-	//
-	//v1.POST("/account/devices/delete", handler.DeleteDevicesHandler)
-
-	//v1.GET("/account/rsa/public/:id", handler.GetDHPublicJWKHandlers)
-	//v1.GET("/account/rsa/private/:id", handler.GetDHPrivateJWKHandlers)
-	//v1.POST("/account/rsa/private/request", handler.RequestPrivateKeyHandlers)
-	//v1.POST("/account/rsa/private/send", handler.SendPrivateKeyHandlers)
-	//
-	//// Exit current device.
-	//v1.GET("/account/logout", handler.LogoutHandler)
-
+	//	https://github.com/hvxahv/hvxahv/blob/main/SECURITY.md
+	v1.GET("/account/dh/private")
+	v1.POST("/account/dh")
+	v1.GET("/account/dh/wait")
 }

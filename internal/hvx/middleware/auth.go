@@ -1,11 +1,10 @@
 package middleware
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/hvxahv/hvxahv/api/device/v1alpha1"
 	"github.com/hvxahv/hvxahv/internal/device"
 	"github.com/hvxahv/hvxahv/internal/hvx/policy"
-	"github.com/pkg/errors"
 	"log"
 	"strings"
 )
@@ -33,28 +32,93 @@ func Auth(c *gin.Context) {
 	if err != nil {
 		c.JSON(500, gin.H{
 			"state":   "500",
-			"message": "LOGIN FAILED. TOKEN IS INCORRECT!",
+			"message": "TOKEN_IS_INCORRECT",
 		})
 		c.Abort()
-	} else {
-		u, err := policy.ParseToken(t)
-		if err != nil {
-			log.Println("failed to obtain user through token.")
-			c.Abort()
-		}
-		if device.NewDevicesIsNotExist(u.DevicesID).IsNotExist() {
-			fmt.Println(errors.Errorf("THE_DEVICE_HAS_BEEN_BANNED"))
-			c.JSON(401, gin.H{
-				"code":    "401",
-				"message": "Token is not available, the device has been banned.",
-			})
-			c.Abort()
-		}
-
-		c.Set("devices", u.DevicesID)
-		c.Set("username", u.Username)
-		c.Set("id", u.ID)
-		c.Next()
+		return
 	}
 
+	pares, err := policy.ParseToken(t)
+	if err != nil {
+		c.JSON(500, gin.H{
+			"code":    "500",
+			"message": "TOKEN_PARSING_FAILED",
+		})
+		c.Abort()
+		return
+	}
+	client, err := device.NewDeviceClient()
+	if err != nil {
+		return
+	}
+	d := &v1alpha1.NewDeviceHash{Hash: pares.DevicesHash}
+	exist, err := client.IsExist(c, d)
+	if err != nil {
+		return
+	}
+	if !exist.IsExist {
+		c.JSON(400, gin.H{
+			"code":    "400",
+			"message": "AUTH_TOKEN_INVALID",
+		})
+		c.Abort()
+		return
+	}
+
+	c.Set("hash", pares.DevicesHash)
+	c.Set("username", pares.Username)
+	c.Set("id", pares.ID)
+	c.Next()
+}
+
+// GetUsername Get the username of the context login user through the username key.
+func GetUsername(c *gin.Context) string {
+	name, ok := c.Get("username")
+	if !ok {
+		c.JSON(401, gin.H{
+			"code":    "401",
+			"message": "FAILED_PARSING_TOKEN",
+		})
+		return ""
+	}
+
+	author, ok := name.(string)
+	if !ok {
+		log.Println("USERNAME_INCORRECT_FORMAT")
+	}
+	return author
+}
+
+func GetDeviceHash(c *gin.Context) string {
+	hash, ok := c.Get("hash")
+	if !ok {
+		c.JSON(401, gin.H{
+			"code":    "500",
+			"message": "FAILED_PARSING_TOKEN",
+		})
+		return ""
+	}
+
+	d, ok := hash.(string)
+	if !ok {
+		log.Println("DEVICE_HASH_INCORRECT_FORMAT")
+	}
+	return d
+}
+
+func GetAccountID(c *gin.Context) string {
+	id, ok := c.Get("id")
+	if !ok {
+		c.JSON(401, gin.H{
+			"code":    "401",
+			"message": "FAILED_PARSING_TOKEN",
+		})
+		return ""
+	}
+
+	i, ok := id.(string)
+	if !ok {
+		log.Println("ACCOUNT_ID_INCORRECT_FORMAT")
+	}
+	return i
 }

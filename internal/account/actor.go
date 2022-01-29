@@ -84,7 +84,7 @@ func (a *account) GetActorsByPreferredUsername(ctx context.Context, in *pb.NewAc
 	return &pb.ActorsData{Code: "200", Actors: actors}, nil
 }
 
-func (a *account) AddActor(ctx context.Context, in *pb.ActorData) (*pb.Reply, error) {
+func (a *account) AddActor(ctx context.Context, in *pb.ActorData) (*pb.AccountReply, error) {
 	db := cockroach.GetDB()
 
 	if err := db.Debug().Table("actors").Create(&Actors{
@@ -101,10 +101,10 @@ func (a *account) AddActor(ctx context.Context, in *pb.ActorData) (*pb.Reply, er
 	}).Error; err != nil {
 		return nil, err
 	}
-	return &pb.Reply{Code: "200", Reply: "ok"}, nil
+	return &pb.AccountReply{Code: "200", Reply: "ok"}, nil
 }
 
-func (a *account) EditActor(ctx context.Context, in *pb.NewEditActor) (*pb.Reply, error) {
+func (a *account) EditActor(ctx context.Context, in *pb.NewEditActor) (*pb.AccountReply, error) {
 
 	d := &pb.NewAccountUsername{Username: in.AccountUsername}
 	acct, err := a.GetAccountByUsername(context.Background(), d)
@@ -128,7 +128,7 @@ func (a *account) EditActor(ctx context.Context, in *pb.NewEditActor) (*pb.Reply
 	if err := db.Debug().Table("actors").Where("id = ?", acct.ActorId).Updates(&actor).Error; err != nil {
 		return nil, err
 	}
-	return &pb.Reply{Code: "200", Reply: "ok"}, nil
+	return &pb.AccountReply{Code: "200", Reply: "ok"}, nil
 }
 
 func NewActors(preferredUsername, publicKey, actorType string) *Actors {
