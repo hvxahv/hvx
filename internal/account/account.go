@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"github.com/go-playground/validator/v10"
 	pb "github.com/hvxahv/hvxahv/api/account/v1alpha1"
+	"github.com/hvxahv/hvxahv/api/device/v1alpha1"
+	"github.com/hvxahv/hvxahv/internal/device"
 	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
@@ -23,17 +25,17 @@ type Accounts struct {
 	IsPrivate bool   `gorm:"type:boolean;is_private"`
 }
 
-func (a *account) IsExist(ctx context.Context, in *pb.NewAccountUsername) (*pb.IsExistReply, error) {
+func (a *account) IsExist(ctx context.Context, in *pb.NewAccountUsername) (*pb.IsAccountExistReply, error) {
 	db := cockroach.GetDB()
 
 	if err := db.Debug().Table("accounts").Where("username = ? ", in.Username).First(&Accounts{}); err != nil {
 		ok := cockroach.IsNotFound(err.Error)
-		return &pb.IsExistReply{IsExist: ok}, nil
+		return &pb.IsAccountExistReply{IsExist: ok}, nil
 	}
-	return &pb.IsExistReply{IsExist: false}, nil
+	return &pb.IsAccountExistReply{IsExist: false}, nil
 }
 
-func (a *account) Create(ctx context.Context, in *pb.NewAccountCreate) (*pb.Reply, error) {
+func (a *account) Create(ctx context.Context, in *pb.NewAccountCreate) (*pb.AccountReply, error) {
 	if err := validator.New().Struct(in); err != nil {
 		return nil, errors.New("FAILED_TO_VALIDATOR")
 	}
@@ -68,10 +70,10 @@ func (a *account) Create(ctx context.Context, in *pb.NewAccountCreate) (*pb.Repl
 		return nil, errors.Errorf("FAILED_TO_CREATE_ACCOUNT")
 	}
 
-	return &pb.Reply{Code: "200", Reply: "ok"}, nil
+	return &pb.AccountReply{Code: "200", Reply: "ok"}, nil
 }
 
-func (a *account) Delete(ctx context.Context, in *pb.NewAccountDelete) (*pb.Reply, error) {
+func (a *account) Delete(ctx context.Context, in *pb.NewAccountDelete) (*pb.AccountReply, error) {
 	v := NewAuthorization(in.Username, in.Password)
 
 	db := cockroach.GetDB()
@@ -91,10 +93,10 @@ func (a *account) Delete(ctx context.Context, in *pb.NewAccountDelete) (*pb.Repl
 		return nil, err
 	}
 
-	return &pb.Reply{Code: "200", Reply: "ok"}, nil
+	return &pb.AccountReply{Code: "200", Reply: "ok"}, nil
 }
 
-func (a *account) EditUsername(ctx context.Context, in *pb.NewEditAccountUsername) (*pb.Reply, error) {
+func (a *account) EditUsername(ctx context.Context, in *pb.NewEditAccountUsername) (*pb.AccountReply, error) {
 	id, err := strconv.Atoi(in.Id)
 	if err != nil {
 		return nil, err
@@ -107,13 +109,13 @@ func (a *account) EditUsername(ctx context.Context, in *pb.NewEditAccountUsernam
 
 	// If the username is Exist, return error.
 	if !exist.IsExist {
-		return &pb.Reply{Code: "401", Reply: "THE_USERNAME_ALREADY_EXISTS"}, nil
+		return &pb.AccountReply{Code: "401", Reply: "THE_USERNAME_ALREADY_EXISTS"}, nil
 	}
 
 	db := cockroach.GetDB()
 
 	if err := db.Debug().Table("accounts").Where("id = ?", uint(id)).First(&a.Accounts).Update("username", in.Username).Error; err != nil {
-		return &pb.Reply{Code: "500", Reply: err.Error()}, err
+		return &pb.AccountReply{Code: "500", Reply: err.Error()}, err
 	}
 
 	address := fmt.Sprintf("https://%s/u/%s", viper.GetString("localhost"), in.Username)
@@ -122,13 +124,13 @@ func (a *account) EditUsername(ctx context.Context, in *pb.NewEditAccountUsernam
 		Update("preferred_username", in.Username).
 		Update("inbox", inbox).
 		Update("address", address).Error; err != nil {
-		return &pb.Reply{Code: "500", Reply: err.Error()}, err
+		return &pb.AccountReply{Code: "500", Reply: err.Error()}, err
 	}
 
-	return &pb.Reply{Code: "200", Reply: "ok"}, nil
+	return &pb.AccountReply{Code: "200", Reply: "ok"}, nil
 }
 
-func (a *account) EditPassword(ctx context.Context, in *pb.NewEditAccountPassword) (*pb.Reply, error) {
+func (a *account) EditPassword(ctx context.Context, in *pb.NewEditAccountPassword) (*pb.AccountReply, error) {
 	id, err := strconv.Atoi(in.Id)
 	if err != nil {
 		return nil, err
@@ -139,15 +141,21 @@ func (a *account) EditPassword(ctx context.Context, in *pb.NewEditAccountPasswor
 		return nil, err
 	}
 
-	//// Because the password is reset, all logged-in devices should be deleted
-	//if err := device.NewDevicesByAccountID(a.ID).DeleteAll(); err != nil {
-	//	return nil, err
-	//}
+	// Because the password is reset, all logged-in devices should be deleted
+	client, err := device.NewDeviceClient()
+	if err != nil {
+		return nil, err
+	}
+	d := &v1alpha1.NewDeviceAccountID{AccountId: in.Id}
+	reply, err := client.DeleteAllByAccountID(ctx, d)
+	if err != nil {
+		return nil, err
+	}
 
-	return &pb.Reply{Code: "200", Reply: "ok"}, nil
+	return &pb.AccountReply{Code: "200", Reply: reply.Reply}, nil
 }
 
-func (a *account) EditMail(ctx context.Context, in *pb.NewEditAccountMail) (*pb.Reply, error) {
+func (a *account) EditMail(ctx context.Context, in *pb.NewEditAccountMail) (*pb.AccountReply, error) {
 	id, err := strconv.Atoi(in.Id)
 	if err != nil {
 		return nil, err
@@ -158,7 +166,7 @@ func (a *account) EditMail(ctx context.Context, in *pb.NewEditAccountMail) (*pb.
 		return nil, err
 	}
 
-	return &pb.Reply{Code: "200", Reply: "ok"}, nil
+	return &pb.AccountReply{Code: "200", Reply: "ok"}, nil
 }
 
 func (a *account) GetAccountByUsername(ctx context.Context, in *pb.NewAccountUsername) (*pb.AccountData, error) {

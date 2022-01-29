@@ -4,11 +4,36 @@ package hvxahv.v1alpha1.proto;
 option go_package = "github.com/hvxahv/hvxahv/api/device/v1alpha1";
 
 service Devices {
-  rpc GetDevicesByAccountID (NewAccountID) returns (DevicesData) {}
+  // Whether there is a device hash.
+  rpc IsExist (NewDeviceHash) returns (IsDeviceExistReply) {}
+  rpc Create(NewDeviceCreate) returns (DeviceCreateReply) {}
+  rpc GetDevicesByAccountID (NewDeviceAccountID) returns (DevicesData) {}
+  rpc DeleteAllByAccountID (NewDeviceAccountID) returns (DeviceReply) {}
+  rpc Delete (NewDeviceID) returns (DeviceReply) {}
+  rpc DeleteByDeviceHash (NewDeviceHash) returns (DeviceReply) {}
 }
 
-message NewAccountID {
+message NewDeviceAccountID {
   string account_id = 1;
+}
+
+message NewDeviceID {
+  string id = 1;
+}
+
+message NewDeviceCreate {
+  string account_id = 1;
+  string ua = 2;
+  string hash = 3;
+}
+
+message DeviceCreateReply {
+  string public_key = 2;
+}
+
+message DeviceReply {
+  string code = 1;
+  string reply = 2;
 }
 
 message DeviceData {
@@ -23,4 +48,12 @@ message DeviceData {
 message DevicesData {
   string code = 1;
   repeated DeviceData devices = 2;
+}
+
+message NewDeviceHash {
+  string hash = 1;
+}
+
+message IsDeviceExistReply {
+  bool is_exist = 2;
 }

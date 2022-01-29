@@ -35,7 +35,7 @@ func SETAcctMail(mail string) error {
 	return nil
 }
 
-func SETDHData(deviceID string, data []byte) error {
+func SETDH(deviceID string, data []byte) error {
 	rd := GetRDB()
 	if err := rd.Set(ctx, deviceID, data, 120*time.Second).Err(); err != nil {
 		return err

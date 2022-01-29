@@ -13,6 +13,7 @@ import (
 
 type device struct {
 	pb.DevicesServer
+	*Devices
 }
 
 // Run creates a new account server, and starts it.

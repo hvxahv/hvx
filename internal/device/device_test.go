@@ -2,6 +2,7 @@ package device
 
 import (
 	"fmt"
+	"github.com/google/uuid"
 	"github.com/hvxahv/hvxahv/api/device/v1alpha1"
 	"github.com/hvxahv/hvxahv/pkg/cache"
 	"github.com/hvxahv/hvxahv/pkg/cockroach"
@@ -9,7 +10,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"golang.org/x/net/context"
-	"log"
 	"os"
 	"testing"
 )
@@ -46,8 +46,24 @@ func init() {
 	cache.InitRedis(1)
 }
 
+func TestDevice_Create(t *testing.T) {
+	hash := uuid.New().String()
+	d := &v1alpha1.NewDeviceCreate{
+		AccountId: "731607090811043841",
+		Ua:        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36",
+		Hash:      hash,
+	}
+	s := device{}
+	create, err := s.Create(context.Background(), d)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	fmt.Println(create.PublicKey, d.Hash)
+}
+
 func TestDevice_GetDevicesByAccountID(t *testing.T) {
-	d := &v1alpha1.NewAccountID{AccountId: "731607090811043841"}
+	d := &v1alpha1.NewDeviceAccountID{AccountId: "731607090811043841"}
 	s := device{}
 	devices, err := s.GetDevicesByAccountID(context.Background(), d)
 	if err != nil {
@@ -57,49 +73,46 @@ func TestDevice_GetDevicesByAccountID(t *testing.T) {
 	fmt.Println(devices.Code, devices)
 }
 
-func TestDevices_IsNotExist(t *testing.T) {
-
-	b := NewDevicesIsNotExist("74f435a8-df51-4816-9a9a-cb34688f68f4").IsNotExist()
-	fmt.Println(b)
-}
-
-func TestDevices_GetDevice(t *testing.T) {
-	device, err := NewDevicesByID(725154842727251969, 725154968683708417).GetDevice()
+func TestDevice_DeleteAllByAccountID(t *testing.T) {
+	d := &v1alpha1.NewDeviceAccountID{AccountId: "731354671656108033"}
+	s := device{}
+	reply, err := s.DeleteAllByAccountID(context.Background(), d)
 	if err != nil {
-		log.Println(err)
+		t.Error(err)
 		return
 	}
-	fmt.Println(device)
+	fmt.Println(reply.Code, reply.Reply)
 }
 
-func TestNewDeviceByHash(t *testing.T) {
-	device, err := NewDeviceByHash(725154842727251969, "c17c3cfb-16bf-4efc-8771-95dfa03617c5").GetDeviceByHash()
+func TestDevice_Delete(t *testing.T) {
+	d := &v1alpha1.NewDeviceID{Id: "731877891266805761"}
+	s := device{}
+	reply, err := s.Delete(context.Background(), d)
 	if err != nil {
-		log.Println(err)
+		t.Error(err)
 		return
 	}
-	fmt.Println(device)
+	fmt.Println(reply.Code, reply.Reply)
 }
-func TestDevices_GetDevicesByAccountID(t *testing.T) {
-	devices, err := NewDevicesByAccountID(725154842727251969).GetDevicesByAccountID()
+
+func TestDevice_IsExist(t *testing.T) {
+	d := &v1alpha1.NewDeviceHash{Hash: "86d9d38d-ae81-4279-b36e-d22ecb26e35e"}
+	s := device{}
+	exist, err := s.IsExist(context.Background(), d)
 	if err != nil {
-		log.Println(err)
+		t.Error(err)
 		return
 	}
-	fmt.Println(devices)
+	fmt.Println(exist.IsExist)
 }
 
-func TestDevices_Delete(t *testing.T) {
-	if err := NewDeviceByHash(123, "").Delete(); err != nil {
-		log.Println(err)
+func TestDevice_DeleteByDeviceHash(t *testing.T) {
+	d := &v1alpha1.NewDeviceHash{Hash: "06e08310-c421-4ffe-98aa-f8f759e9f094"}
+	s := device{}
+	reply, err := s.DeleteByDeviceHash(context.Background(), d)
+	if err != nil {
+		t.Error(err)
 		return
 	}
-}
-
-func TestDevices_DeleteByAccountID(t *testing.T) {
-
-	if err := NewDevicesByAccountID(714483855961915393).DeleteAll(); err != nil {
-		fmt.Println(err)
-		return
-	}
+	fmt.Println(reply.Code, reply.Reply)
 }

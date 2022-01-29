@@ -23,20 +23,20 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AccountsClient interface {
 	// IsExist If not found Error, return true else return false.
-	IsExist(ctx context.Context, in *NewAccountUsername, opts ...grpc.CallOption) (*IsExistReply, error)
+	IsExist(ctx context.Context, in *NewAccountUsername, opts ...grpc.CallOption) (*IsAccountExistReply, error)
 	// Create the Actor first, and then use the returned ActorID to create a unique account of the current instance account system.
 	// The username in the account system is unique, and the Actor may have the same username in different instances.
-	Create(ctx context.Context, in *NewAccountCreate, opts ...grpc.CallOption) (*Reply, error)
+	Create(ctx context.Context, in *NewAccountCreate, opts ...grpc.CallOption) (*AccountReply, error)
 	//  Log in to the account system interface.
 	Verify(ctx context.Context, in *NewAccountVerify, opts ...grpc.CallOption) (*VerifyAccountReply, error)
 	GetAccountByUsername(ctx context.Context, in *NewAccountUsername, opts ...grpc.CallOption) (*AccountData, error)
-	Delete(ctx context.Context, in *NewAccountDelete, opts ...grpc.CallOption) (*Reply, error)
+	Delete(ctx context.Context, in *NewAccountDelete, opts ...grpc.CallOption) (*AccountReply, error)
 	// EditUsername The account username will be updated. The username in the account system is unique, and the Actor may have the same username.
-	EditUsername(ctx context.Context, in *NewEditAccountUsername, opts ...grpc.CallOption) (*Reply, error)
+	EditUsername(ctx context.Context, in *NewEditAccountUsername, opts ...grpc.CallOption) (*AccountReply, error)
 	// EditPassword The account password will be updated.
-	EditPassword(ctx context.Context, in *NewEditAccountPassword, opts ...grpc.CallOption) (*Reply, error)
+	EditPassword(ctx context.Context, in *NewEditAccountPassword, opts ...grpc.CallOption) (*AccountReply, error)
 	// EditEmail The account email will be updated.
-	EditMail(ctx context.Context, in *NewEditAccountMail, opts ...grpc.CallOption) (*Reply, error)
+	EditMail(ctx context.Context, in *NewEditAccountMail, opts ...grpc.CallOption) (*AccountReply, error)
 	GetPublicKeyByAccountUsername(ctx context.Context, in *NewAccountUsername, opts ...grpc.CallOption) (*GetPublicKeyReply, error)
 }
 
@@ -48,8 +48,8 @@ func NewAccountsClient(cc grpc.ClientConnInterface) AccountsClient {
 	return &accountsClient{cc}
 }
 
-func (c *accountsClient) IsExist(ctx context.Context, in *NewAccountUsername, opts ...grpc.CallOption) (*IsExistReply, error) {
-	out := new(IsExistReply)
+func (c *accountsClient) IsExist(ctx context.Context, in *NewAccountUsername, opts ...grpc.CallOption) (*IsAccountExistReply, error) {
+	out := new(IsAccountExistReply)
 	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Accounts/IsExist", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -57,8 +57,8 @@ func (c *accountsClient) IsExist(ctx context.Context, in *NewAccountUsername, op
 	return out, nil
 }
 
-func (c *accountsClient) Create(ctx context.Context, in *NewAccountCreate, opts ...grpc.CallOption) (*Reply, error) {
-	out := new(Reply)
+func (c *accountsClient) Create(ctx context.Context, in *NewAccountCreate, opts ...grpc.CallOption) (*AccountReply, error) {
+	out := new(AccountReply)
 	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Accounts/Create", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -84,8 +84,8 @@ func (c *accountsClient) GetAccountByUsername(ctx context.Context, in *NewAccoun
 	return out, nil
 }
 
-func (c *accountsClient) Delete(ctx context.Context, in *NewAccountDelete, opts ...grpc.CallOption) (*Reply, error) {
-	out := new(Reply)
+func (c *accountsClient) Delete(ctx context.Context, in *NewAccountDelete, opts ...grpc.CallOption) (*AccountReply, error) {
+	out := new(AccountReply)
 	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Accounts/Delete", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -93,8 +93,8 @@ func (c *accountsClient) Delete(ctx context.Context, in *NewAccountDelete, opts 
 	return out, nil
 }
 
-func (c *accountsClient) EditUsername(ctx context.Context, in *NewEditAccountUsername, opts ...grpc.CallOption) (*Reply, error) {
-	out := new(Reply)
+func (c *accountsClient) EditUsername(ctx context.Context, in *NewEditAccountUsername, opts ...grpc.CallOption) (*AccountReply, error) {
+	out := new(AccountReply)
 	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Accounts/EditUsername", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -102,8 +102,8 @@ func (c *accountsClient) EditUsername(ctx context.Context, in *NewEditAccountUse
 	return out, nil
 }
 
-func (c *accountsClient) EditPassword(ctx context.Context, in *NewEditAccountPassword, opts ...grpc.CallOption) (*Reply, error) {
-	out := new(Reply)
+func (c *accountsClient) EditPassword(ctx context.Context, in *NewEditAccountPassword, opts ...grpc.CallOption) (*AccountReply, error) {
+	out := new(AccountReply)
 	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Accounts/EditPassword", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -111,8 +111,8 @@ func (c *accountsClient) EditPassword(ctx context.Context, in *NewEditAccountPas
 	return out, nil
 }
 
-func (c *accountsClient) EditMail(ctx context.Context, in *NewEditAccountMail, opts ...grpc.CallOption) (*Reply, error) {
-	out := new(Reply)
+func (c *accountsClient) EditMail(ctx context.Context, in *NewEditAccountMail, opts ...grpc.CallOption) (*AccountReply, error) {
+	out := new(AccountReply)
 	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Accounts/EditMail", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -134,20 +134,20 @@ func (c *accountsClient) GetPublicKeyByAccountUsername(ctx context.Context, in *
 // for forward compatibility
 type AccountsServer interface {
 	// IsExist If not found Error, return true else return false.
-	IsExist(context.Context, *NewAccountUsername) (*IsExistReply, error)
+	IsExist(context.Context, *NewAccountUsername) (*IsAccountExistReply, error)
 	// Create the Actor first, and then use the returned ActorID to create a unique account of the current instance account system.
 	// The username in the account system is unique, and the Actor may have the same username in different instances.
-	Create(context.Context, *NewAccountCreate) (*Reply, error)
+	Create(context.Context, *NewAccountCreate) (*AccountReply, error)
 	//  Log in to the account system interface.
 	Verify(context.Context, *NewAccountVerify) (*VerifyAccountReply, error)
 	GetAccountByUsername(context.Context, *NewAccountUsername) (*AccountData, error)
-	Delete(context.Context, *NewAccountDelete) (*Reply, error)
+	Delete(context.Context, *NewAccountDelete) (*AccountReply, error)
 	// EditUsername The account username will be updated. The username in the account system is unique, and the Actor may have the same username.
-	EditUsername(context.Context, *NewEditAccountUsername) (*Reply, error)
+	EditUsername(context.Context, *NewEditAccountUsername) (*AccountReply, error)
 	// EditPassword The account password will be updated.
-	EditPassword(context.Context, *NewEditAccountPassword) (*Reply, error)
+	EditPassword(context.Context, *NewEditAccountPassword) (*AccountReply, error)
 	// EditEmail The account email will be updated.
-	EditMail(context.Context, *NewEditAccountMail) (*Reply, error)
+	EditMail(context.Context, *NewEditAccountMail) (*AccountReply, error)
 	GetPublicKeyByAccountUsername(context.Context, *NewAccountUsername) (*GetPublicKeyReply, error)
 	mustEmbedUnimplementedAccountsServer()
 }
@@ -156,10 +156,10 @@ type AccountsServer interface {
 type UnimplementedAccountsServer struct {
 }
 
-func (UnimplementedAccountsServer) IsExist(context.Context, *NewAccountUsername) (*IsExistReply, error) {
+func (UnimplementedAccountsServer) IsExist(context.Context, *NewAccountUsername) (*IsAccountExistReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method IsExist not implemented")
 }
-func (UnimplementedAccountsServer) Create(context.Context, *NewAccountCreate) (*Reply, error) {
+func (UnimplementedAccountsServer) Create(context.Context, *NewAccountCreate) (*AccountReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
 }
 func (UnimplementedAccountsServer) Verify(context.Context, *NewAccountVerify) (*VerifyAccountReply, error) {
@@ -168,16 +168,16 @@ func (UnimplementedAccountsServer) Verify(context.Context, *NewAccountVerify) (*
 func (UnimplementedAccountsServer) GetAccountByUsername(context.Context, *NewAccountUsername) (*AccountData, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAccountByUsername not implemented")
 }
-func (UnimplementedAccountsServer) Delete(context.Context, *NewAccountDelete) (*Reply, error) {
+func (UnimplementedAccountsServer) Delete(context.Context, *NewAccountDelete) (*AccountReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
 }
-func (UnimplementedAccountsServer) EditUsername(context.Context, *NewEditAccountUsername) (*Reply, error) {
+func (UnimplementedAccountsServer) EditUsername(context.Context, *NewEditAccountUsername) (*AccountReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method EditUsername not implemented")
 }
-func (UnimplementedAccountsServer) EditPassword(context.Context, *NewEditAccountPassword) (*Reply, error) {
+func (UnimplementedAccountsServer) EditPassword(context.Context, *NewEditAccountPassword) (*AccountReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method EditPassword not implemented")
 }
-func (UnimplementedAccountsServer) EditMail(context.Context, *NewEditAccountMail) (*Reply, error) {
+func (UnimplementedAccountsServer) EditMail(context.Context, *NewEditAccountMail) (*AccountReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method EditMail not implemented")
 }
 func (UnimplementedAccountsServer) GetPublicKeyByAccountUsername(context.Context, *NewAccountUsername) (*GetPublicKeyReply, error) {
@@ -412,8 +412,8 @@ var Accounts_ServiceDesc = grpc.ServiceDesc{
 type ActorsClient interface {
 	GetActorByAccountUsername(ctx context.Context, in *NewAccountUsername, opts ...grpc.CallOption) (*ActorData, error)
 	GetActorsByPreferredUsername(ctx context.Context, in *NewActorPreferredUsername, opts ...grpc.CallOption) (*ActorsData, error)
-	AddActor(ctx context.Context, in *ActorData, opts ...grpc.CallOption) (*Reply, error)
-	EditActor(ctx context.Context, in *NewEditActor, opts ...grpc.CallOption) (*Reply, error)
+	AddActor(ctx context.Context, in *ActorData, opts ...grpc.CallOption) (*AccountReply, error)
+	EditActor(ctx context.Context, in *NewEditActor, opts ...grpc.CallOption) (*AccountReply, error)
 }
 
 type actorsClient struct {
@@ -442,8 +442,8 @@ func (c *actorsClient) GetActorsByPreferredUsername(ctx context.Context, in *New
 	return out, nil
 }
 
-func (c *actorsClient) AddActor(ctx context.Context, in *ActorData, opts ...grpc.CallOption) (*Reply, error) {
-	out := new(Reply)
+func (c *actorsClient) AddActor(ctx context.Context, in *ActorData, opts ...grpc.CallOption) (*AccountReply, error) {
+	out := new(AccountReply)
 	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Actors/AddActor", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -451,8 +451,8 @@ func (c *actorsClient) AddActor(ctx context.Context, in *ActorData, opts ...grpc
 	return out, nil
 }
 
-func (c *actorsClient) EditActor(ctx context.Context, in *NewEditActor, opts ...grpc.CallOption) (*Reply, error) {
-	out := new(Reply)
+func (c *actorsClient) EditActor(ctx context.Context, in *NewEditActor, opts ...grpc.CallOption) (*AccountReply, error) {
+	out := new(AccountReply)
 	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Actors/EditActor", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -466,8 +466,8 @@ func (c *actorsClient) EditActor(ctx context.Context, in *NewEditActor, opts ...
 type ActorsServer interface {
 	GetActorByAccountUsername(context.Context, *NewAccountUsername) (*ActorData, error)
 	GetActorsByPreferredUsername(context.Context, *NewActorPreferredUsername) (*ActorsData, error)
-	AddActor(context.Context, *ActorData) (*Reply, error)
-	EditActor(context.Context, *NewEditActor) (*Reply, error)
+	AddActor(context.Context, *ActorData) (*AccountReply, error)
+	EditActor(context.Context, *NewEditActor) (*AccountReply, error)
 	mustEmbedUnimplementedActorsServer()
 }
 
@@ -481,10 +481,10 @@ func (UnimplementedActorsServer) GetActorByAccountUsername(context.Context, *New
 func (UnimplementedActorsServer) GetActorsByPreferredUsername(context.Context, *NewActorPreferredUsername) (*ActorsData, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetActorsByPreferredUsername not implemented")
 }
-func (UnimplementedActorsServer) AddActor(context.Context, *ActorData) (*Reply, error) {
+func (UnimplementedActorsServer) AddActor(context.Context, *ActorData) (*AccountReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddActor not implemented")
 }
-func (UnimplementedActorsServer) EditActor(context.Context, *NewEditActor) (*Reply, error) {
+func (UnimplementedActorsServer) EditActor(context.Context, *NewEditActor) (*AccountReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method EditActor not implemented")
 }
 func (UnimplementedActorsServer) mustEmbedUnimplementedActorsServer() {}
@@ -594,6 +594,164 @@ var Actors_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "EditActor",
 			Handler:    _Actors_EditActor_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "api/account/v1alpha1/account.proto",
+}
+
+// ECDHClient is the client API for ECDH service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type ECDHClient interface {
+	RequestEncryption(ctx context.Context, in *NewRequestEncryption, opts ...grpc.CallOption) (*EcdhEncryptionReply, error)
+	SendEncryption(ctx context.Context, in *NewSendEncryption, opts ...grpc.CallOption) (*EcdhEncryptionReply, error)
+	WaitEncryption(ctx context.Context, in *NewWaitEncryptionDeviceID, opts ...grpc.CallOption) (*WaitEncryptionReply, error)
+}
+
+type eCDHClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewECDHClient(cc grpc.ClientConnInterface) ECDHClient {
+	return &eCDHClient{cc}
+}
+
+func (c *eCDHClient) RequestEncryption(ctx context.Context, in *NewRequestEncryption, opts ...grpc.CallOption) (*EcdhEncryptionReply, error) {
+	out := new(EcdhEncryptionReply)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.ECDH/RequestEncryption", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *eCDHClient) SendEncryption(ctx context.Context, in *NewSendEncryption, opts ...grpc.CallOption) (*EcdhEncryptionReply, error) {
+	out := new(EcdhEncryptionReply)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.ECDH/SendEncryption", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *eCDHClient) WaitEncryption(ctx context.Context, in *NewWaitEncryptionDeviceID, opts ...grpc.CallOption) (*WaitEncryptionReply, error) {
+	out := new(WaitEncryptionReply)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.ECDH/WaitEncryption", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// ECDHServer is the server API for ECDH service.
+// All implementations must embed UnimplementedECDHServer
+// for forward compatibility
+type ECDHServer interface {
+	RequestEncryption(context.Context, *NewRequestEncryption) (*EcdhEncryptionReply, error)
+	SendEncryption(context.Context, *NewSendEncryption) (*EcdhEncryptionReply, error)
+	WaitEncryption(context.Context, *NewWaitEncryptionDeviceID) (*WaitEncryptionReply, error)
+	mustEmbedUnimplementedECDHServer()
+}
+
+// UnimplementedECDHServer must be embedded to have forward compatible implementations.
+type UnimplementedECDHServer struct {
+}
+
+func (UnimplementedECDHServer) RequestEncryption(context.Context, *NewRequestEncryption) (*EcdhEncryptionReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RequestEncryption not implemented")
+}
+func (UnimplementedECDHServer) SendEncryption(context.Context, *NewSendEncryption) (*EcdhEncryptionReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SendEncryption not implemented")
+}
+func (UnimplementedECDHServer) WaitEncryption(context.Context, *NewWaitEncryptionDeviceID) (*WaitEncryptionReply, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method WaitEncryption not implemented")
+}
+func (UnimplementedECDHServer) mustEmbedUnimplementedECDHServer() {}
+
+// UnsafeECDHServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to ECDHServer will
+// result in compilation errors.
+type UnsafeECDHServer interface {
+	mustEmbedUnimplementedECDHServer()
+}
+
+func RegisterECDHServer(s grpc.ServiceRegistrar, srv ECDHServer) {
+	s.RegisterService(&ECDH_ServiceDesc, srv)
+}
+
+func _ECDH_RequestEncryption_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NewRequestEncryption)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ECDHServer).RequestEncryption(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/hvxahv.v1alpha1.proto.ECDH/RequestEncryption",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ECDHServer).RequestEncryption(ctx, req.(*NewRequestEncryption))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ECDH_SendEncryption_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NewSendEncryption)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ECDHServer).SendEncryption(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/hvxahv.v1alpha1.proto.ECDH/SendEncryption",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ECDHServer).SendEncryption(ctx, req.(*NewSendEncryption))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ECDH_WaitEncryption_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NewWaitEncryptionDeviceID)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ECDHServer).WaitEncryption(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/hvxahv.v1alpha1.proto.ECDH/WaitEncryption",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ECDHServer).WaitEncryption(ctx, req.(*NewWaitEncryptionDeviceID))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// ECDH_ServiceDesc is the grpc.ServiceDesc for ECDH service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var ECDH_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "hvxahv.v1alpha1.proto.ECDH",
+	HandlerType: (*ECDHServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "RequestEncryption",
+			Handler:    _ECDH_RequestEncryption_Handler,
+		},
+		{
+			MethodName: "SendEncryption",
+			Handler:    _ECDH_SendEncryption_Handler,
+		},
+		{
+			MethodName: "WaitEncryption",
+			Handler:    _ECDH_WaitEncryption_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -2,7 +2,7 @@ package v1alpha1
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hvxahv/hvxahv/internal/hvx/handler"
+	"github.com/hvxahv/hvxahv/api/hvx/handler"
 )
 
 func V1Devices(v1 *gin.RouterGroup) {
@@ -17,8 +17,5 @@ func V1Devices(v1 *gin.RouterGroup) {
 	//v1.GET("/account/rsa/private/:id", handler.GetDHPrivateJWKHandlers)
 	//v1.POST("/account/rsa/private/request", handler.RequestPrivateKeyHandlers)
 	//v1.POST("/account/rsa/private/send", handler.SendPrivateKeyHandlers)
-	//
-	//// Exit current device.
-	//v1.GET("/account/logout", handler.LogoutHandler)
 
 }

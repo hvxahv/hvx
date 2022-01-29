@@ -5,27 +5,27 @@ option go_package = "github.com/hvxahv/hvxahv/api/account/v1alpha1";
 
 service Accounts {
   // IsExist If not found Error, return true else return false.
-  rpc IsExist (NewAccountUsername) returns (IsExistReply) {}
+  rpc IsExist (NewAccountUsername) returns (IsAccountExistReply) {}
 
   // Create the Actor first, and then use the returned ActorID to create a unique account of the current instance account system.
   // The username in the account system is unique, and the Actor may have the same username in different instances.
-  rpc Create (NewAccountCreate) returns (Reply) {}
+  rpc Create (NewAccountCreate) returns (AccountReply) {}
 
   //  Log in to the account system interface.
   rpc Verify (NewAccountVerify) returns (VerifyAccountReply) {}
 
   rpc GetAccountByUsername (NewAccountUsername) returns (AccountData) {}
 
-  rpc Delete (NewAccountDelete) returns (Reply) {}
+  rpc Delete (NewAccountDelete) returns (AccountReply) {}
 
   // EditUsername The account username will be updated. The username in the account system is unique, and the Actor may have the same username.
-  rpc EditUsername (NewEditAccountUsername) returns (Reply) {}
+  rpc EditUsername (NewEditAccountUsername) returns (AccountReply) {}
 
   // EditPassword The account password will be updated.
-  rpc EditPassword (NewEditAccountPassword) returns (Reply) {}
+  rpc EditPassword (NewEditAccountPassword) returns (AccountReply) {}
 
   // EditEmail The account email will be updated.
-  rpc EditMail (NewEditAccountMail) returns (Reply) {}
+  rpc EditMail (NewEditAccountMail) returns (AccountReply) {}
 
   rpc GetPublicKeyByAccountUsername (NewAccountUsername) returns (GetPublicKeyReply) {}
 }
@@ -33,11 +33,17 @@ service Accounts {
 service Actors {
   rpc GetActorByAccountUsername (NewAccountUsername) returns (ActorData) {}
   rpc GetActorsByPreferredUsername(NewActorPreferredUsername) returns (ActorsData) {}
-  rpc AddActor (ActorData) returns (Reply) {}
-  rpc EditActor (NewEditActor) returns (Reply) {}
+  rpc AddActor (ActorData) returns (AccountReply) {}
+  rpc EditActor (NewEditActor) returns (AccountReply) {}
 }
 
-message IsExistReply {
+service ECDH {
+  rpc RequestEncryption (NewRequestEncryption) returns (EcdhEncryptionReply) {}
+  rpc SendEncryption (NewSendEncryption) returns (EcdhEncryptionReply) {}
+  rpc WaitEncryption (NewWaitEncryptionDeviceID) returns (WaitEncryptionReply) {}
+}
+
+message IsAccountExistReply {
   bool is_exist = 1;
 }
 
@@ -64,7 +70,7 @@ message ActorData {
   string is_remote = 11;
 }
 
-message Reply {
+message AccountReply {
   string code = 1;
   string reply = 2;
 }
@@ -88,7 +94,7 @@ message VerifyAccountReply {
   string id = 3;
   string token = 4;
   string mail = 5;
-  string device_id = 6;
+  string device_hash = 6;
   string public_key = 7;
 }
 
@@ -135,4 +141,32 @@ message NewEditActor {
 message GetPublicKeyReply {
   string code = 1;
   string public_key = 2;
+}
+
+message NewRequestEncryption {
+  string username = 1;
+  string request_device_hash = 2;
+  string dh_public_key = 3;
+  string dh_iv = 4;
+}
+
+message EcdhEncryptionReply {
+  string code = 1;
+  string reply = 2;
+}
+
+message NewSendEncryption {
+  string device_hash = 1;
+  string dh_public_key = 2;
+  string private_key_aes = 3;
+}
+
+message NewWaitEncryptionDeviceID {
+  string device_hash = 1;
+}
+
+message WaitEncryptionReply {
+  string code = 1;
+  string dh_public_key = 2;
+  string private_key_aes = 3;
 }
