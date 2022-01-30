@@ -7,6 +7,9 @@ account:
 device:
 	go run ./cmd/device/main.go run
 
+notify:
+	go run ./cmd/notify/main.go run
+
 articles:
 	go run ./app/articles/main.go run
 

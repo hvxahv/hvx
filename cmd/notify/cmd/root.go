@@ -82,4 +82,11 @@ func initConfig() {
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Fprintln(os.Stderr, "Using configs file:", viper.ConfigFileUsed())
 	}
+
+	n := cockroach.NewDBAddr()
+	if err := n.InitDB(); err != nil {
+		return
+	}
+
+	cache.InitRedis(1)
 }

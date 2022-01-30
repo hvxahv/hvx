@@ -8,6 +8,7 @@ service Devices {
   rpc IsExist (NewDeviceHash) returns (IsDeviceExistReply) {}
   rpc Create(NewDeviceCreate) returns (DeviceCreateReply) {}
   rpc GetDevicesByAccountID (NewDeviceAccountID) returns (DevicesData) {}
+  rpc GetDeviceByHash (NewDeviceHash) returns (DeviceData) {}
   rpc DeleteAllByAccountID (NewDeviceAccountID) returns (DeviceReply) {}
   rpc Delete (NewDeviceID) returns (DeviceReply) {}
   rpc DeleteByDeviceHash (NewDeviceHash) returns (DeviceReply) {}
