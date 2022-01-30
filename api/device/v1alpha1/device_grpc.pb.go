@@ -26,6 +26,7 @@ type DevicesClient interface {
 	IsExist(ctx context.Context, in *NewDeviceHash, opts ...grpc.CallOption) (*IsDeviceExistReply, error)
 	Create(ctx context.Context, in *NewDeviceCreate, opts ...grpc.CallOption) (*DeviceCreateReply, error)
 	GetDevicesByAccountID(ctx context.Context, in *NewDeviceAccountID, opts ...grpc.CallOption) (*DevicesData, error)
+	GetDeviceByHash(ctx context.Context, in *NewDeviceHash, opts ...grpc.CallOption) (*DeviceData, error)
 	DeleteAllByAccountID(ctx context.Context, in *NewDeviceAccountID, opts ...grpc.CallOption) (*DeviceReply, error)
 	Delete(ctx context.Context, in *NewDeviceID, opts ...grpc.CallOption) (*DeviceReply, error)
 	DeleteByDeviceHash(ctx context.Context, in *NewDeviceHash, opts ...grpc.CallOption) (*DeviceReply, error)
@@ -60,6 +61,15 @@ func (c *devicesClient) Create(ctx context.Context, in *NewDeviceCreate, opts ..
 func (c *devicesClient) GetDevicesByAccountID(ctx context.Context, in *NewDeviceAccountID, opts ...grpc.CallOption) (*DevicesData, error) {
 	out := new(DevicesData)
 	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Devices/GetDevicesByAccountID", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *devicesClient) GetDeviceByHash(ctx context.Context, in *NewDeviceHash, opts ...grpc.CallOption) (*DeviceData, error) {
+	out := new(DeviceData)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Devices/GetDeviceByHash", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -101,6 +111,7 @@ type DevicesServer interface {
 	IsExist(context.Context, *NewDeviceHash) (*IsDeviceExistReply, error)
 	Create(context.Context, *NewDeviceCreate) (*DeviceCreateReply, error)
 	GetDevicesByAccountID(context.Context, *NewDeviceAccountID) (*DevicesData, error)
+	GetDeviceByHash(context.Context, *NewDeviceHash) (*DeviceData, error)
 	DeleteAllByAccountID(context.Context, *NewDeviceAccountID) (*DeviceReply, error)
 	Delete(context.Context, *NewDeviceID) (*DeviceReply, error)
 	DeleteByDeviceHash(context.Context, *NewDeviceHash) (*DeviceReply, error)
@@ -119,6 +130,9 @@ func (UnimplementedDevicesServer) Create(context.Context, *NewDeviceCreate) (*De
 }
 func (UnimplementedDevicesServer) GetDevicesByAccountID(context.Context, *NewDeviceAccountID) (*DevicesData, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetDevicesByAccountID not implemented")
+}
+func (UnimplementedDevicesServer) GetDeviceByHash(context.Context, *NewDeviceHash) (*DeviceData, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetDeviceByHash not implemented")
 }
 func (UnimplementedDevicesServer) DeleteAllByAccountID(context.Context, *NewDeviceAccountID) (*DeviceReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteAllByAccountID not implemented")
@@ -196,6 +210,24 @@ func _Devices_GetDevicesByAccountID_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Devices_GetDeviceByHash_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NewDeviceHash)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DevicesServer).GetDeviceByHash(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/hvxahv.v1alpha1.proto.Devices/GetDeviceByHash",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DevicesServer).GetDeviceByHash(ctx, req.(*NewDeviceHash))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Devices_DeleteAllByAccountID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(NewDeviceAccountID)
 	if err := dec(in); err != nil {
@@ -268,6 +300,10 @@ var Devices_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetDevicesByAccountID",
 			Handler:    _Devices_GetDevicesByAccountID_Handler,
+		},
+		{
+			MethodName: "GetDeviceByHash",
+			Handler:    _Devices_GetDeviceByHash_Handler,
 		},
 		{
 			MethodName: "DeleteAllByAccountID",

@@ -72,6 +72,23 @@ func (d *device) GetDevicesByAccountID(ctx context.Context, in *pb.NewDeviceAcco
 	return &pb.DevicesData{Code: "200", Devices: devices}, nil
 }
 
+func (d *device) GetDeviceByHash(ctx context.Context, in *pb.NewDeviceHash) (*pb.DeviceData, error) {
+	db := cockroach.GetDB()
+
+	if err := db.Debug().Table("devices").Where("hash = ?", in.Hash).First(&d.Devices).Error; err != nil {
+		return nil, err
+	}
+
+	return &pb.DeviceData{
+		Id:         strconv.Itoa(int(d.ID)),
+		AccountId:  strconv.Itoa(int(d.Devices.AccountID)),
+		Device:     d.Devices.Device,
+		Hash:       d.Devices.Hash,
+		PrivateKey: d.Devices.PrivateKey,
+		PublicKey:  d.Devices.PublicKey,
+	}, nil
+}
+
 func (d *device) DeleteAllByAccountID(ctx context.Context, in *pb.NewDeviceAccountID) (*pb.DeviceReply, error) {
 	id, err := strconv.Atoi(in.AccountId)
 	if err != nil {

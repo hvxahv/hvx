@@ -6,5 +6,5 @@ import (
 )
 
 func V1Notify(v1 *gin.RouterGroup) {
-	v1.POST("/notify/sub", handler.NotifySubHandler)
+	v1.POST("/notify/sub", handler.NotifySubscriptionHandler)
 }

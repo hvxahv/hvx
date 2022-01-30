@@ -71,7 +71,7 @@ func (a *account) SendEncryption(ctx context.Context, in *pb.NewSendEncryption) 
 	return nil, nil
 }
 
-func (a *account) WaitEncryption(ctx context.Context, in *pb.NewWaitEncryptionDeviceID) (*pb.EcdhEncryptionReply, error) {
+func (a *account) WaitEncryption(ctx context.Context, in *pb.NewWaitEncryptionDeviceID) (*pb.WaitEncryptionReply, error) {
 	data, err := cache.GETDHData(in.DeviceHash)
 	if err != nil {
 		return nil, err

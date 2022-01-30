@@ -11,7 +11,7 @@ func V1Devices(v1 *gin.RouterGroup) {
 	 */
 	v1.GET("/devices", handler.GetDevicesHandler)
 	//
-	//v1.POST("/account/devices/delete", handler.DeleteDevicesHandler)
+	v1.DELETE("/device/delete", handler.DeleteDevicesHandler)
 
 	//v1.GET("/account/rsa/public/:id", handler.GetDHPublicJWKHandlers)
 	//v1.GET("/account/rsa/private/:id", handler.GetDHPrivateJWKHandlers)
