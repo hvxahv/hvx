@@ -21,7 +21,6 @@ import (
 	"github.com/hvxahv/hvxahv/pkg/microservices/consul"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"log"
 	"os"
 	"os/signal"
 	"syscall"
@@ -30,12 +29,12 @@ import (
 // runCmd represents the run command
 var runCmd = &cobra.Command{
 	Use:   "run",
-	Short: "Run Accounts Services...",
+	Short: "Run Accounts Services.",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		port := viper.GetString("microservices.account.port")
 
-		tags := []string{"account", "gRPC"}
+		tags := []string{"Account", "gRPC"}
 		nr := consul.NewRegister("account", port, tags, "localhost")
 		if err := nr.Register(); err != nil {
 			fmt.Println(err)
@@ -49,7 +48,8 @@ var runCmd = &cobra.Command{
 			fmt.Printf("failed to start account gRPC service: %v", err)
 			return
 		}
-		log.Printf("Port: %s, The %s gRPC service is running...", port, "account")
+		fmt.Println("Starting gRPC server...")
+		fmt.Println("Account gRPC server listening on port:", port)
 
 		s := <-c
 		switch s {

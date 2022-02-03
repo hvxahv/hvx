@@ -8,7 +8,7 @@ import (
 )
 
 func NewAccountClient() (pb.AccountsClient, error) {
-	address := fmt.Sprintf("%s:%s", viper.GetString("microservices.account.localhost"), viper.GetString("microservices.account.port"))
+	address := fmt.Sprintf("%s:%s", viper.GetString("microservices.account.host"), viper.GetString("microservices.account.port"))
 
 	conn, err := grpc.Dial(address, grpc.WithInsecure())
 	if err != nil {
@@ -19,7 +19,7 @@ func NewAccountClient() (pb.AccountsClient, error) {
 }
 
 func NewActorClient() (pb.ActorsClient, error) {
-	address := fmt.Sprintf("%s:%s", viper.GetString("microservices.account.localhost"), viper.GetString("microservices.account.port"))
+	address := fmt.Sprintf("%s:%s", viper.GetString("microservices.account.host"), viper.GetString("microservices.account.port"))
 	conn, err := grpc.Dial(address, grpc.WithInsecure())
 	if err != nil {
 		return nil, err
@@ -29,7 +29,7 @@ func NewActorClient() (pb.ActorsClient, error) {
 }
 
 func NewECDHClient() (pb.ECDHClient, error) {
-	address := fmt.Sprintf("%s:%s", viper.GetString("microservices.account.localhost"), viper.GetString("microservices.account.port"))
+	address := fmt.Sprintf("%s:%s", viper.GetString("microservices.account.host"), viper.GetString("microservices.account.port"))
 	conn, err := grpc.Dial(address, grpc.WithInsecure())
 	if err != nil {
 		return nil, err

@@ -10,8 +10,14 @@ device:
 notify:
 	go run ./cmd/notify/main.go run
 
+saved:
+	go run ./cmd/saved/main.go run
+
+message:
+	go run ./cmd/message/main.go run
 articles:
 	go run ./app/articles/main.go run
+
 
 # RUN CHANNEL SERVICES.
 chan:

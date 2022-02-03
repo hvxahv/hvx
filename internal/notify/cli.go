@@ -8,9 +8,8 @@ import (
 )
 
 func NewNotifyClient() (pb.NotifyClient, error) {
-	address := fmt.Sprintf("%s:%s", viper.GetString("microservices.notify.localhost"), viper.GetString("microservices.notify.port"))
+	address := fmt.Sprintf("%s:%s", viper.GetString("microservices.notify.host"), viper.GetString("microservices.notify.port"))
 
-	fmt.Println(address)
 	conn, err := grpc.Dial(address, grpc.WithInsecure())
 	if err != nil {
 		return nil, err

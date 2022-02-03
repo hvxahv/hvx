@@ -17,7 +17,7 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/hvxahv/hvxahv/internal/hvx"
+	"github.com/hvxahv/hvxahv/api/hvx"
 	"github.com/hvxahv/hvxahv/pkg/microservices/consul"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -46,7 +46,7 @@ var runCmd = &cobra.Command{
 		c := make(chan os.Signal, 1)
 		signal.Notify(c, syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT)
 
-		api := hvx.APIServer()
+		api := hvx.API()
 		go func() {
 			if err := api.Run(fmt.Sprintf(":%s", p)); err != nil {
 				fmt.Println(err)

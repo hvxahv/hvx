@@ -17,6 +17,12 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/hvxahv/hvxahv/internal/notify"
+	"github.com/hvxahv/hvxahv/pkg/microservices/consul"
+	"github.com/spf13/viper"
+	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/spf13/cobra"
 )
@@ -24,17 +30,12 @@ import (
 // runCmd represents the run command
 var runCmd = &cobra.Command{
 	Use:   "run",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Run notify service.",
+	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		port := viper.GetString("microservices.notify.port")
 
-		tags := []string{"account", "gRPC"}
+		tags := []string{"Notify", "gRPC"}
 		nr := consul.NewRegister("notify", port, tags, "localhost")
 		if err := nr.Register(); err != nil {
 			fmt.Println(err)
@@ -48,7 +49,9 @@ to quickly create a Cobra application.`,
 			fmt.Printf("failed to start account gRPC service: %v", err)
 			return
 		}
-		log.Printf("Port: %s, The %s gRPC service is running...", port, "notify")
+
+		fmt.Println("Starting gRPC server...")
+		fmt.Println("Notify gRPC server listening on port:", port)
 
 		s := <-c
 		switch s {

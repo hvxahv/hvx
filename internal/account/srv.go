@@ -37,8 +37,15 @@ func Run() error {
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", port))
 	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
+		return err
 	}
 
-	return s.Serve(lis)
+	go func() {
+		if err := s.Serve(lis); err != nil {
+			fmt.Println(err)
+			return
+		}
+	}()
+
+	return nil
 }

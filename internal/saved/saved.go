@@ -1,9 +1,11 @@
 package saved
 
 import (
+	pb "github.com/hvxahv/hvxahv/api/saved/v1alpha1"
 	"github.com/hvxahv/hvxahv/pkg/cockroach"
+	"golang.org/x/net/context"
 	"gorm.io/gorm"
-	"log"
+	"strconv"
 )
 
 // Change the upload logic.
@@ -15,60 +17,61 @@ import (
 type Saves struct {
 	gorm.Model
 
-	ID        uint   `gorm:"primaryKey" json:"ID,string"`
-	AccountID uint   `gorm:"primaryKey;type:bigint;accounts_id" json:"account_id,string"`
-	Name      string `gorm:"type:text;name"`
-	Hash      string `gorm:"type:text;hash"`
-	FileType  string `gorm:"type:text;file_type"`
+	AccountID   uint   `gorm:"primaryKey;type:bigint;accounts_id"`
+	Name        string `gorm:"type:text;name"`
+	Description string `gorm:"type:text;description"`
+	Hash        string `gorm:"type:text;hash"`
+	Types       string `gorm:"type:text;types"`
 }
 
-func (s *Saves) GetSaves() (*[]Saves, error) {
-	db := cockroach.GetDB()
-	var saves []Saves
-	if err := db.Debug().Table("saves").Where("account_id = ?", s.AccountID).Find(&saves).Error; err != nil {
-		return nil, err
-	}
-	return &saves, nil
-}
-
-func (s *Saves) GetSavedByID() (*Saves, error) {
-	db := cockroach.GetDB()
-	if err := db.Debug().Table("saves").Where("id = ?", s.ID).First(&s).Error; err != nil {
-		return nil, err
-	}
-	return s, nil
-}
-
-func (s *Saves) Create() error {
+func (s *saved) Create(ctx context.Context, in *pb.NewSavedCreate) (*pb.SavedReply, error) {
 	db := cockroach.GetDB()
 	if err := db.AutoMigrate(&Saves{}); err != nil {
-		log.Println(err)
-		return err
+		return nil, err
 	}
-	if err := db.Debug().Table("saves").Create(&s).Error; err != nil {
-		return err
+	id, err := strconv.Atoi(in.AccountId)
+	if err != nil {
+		return nil, err
 	}
-	return nil
-}
-
-func NewSaves(accountID uint, name, hash string, fileType string) *Saves {
-	return &Saves{AccountID: accountID, Name: name, Hash: hash, FileType: fileType}
-}
-
-func NewSavesID(id uint) *Saves {
-	return &Saves{
-		Model: gorm.Model{
-			ID: id,
-		},
+	c := NewSaves(uint(id), in.Name, in.Description, in.Hash, in.Types)
+	if err := db.Debug().Table("saves").Create(&c).Error; err != nil {
+		return nil, err
 	}
+	return &pb.SavedReply{Code: "200", Reply: "ok"}, nil
 }
 
-func NewSavesByAccountID(accountID uint) *Saves {
-	return &Saves{AccountID: accountID}
+func (s *saved) GetSaves(ctx context.Context, in *pb.NewSavedAccountID) (*pb.GetSavesReply, error) {
+	db := cockroach.GetDB()
+	id, err := strconv.Atoi(in.AccountId)
+	if err != nil {
+		return nil, err
+	}
+	var saves []*pb.SavedData
+	if err := db.Debug().Table("saves").Where("account_id = ?", uint(id)).Find(&saves).Error; err != nil {
+		return nil, err
+	}
+	return &pb.GetSavesReply{Code: "200", Saves: saves}, nil
 }
 
-type Saved interface {
-	GetSaves() (*[]Saves, error)
-	Create() error
-	GetSavedByID() (*Saves, error)
+func (s *saved) GetSaved(ctx context.Context, in *pb.NewSavedID) (*pb.SavedData, error) {
+	db := cockroach.GetDB()
+	id, err := strconv.Atoi(in.Id)
+	if err != nil {
+		return nil, err
+	}
+	var saves Saves
+	if err := db.Debug().Table("saves").Where("id = ?", uint(id)).First(&saves).Error; err != nil {
+		return nil, err
+	}
+	return &pb.SavedData{
+		Id:          strconv.Itoa(int(saves.ID)),
+		Name:        saves.Name,
+		Description: saves.Description,
+		Hash:        saves.Hash,
+		Types:       saves.Types,
+	}, nil
+}
+
+func NewSaves(accountID uint, name string, description string, hash string, types string) *Saves {
+	return &Saves{AccountID: accountID, Name: name, Description: description, Hash: hash, Types: types}
 }

@@ -2,22 +2,32 @@ package hvx
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hvxahv/hvxahv/api/hvx/handler"
 	"github.com/hvxahv/hvxahv/api/hvx/v1alpha1"
+	"github.com/hvxahv/hvxahv/internal/hvx/handler"
 	"github.com/hvxahv/hvxahv/internal/hvx/middleware"
 	"github.com/hvxahv/hvxahv/internal/hvx/public"
+	"github.com/spf13/viper"
 )
 
-func APIServer() *gin.Engine {
+func API() *gin.Engine {
 	api := gin.Default()
 	api.Use(middleware.CORS())
-
 	api.GET("ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"message": "pong!",
 		})
 	})
 
+	api.GET("/instance", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"instance":    "hvxahv",
+			"version":     viper.GetString("version"),
+			"activityPub": "https://www.w3.org/TR/activitypub/",
+			"ipfs":        viper.GetString("ipfs_addr"),
+			"matrix":      viper.GetString("matrix.addr"),
+		})
+	})
+	// Public data...
 	api.GET("/public/account/count", public.GetPublicAccountCountHandler)
 
 	// Open API routing for the ActivityPub protocol.
@@ -56,18 +66,17 @@ func APIServer() *gin.Engine {
 	// INTERNAL API GROUP.
 	v1alpha1.V1Accounts(v1)
 	v1alpha1.V1Devices(v1)
+	v1alpha1.V1Saved(v1)
+
 	//
 	//v1alpha1.V1Articles(v1)
 	//
 	//v1alpha1.V1Follow(v1)
-	//
-	//v1alpha1.V1Saved(v1)
 	//
 	//v1alpha1.V1Storage(v1)
 	//
 	v1alpha1.V1Notify(v1)
 	//
 	//v1alpha1.V1Messages(v1)
-
 	return api
 }

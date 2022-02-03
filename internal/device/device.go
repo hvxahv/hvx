@@ -55,6 +55,7 @@ func (d *device) Create(ctx context.Context, in *pb.NewDeviceCreate) (*pb.Device
 	}
 
 	return &pb.DeviceCreateReply{
+		DeviceId:  strconv.Itoa(int(v.ID)),
 		PublicKey: publicKey,
 	}, nil
 }
@@ -70,6 +71,26 @@ func (d *device) GetDevicesByAccountID(ctx context.Context, in *pb.NewDeviceAcco
 		return nil, err
 	}
 	return &pb.DevicesData{Code: "200", Devices: devices}, nil
+}
+
+func (d *device) GetDeviceByID(ctx context.Context, in *pb.NewDeviceID) (*pb.DeviceData, error) {
+	db := cockroach.GetDB()
+	id, err := strconv.Atoi(in.Id)
+	if err != nil {
+		return nil, err
+	}
+	if err := db.Debug().Table("devices").Where("id = ?", id).First(&d.Devices).Error; err != nil {
+		return nil, err
+	}
+
+	return &pb.DeviceData{
+		Id:         strconv.Itoa(int(d.ID)),
+		AccountId:  strconv.Itoa(int(d.Devices.AccountID)),
+		Device:     d.Devices.Device,
+		Hash:       d.Devices.Hash,
+		PrivateKey: d.Devices.PrivateKey,
+		PublicKey:  d.Devices.PublicKey,
+	}, nil
 }
 
 func (d *device) GetDeviceByHash(ctx context.Context, in *pb.NewDeviceHash) (*pb.DeviceData, error) {

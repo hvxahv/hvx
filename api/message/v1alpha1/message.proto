@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package hvxahv.v1alpha1.proto;
+option go_package = "github.com/hvxahv/hvxahv/api/message/v1alpha1";
+
+service Message {
+  // Create a matrix account with a username and password.
+  rpc MessageAccessRegister (NewMessageAccess) returns (MessageReply) {}
+  rpc MessageAccessLogin (NewMessageAccess) returns (MessageReply) {}
+}
+
+message NewMessageAccess {
+  string account_id = 1;
+  string username = 2;
+  string password = 3;
+}
+
+message MessageReply {
+  string code = 1;
+  string reply = 2;
+}

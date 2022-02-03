@@ -1,31 +1,38 @@
 package notify
 
-type PushData struct {
-	AccountID uint
-	DeviceID  uint
-	Data      []byte
-}
+import (
+	"context"
+	"github.com/hvxahv/hvxahv/api/device/v1alpha1"
+	pb "github.com/hvxahv/hvxahv/api/notify/v1alpha1"
+	"github.com/hvxahv/hvxahv/internal/device"
+	"github.com/hvxahv/hvxahv/pkg/cockroach"
+	"github.com/hvxahv/hvxahv/pkg/push"
+	"github.com/pkg/errors"
+	"strconv"
+)
 
-func NewPush(accountID, deviceID uint, data []byte) *PushData {
-	return &PushData{
-		AccountID: accountID,
-		DeviceID:  deviceID,
-		Data:      data,
+func (n *notify) Push(ctx context.Context, in *pb.NewNotifyPush) (*pb.NotifyPushReply, error) {
+	client, err := device.NewDeviceClient()
+	if err != nil {
+		return nil, err
 	}
-}
 
-func (p *PushData) Push() error {
-	//d, err := device.NewDevicesByID(p.AccountID, p.DeviceID).GetDevice()
-	//if err != nil {
-	//	return err
-	//}
-	//// Get subscription by device ID.
-	//n, err := NewNotifiesByDeviceID(d.ID).Get()
-	//if err != nil {
-	//	return err
-	//}
-	//if err := push.NewSubscription(p.DeviceID, n.Endpoint, n.Auth, n.P256dh, d.PublicKey, d.PrivateKey, p.Data).Send(); err != nil {
-	//	return err
-	//}
-	return nil
+	de, err := client.GetDeviceByID(ctx, &v1alpha1.NewDeviceID{Id: in.DeviceId})
+	if err != nil {
+		return nil, err
+	}
+
+	db := cockroach.GetDB()
+	id, err := strconv.Atoi(in.DeviceId)
+	if err != nil {
+		return nil, err
+	}
+	if err := db.Debug().Table("notifies").Where("device_id = ?", uint(id)).First(&n.Notifies).Error; err != nil {
+		return nil, err
+	}
+
+	if err := push.NewSubscription(in.DeviceId, n.Notifies.Endpoint, n.Notifies.Auth, n.Notifies.P256dh, de.PublicKey, de.PrivateKey, in.Data).Send(); err != nil {
+		return nil, errors.Errorf("PUSH_ERROR_%s ", err)
+	}
+	return &pb.NotifyPushReply{Code: "200", Reply: "ok"}, nil
 }

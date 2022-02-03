@@ -73,6 +73,28 @@ func TestDevice_GetDevicesByAccountID(t *testing.T) {
 	fmt.Println(devices.Code, devices)
 }
 
+func TestDevice_GetDevicesByHash(t *testing.T) {
+	d := &v1alpha1.NewDeviceHash{Hash: "d76cb739-f885-4793-b320-6b10c2d40f9b"}
+	s := device{}
+	v, err := s.GetDeviceByHash(context.Background(), d)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	fmt.Println(v.Hash, v.PublicKey, v.AccountId, v.Device, v.Id, v.PrivateKey)
+}
+
+func TestDevice_GetDeviceByID(t *testing.T) {
+	d := &v1alpha1.NewDeviceID{Id: "732283914892804097"}
+	s := device{}
+	v, err := s.GetDeviceByID(context.Background(), d)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	fmt.Println(v.Hash, v.PublicKey, v.AccountId, v.Device, v.Id, v.PrivateKey)
+}
+
 func TestDevice_DeleteAllByAccountID(t *testing.T) {
 	d := &v1alpha1.NewDeviceAccountID{AccountId: "731354671656108033"}
 	s := device{}

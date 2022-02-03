@@ -22,9 +22,7 @@ func Run() error {
 	log.Printf("App %s Started at %s\n", name, time.Now())
 
 	s := grpc.NewServer()
-	fmt.Println("Starting gRPC server...")
-	fmt.Printf("%s gRPC server listening on port: %s", name, port)
-	// Create a new account and actor server.
+
 	pb.RegisterNotifyServer(s, &notify{})
 	reflection.Register(s)
 
@@ -33,5 +31,11 @@ func Run() error {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	return s.Serve(lis)
+	go func() {
+		if err := s.Serve(lis); err != nil {
+			fmt.Println(err)
+			return
+		}
+	}()
+	return nil
 }

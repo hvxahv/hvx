@@ -38,9 +38,11 @@ service Actors {
 }
 
 service ECDH {
-  rpc RequestEncryption (NewRequestEncryption) returns (EcdhEncryptionReply) {}
-  rpc SendEncryption (NewSendEncryption) returns (EcdhEncryptionReply) {}
-  rpc WaitEncryption (NewWaitEncryptionDeviceID) returns (WaitEncryptionReply) {}
+  // Get the Diffie-Hellman parameter and use the requested logged-in device as the cache key
+  rpc DHRequestEncryption (NewDHRequestEncryption) returns (DHEncryptionReply) {}
+  rpc DHGetPublic(NewDHGetPublic) returns (DHGetPublicReply) {}
+  rpc DHSendEncryption (NewDHSendEncryption) returns (DHEncryptionReply) {}
+  rpc DHWaitEncryption (NewDHWaitEncryption) returns (DHWaitEncryptionReply) {}
 }
 
 message IsAccountExistReply {
@@ -94,7 +96,7 @@ message VerifyAccountReply {
   string id = 3;
   string token = 4;
   string mail = 5;
-  string device_hash = 6;
+  string device_id = 6;
   string public_key = 7;
 }
 
@@ -143,30 +145,43 @@ message GetPublicKeyReply {
   string public_key = 2;
 }
 
-message NewRequestEncryption {
+message NewDHRequestEncryption {
   string username = 1;
-  string request_device_hash = 2;
-  string dh_public_key = 3;
-  string dh_iv = 4;
+  string device_id = 2;
+  // Request from the device by DeviceID.
+  string to = 3;
+  string dh_public_key = 4;
+  string dh_iv = 5;
 }
 
-message EcdhEncryptionReply {
+message DHEncryptionReply {
   string code = 1;
   string reply = 2;
 }
 
-message NewSendEncryption {
-  string device_hash = 1;
+message NewDHSendEncryption {
+  string device_id = 1;
   string dh_public_key = 2;
-  string private_key_aes = 3;
+  string private_key = 3;
 }
 
-message NewWaitEncryptionDeviceID {
-  string device_hash = 1;
+message NewDHWaitEncryption {
+  string device_id = 1;
 }
 
-message WaitEncryptionReply {
+message DHWaitEncryptionReply {
   string code = 1;
   string dh_public_key = 2;
-  string private_key_aes = 3;
+  string private_key = 3;
+}
+
+message NewDHGetPublic {
+  string device_id = 1;
+}
+
+message DHGetPublicReply {
+  string code = 1;
+  string device_id = 2;
+  string iv = 3;
+  string public_key = 4;
 }

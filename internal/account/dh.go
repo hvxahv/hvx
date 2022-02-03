@@ -3,76 +3,109 @@ package account
 import (
 	"bytes"
 	"encoding/gob"
+	"encoding/json"
 	"fmt"
 	pb "github.com/hvxahv/hvxahv/api/account/v1alpha1"
+	"github.com/hvxahv/hvxahv/api/notify/v1alpha1"
+	"github.com/hvxahv/hvxahv/internal/notify"
 	"github.com/hvxahv/hvxahv/pkg/cache"
+	"github.com/hvxahv/hvxahv/pkg/push"
 	"golang.org/x/net/context"
 )
 
-type req struct {
-	DeviceHash string
-	PublicKey  string
-	IV         string
+type dh struct {
+	DeviceID  string
+	TO        string
+	PublicKey string
+	IV        string
 }
 
 type send struct {
-	DeviceHash string
-	PublicKey  string
-	PrivateKey string
+	DeviceID    string
+	DHPublicKey string
+	PrivateKey  string
 }
 
-func (a *account) RequestEncryption(ctx context.Context, in *pb.NewRequestEncryption) (*pb.EcdhEncryptionReply, error) {
+func (a *account) DHRequestEncryption(ctx context.Context, in *pb.NewDHRequestEncryption) (*pb.DHEncryptionReply, error) {
 	var buf bytes.Buffer
-	enc := gob.NewEncoder(&buf)
-	if err := enc.Encode(&req{
-		DeviceHash: in.RequestDeviceHash,
-		PublicKey:  in.DhPublicKey,
-		IV:         in.DhIv,
+	encode := gob.NewEncoder(&buf)
+	if err := encode.Encode(&dh{
+		DeviceID:  in.DeviceId,
+		TO:        in.To,
+		PublicKey: in.DhPublicKey,
+		IV:        in.DhIv,
 	}); err != nil {
 		return nil, err
 	}
-	fmt.Println(buf.Bytes())
-	//if err := cache.SETDH(req, buf.Bytes()); err != nil {
-	//	log.Println(err)
-	//	return
-	//}
+	if err := cache.SETDHData(in.To, buf.Bytes()); err != nil {
+		return nil, err
+	}
 
-	//d, err := json.Marshal(push.NewData(
-	//	"Notify",
-	//	fmt.Sprintf("You are preparing to login on another device: %s.", deviceID),
-	//	"https://avatars.githubusercontent.com/u/94792300?s=200&v=4",
-	//	"Authorized"),
-	//)
-	//if err != nil {
-	//	log.Println(err)
-	//	return
-	//}
-	//if err := notify.NewPush(a.ID, hash.ID, d).Push(); err != nil {
-	//	log.Println(err)
-	//	return
-	//}
-	return nil, nil
+	client, err := notify.NewNotifyClient()
+	if err != nil {
+		return nil, err
+	}
+	data, err := json.Marshal(push.NewData(
+		"Notify",
+		fmt.Sprintf("YOU_HAVE_A_NEW_LOGIN_REQUEST"),
+		"https://avatars.githubusercontent.com/u/94792300?s=200&v=4",
+		"Authorized"),
+	)
+	if err != nil {
+		return nil, err
+	}
+	d := &v1alpha1.NewNotifyPush{
+		DeviceId: in.To,
+		Data:     data,
+	}
+	reply, err := client.Push(ctx, d)
+	if err != nil {
+		return nil, err
+	}
+	return &pb.DHEncryptionReply{Code: reply.Code, Reply: reply.Reply}, nil
 }
 
-func (a *account) SendEncryption(ctx context.Context, in *pb.NewSendEncryption) (*pb.EcdhEncryptionReply, error) {
+func (a *account) DHGetPublic(ctx context.Context, in *pb.NewDHGetPublic) (*pb.DHGetPublicReply, error) {
+	data, err := cache.GETDHData(in.DeviceId)
+	if err != nil {
+		return nil, err
+	}
+	var d dh
+	decode := gob.NewDecoder(bytes.NewReader(data))
+	if err := decode.Decode(&d); err != nil {
+		return nil, err
+	}
+
+	return &pb.DHGetPublicReply{
+		Code:      "200",
+		DeviceId:  d.DeviceID,
+		Iv:        d.IV,
+		PublicKey: d.PublicKey,
+	}, nil
+}
+
+func (a *account) DHSendEncryption(ctx context.Context, in *pb.NewDHSendEncryption) (*pb.DHEncryptionReply, error) {
 	var buf bytes.Buffer
 	enc := gob.NewEncoder(&buf)
-	if err := enc.Encode(send{
-		DeviceHash: in.DeviceHash,
-		PublicKey:  in.DhPublicKey,
-		PrivateKey: in.PrivateKeyAes,
+	if err := enc.Encode(&send{
+		DeviceID:    in.DeviceId,
+		DHPublicKey: in.DhPublicKey,
+		PrivateKey:  in.PrivateKey,
 	}); err != nil {
 		return nil, err
 	}
-	fmt.Println(buf.Bytes())
-	//if err := cache.SETDH(in.DeviceHash, buf.Bytes()); err != nil {
-	//	return nil, err
-	//}
-	return nil, nil
+
+	if err := cache.SETDHData(in.DeviceId, buf.Bytes()); err != nil {
+		return nil, err
+	}
+	return &pb.DHEncryptionReply{
+		Code:  "200",
+		Reply: "ok",
+	}, nil
 }
 
-func (a *account) WaitEncryption(ctx context.Context, in *pb.NewWaitEncryptionDeviceID) (*pb.WaitEncryptionReply, error) {
-	data, err := cache.GETDHData(in.DeviceHash)
+func (a *account) DHWaitEncryption(ctx context.Context, in *pb.NewDHWaitEncryption) (*pb.DHWaitEncryptionReply, error) {
+	data, err := cache.GETDHData(in.DeviceId)
 	if err != nil {
 		return nil, err
 	}
@@ -81,6 +114,10 @@ func (a *account) WaitEncryption(ctx context.Context, in *pb.NewWaitEncryptionDe
 	if err := dec.Decode(&buf); err != nil {
 		return nil, err
 	}
-	fmt.Println(data)
-	return nil, nil
+
+	return &pb.DHWaitEncryptionReply{
+		Code:        "200",
+		DhPublicKey: buf.DHPublicKey,
+		PrivateKey:  buf.PrivateKey,
+	}, nil
 }

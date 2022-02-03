@@ -1,12 +1,4 @@
-# Gateway
-
-- Provide HTTP API
-
-- Authentication
-
-
-
-
+# HVX EXTERNAL HTTP SERVER
 
 [RESTful API DOCS](RESTful.md)
 

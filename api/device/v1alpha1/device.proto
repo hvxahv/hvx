@@ -8,6 +8,7 @@ service Devices {
   rpc IsExist (NewDeviceHash) returns (IsDeviceExistReply) {}
   rpc Create(NewDeviceCreate) returns (DeviceCreateReply) {}
   rpc GetDevicesByAccountID (NewDeviceAccountID) returns (DevicesData) {}
+  rpc GetDeviceByID (NewDeviceID) returns (DeviceData) {}
   rpc GetDeviceByHash (NewDeviceHash) returns (DeviceData) {}
   rpc DeleteAllByAccountID (NewDeviceAccountID) returns (DeviceReply) {}
   rpc Delete (NewDeviceID) returns (DeviceReply) {}
@@ -29,6 +30,7 @@ message NewDeviceCreate {
 }
 
 message DeviceCreateReply {
+  string device_id = 1;
   string public_key = 2;
 }
 

@@ -1,10 +1,11 @@
 package message
 
 import (
-	"log"
-
+	"context"
+	pb "github.com/hvxahv/hvxahv/api/message/v1alpha1"
 	"github.com/hvxahv/hvxahv/pkg/matrix"
 	"github.com/matrix-org/gomatrix"
+	"strconv"
 )
 
 type Register struct {
@@ -13,77 +14,62 @@ type Register struct {
 	Type              string `json:"type"`
 }
 
-type MatrixAccess struct {
-	AccountID uint
-	Username  string
-	Password  string
-}
-
-func (a *MatrixAccess) Login() error {
-	cli, err := matrix.NewClient(a.Username, a.Password)
-	if err != nil {
-		return err
-	}
-
-	r := &gomatrix.ReqLogin{
-		Password: a.Password,
-		User:     a.Username,
-	}
-
-	login, err := cli.Login(r)
-	if err != nil {
-		return err
-	}
-
-	if err := NewAccessUpdateTokenByAcctID(a.AccountID, login.AccessToken).UpdateToken(); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (a *MatrixAccess) Register() error {
+func (m *message) MessageAccessRegister(ctx context.Context, in *pb.NewMessageAccess) (*pb.MessageReply, error) {
 	cli, err := matrix.NewClient("", "")
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	reg := &gomatrix.ReqRegister{
-		Username:                 a.Username,
-		BindEmail:                false,
-		Password:                 a.Password,
-		DeviceID:                 "",
-		InitialDeviceDisplayName: "",
-		Auth: Register{
+	res, _, err := cli.Register(&gomatrix.ReqRegister{
+		Username:  in.Username,
+		BindEmail: false,
+		Password:  in.Password,
+		Auth: &Register{
 			ExampleCredential: "",
 			Session:           "",
 			Type:              "m.login.dummy",
 		},
-	}
-
-	resp, _, err := cli.Register(reg)
+	})
 	if err != nil {
-		log.Println(err)
-		return err
+		return nil, err
 	}
 
-	c := NewMatrixAccesses(a.AccountID, resp.AccessToken, resp.HomeServer, resp.UserID, resp.DeviceID)
-	if err := c.Create(); err != nil {
-		return err
+	id, err := strconv.Atoi(in.AccountId)
+	if err != nil {
+		return nil, err
 	}
-	return nil
+
+	c := NewMatrixAccesses(uint(id), res.AccessToken, res.HomeServer, res.UserID, res.DeviceID)
+	if err := c.Create(); err != nil {
+		return nil, err
+	}
+	return &pb.MessageReply{Code: "200", Reply: "ok"}, nil
 }
 
-//func NewMatrixAccessAuth(username string, password string) *MatrixAccess {
-//	a, err := account.NewAccountsUsername(username).GetAccountByUsername()
-//	if err != nil {
-//		return nil
-//	}
-//	return &MatrixAccess{AccountID: a.ID, Username: username, Password: password}
-//}
+func (m *message) MessageAccessLogin(ctx context.Context, in *pb.NewMessageAccess) (*pb.MessageReply, error) {
+	cli, err := matrix.NewClient(in.Username, in.Password)
+	if err != nil {
+		return nil, err
+	}
 
-type Authentication interface {
-	// Register When registering an account, you need to call this method to register an account of the matrix protocol.
-	Register() error
-	// Login If the login expires, you need to log in again with a password, and update the token in the matrix_accesses table after the login is completed.
-	Login() error
+	r := &gomatrix.ReqLogin{
+		Password: in.Password,
+		User:     in.Username,
+	}
+
+	login, err := cli.Login(r)
+	if err != nil {
+		return nil, err
+	}
+
+	id, err := strconv.Atoi(in.AccountId)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := NewAccessUpdateToken(uint(id), login.AccessToken).UpdateToken(); err != nil {
+		return nil, err
+	}
+
+	return nil, nil
 }

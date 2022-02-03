@@ -11,13 +11,11 @@
 package push
 
 import (
-	"strconv"
-
 	"github.com/SherClockHolmes/webpush-go"
 )
 
 type Subscription struct {
-	DeviceID uint
+	DeviceID string
 	Endpoint string
 	Auth     string
 	P256dh   string
@@ -40,7 +38,7 @@ func NewData(title string, body string, icon string, tag string) *Data {
 	return &Data{Title: title, Body: body, Icon: icon, Tag: tag}
 }
 
-func NewSubscription(deviceID uint, endpoint, auth, p256dh, publicKey, privateKey string, data []byte) *Subscription {
+func NewSubscription(deviceID, endpoint, auth, p256dh, publicKey, privateKey string, data []byte) *Subscription {
 	return &Subscription{
 		DeviceID:   deviceID,
 		Endpoint:   endpoint,
@@ -63,7 +61,7 @@ func (s *Subscription) Send() error {
 
 	// Send Notification.
 	resp, err := webpush.SendNotification(s.Data, sub, &webpush.Options{
-		Subscriber:      strconv.Itoa(int(s.DeviceID)), // Do not include "mailto:"
+		Subscriber:      s.DeviceID, // Do not include "mailto:"
 		VAPIDPublicKey:  s.PublicKey,
 		VAPIDPrivateKey: s.PrivateKey,
 		TTL:             30,

@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package hvxahv.v1alpha1.proto;
+option go_package = "github.com/hvxahv/hvxahv/api/saved/v1alpha1";
+
+service Saved {
+  rpc Create(NewSavedCreate) returns (SavedReply) {}
+  rpc GetSaves(NewSavedAccountID) returns (GetSavesReply) {}
+  rpc GetSaved(NewSavedID) returns (SavedData) {}
+}
+
+message SavedData {
+  string id = 1;
+  string name = 3;
+  string description = 4;
+  string hash = 5;
+  string types = 6;
+  string created_at = 7;
+}
+
+message NewSavedCreate {
+  string account_id = 1;
+  string name = 2;
+  string description = 3;
+  string hash = 4;
+  string types = 5;
+}
+
+message SavedReply {
+  string code = 1;
+  string reply = 2;
+}
+
+message NewSavedAccountID {
+  string account_id = 1;
+}
+
+message GetSavesReply {
+  string code = 1;
+  repeated SavedData saves = 2;
+}
+
+message NewSavedID {
+  string id = 1;
+}

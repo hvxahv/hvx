@@ -35,5 +35,12 @@ func Run() error {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	return s.Serve(lis)
+	go func() {
+		if err := s.Serve(lis); err != nil {
+			fmt.Println(err)
+			return
+		}
+	}()
+
+	return nil
 }

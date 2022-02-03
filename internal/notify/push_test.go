@@ -1,16 +1,18 @@
 package notify
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/hvxahv/hvxahv/api/notify/v1alpha1"
 	"log"
 	"testing"
 
 	"github.com/hvxahv/hvxahv/pkg/push"
 )
 
-func TestPush(t *testing.T) {
-	d, err := json.Marshal(push.NewData("Notify",
+func TestNotify_Push(t *testing.T) {
+	data, err := json.Marshal(push.NewData("Notify",
 		"Life's Not Out To Get You!",
 		"https://avatars.githubusercontent.com/u/94792300?s=200&v=4",
 		"Authorized"))
@@ -18,8 +20,15 @@ func TestPush(t *testing.T) {
 		log.Println(err)
 		return
 	}
-	if err := NewPush(725220233314041857, 726287557594087425, d).Push(); err != nil {
-		fmt.Println(err)
+	d := &v1alpha1.NewNotifyPush{
+		DeviceId: "732570178888761345",
+		Data:     data,
+	}
+	s := notify{}
+	reply, err := s.Push(context.Background(), d)
+	if err != nil {
+		t.Error(err)
 		return
 	}
+	fmt.Println(reply.Code, reply.Reply)
 }

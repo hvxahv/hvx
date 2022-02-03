@@ -2,7 +2,7 @@ package v1alpha1
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hvxahv/hvxahv/api/hvx/handler"
+	"github.com/hvxahv/hvxahv/internal/hvx/handler"
 )
 
 func V1Accounts(v1 *gin.RouterGroup) {
@@ -32,7 +32,8 @@ func V1Accounts(v1 *gin.RouterGroup) {
 	 * ECDH for v1 version of the server api endpoints for the account resource type (hvx.hvxahv.com/v1/account).
 	 */
 	//	https://github.com/hvxahv/hvxahv/blob/main/SECURITY.md
-	v1.GET("/account/dh/private")
-	v1.POST("/account/dh")
-	v1.GET("/account/dh/wait")
+	v1.POST("/account/dh/request", handler.DHRequestHandler)
+	v1.GET("/account/dh/public/:id", handler.DHGetPublicHandler)
+	v1.POST("/account/dh/send", handler.DHSendHandler)
+	v1.GET("/account/dh/wait/:id", handler.DHWaitHandler)
 }

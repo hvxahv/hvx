@@ -69,11 +69,11 @@ func SignInHandler(c *gin.Context) {
 		return
 	}
 	c.JSON(200, gin.H{
-		"code":        "200",
-		"token":       verify.Token,
-		"mail":        verify.Mail,
-		"device_hash": verify.DeviceHash,
-		"public_key":  verify.PublicKey,
+		"code":       "200",
+		"token":      verify.Token,
+		"mail":       verify.Mail,
+		"device_id":  verify.DeviceId,
+		"public_key": verify.PublicKey,
 	})
 }
 
@@ -96,14 +96,14 @@ func LogoutHandler(c *gin.Context) {
 }
 
 func GetPublicKeyHandlers(c *gin.Context) {
-	cli, err := account.NewAccountClient()
+	client, err := account.NewAccountClient()
 	if err != nil {
 		return
 	}
 	d := &pb.NewAccountUsername{
 		Username: middleware.GetUsername(c),
 	}
-	reply, err := cli.GetPublicKeyByAccountUsername(c, d)
+	reply, err := client.GetPublicKeyByAccountUsername(c, d)
 	c.JSON(200, gin.H{
 		"code":       reply.Code,
 		"public_key": reply.PublicKey,

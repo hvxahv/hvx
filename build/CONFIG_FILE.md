@@ -5,82 +5,90 @@ Place the configuration file in the user directory and set the name `.hvxahv.yam
 
 ```
 ---
-# Author settings.
-author: "disism.com"
-
-# Go mod repo
+author: "disism"
 name: "github.com/hvxahv/hvxahv"
-version: "0.0.1"
+version: ""
 
 # Set domain.
-localhost: "example.bar"
+localhost: "domain"
 
 # IPFS api address.
-ipfs_addr: ""
+ipfs_addr: "address"
+
 # IPFS Gateway
-ipfs_gateway: ""
+ipfs_gateway: "address/ipfs/"
 
 # Key used for signed.
-token_signed: "jwt_key_hvxahv.foo.bar"
+token_signed: "jwt_key_hvxahv.half_memories.com"
 
 # Set TOKEN expiration time, days.
 token_expired: 60
 
 # Matrix server
 matrix:
-  addr: ""
+  addr: "address"
 
 cockroach:
-  host: ""
-  port: ""
+  host: "address"
+  port: "26257"
   user: ""
   password: ""
   dbName: ""
-  sslMode: ""
-  timeZone: ""
+  sslMode: "disable"
+  timeZone: "Asia/Shanghai"
 
 redis:
-  host: ""
-  port: ""
+  host: "address"
+  port: "6379"
   password: ""
 
 bot:
-  tg_dev_id: ""
+# Telegram Bot Setting
+  tg_dev_id: "bot_id"
   tg_token: ""
 
 
 minio:
-  addr: ""
+  addr: "address"
   accessKeyID: ""
   secretAccessKey: ""
-  useSSL: true
-  location: ""
+  useSSL: false
+  location: "ap-northeast-3"
 
 consul:
-  address: ""
+  address: "address"
 
 microservices:
   # Provide RESTful API services for external access.
   hvx:
     version: "0.0.1"
-    host: "localhost"
+    host: "hvxahv.disism.internal"
     port: "8088"
 
   # Account service.
-  accounts:
+  account:
     version: "0.0.1"
-    host: "localhost"
+    host: "hvxahv.disism.internal"
     port: "7041"
 
-  # Article publishing channel service based on IPFS protocol.
-  channel:
+  device:
     version: "0.0.1"
-    host: "localhost"
-    port: "7141"
+    host: "hvxahv.disism.internal"
+    port: "7042"
 
-  # Instant messaging service based on matrix.org
+  notify:
+    version: "0.0.1"
+    host: "hvxahv.disism.internal"
+    port: "7043"
+
+  saved:
+    version: "0.0.1"
+    host: "hvxahv.disism.internal"
+    port: "7044"
+
   message:
     version: "0.0.1"
-    host: ""
-    port: ""
+    host: "hvxahv.disism.internal"
+    port: "7045"
+
 ```

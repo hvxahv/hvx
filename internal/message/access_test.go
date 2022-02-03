@@ -39,16 +39,3 @@ func TestInitChatConfig(t *testing.T) {
 	}
 
 }
-
-func TestAccess_Register(t *testing.T) {
-	TestInitChatConfig(t)
-}
-
-func TestMatrix_Create(t *testing.T) {
-	TestInitChatConfig(t)
-
-	c := NewMatrixAccesses(111, "", "", "", "")
-	if err := c.Create(); err != nil {
-		fmt.Println(err)
-	}
-}

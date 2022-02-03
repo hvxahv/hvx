@@ -24,8 +24,8 @@ func (a *account) Verify(ctx context.Context, in *pb.NewAccountVerify) (*pb.Veri
 	if err := bcrypt.CompareHashAndPassword([]byte(v.Password), []byte(in.Password)); err != nil {
 		return nil, errors.Errorf("PASSWORD_VERIFICATION_FAILED")
 	}
-	hash := uuid.New().String()
 
+	hash := uuid.New().String()
 	// Creating an authorization token.
 	k, err := policy.GenToken(strconv.Itoa(int(v.ID)), v.Mail, v.Username, v.Password, hash)
 	if err != nil {
@@ -48,13 +48,13 @@ func (a *account) Verify(ctx context.Context, in *pb.NewAccountVerify) (*pb.Veri
 	}
 
 	return &pb.VerifyAccountReply{
-		Code:       "200",
-		Reply:      "ok",
-		Id:         strconv.Itoa(int(v.ID)),
-		Token:      k,
-		Mail:       v.Mail,
-		DeviceHash: hash,
-		PublicKey:  create.PublicKey,
+		Code:      "200",
+		Reply:     "ok",
+		Id:        strconv.Itoa(int(v.ID)),
+		Token:     k,
+		Mail:      v.Mail,
+		DeviceId:  create.DeviceId,
+		PublicKey: create.PublicKey,
 	}, nil
 }
 

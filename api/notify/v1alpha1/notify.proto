@@ -5,16 +5,31 @@ option go_package = "github.com/hvxahv/hvxahv/api/notify/v1alpha1";
 
 service Notify {
   rpc Subscription(NewNotifySubscription) returns (NotifySubscriptionReply) {}
+  rpc Push(NewNotifyPush) returns (NotifyPushReply) {}
 }
 
 message NewNotifySubscription {
-  string device_hash = 1;
+  string device_id = 1;
   string endpoint = 2;
   string p256dh = 3;
   string auth = 4;
 }
 
 message NotifySubscriptionReply {
+  string code = 1;
+  string reply = 2;
+}
+
+message GetNotificationByDeviceHash {
+  string device_hash = 1;
+}
+
+message NewNotifyPush {
+  string device_id = 2;
+  bytes data = 3;
+}
+
+message NotifyPushReply {
   string code = 1;
   string reply = 2;
 }

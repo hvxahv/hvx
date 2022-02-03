@@ -8,7 +8,7 @@ import (
 )
 
 func NewDeviceClient() (pb.DevicesClient, error) {
-	address := fmt.Sprintf("%s:%s", viper.GetString("microservices.device.localhost"), viper.GetString("microservices.device.port"))
+	address := fmt.Sprintf("%s:%s", viper.GetString("microservices.device.host"), viper.GetString("microservices.device.port"))
 
 	conn, err := grpc.Dial(address, grpc.WithInsecure())
 	if err != nil {
