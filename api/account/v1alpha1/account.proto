@@ -2,3 +2,122 @@ syntax = "proto3";
 
 package hvxahv.v1alpha1.proto;
 option go_package = "github.com/hvxahv/hvxahv/api/account/v1alpha1";
+
+service Accounts {
+  // IsExist Check the account creation status by username,
+  // return true if not created, otherwise return false, used
+  // when checking if the user exists.
+  rpc IsExist (IsExistRequest) returns (IsExistResponse) {}
+
+  // Create a new account.
+  // Actor is created first and then the returned ActorID is used to
+  //  create a unique account for the current instance account system.
+  // The Actor's PreferredUsername is used to identify the actor in the
+  // current instance account system. The username in the account system
+  // is unique, but the Actor's PreferredUsername is not unique,
+  // as it may have the same username in different instances.
+  rpc Create (CreateRequest) returns (CreateResponse) {}
+
+  // Get the account by username.
+  // Internal methods in the program should not be exposed to API
+  // structures for users to call. There is no other solution for
+  // the time being, so we will use the code for now and modify it later.
+  rpc GetAccountByUsername (GetAccountByUsernameRequest) returns (GetAccountByUsernameResponse) {}
+
+  // First you need the password as a parameter to verify that the account
+  // is correct, and then delete the account system and actor table when
+  // the password is verified to be correct.
+  rpc Delete (DeleteRequest) returns (DeleteResponse) {}
+
+  // EditUsername Update the account username.
+  // will change both the username and preferred_username in the
+  // accounts and actors tables.
+  // As with password changes, you need to take down all clients
+  // and log back in to issue the token.
+  rpc EditUsername (EditUsernameRequest) returns (EditUsernameResponse) {}
+
+  // EditPassword Update the account password.
+  // When changing the password for an account, all client authorizations
+  // need to be removed and all devices that have logged in must log in
+  // again to perform all account operations; this verification is
+  // verified in the REST API TOKEN.
+  rpc EditPassword (EditPasswordRequest) returns (EditPasswordResponse) {}
+
+  // EditEmail Edit the unique email for the account.
+  // All devices should be taken offline.
+  rpc EditEmail (EditEmailRequest) returns (EditEmailResponse) {}
+}
+
+message IsExistRequest {
+  string username = 1;
+}
+
+message IsExistResponse {
+  bool is_exist = 1;
+}
+
+message CreateRequest {
+  string username = 1;
+  string mail = 2;
+  string password = 3;
+  string publicKey = 4;
+}
+
+message CreateResponse {
+  string code = 1;
+  string reply = 2;
+}
+
+message GetAccountByUsernameRequest {
+  string username = 1;
+}
+
+message GetAccountByUsernameResponse {
+  string account_id = 1;
+  string username = 2;
+  string mail = 3;
+  string password = 4;
+  string actor_id = 5;
+  string is_private = 6;
+}
+
+message DeleteRequest {
+  string username = 1;
+  string password = 3;
+}
+
+message DeleteResponse {
+  string code = 1;
+  string reply = 2;
+}
+
+message EditUsernameRequest {
+  string id = 1;
+  string username = 2;
+}
+
+message EditUsernameResponse {
+  string code = 1;
+  string reply = 2;
+}
+
+message EditPasswordRequest {
+  string username = 1;
+  string password = 2;
+  string new = 3;
+}
+
+message EditPasswordResponse {
+  string code = 1;
+  string reply = 2;
+}
+
+message EditEmailRequest {
+  string id = 1;
+  string mail = 2;
+}
+
+message EditEmailResponse {
+  string code = 1;
+  string reply = 2;
+}

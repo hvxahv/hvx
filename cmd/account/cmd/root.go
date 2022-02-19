@@ -17,8 +17,8 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 	"github.com/spf13/cobra"
+	"os"
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
@@ -73,7 +73,7 @@ func initConfig() {
 
 		// Search config in home directory with name ".account" (without extension).
 		viper.AddConfigPath(home)
-		viper.SetConfigName(".account")
+		viper.SetConfigName(".hvxahv")
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match

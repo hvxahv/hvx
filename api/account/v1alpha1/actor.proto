@@ -1,0 +1,65 @@
+syntax = "proto3";
+
+package hvxahv.v1alpha1.proto;
+option go_package = "github.com/hvxahv/hvxahv/api/account/v1alpha1";
+
+service Actor {
+  // GetActorByAccountUsername Get by username returns the actor
+  // identified by the specified username.
+  rpc GetActorByAccountUsername (GetActorByAccountUsernameRequest) returns (AccountDataResponse) {}
+
+  // GetActorsByPreferredUsername Returns the set of actors by the
+  // specified GetActorsByPreferredUsername by PreferredUsername.
+  rpc GetActorsByPreferredUsername (GetActorsByPreferredUsernameRequest) returns (GetActorsByPreferredUsernameResponse) {}
+
+  // GetActorByAddress Returns the actor identified by the specified address.
+  rpc GetActorByAddress (GetActorByAddressRequest) returns (AccountDataResponse) {}
+
+  // EditActor Edit the actor's profile and view the structure to get
+  // the allowed and changeable parameters.
+  // By username.
+  rpc EditActor (EditActorRequest) returns (EditActorResponse) {}
+}
+
+message GetActorByAccountUsernameRequest {
+  string username = 1;
+}
+
+message AccountDataResponse {
+  string id = 1;
+  string preferred_username = 2;
+  string domain = 3;
+  string avatar = 4;
+  string name = 5;
+  string summary = 6;
+  string inbox = 7;
+  string address = 8;
+  string public_key = 9;
+  string actor_type = 10;
+  string is_remote = 11;
+}
+
+message GetActorsByPreferredUsernameRequest {
+  string preferred_username = 1;
+}
+
+message GetActorsByPreferredUsernameResponse {
+  string code = 1;
+  repeated AccountDataResponse actors = 2;
+}
+
+message GetActorByAddressRequest {
+  string address = 1;
+}
+
+message EditActorRequest {
+  string AccountUsername = 1;
+  string name = 2;
+  string avatar = 3;
+  string summary = 4;
+}
+
+message EditActorResponse {
+  string code = 1;
+  string reply = 2;
+}
