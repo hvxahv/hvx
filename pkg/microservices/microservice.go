@@ -34,3 +34,15 @@ func GetSavedPort() string {
 func GetSavedAddress() string {
 	return fmt.Sprintf("%s:%s", GetSavedHost(), GetSavedPort())
 }
+
+func GetMessageHost() string {
+	return viper.GetString("microservices.message.host")
+}
+
+func GetMessagePort() string {
+	return viper.GetString("microservices.message.port")
+}
+
+func GetMessageAddress() string {
+	return fmt.Sprintf("%s:%s", GetMessageHost(), GetMessagePort())
+}

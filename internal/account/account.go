@@ -21,7 +21,7 @@ type Accounts struct {
 
 	// Username is the primaryKey of the database which is unique,
 	// in the account system of this instance is must be added during the creation process to ensure the correctness of the data.
-	Username string `gorm:"primaryKey;type:text;username;" validate:"required,min=4,max=16"`
+	Username string `gorm:"primaryKey;type:text;username;unique" validate:"required,min=4,max=16"`
 
 	// Mail When registering, the user is required to provide an email,
 	// and an error needs to be returned when the email is not in the correct format.

@@ -1,4 +1,4 @@
-package consul
+package matrix
 
 import (
 	"fmt"
@@ -30,23 +30,11 @@ func init() {
 
 }
 
-func TestRegister_Register(t *testing.T) {
-	p := viper.GetString("microservices.hvx.port")
-
-	tags := []string{"hvx", "http", "RESTFul"}
-	nr := NewRegister("hvx", p, tags, "localhost")
-	err := nr.Register()
+func TestNewClient(t *testing.T) {
+	c, err := NewClient("", "")
 	if err != nil {
-		fmt.Println(err)
+		t.Error(err)
 		return
 	}
-
-}
-
-func TestDeregister(t *testing.T) {
-
-	err := Deregister("b5e6670f-33e9-4d92-a186-583c64aa43ce")
-	if err != nil {
-		fmt.Println(err)
-	}
+	fmt.Println(c)
 }
