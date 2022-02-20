@@ -3,7 +3,7 @@ package account
 import (
 	"fmt"
 	pb "github.com/hvxahv/hvxahv/api/account/v1alpha1"
-	"github.com/spf13/viper"
+	"github.com/hvxahv/hvxahv/pkg/microservices"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"log"
@@ -24,7 +24,6 @@ type account struct {
 // Run starts the server. It will block until the server is shutdown. If the server fails to start, it will return an error.
 func Run() error {
 	name := "account"
-	port := viper.GetString("microservices.account.port")
 	log.Printf("App %s Started at %s\n", name, time.Now())
 
 	// Create a new server instance.
@@ -37,7 +36,7 @@ func Run() error {
 
 	reflection.Register(s)
 
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", port))
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", microservices.GetAccountAddress()))
 	if err != nil {
 		return err
 	}
