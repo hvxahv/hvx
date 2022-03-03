@@ -22,19 +22,36 @@
  * SOFTWARE.
  */
 
-package saved
+package public
 
 import (
-	pb "github.com/hvxahv/hvxahv/api/saved/v1alpha1"
-	"github.com/hvxahv/hvxahv/pkg/microservices"
-	"google.golang.org/grpc"
+	"fmt"
+	"github.com/gin-gonic/gin"
+	"github.com/hvxahv/hvxahv/pkg/cockroach"
+	"log"
 )
 
-func NewSavedClient() (pb.SavedClient, error) {
-	conn, err := grpc.Dial(microservices.GetSavedAddress(), grpc.WithInsecure())
-	if err != nil {
-		return nil, err
+func GetPublicAccountCountHandler(c *gin.Context) {
+	db := cockroach.GetDB()
+	var count int64
+	if err := db.Debug().Table("account").Count(&count).Error; err != nil {
+		log.Println(err)
+		return
 	}
+	fmt.Println(count)
+	c.JSON(200, gin.H{
+		"code":          "200",
+		"account_count": count,
+	})
+}
 
-	return pb.NewSavedClient(conn), nil
+func GetPublicInstanceDetailsHandler(c *gin.Context) {
+	c.JSON(200, gin.H{
+		"code": "200",
+		"details": gin.H{
+			"version":    "0.1.0",
+			"build":      "2022-01-01",
+			"maintainer": "hvxahv",
+		},
+	})
 }

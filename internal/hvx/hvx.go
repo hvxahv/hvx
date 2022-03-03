@@ -22,19 +22,24 @@
  * SOFTWARE.
  */
 
-package saved
+package hvx
 
 import (
-	pb "github.com/hvxahv/hvxahv/api/saved/v1alpha1"
-	"github.com/hvxahv/hvxahv/pkg/microservices"
-	"google.golang.org/grpc"
+	"github.com/gin-gonic/gin"
+	"github.com/hvxahv/hvxahv/internal/hvx/public"
 )
 
-func NewSavedClient() (pb.SavedClient, error) {
-	conn, err := grpc.Dial(microservices.GetSavedAddress(), grpc.WithInsecure())
-	if err != nil {
-		return nil, err
-	}
+func APIServer() *gin.Engine {
+	api := gin.Default()
+	api.GET("ping", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message": "pong!",
+		})
+	})
+	// Get the total number of users of the current instance.
+	api.GET("/public/account/count", public.GetPublicAccountCountHandler)
 
-	return pb.NewSavedClient(conn), nil
+	// Get the instance details of the current instance.
+	api.GET("/instance/ ", public.GetPublicInstanceDetailsHandler)
+	return api
 }
