@@ -1,8 +1,8 @@
 #!/bin/bash
 
-version=""
-
-function getVersion {
+# get_version returns the version of hack.
+function get_version {
+  local version=""
   if [ -f "../VERSION" ]; then
     version=$(cat ../VERSION)
   fi
@@ -14,6 +14,6 @@ function getVersion {
         version="0"
       fi
   fi
-}
 
-getVersion
+  echo "$version"
+}
