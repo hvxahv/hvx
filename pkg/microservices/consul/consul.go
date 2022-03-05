@@ -25,7 +25,6 @@ func NewRegister(name string, port string, tags []string, address string) *Regis
 func (r *Register) Register() error {
 	cfg := api.DefaultConfig()
 	cfg.Address = viper.GetString("consul.address")
-
 	client, err := api.NewClient(cfg)
 	if err != nil {
 		return errors.Errorf("consul client error : %v", err)
@@ -52,8 +51,8 @@ func (r *Register) Register() error {
 		Check:   check,
 	}
 
-	if err2 := client.Agent().ServiceRegister(registration); err2 != nil {
-		return errors.Errorf("consul registration failed: %v", err2)
+	if err := client.Agent().ServiceRegister(registration); err != nil {
+		return errors.Errorf("consul registration failed: %v", err)
 	}
 	return nil
 }

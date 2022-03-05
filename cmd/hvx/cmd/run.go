@@ -1,27 +1,61 @@
 /*
-Copyright © 2022 NAME HERE <EMAIL ADDRESS>
+ * MIT License
+ *
+ * Copyright (c) 2022 The hvxahv Authors.
+ *
+ */
 
-*/
 package cmd
 
 import (
 	"fmt"
-
+	"github.com/hvxahv/hvxahv/api/hvx"
+	"github.com/hvxahv/hvxahv/pkg/microservices"
+	"github.com/hvxahv/hvxahv/pkg/microservices/consul"
 	"github.com/spf13/cobra"
+	"log"
+	"os"
+	"os/signal"
+	"syscall"
 )
 
 // runCmd represents the run command
 var runCmd = &cobra.Command{
 	Use:   "run",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "",
+	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("run called")
+		p := microservices.NewService("hvx").GetPort()
+
+		tags := []string{"hvx", "http", "RESTFul"}
+		nr := consul.NewRegister("hvx", p, tags, "localhost")
+		err := nr.Register()
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		c := make(chan os.Signal, 1)
+		signal.Notify(c, syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT)
+
+		api := hvx.APIServer()
+		go func() {
+			if err := api.Run(fmt.Sprintf(":%s", p)); err != nil {
+				fmt.Println(err)
+				return
+			}
+		}()
+
+		s := <-c
+		switch s {
+		case syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT:
+			err := consul.Deregister(nr.ID)
+			if err != nil {
+				log.Println(err)
+			}
+			return
+		default:
+		}
 	},
 }
 

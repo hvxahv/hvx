@@ -17,8 +17,9 @@ package cmd
 
 import (
 	"fmt"
-	"os"
+	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"github.com/spf13/cobra"
+	"os"
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
@@ -29,13 +30,8 @@ var cfgFile string
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "hvx",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "",
+	Long:  ``,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	// Run: func(cmd *cobra.Command, args []string) { },
@@ -73,7 +69,7 @@ func initConfig() {
 
 		// Search config in home directory with name ".hvx" (without extension).
 		viper.AddConfigPath(home)
-		viper.SetConfigName(".hvx")
+		viper.SetConfigName(".hvxahv")
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match
@@ -81,5 +77,12 @@ func initConfig() {
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
+	}
+
+	// Initialize the database.
+	n := cockroach.NewDBAddr()
+	if err := n.InitDB(); err != nil {
+		fmt.Println(err)
+		return
 	}
 }
