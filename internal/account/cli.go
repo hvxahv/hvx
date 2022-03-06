@@ -1,22 +1,32 @@
 package account
 
 import (
+	"fmt"
 	pb "github.com/hvxahv/hvxahv/api/account/v1alpha1"
 	"github.com/hvxahv/hvxahv/pkg/microservices"
 	"google.golang.org/grpc"
 )
 
 func NewAccountClient() (pb.AccountsClient, error) {
-	conn, err := grpc.Dial(microservices.GetAccountAddress(), grpc.WithInsecure())
+	conn, err := grpc.Dial(microservices.NewService("account").GetAddress(), grpc.WithInsecure())
 	if err != nil {
 		return nil, err
 	}
-
+	fmt.Println(microservices.NewService("account").GetAddress())
 	return pb.NewAccountsClient(conn), nil
 }
 
+func NewAuthClient() (pb.AuthClient, error) {
+	conn, err := grpc.Dial(microservices.NewService("account").GetAddress(), grpc.WithInsecure())
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println(microservices.NewService("account").GetAddress())
+	return pb.NewAuthClient(conn), nil
+}
+
 func NewActorClient() (pb.ActorClient, error) {
-	conn, err := grpc.Dial(microservices.GetAccountAddress(), grpc.WithInsecure())
+	conn, err := grpc.Dial(microservices.NewService("account").GetAddress(), grpc.WithInsecure())
 	if err != nil {
 		return nil, err
 	}
@@ -25,7 +35,7 @@ func NewActorClient() (pb.ActorClient, error) {
 }
 
 func NewDeviceClient() (pb.DevicesClient, error) {
-	conn, err := grpc.Dial(microservices.GetAccountAddress(), grpc.WithInsecure())
+	conn, err := grpc.Dial(microservices.NewService("account").GetAddress(), grpc.WithInsecure())
 	if err != nil {
 		return nil, err
 	}

@@ -1,8 +1,13 @@
 package v1alpha1
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/hvxahv/hvxahv/internal/hvx/handler"
+)
 
 func V1Accounts(v1 *gin.RouterGroup) {
+	v1.GET("/search/:actor", handler.SearchActorsHandler)
+
 	/**
 	 * Account for v1 version of the server api endpoints for the account resource type (hvx.hvxahv.com/v1/account).
 	 */
