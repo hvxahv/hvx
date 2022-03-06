@@ -33,7 +33,7 @@ var runCmd = &cobra.Command{
 	Short: "Run the account microservice",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		port := microservices.GetAccountPort()
+		port := microservices.NewService("account").GetPort()
 
 		tags := []string{"Account", "gRPC"}
 		nr := consul.NewRegister("account", port, tags, "localhost")

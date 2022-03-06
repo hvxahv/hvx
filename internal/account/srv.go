@@ -36,7 +36,7 @@ func Run() error {
 
 	reflection.Register(s)
 
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", microservices.GetAccountAddress()))
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", microservices.NewService("account").GetPort()))
 	if err != nil {
 		return err
 	}

@@ -18,7 +18,7 @@ func (s *Service) GetPort() string {
 }
 
 func (s *Service) GetAddress() string {
-	return viper.GetString(fmt.Sprintf("%s:%s", s.GetHost(), s.GetPort()))
+	return fmt.Sprintf("%s:%s", s.GetHost(), s.GetPort())
 }
 
 func NewService(name string) *Service {

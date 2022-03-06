@@ -1,6 +1,18 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2022 The hvxahv Authors.
+ *
+ */
+
 package activitypub
 
-import "time"
+import (
+	"fmt"
+	"github.com/spf13/viper"
+	"strings"
+	"time"
+)
 
 // EXAMPLE 9
 //{
@@ -115,41 +127,6 @@ import "time"
 //    }
 //}
 
-//type Actor struct {
-//	Context                   []string `json:"@context"`
-//	Id                        string        `json:"id"`
-//	Type                      string        `json:"type"`
-//	Following                 string        `json:"following"`
-//	Followers                 string        `json:"followers"`
-//	Inbox                     string        `json:"inbox"`
-//	Outbox                    string        `json:"outbox"`
-//	Featured                  string        `json:"featured"`
-//	FeaturedTags              string        `json:"featuredTags"`
-//	PreferredUsername         string        `json:"preferredUsername"`
-//	Name                      string        `json:"name"`
-//	Summary                   string        `json:"summary"`
-//	Url                       string        `json:"url"`
-//	ManuallyApprovesFollowers bool          `json:"manuallyApprovesFollowers"`
-//	Discoverable              bool          `json:"discoverable"`
-//	Published                 time.Time     `json:"published"`
-//	Devices                   string        `json:"devices"`
-//	PublicKey                 struct {
-//		Id           string `json:"id"`
-//		Owner        string `json:"owner"`
-//		PublicKeyPem string `json:"publicKeyPem"`
-//	} `json:"publicKey"`
-//	Tag        []interface{} `json:"tag"`
-//	Attachment []interface{} `json:"attachment"`
-//	Endpoints  struct {
-//		SharedInbox string `json:"sharedInbox"`
-//	} `json:"endpoints"`
-//	Icon struct {
-//		Type      string `json:"type"`
-//		MediaType string `json:"mediaType"`
-//		Url       string `json:"url"`
-//	} `json:"icon"`
-//}
-
 type Actor struct {
 	Context                   []interface{} `json:"@context"`
 	Id                        string        `json:"id"`
@@ -183,4 +160,110 @@ type Actor struct {
 		MediaType string `json:"mediaType"`
 		Url       string `json:"url"`
 	} `json:"icon"`
+}
+
+func NewActorContext() []interface{} {
+	arr := make([]interface{}, 0)
+	ctx := []string{"https://www.w3.org/ns/activitystreams", "https://w3id.org/security/v1alpha1"}
+	for _, i := range ctx {
+		arr = append(arr, i)
+	}
+	return arr
+}
+
+// NewActor Return standard ActivityPub protocol user data.
+func NewActor(preferredUsername, name, summary, publicKey, avatar string) *Actor {
+	var (
+		addr = viper.GetString("localhost")
+
+		id  = fmt.Sprintf("https://%s/u/%s", addr, preferredUsername)
+		kid = fmt.Sprintf("%s#main-key", id)
+		box = fmt.Sprintf("https://%s/u/%s/", addr, preferredUsername)
+	)
+
+	actor := &Actor{
+		Context:                   NewActorContext(),
+		Id:                        id,
+		Type:                      "Person",
+		Following:                 "",
+		Followers:                 "",
+		Inbox:                     box + "inbox",
+		Outbox:                    box + "outbox",
+		Featured:                  "",
+		FeaturedTags:              "",
+		PreferredUsername:         preferredUsername,
+		Name:                      name,
+		Summary:                   summary,
+		Url:                       "",
+		ManuallyApprovesFollowers: false,
+		Discoverable:              false,
+		Published:                 time.Time{},
+		Devices:                   "",
+		PublicKey: struct {
+			Id           string `json:"id"`
+			Owner        string `json:"owner"`
+			PublicKeyPem string `json:"publicKeyPem"`
+		}{
+			Id:           kid,
+			Owner:        id,
+			PublicKeyPem: publicKey,
+		},
+		Tag:        nil,
+		Attachment: nil,
+		Endpoints: struct {
+			SharedInbox string `json:"sharedInbox"`
+		}{},
+		Icon: struct {
+			Type      string `json:"type"`
+			MediaType string `json:"mediaType"`
+			Url       string `json:"url"`
+		}{
+			Type:      "Image",
+			MediaType: "image/jpg",
+			Url:       avatar,
+		},
+	}
+	return actor
+}
+
+// GetActorName Get the username in the request url such,
+// as "/.well-known/webFinger?resource=acct:hvturingga@halfmemories.com" Will get hvturingga,
+// If the match fails, it will return a custom username not found error.
+func GetActorName(resource string) string {
+	if strings.HasPrefix(resource, "acct:") {
+		resource = resource[5:]
+		if ali := strings.IndexByte(resource, '@'); ali != -1 {
+			resource = resource[:ali]
+		}
+	}
+
+	return resource
+}
+
+// IsRemote Get host to determine whether it is a remote
+// instance user (not a user of this instance).
+func IsRemote(resource string) bool {
+	host := GetHost(resource)
+	if !strings.Contains(resource, "@") {
+		return false
+	}
+
+	if host != viper.GetString("localhost") {
+		return true
+	}
+	return false
+
+}
+
+// GetHost Get the host of the received resource.
+// // as "/.well-known/webFinger?resource=acct:hvturingga@halfmemories.com" Will get halfmemories.com,
+func GetHost(resource string) string {
+	if strings.HasPrefix(resource, "acct:") {
+		ali := strings.IndexByte(resource, '@')
+		if ali != -1 {
+			return resource[ali+1:]
+		}
+	}
+
+	return resource[5:]
 }
