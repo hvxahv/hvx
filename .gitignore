@@ -18,5 +18,4 @@ vendor/
 .idea
 
 # Ignore releases binary
-.release/windows/
-.release/linux
+.release/binary/*

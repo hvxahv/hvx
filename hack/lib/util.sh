@@ -17,3 +17,21 @@ function get_version {
 
   echo "$version"
 }
+
+function get_go_version {
+  local go_version=""
+  if [ -f "../GO_VERSION" ]; then
+    go_version=$(cat ../GO_VERSION)
+  fi
+
+  if [ -z "$go_version" ]; then
+      if [ -d ".git" ]; then
+        go_version=$(git symbolic-ref HEAD | cut -b 12-)-$(git rev-parse HEAD)
+      else
+        go_version="0"
+      fi
+  fi
+
+  echo "$go_version"
+}
+
