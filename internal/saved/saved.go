@@ -57,7 +57,7 @@ type Saves struct {
 	Types string `gorm:"type:text;types"`
 }
 
-func (s *saved) Create(ctx context.Context, in *pb.CreateRequest) (*pb.CreateResponse, error) {
+func (s *saved) CreateSaved(ctx context.Context, in *pb.CreateSavedRequest) (*pb.CreateSavedResponse, error) {
 	db := cockroach.GetDB()
 	if err := db.AutoMigrate(&Saves{}); err != nil {
 		return nil, err
@@ -72,7 +72,7 @@ func (s *saved) Create(ctx context.Context, in *pb.CreateRequest) (*pb.CreateRes
 	if err := db.Debug().Table("saves").Create(&c).Error; err != nil {
 		return nil, err
 	}
-	return &pb.CreateResponse{Code: "200", Reply: "ok"}, nil
+	return &pb.CreateSavedResponse{Code: "200", Reply: "ok"}, nil
 }
 
 func (s *saved) GetSaves(ctx context.Context, in *pb.GetSavesRequest) (*pb.GetSavesResponse, error) {

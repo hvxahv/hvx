@@ -4,12 +4,12 @@ package hvxahv.v1alpha1.proto;
 option go_package = "github.com/hvxahv/hvxahv/api/saved/v1alpha1";
 
 service Saved {
-  // Create Save the hash of the uploaded file to the database,
+  // CreateSaved Save the hash of the uploaded file to the database,
   // Because the file needs to be encrypted for the user to
   // choose, the upload to the IPFS file server should be
   // done in the client and the returned ipfs cid should be
   // submitted to the server, which will save it.
-  rpc Create (CreateRequest) returns (CreateResponse) {}
+  rpc CreateSaved (CreateSavedRequest) returns (CreateSavedResponse) {}
 
   // GetSaves Get a collection of saved files by account ID.
   rpc GetSaves (GetSavesRequest) returns (GetSavesResponse) {}
@@ -31,7 +31,7 @@ message Save {
   string created_at = 7;
 }
 
-message CreateRequest {
+message CreateSavedRequest {
   string account_id = 1;
   string name = 2;
   string description = 3;
@@ -40,7 +40,7 @@ message CreateRequest {
   bool isPrivate = 6;
 }
 
-message CreateResponse {
+message CreateSavedResponse {
   string code = 1;
   string reply = 2;
 }

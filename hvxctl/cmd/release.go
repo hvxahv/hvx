@@ -17,24 +17,24 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/spf13/cobra"
 	"os"
 	"os/exec"
-
-	"github.com/spf13/cobra"
 )
 
 // releaseCmd represents the release command
 var releaseCmd = &cobra.Command{
-	Use:   "release",
-	Short: "",
-	Long:  ``,
+	Use:     "release",
+	Aliases: []string{"r"},
+	Short:   "",
+	Long:    ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		wd, err := os.Getwd()
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
 		}
-		command := exec.Command("sh", fmt.Sprintf("%s/../hack/release.sh", wd))
+		command := exec.Command("sh", fmt.Sprintf("%s/../hack/release.sh %s", wd, args[0]))
 		command.Stdout = os.Stdout
 		command.Stderr = os.Stderr
 		if err := command.Run(); err != nil {

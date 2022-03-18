@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package hvxahv.v1alpha1.proto;
+option go_package = "github.com/hvxahv/hvxahv/api/channel/v1alpha1";
+
+service BroadcastService {
+  rpc CreateBroadcast (CreateBroadcastRequest) returns (CreateBroadcastResponse) {}
+  rpc GetBroadcasts (GetBroadcastsRequest) returns (GetBroadcastsResponse) {}
+}
+
+message CreateBroadcastRequest {}
+
+message CreateBroadcastResponse {}
+
+message GetBroadcastsRequest {}
+
+message GetBroadcastsResponse {}

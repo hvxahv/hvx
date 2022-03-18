@@ -42,7 +42,7 @@ func init() {
 }
 
 func TestSaved_Create(t *testing.T) {
-	d := v1alpha1.CreateRequest{
+	d := v1alpha1.CreateSavedRequest{
 		AccountId:   "733124680636596225",
 		Name:        "YUI",
 		Description: "description",
@@ -52,7 +52,7 @@ func TestSaved_Create(t *testing.T) {
 	}
 
 	s := saved{}
-	create, err := s.Create(context.Background(), &d)
+	create, err := s.CreateSaved(context.Background(), &d)
 	if err != nil {
 		t.Error(err)
 		return

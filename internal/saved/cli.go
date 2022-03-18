@@ -31,7 +31,7 @@ import (
 )
 
 func NewSavedClient() (pb.SavedClient, error) {
-	conn, err := grpc.Dial(microservices.GetSavedAddress(), grpc.WithInsecure())
+	conn, err := grpc.Dial(microservices.NewService("saved").GetAddress(), grpc.WithInsecure())
 	if err != nil {
 		return nil, err
 	}

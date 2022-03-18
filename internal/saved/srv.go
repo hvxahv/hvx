@@ -25,7 +25,7 @@ func Run() error {
 	pb.RegisterSavedServer(s, &saved{})
 	reflection.Register(s)
 
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", microservices.GetSavedPort()))
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", microservices.NewService("saved").GetPort()))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}

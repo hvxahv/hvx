@@ -2,3 +2,26 @@ syntax = "proto3";
 
 package hvxahv.v1alpha1.proto;
 option go_package = "github.com/hvxahv/hvxahv/api/article/v1alpha1";
+
+service ArticleService {
+  rpc GetArticle(GetArticleRequest) returns (GetArticleResponse) {}
+  rpc CreateArticle(CreateArticleRequest) returns (CreateArticleResponse) {}
+  rpc UpdateArticle(UpdateArticleRequest) returns (UpdateArticleResponse) {}
+  rpc DeleteArticle(DeleteArticleRequest) returns (DeleteArticleResponse) {}
+}
+
+message GetArticleRequest {}
+
+message GetArticleResponse {}
+
+message CreateArticleRequest {}
+
+message CreateArticleResponse {}
+
+message UpdateArticleRequest {}
+
+message UpdateArticleResponse {}
+
+message DeleteArticleRequest {}
+
+message DeleteArticleResponse {}

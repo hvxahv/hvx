@@ -19,13 +19,16 @@ import (
 	"fmt"
 	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"github.com/spf13/cobra"
+	"os"
+	"os/exec"
 )
 
 // createCmd represents the create command
 var createCmd = &cobra.Command{
-	Use:   "create",
-	Short: "Create DB",
-	Long:  ``,
+	Use:     "create",
+	Aliases: []string{"c"},
+	Short:   "Create database or services.",
+	Long:    ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		switch args[0] {
 		case "db":
@@ -34,6 +37,19 @@ var createCmd = &cobra.Command{
 				return
 			}
 			fmt.Printf("%s created!\n", args[1])
+		case "svc":
+			wd, err := os.Getwd()
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+			command := exec.Command("sh", fmt.Sprintf("%s/../hack/dev/create.sh %s", wd, args[1]))
+			command.Stdout = os.Stdout
+			command.Stderr = os.Stderr
+			if err := command.Run(); err != nil {
+				fmt.Println(err)
+			}
+			fmt.Println(command)
 		default:
 			fmt.Println("Execution failed, please check the command.")
 		}

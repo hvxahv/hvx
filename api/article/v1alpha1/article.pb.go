@@ -10,6 +10,7 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -19,23 +20,397 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type GetArticleRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *GetArticleRequest) Reset() {
+	*x = GetArticleRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_api_article_v1alpha1_article_proto_msgTypes[0]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GetArticleRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetArticleRequest) ProtoMessage() {}
+
+func (x *GetArticleRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_article_v1alpha1_article_proto_msgTypes[0]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetArticleRequest.ProtoReflect.Descriptor instead.
+func (*GetArticleRequest) Descriptor() ([]byte, []int) {
+	return file_api_article_v1alpha1_article_proto_rawDescGZIP(), []int{0}
+}
+
+type GetArticleResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *GetArticleResponse) Reset() {
+	*x = GetArticleResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_api_article_v1alpha1_article_proto_msgTypes[1]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GetArticleResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetArticleResponse) ProtoMessage() {}
+
+func (x *GetArticleResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_article_v1alpha1_article_proto_msgTypes[1]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetArticleResponse.ProtoReflect.Descriptor instead.
+func (*GetArticleResponse) Descriptor() ([]byte, []int) {
+	return file_api_article_v1alpha1_article_proto_rawDescGZIP(), []int{1}
+}
+
+type CreateArticleRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *CreateArticleRequest) Reset() {
+	*x = CreateArticleRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_api_article_v1alpha1_article_proto_msgTypes[2]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *CreateArticleRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateArticleRequest) ProtoMessage() {}
+
+func (x *CreateArticleRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_article_v1alpha1_article_proto_msgTypes[2]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateArticleRequest.ProtoReflect.Descriptor instead.
+func (*CreateArticleRequest) Descriptor() ([]byte, []int) {
+	return file_api_article_v1alpha1_article_proto_rawDescGZIP(), []int{2}
+}
+
+type CreateArticleResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *CreateArticleResponse) Reset() {
+	*x = CreateArticleResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_api_article_v1alpha1_article_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *CreateArticleResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateArticleResponse) ProtoMessage() {}
+
+func (x *CreateArticleResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_article_v1alpha1_article_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateArticleResponse.ProtoReflect.Descriptor instead.
+func (*CreateArticleResponse) Descriptor() ([]byte, []int) {
+	return file_api_article_v1alpha1_article_proto_rawDescGZIP(), []int{3}
+}
+
+type UpdateArticleRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *UpdateArticleRequest) Reset() {
+	*x = UpdateArticleRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_api_article_v1alpha1_article_proto_msgTypes[4]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *UpdateArticleRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateArticleRequest) ProtoMessage() {}
+
+func (x *UpdateArticleRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_article_v1alpha1_article_proto_msgTypes[4]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateArticleRequest.ProtoReflect.Descriptor instead.
+func (*UpdateArticleRequest) Descriptor() ([]byte, []int) {
+	return file_api_article_v1alpha1_article_proto_rawDescGZIP(), []int{4}
+}
+
+type UpdateArticleResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *UpdateArticleResponse) Reset() {
+	*x = UpdateArticleResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_api_article_v1alpha1_article_proto_msgTypes[5]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *UpdateArticleResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateArticleResponse) ProtoMessage() {}
+
+func (x *UpdateArticleResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_article_v1alpha1_article_proto_msgTypes[5]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateArticleResponse.ProtoReflect.Descriptor instead.
+func (*UpdateArticleResponse) Descriptor() ([]byte, []int) {
+	return file_api_article_v1alpha1_article_proto_rawDescGZIP(), []int{5}
+}
+
+type DeleteArticleRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *DeleteArticleRequest) Reset() {
+	*x = DeleteArticleRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_api_article_v1alpha1_article_proto_msgTypes[6]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *DeleteArticleRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteArticleRequest) ProtoMessage() {}
+
+func (x *DeleteArticleRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_article_v1alpha1_article_proto_msgTypes[6]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteArticleRequest.ProtoReflect.Descriptor instead.
+func (*DeleteArticleRequest) Descriptor() ([]byte, []int) {
+	return file_api_article_v1alpha1_article_proto_rawDescGZIP(), []int{6}
+}
+
+type DeleteArticleResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *DeleteArticleResponse) Reset() {
+	*x = DeleteArticleResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_api_article_v1alpha1_article_proto_msgTypes[7]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *DeleteArticleResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteArticleResponse) ProtoMessage() {}
+
+func (x *DeleteArticleResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_article_v1alpha1_article_proto_msgTypes[7]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteArticleResponse.ProtoReflect.Descriptor instead.
+func (*DeleteArticleResponse) Descriptor() ([]byte, []int) {
+	return file_api_article_v1alpha1_article_proto_rawDescGZIP(), []int{7}
+}
+
 var File_api_article_v1alpha1_article_proto protoreflect.FileDescriptor
 
 var file_api_article_v1alpha1_article_proto_rawDesc = []byte{
 	0x0a, 0x22, 0x61, 0x70, 0x69, 0x2f, 0x61, 0x72, 0x74, 0x69, 0x63, 0x6c, 0x65, 0x2f, 0x76, 0x31,
 	0x61, 0x6c, 0x70, 0x68, 0x61, 0x31, 0x2f, 0x61, 0x72, 0x74, 0x69, 0x63, 0x6c, 0x65, 0x2e, 0x70,
 	0x72, 0x6f, 0x74, 0x6f, 0x12, 0x15, 0x68, 0x76, 0x78, 0x61, 0x68, 0x76, 0x2e, 0x76, 0x31, 0x61,
-	0x6c, 0x70, 0x68, 0x61, 0x31, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x42, 0x2f, 0x5a, 0x2d, 0x67,
+	0x6c, 0x70, 0x68, 0x61, 0x31, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x13, 0x0a, 0x11, 0x47,
+	0x65, 0x74, 0x41, 0x72, 0x74, 0x69, 0x63, 0x6c, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x22, 0x14, 0x0a, 0x12, 0x47, 0x65, 0x74, 0x41, 0x72, 0x74, 0x69, 0x63, 0x6c, 0x65, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x16, 0x0a, 0x14, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65,
+	0x41, 0x72, 0x74, 0x69, 0x63, 0x6c, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x17,
+	0x0a, 0x15, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x41, 0x72, 0x74, 0x69, 0x63, 0x6c, 0x65, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x16, 0x0a, 0x14, 0x55, 0x70, 0x64, 0x61, 0x74,
+	0x65, 0x41, 0x72, 0x74, 0x69, 0x63, 0x6c, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22,
+	0x17, 0x0a, 0x15, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x41, 0x72, 0x74, 0x69, 0x63, 0x6c, 0x65,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x16, 0x0a, 0x14, 0x44, 0x65, 0x6c, 0x65,
+	0x74, 0x65, 0x41, 0x72, 0x74, 0x69, 0x63, 0x6c, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x22, 0x17, 0x0a, 0x15, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x41, 0x72, 0x74, 0x69, 0x63, 0x6c,
+	0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x32, 0xbf, 0x03, 0x0a, 0x0e, 0x41, 0x72,
+	0x74, 0x69, 0x63, 0x6c, 0x65, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x63, 0x0a, 0x0a,
+	0x47, 0x65, 0x74, 0x41, 0x72, 0x74, 0x69, 0x63, 0x6c, 0x65, 0x12, 0x28, 0x2e, 0x68, 0x76, 0x78,
+	0x61, 0x68, 0x76, 0x2e, 0x76, 0x31, 0x61, 0x6c, 0x70, 0x68, 0x61, 0x31, 0x2e, 0x70, 0x72, 0x6f,
+	0x74, 0x6f, 0x2e, 0x47, 0x65, 0x74, 0x41, 0x72, 0x74, 0x69, 0x63, 0x6c, 0x65, 0x52, 0x65, 0x71,
+	0x75, 0x65, 0x73, 0x74, 0x1a, 0x29, 0x2e, 0x68, 0x76, 0x78, 0x61, 0x68, 0x76, 0x2e, 0x76, 0x31,
+	0x61, 0x6c, 0x70, 0x68, 0x61, 0x31, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x47, 0x65, 0x74,
+	0x41, 0x72, 0x74, 0x69, 0x63, 0x6c, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22,
+	0x00, 0x12, 0x6c, 0x0a, 0x0d, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x41, 0x72, 0x74, 0x69, 0x63,
+	0x6c, 0x65, 0x12, 0x2b, 0x2e, 0x68, 0x76, 0x78, 0x61, 0x68, 0x76, 0x2e, 0x76, 0x31, 0x61, 0x6c,
+	0x70, 0x68, 0x61, 0x31, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x43, 0x72, 0x65, 0x61, 0x74,
+	0x65, 0x41, 0x72, 0x74, 0x69, 0x63, 0x6c, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a,
+	0x2c, 0x2e, 0x68, 0x76, 0x78, 0x61, 0x68, 0x76, 0x2e, 0x76, 0x31, 0x61, 0x6c, 0x70, 0x68, 0x61,
+	0x31, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x41, 0x72,
+	0x74, 0x69, 0x63, 0x6c, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12,
+	0x6c, 0x0a, 0x0d, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x41, 0x72, 0x74, 0x69, 0x63, 0x6c, 0x65,
+	0x12, 0x2b, 0x2e, 0x68, 0x76, 0x78, 0x61, 0x68, 0x76, 0x2e, 0x76, 0x31, 0x61, 0x6c, 0x70, 0x68,
+	0x61, 0x31, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x41,
+	0x72, 0x74, 0x69, 0x63, 0x6c, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2c, 0x2e,
+	0x68, 0x76, 0x78, 0x61, 0x68, 0x76, 0x2e, 0x76, 0x31, 0x61, 0x6c, 0x70, 0x68, 0x61, 0x31, 0x2e,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x41, 0x72, 0x74, 0x69,
+	0x63, 0x6c, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x6c, 0x0a,
+	0x0d, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x41, 0x72, 0x74, 0x69, 0x63, 0x6c, 0x65, 0x12, 0x2b,
+	0x2e, 0x68, 0x76, 0x78, 0x61, 0x68, 0x76, 0x2e, 0x76, 0x31, 0x61, 0x6c, 0x70, 0x68, 0x61, 0x31,
+	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x41, 0x72, 0x74,
+	0x69, 0x63, 0x6c, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2c, 0x2e, 0x68, 0x76,
+	0x78, 0x61, 0x68, 0x76, 0x2e, 0x76, 0x31, 0x61, 0x6c, 0x70, 0x68, 0x61, 0x31, 0x2e, 0x70, 0x72,
+	0x6f, 0x74, 0x6f, 0x2e, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x41, 0x72, 0x74, 0x69, 0x63, 0x6c,
+	0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x42, 0x2f, 0x5a, 0x2d, 0x67,
 	0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x68, 0x76, 0x78, 0x61, 0x68, 0x76,
 	0x2f, 0x68, 0x76, 0x78, 0x61, 0x68, 0x76, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x61, 0x72, 0x74, 0x69,
 	0x63, 0x6c, 0x65, 0x2f, 0x76, 0x31, 0x61, 0x6c, 0x70, 0x68, 0x61, 0x31, 0x62, 0x06, 0x70, 0x72,
 	0x6f, 0x74, 0x6f, 0x33,
 }
 
-var file_api_article_v1alpha1_article_proto_goTypes = []interface{}{}
+var (
+	file_api_article_v1alpha1_article_proto_rawDescOnce sync.Once
+	file_api_article_v1alpha1_article_proto_rawDescData = file_api_article_v1alpha1_article_proto_rawDesc
+)
+
+func file_api_article_v1alpha1_article_proto_rawDescGZIP() []byte {
+	file_api_article_v1alpha1_article_proto_rawDescOnce.Do(func() {
+		file_api_article_v1alpha1_article_proto_rawDescData = protoimpl.X.CompressGZIP(file_api_article_v1alpha1_article_proto_rawDescData)
+	})
+	return file_api_article_v1alpha1_article_proto_rawDescData
+}
+
+var file_api_article_v1alpha1_article_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_api_article_v1alpha1_article_proto_goTypes = []interface{}{
+	(*GetArticleRequest)(nil),     // 0: hvxahv.v1alpha1.proto.GetArticleRequest
+	(*GetArticleResponse)(nil),    // 1: hvxahv.v1alpha1.proto.GetArticleResponse
+	(*CreateArticleRequest)(nil),  // 2: hvxahv.v1alpha1.proto.CreateArticleRequest
+	(*CreateArticleResponse)(nil), // 3: hvxahv.v1alpha1.proto.CreateArticleResponse
+	(*UpdateArticleRequest)(nil),  // 4: hvxahv.v1alpha1.proto.UpdateArticleRequest
+	(*UpdateArticleResponse)(nil), // 5: hvxahv.v1alpha1.proto.UpdateArticleResponse
+	(*DeleteArticleRequest)(nil),  // 6: hvxahv.v1alpha1.proto.DeleteArticleRequest
+	(*DeleteArticleResponse)(nil), // 7: hvxahv.v1alpha1.proto.DeleteArticleResponse
+}
 var file_api_article_v1alpha1_article_proto_depIdxs = []int32{
-	0, // [0:0] is the sub-list for method output_type
-	0, // [0:0] is the sub-list for method input_type
+	0, // 0: hvxahv.v1alpha1.proto.ArticleService.GetArticle:input_type -> hvxahv.v1alpha1.proto.GetArticleRequest
+	2, // 1: hvxahv.v1alpha1.proto.ArticleService.CreateArticle:input_type -> hvxahv.v1alpha1.proto.CreateArticleRequest
+	4, // 2: hvxahv.v1alpha1.proto.ArticleService.UpdateArticle:input_type -> hvxahv.v1alpha1.proto.UpdateArticleRequest
+	6, // 3: hvxahv.v1alpha1.proto.ArticleService.DeleteArticle:input_type -> hvxahv.v1alpha1.proto.DeleteArticleRequest
+	1, // 4: hvxahv.v1alpha1.proto.ArticleService.GetArticle:output_type -> hvxahv.v1alpha1.proto.GetArticleResponse
+	3, // 5: hvxahv.v1alpha1.proto.ArticleService.CreateArticle:output_type -> hvxahv.v1alpha1.proto.CreateArticleResponse
+	5, // 6: hvxahv.v1alpha1.proto.ArticleService.UpdateArticle:output_type -> hvxahv.v1alpha1.proto.UpdateArticleResponse
+	7, // 7: hvxahv.v1alpha1.proto.ArticleService.DeleteArticle:output_type -> hvxahv.v1alpha1.proto.DeleteArticleResponse
+	4, // [4:8] is the sub-list for method output_type
+	0, // [0:4] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -46,18 +421,117 @@ func file_api_article_v1alpha1_article_proto_init() {
 	if File_api_article_v1alpha1_article_proto != nil {
 		return
 	}
+	if !protoimpl.UnsafeEnabled {
+		file_api_article_v1alpha1_article_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*GetArticleRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_api_article_v1alpha1_article_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*GetArticleResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_api_article_v1alpha1_article_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*CreateArticleRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_api_article_v1alpha1_article_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*CreateArticleResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_api_article_v1alpha1_article_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*UpdateArticleRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_api_article_v1alpha1_article_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*UpdateArticleResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_api_article_v1alpha1_article_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*DeleteArticleRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_api_article_v1alpha1_article_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*DeleteArticleResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_api_article_v1alpha1_article_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   0,
+			NumMessages:   8,
 			NumExtensions: 0,
-			NumServices:   0,
+			NumServices:   1,
 		},
 		GoTypes:           file_api_article_v1alpha1_article_proto_goTypes,
 		DependencyIndexes: file_api_article_v1alpha1_article_proto_depIdxs,
+		MessageInfos:      file_api_article_v1alpha1_article_proto_msgTypes,
 	}.Build()
 	File_api_article_v1alpha1_article_proto = out.File
 	file_api_article_v1alpha1_article_proto_rawDesc = nil

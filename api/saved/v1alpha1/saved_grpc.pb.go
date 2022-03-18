@@ -18,12 +18,12 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type SavedClient interface {
-	// Create Save the hash of the uploaded file to the database,
+	// CreateSaved Save the hash of the uploaded file to the database,
 	// Because the file needs to be encrypted for the user to
 	// choose, the upload to the IPFS file server should be
 	// done in the client and the returned ipfs cid should be
 	// submitted to the server, which will save it.
-	Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error)
+	CreateSaved(ctx context.Context, in *CreateSavedRequest, opts ...grpc.CallOption) (*CreateSavedResponse, error)
 	// GetSaves Get a collection of saved files by account ID.
 	GetSaves(ctx context.Context, in *GetSavesRequest, opts ...grpc.CallOption) (*GetSavesResponse, error)
 	// GetSaved Get by saved ID.
@@ -41,9 +41,9 @@ func NewSavedClient(cc grpc.ClientConnInterface) SavedClient {
 	return &savedClient{cc}
 }
 
-func (c *savedClient) Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error) {
-	out := new(CreateResponse)
-	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Saved/Create", in, out, opts...)
+func (c *savedClient) CreateSaved(ctx context.Context, in *CreateSavedRequest, opts ...grpc.CallOption) (*CreateSavedResponse, error) {
+	out := new(CreateSavedResponse)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Saved/CreateSaved", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -81,12 +81,12 @@ func (c *savedClient) EditSaved(ctx context.Context, in *EditSavedRequest, opts 
 // All implementations must embed UnimplementedSavedServer
 // for forward compatibility
 type SavedServer interface {
-	// Create Save the hash of the uploaded file to the database,
+	// CreateSaved Save the hash of the uploaded file to the database,
 	// Because the file needs to be encrypted for the user to
 	// choose, the upload to the IPFS file server should be
 	// done in the client and the returned ipfs cid should be
 	// submitted to the server, which will save it.
-	Create(context.Context, *CreateRequest) (*CreateResponse, error)
+	CreateSaved(context.Context, *CreateSavedRequest) (*CreateSavedResponse, error)
 	// GetSaves Get a collection of saved files by account ID.
 	GetSaves(context.Context, *GetSavesRequest) (*GetSavesResponse, error)
 	// GetSaved Get by saved ID.
@@ -101,8 +101,8 @@ type SavedServer interface {
 type UnimplementedSavedServer struct {
 }
 
-func (UnimplementedSavedServer) Create(context.Context, *CreateRequest) (*CreateResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
+func (UnimplementedSavedServer) CreateSaved(context.Context, *CreateSavedRequest) (*CreateSavedResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateSaved not implemented")
 }
 func (UnimplementedSavedServer) GetSaves(context.Context, *GetSavesRequest) (*GetSavesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSaves not implemented")
@@ -126,20 +126,20 @@ func RegisterSavedServer(s grpc.ServiceRegistrar, srv SavedServer) {
 	s.RegisterService(&Saved_ServiceDesc, srv)
 }
 
-func _Saved_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateRequest)
+func _Saved_CreateSaved_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateSavedRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(SavedServer).Create(ctx, in)
+		return srv.(SavedServer).CreateSaved(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/hvxahv.v1alpha1.proto.Saved/Create",
+		FullMethod: "/hvxahv.v1alpha1.proto.Saved/CreateSaved",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SavedServer).Create(ctx, req.(*CreateRequest))
+		return srv.(SavedServer).CreateSaved(ctx, req.(*CreateSavedRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -206,8 +206,8 @@ var Saved_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*SavedServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Create",
-			Handler:    _Saved_Create_Handler,
+			MethodName: "CreateSaved",
+			Handler:    _Saved_CreateSaved_Handler,
 		},
 		{
 			MethodName: "GetSaves",

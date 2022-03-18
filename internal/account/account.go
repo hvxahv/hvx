@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"github.com/go-playground/validator/v10"
 	pb "github.com/hvxahv/hvxahv/api/account/v1alpha1"
+	"github.com/hvxahv/hvxahv/api/device/v1alpha1"
+	"github.com/hvxahv/hvxahv/internal/device"
 	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
@@ -20,22 +22,25 @@ type Accounts struct {
 	gorm.Model
 
 	// Username is the primaryKey of the database which is unique,
-	// in the account system of this instance is must be added during the creation process to ensure the correctness of the data.
+	// in the account system of this instance is must be added during
+	// the creation process to ensure the correctness of the data.
 	Username string `gorm:"primaryKey;type:text;username;unique" validate:"required,min=4,max=16"`
 
 	// Mail When registering, the user is required to provide an email,
-	// and an error needs to be returned when the email is not in the correct format.
-	// It is also unique in the account system.
+	// and an error needs to be returned when the email is not in the
+	// correct format. It is also unique in the account system.
 	Mail string `gorm:"index;type:text;mail;unique" validate:"required,email"`
 
 	// Password must be encrypted and saved. The length of the password needs to be verified
 	Password string `gorm:"type:text;password" validate:"required,min=8,max=100"`
 
-	// ActorID is used for compatibility with the ActivityPub protocol to connect to the actor table by ID.
+	// ActorID is used for compatibility with the ActivityPub protocol
+	// to connect to the actor table by ID.
 	ActorID uint `gorm:"type:bigint;actor_id"`
 
 	// IsPrivate sets whether the account is private or not,
-	// it is a social extension that is set by the user to make the account public or not.
+	// it is a social extension that is set by the user to make the
+	// account public or not.
 	IsPrivate bool `gorm:"type:boolean;is_private"`
 }
 
@@ -121,15 +126,11 @@ func (a *account) Delete(ctx context.Context, in *pb.DeleteRequest) (*pb.DeleteR
 		return nil, err
 	}
 
-	d := &pb.DeleteDeviceAllByAccountIDRequest{
-		AccountId: strconv.Itoa(int(v.ID)),
-	}
-	da, err := a.DeleteDeviceAllByAccountID(ctx, d)
+	d, err := deleteAllDevicesByAccountID(ctx, v.ID)
 	if err != nil {
 		return nil, err
 	}
-
-	return &pb.DeleteResponse{Code: "200", Reply: da.Reply}, nil
+	return &pb.DeleteResponse{Code: "200", Reply: d.Reply}, nil
 }
 
 func (a *account) EditUsername(ctx context.Context, in *pb.EditUsernameRequest) (*pb.EditUsernameResponse, error) {
@@ -163,14 +164,7 @@ func (a *account) EditUsername(ctx context.Context, in *pb.EditUsernameRequest) 
 		return &pb.EditUsernameResponse{Code: "500", Reply: err.Error()}, err
 	}
 
-	d := &pb.DeleteDeviceAllByAccountIDRequest{
-		AccountId: in.Id,
-	}
-	da, err := a.DeleteDeviceAllByAccountID(ctx, d)
-	if err != nil {
-		return nil, err
-	}
-	return &pb.EditUsernameResponse{Code: "200", Reply: da.Reply}, nil
+	return &pb.EditUsernameResponse{Code: "200", Reply: "ok"}, nil
 }
 
 func (a *account) EditPassword(ctx context.Context, in *pb.EditPasswordRequest) (*pb.EditPasswordResponse, error) {
@@ -190,15 +184,11 @@ func (a *account) EditPassword(ctx context.Context, in *pb.EditPasswordRequest) 
 		return nil, err
 	}
 
-	d := &pb.DeleteDeviceAllByAccountIDRequest{
-		AccountId: strconv.Itoa(int(v.ID)),
-	}
-	da, err := a.DeleteDeviceAllByAccountID(ctx, d)
+	d, err := deleteAllDevicesByAccountID(ctx, v.ID)
 	if err != nil {
 		return nil, err
 	}
-
-	return &pb.EditPasswordResponse{Code: "200", Reply: da.Reply}, nil
+	return &pb.EditPasswordResponse{Code: "200", Reply: d.Reply}, nil
 }
 
 func (a *account) EditEmail(ctx context.Context, in *pb.EditEmailRequest) (*pb.EditEmailResponse, error) {
@@ -223,4 +213,19 @@ func NewAccounts(actorID uint, username, mail, password string) *Accounts {
 		Password: string(hash),
 		ActorID:  actorID,
 	}
+}
+
+func deleteAllDevicesByAccountID(ctx context.Context, accountID uint) (*v1alpha1.DeleteDeviceAllByAccountIDResponse, error) {
+	client, err := device.GetDeviceClient()
+	if err != nil {
+		return nil, err
+	}
+	d := &v1alpha1.DeleteDeviceAllByAccountIDRequest{
+		AccountId: strconv.Itoa(int(accountID)),
+	}
+	da, err := client.DeleteDeviceAllByAccountID(ctx, d)
+	if err != nil {
+		return nil, err
+	}
+	return da, nil
 }

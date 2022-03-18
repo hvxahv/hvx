@@ -26,7 +26,7 @@ func Auth(c *gin.Context) {
 	//	c.Abort()
 	//	return
 	//}
-
+	//
 	//// Because the device ID is unique, when logging in,
 	//// the device id obtained by the token is used to query whether the device exists.
 	//// If the device does not exist, the device will be returned as unregistered.

@@ -33,12 +33,3 @@ func NewActorClient() (pb.ActorClient, error) {
 
 	return pb.NewActorClient(conn), nil
 }
-
-func NewDeviceClient() (pb.DevicesClient, error) {
-	conn, err := grpc.Dial(microservices.NewService("account").GetAddress(), grpc.WithInsecure())
-	if err != nil {
-		return nil, err
-	}
-
-	return pb.NewDevicesClient(conn), nil
-}

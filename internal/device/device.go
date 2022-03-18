@@ -1,9 +1,16 @@
-package account
+/*
+ * MIT License
+ *
+ * Copyright (c) 2022 The hvxahv Authors.
+ *
+ */
+
+package device
 
 import (
 	"fmt"
 	"github.com/SherClockHolmes/webpush-go"
-	pb "github.com/hvxahv/hvxahv/api/account/v1alpha1"
+	pb "github.com/hvxahv/hvxahv/api/device/v1alpha1"
 	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"golang.org/x/net/context"
 	"gorm.io/gorm"
@@ -29,7 +36,7 @@ type Devices struct {
 	PublicKey  string `gorm:"type:text;publicKey"`
 }
 
-func (a *account) DeviceIsExistByHash(ctx context.Context, in *pb.DeviceIsExistByHashRequest) (*pb.DeviceIsExistByHashResponse, error) {
+func (a *device) DeviceIsExistByHash(ctx context.Context, in *pb.DeviceIsExistByHashRequest) (*pb.DeviceIsExistByHashResponse, error) {
 	db := cockroach.GetDB()
 	if err := db.Debug().Table("devices").Where("hash = ?", in.Hash).First(&Devices{}); err != nil {
 		ok := cockroach.IsNotFound(err.Error)
@@ -39,7 +46,7 @@ func (a *account) DeviceIsExistByHash(ctx context.Context, in *pb.DeviceIsExistB
 	return &pb.DeviceIsExistByHashResponse{IsExist: false}, nil
 }
 
-func (a *account) CreateDevice(ctx context.Context, in *pb.CreateDeviceRequest) (*pb.CreateDeviceResponse, error) {
+func (a *device) CreateDevice(ctx context.Context, in *pb.CreateDeviceRequest) (*pb.CreateDeviceResponse, error) {
 	db := cockroach.GetDB()
 	if err := db.AutoMigrate(&Devices{}); err != nil {
 		fmt.Println(err)
@@ -67,7 +74,7 @@ func (a *account) CreateDevice(ctx context.Context, in *pb.CreateDeviceRequest) 
 	}, nil
 }
 
-func (a *account) GetDevicesByAccountID(ctx context.Context, in *pb.GetDevicesByAccountIDRequest) (*pb.GetDevicesByAccountIDResponse, error) {
+func (a *device) GetDevicesByAccountID(ctx context.Context, in *pb.GetDevicesByAccountIDRequest) (*pb.GetDevicesByAccountIDResponse, error) {
 	id, err := strconv.Atoi(in.AccountId)
 	if err != nil {
 		return nil, err
@@ -80,7 +87,7 @@ func (a *account) GetDevicesByAccountID(ctx context.Context, in *pb.GetDevicesBy
 	return &pb.GetDevicesByAccountIDResponse{Code: "200", Devices: devices}, nil
 }
 
-func (a *account) GetDeviceByID(ctx context.Context, in *pb.GetDeviceByIDRequest) (*pb.Device, error) {
+func (a *device) GetDeviceByID(ctx context.Context, in *pb.GetDeviceByIDRequest) (*pb.Device, error) {
 	db := cockroach.GetDB()
 	id, err := strconv.Atoi(in.DeviceId)
 	if err != nil {
@@ -100,7 +107,7 @@ func (a *account) GetDeviceByID(ctx context.Context, in *pb.GetDeviceByIDRequest
 	}, nil
 }
 
-func (a *account) GetDeviceByHash(ctx context.Context, in *pb.GetDeviceByHashRequest) (*pb.Device, error) {
+func (a *device) GetDeviceByHash(ctx context.Context, in *pb.GetDeviceByHashRequest) (*pb.Device, error) {
 	db := cockroach.GetDB()
 
 	if err := db.Debug().Table("devices").Where("hash = ?", in.Hash).First(&a.Devices).Error; err != nil {
@@ -117,7 +124,7 @@ func (a *account) GetDeviceByHash(ctx context.Context, in *pb.GetDeviceByHashReq
 	}, nil
 }
 
-func (a *account) DeleteDeviceAllByAccountID(ctx context.Context, in *pb.DeleteDeviceAllByAccountIDRequest) (*pb.DeleteDeviceAllByAccountIDResponse, error) {
+func (a *device) DeleteDeviceAllByAccountID(ctx context.Context, in *pb.DeleteDeviceAllByAccountIDRequest) (*pb.DeleteDeviceAllByAccountIDResponse, error) {
 	id, err := strconv.Atoi(in.AccountId)
 	if err != nil {
 		return nil, err
@@ -129,7 +136,7 @@ func (a *account) DeleteDeviceAllByAccountID(ctx context.Context, in *pb.DeleteD
 	return &pb.DeleteDeviceAllByAccountIDResponse{Code: "200", Reply: "ok"}, nil
 }
 
-func (a *account) DeleteDeviceByID(ctx context.Context, in *pb.DeleteDeviceByIDRequest) (*pb.DeleteDeviceByIDResponse, error) {
+func (a *device) DeleteDeviceByID(ctx context.Context, in *pb.DeleteDeviceByIDRequest) (*pb.DeleteDeviceByIDResponse, error) {
 	id, err := strconv.Atoi(in.DeviceId)
 	if err != nil {
 		return nil, err
@@ -141,7 +148,7 @@ func (a *account) DeleteDeviceByID(ctx context.Context, in *pb.DeleteDeviceByIDR
 	return &pb.DeleteDeviceByIDResponse{Code: "200", Reply: "ok"}, nil
 }
 
-func (a *account) DeleteDeviceByHash(ctx context.Context, in *pb.DeleteDeviceByHashRequest) (*pb.DeleteDeviceByHashResponse, error) {
+func (a *device) DeleteDeviceByHash(ctx context.Context, in *pb.DeleteDeviceByHashRequest) (*pb.DeleteDeviceByHashResponse, error) {
 	db := cockroach.GetDB()
 	if err := db.Debug().Table("devices").Where("hash = ?", in.Hash).Unscoped().Delete(&Devices{}).Error; err != nil {
 		return nil, err

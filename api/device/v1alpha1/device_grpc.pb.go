@@ -373,5 +373,5 @@ var Devices_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "api/account/v1alpha1/device.proto",
+	Metadata: "api/device/v1alpha1/device.proto",
 }

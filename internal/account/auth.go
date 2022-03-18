@@ -3,6 +3,8 @@ package account
 import (
 	"github.com/google/uuid"
 	pb "github.com/hvxahv/hvxahv/api/account/v1alpha1"
+	"github.com/hvxahv/hvxahv/api/device/v1alpha1"
+	"github.com/hvxahv/hvxahv/internal/device"
 	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"github.com/hvxahv/hvxahv/pkg/identity"
 	"github.com/pkg/errors"
@@ -31,12 +33,18 @@ func (a *account) Verify(ctx context.Context, in *pb.VerifyRequest) (*pb.VerifyR
 		return &pb.VerifyResponse{Code: "401", Reply: err.Error()}, err
 	}
 
-	d := &pb.CreateDeviceRequest{
+	data := &v1alpha1.CreateDeviceRequest{
 		AccountId: strconv.Itoa(int(v.ID)),
 		Ua:        in.Ua,
 		Hash:      hash,
 	}
-	device, err := a.CreateDevice(ctx, d)
+
+	client, err := device.GetDeviceClient()
+	if err != nil {
+		return nil, err
+	}
+
+	d, err := client.CreateDevice(ctx, data)
 	if err != nil {
 		return nil, err
 	}
@@ -47,8 +55,8 @@ func (a *account) Verify(ctx context.Context, in *pb.VerifyRequest) (*pb.VerifyR
 		Id:        strconv.Itoa(int(v.ID)),
 		Token:     k,
 		Mail:      v.Mail,
-		DeviceId:  device.DeviceId,
-		PublicKey: device.PublicKey,
+		DeviceId:  d.DeviceId,
+		PublicKey: d.PublicKey,
 	}, nil
 }
 
