@@ -9,6 +9,8 @@ service Devices {
   // Otherwise returns false.
   rpc DeviceIsExistByHash (DeviceIsExistByHashRequest) returns (DeviceIsExistByHashResponse) {}
 
+  rpc DeviceIsExistByID (DeviceIsExistByIDRequest) returns (DeviceIsExistByIDResponse) {}
+
   // CreateDevice To create the logged-in device data, pass the account id
   // and user agent and generate a hash as a unique identifier
   // for the device.
@@ -50,6 +52,14 @@ message DeviceIsExistByHashResponse {
   bool is_exist = 1;
 }
 
+message DeviceIsExistByIDRequest {
+  string id = 1;
+}
+
+message DeviceIsExistByIDResponse {
+  bool is_exist = 1;
+}
+
 message CreateDeviceRequest {
   string account_id = 1;
   string ua = 2;
@@ -88,7 +98,8 @@ message DeleteDeviceAllByAccountIDResponse {
 }
 
 message DeleteDeviceByIDRequest {
-  string device_id = 1;
+  string account_id = 1;
+  string device_id = 2;
 }
 
 message DeleteDeviceByIDResponse {

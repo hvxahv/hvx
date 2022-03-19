@@ -18,15 +18,26 @@ service Saved {
   rpc GetSaved (GetSavedRequest) returns (Save) {}
 
   // EditSaved Edit by saved ID.
-  // View the EditSavedRequest relevant parameters that are allowed to be changed.
+  // View the EditSavedRequest relevant parameters that are allowed
+  // to be changed.
   rpc EditSaved (EditSavedRequest) returns (EditSavedResponse) {}
+
+  // DeleteSaved Delete by saved ID.
+  // Users must be informed that data that exists in IPFS files
+  // is not actually deleted, and user-friendly prompts need
+  // to be returned.
+  rpc DeleteSaved (DeleteSavedRequest) returns (DeleteSavedResponse) {}
+
+  // DeleteSaves This API is typically used when deleting an account.
+  // When a user's account is completely deleted, no data should remain.
+  rpc DeleteAllSaves (DeleteAllSavesRequest) returns (DeleteAllSavesResponse) {}
 }
 
 message Save {
   string id = 1;
   string name = 3;
   string description = 4;
-  string hash = 5;
+  string cid = 5;
   string types = 6;
   string created_at = 7;
 }
@@ -35,7 +46,7 @@ message CreateSavedRequest {
   string account_id = 1;
   string name = 2;
   string description = 3;
-  string hash = 4;
+  string cid = 4;
   string types = 5;
   bool isPrivate = 6;
 }
@@ -55,16 +66,37 @@ message GetSavesResponse {
 }
 
 message GetSavedRequest {
-  string id = 1;
+  string account_id = 1;
+  string id = 2;
 }
 
 message EditSavedRequest {
   string id = 1;
-  string name = 2;
-  string description = 3;
+  string account_id = 2;
+  string name = 3;
+  string description = 4;
 }
 
 message EditSavedResponse {
+  string code = 1;
+  string reply = 2;
+}
+
+message DeleteSavedRequest {
+  string id = 1;
+  string account_id = 2;
+}
+
+message DeleteSavedResponse {
+  string code = 1;
+  string reply = 2;
+}
+
+message DeleteAllSavesRequest {
+  string account_id = 1;
+}
+
+message DeleteAllSavesResponse {
   string code = 1;
   string reply = 2;
 }

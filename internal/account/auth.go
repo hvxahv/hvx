@@ -25,28 +25,24 @@ func (a *account) Verify(ctx context.Context, in *pb.VerifyRequest) (*pb.VerifyR
 		return nil, errors.Errorf("PASSWORD_VERIFICATION_FAILED")
 	}
 
-	hash := uuid.New().String()
-
-	// Creating an authorization token.
-	k, err := identity.GenToken(strconv.Itoa(int(v.ID)), v.Mail, v.Username, v.Password, hash)
-	if err != nil {
-		return &pb.VerifyResponse{Code: "401", Reply: err.Error()}, err
-	}
-
-	data := &v1alpha1.CreateDeviceRequest{
-		AccountId: strconv.Itoa(int(v.ID)),
-		Ua:        in.Ua,
-		Hash:      hash,
-	}
-
 	client, err := device.GetDeviceClient()
 	if err != nil {
 		return nil, err
 	}
 
-	d, err := client.CreateDevice(ctx, data)
+	d, err := client.CreateDevice(ctx, &v1alpha1.CreateDeviceRequest{
+		AccountId: strconv.Itoa(int(v.ID)),
+		Ua:        in.Ua,
+		Hash:      uuid.New().String(),
+	})
 	if err != nil {
 		return nil, err
+	}
+
+	// Creating an authorization token.
+	k, err := identity.GenToken(strconv.Itoa(int(v.ID)), v.Mail, v.Username, d.DeviceId)
+	if err != nil {
+		return &pb.VerifyResponse{Code: "401", Reply: err.Error()}, err
 	}
 
 	return &pb.VerifyResponse{

@@ -38,12 +38,31 @@ type Devices struct {
 
 func (a *device) DeviceIsExistByHash(ctx context.Context, in *pb.DeviceIsExistByHashRequest) (*pb.DeviceIsExistByHashResponse, error) {
 	db := cockroach.GetDB()
+
 	if err := db.Debug().Table("devices").Where("hash = ?", in.Hash).First(&Devices{}); err != nil {
 		ok := cockroach.IsNotFound(err.Error)
 		return &pb.DeviceIsExistByHashResponse{IsExist: ok}, nil
 	}
 
 	return &pb.DeviceIsExistByHashResponse{IsExist: false}, nil
+}
+
+func (a *device) DeviceIsExistByID(ctx context.Context, in *pb.DeviceIsExistByIDRequest) (*pb.DeviceIsExistByIDResponse, error) {
+	db := cockroach.GetDB()
+	id, err := strconv.Atoi(in.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := db.Debug().
+		Table("devices").
+		Where("id = ?", uint(id)).
+		First(&Devices{}); err != nil {
+		ok := cockroach.IsNotFound(err.Error)
+		return &pb.DeviceIsExistByIDResponse{IsExist: ok}, nil
+	}
+
+	return &pb.DeviceIsExistByIDResponse{IsExist: false}, nil
 }
 
 func (a *device) CreateDevice(ctx context.Context, in *pb.CreateDeviceRequest) (*pb.CreateDeviceResponse, error) {
@@ -81,7 +100,11 @@ func (a *device) GetDevicesByAccountID(ctx context.Context, in *pb.GetDevicesByA
 	}
 	var devices []*pb.Device
 	db := cockroach.GetDB()
-	if err := db.Debug().Table("devices").Where("account_id = ?", id).Find(&devices).Error; err != nil {
+	if err := db.Debug().
+		Table("devices").
+		Where("account_id = ?", id).
+		Find(&devices).
+		Error; err != nil {
 		return nil, err
 	}
 	return &pb.GetDevicesByAccountIDResponse{Code: "200", Devices: devices}, nil
@@ -141,8 +164,19 @@ func (a *device) DeleteDeviceByID(ctx context.Context, in *pb.DeleteDeviceByIDRe
 	if err != nil {
 		return nil, err
 	}
+	aid, err := strconv.Atoi(in.AccountId)
+	if err != nil {
+		return nil, err
+	}
 	db := cockroach.GetDB()
-	if err := db.Debug().Table("devices").Where("id = ?", id).Unscoped().Delete(&Devices{}).Error; err != nil {
+
+	if err := db.Debug().
+		Table("devices").
+		Where("id = ? AND account_id = ?", uint(id), uint(aid)).
+		Unscoped().
+		Delete(&Devices{}).
+		Error;
+		err != nil {
 		return nil, err
 	}
 	return &pb.DeleteDeviceByIDResponse{Code: "200", Reply: "ok"}, nil

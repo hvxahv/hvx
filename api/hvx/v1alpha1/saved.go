@@ -15,7 +15,11 @@ import (
 func V1Saved(v1 *gin.RouterGroup) {
 	v1.GET("/saves", handler.GetSaves)
 
-	v1.GET("/saved/:id")
+	v1.GET("/saved/:id", handler.GetSaved)
 
-	v1.POST("/saved")
+	v1.POST("/saved", handler.CreateSaved)
+
+	v1.PUT("/saved/:id", handler.EditSaved)
+
+	v1.DELETE("/saved/:id", handler.DeleteSaved)
 }

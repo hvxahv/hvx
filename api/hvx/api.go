@@ -66,6 +66,8 @@ func APIServer() *gin.Engine {
 	// The internal API requires TOKEN authentication to access.
 	v1alpha1.V1Accounts(v1)
 
+	v1alpha1.Devices(v1)
+
 	v1alpha1.V1Articles(v1)
 
 	v1alpha1.V1Activity(v1)

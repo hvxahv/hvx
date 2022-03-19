@@ -30,7 +30,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-func NewSavedClient() (pb.SavedClient, error) {
+func GetSavedClient() (pb.SavedClient, error) {
 	conn, err := grpc.Dial(microservices.NewService("saved").GetAddress(), grpc.WithInsecure())
 	if err != nil {
 		return nil, err

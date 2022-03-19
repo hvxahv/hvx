@@ -17,6 +17,7 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"github.com/spf13/cobra"
 	"os"
 
@@ -82,4 +83,10 @@ func initConfig() {
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
 	}
+	// Initialize the database.
+	if err := cockroach.NewDBAddr().InitDB(); err != nil {
+		fmt.Println(err)
+		return
+	}
+
 }

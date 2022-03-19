@@ -10,24 +10,22 @@ import (
 
 // Claims Generate the data needed for TOKEN.
 type Claims struct {
-	Uuid        string
-	Email       string
-	ID          string
-	Username    string
-	Password    string
-	DevicesHash string
+	Uuid     string
+	Email    string
+	ID       string
+	Username string
+	DeviceID string
 	jwt.StandardClaims
 }
 
-func NewClaims(id, mail, username, password, devicesHash string) *Claims {
+func NewClaims(id, mail, username, deviceID string) *Claims {
 	fmt.Println(viper.GetInt("token_expired"))
 	expireTime := time.Now().Add(time.Duration(viper.GetInt("token_expired")) * 24 * time.Hour)
 	c := &Claims{
-		Email:       mail,
-		ID:          id,
-		Username:    username,
-		Password:    password,
-		DevicesHash: devicesHash,
+		Email:    mail,
+		ID:       id,
+		Username: username,
+		DeviceID: deviceID,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expireTime.Unix(),
 			IssuedAt:  time.Now().Unix(),
@@ -40,8 +38,8 @@ func NewClaims(id, mail, username, password, devicesHash string) *Claims {
 
 // GenToken After the user logs in and the password is successfully verified,
 // this method will be used to generate a Token and return.
-func GenToken(id, mail, username, password, deviceHash string) (string, error) {
-	t := jwt.NewWithClaims(jwt.SigningMethodHS256, NewClaims(id, mail, username, password, deviceHash))
+func GenToken(id, mail, username, deviceID string) (string, error) {
+	t := jwt.NewWithClaims(jwt.SigningMethodHS256, NewClaims(id, mail, username, deviceID))
 	token, err := t.SignedString([]byte(viper.GetString("token_signed")))
 	if err != nil {
 		fmt.Println(err)
