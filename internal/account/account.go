@@ -6,7 +6,9 @@ import (
 	"github.com/go-playground/validator/v10"
 	pb "github.com/hvxahv/hvxahv/api/account/v1alpha1"
 	"github.com/hvxahv/hvxahv/api/device/v1alpha1"
+	saves "github.com/hvxahv/hvxahv/api/saved/v1alpha1"
 	"github.com/hvxahv/hvxahv/internal/device"
+	"github.com/hvxahv/hvxahv/internal/saved"
 	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
@@ -130,7 +132,17 @@ func (a *account) Delete(ctx context.Context, in *pb.DeleteRequest) (*pb.DeleteR
 	if err != nil {
 		return nil, err
 	}
-	return &pb.DeleteResponse{Code: "200", Reply: d.Reply}, nil
+
+	if d.Reply != "ok" {
+		return nil, errors.Errorf("FAILED_TO_DELETE_DEVICES")
+	}
+
+	s, err := deleteAllSavesByAccountID(ctx, v.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.DeleteResponse{Code: "200", Reply: s.Reply}, nil
 }
 
 func (a *account) EditUsername(ctx context.Context, in *pb.EditUsernameRequest) (*pb.EditUsernameResponse, error) {
@@ -198,7 +210,11 @@ func (a *account) EditEmail(ctx context.Context, in *pb.EditEmailRequest) (*pb.E
 	}
 
 	db := cockroach.GetDB()
-	if err := db.Debug().Table("accounts").Where("id = ?", id).Update("mail", in.Mail).Error; err != nil {
+	if err := db.Debug().
+		Table("accounts").
+		Where("id = ?", id).
+		Update("mail", in.Mail).
+		Error; err != nil {
 		return nil, err
 	}
 
@@ -224,6 +240,20 @@ func deleteAllDevicesByAccountID(ctx context.Context, accountID uint) (*v1alpha1
 		AccountId: strconv.Itoa(int(accountID)),
 	}
 	da, err := client.DeleteDeviceAllByAccountID(ctx, d)
+	if err != nil {
+		return nil, err
+	}
+	return da, nil
+}
+
+func deleteAllSavesByAccountID(ctx context.Context, accountID uint) (*saves.DeleteAllSavesResponse, error) {
+	client, err := saved.GetSavedClient()
+	if err != nil {
+		return nil, err
+	}
+	da, err := client.DeleteAllSaves(ctx, &saves.DeleteAllSavesRequest{
+		AccountId: strconv.Itoa(int(accountID)),
+	})
 	if err != nil {
 		return nil, err
 	}

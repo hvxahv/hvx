@@ -29,8 +29,17 @@ type SavedClient interface {
 	// GetSaved Get by saved ID.
 	GetSaved(ctx context.Context, in *GetSavedRequest, opts ...grpc.CallOption) (*Save, error)
 	// EditSaved Edit by saved ID.
-	// View the EditSavedRequest relevant parameters that are allowed to be changed.
+	// View the EditSavedRequest relevant parameters that are allowed
+	// to be changed.
 	EditSaved(ctx context.Context, in *EditSavedRequest, opts ...grpc.CallOption) (*EditSavedResponse, error)
+	// DeleteSaved Delete by saved ID.
+	// Users must be informed that data that exists in IPFS files
+	// is not actually deleted, and user-friendly prompts need
+	// to be returned.
+	DeleteSaved(ctx context.Context, in *DeleteSavedRequest, opts ...grpc.CallOption) (*DeleteSavedResponse, error)
+	// DeleteSaves This API is typically used when deleting an account.
+	// When a user's account is completely deleted, no data should remain.
+	DeleteAllSaves(ctx context.Context, in *DeleteAllSavesRequest, opts ...grpc.CallOption) (*DeleteAllSavesResponse, error)
 }
 
 type savedClient struct {
@@ -77,6 +86,24 @@ func (c *savedClient) EditSaved(ctx context.Context, in *EditSavedRequest, opts 
 	return out, nil
 }
 
+func (c *savedClient) DeleteSaved(ctx context.Context, in *DeleteSavedRequest, opts ...grpc.CallOption) (*DeleteSavedResponse, error) {
+	out := new(DeleteSavedResponse)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Saved/DeleteSaved", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *savedClient) DeleteAllSaves(ctx context.Context, in *DeleteAllSavesRequest, opts ...grpc.CallOption) (*DeleteAllSavesResponse, error) {
+	out := new(DeleteAllSavesResponse)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Saved/DeleteAllSaves", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // SavedServer is the server API for Saved service.
 // All implementations must embed UnimplementedSavedServer
 // for forward compatibility
@@ -92,8 +119,17 @@ type SavedServer interface {
 	// GetSaved Get by saved ID.
 	GetSaved(context.Context, *GetSavedRequest) (*Save, error)
 	// EditSaved Edit by saved ID.
-	// View the EditSavedRequest relevant parameters that are allowed to be changed.
+	// View the EditSavedRequest relevant parameters that are allowed
+	// to be changed.
 	EditSaved(context.Context, *EditSavedRequest) (*EditSavedResponse, error)
+	// DeleteSaved Delete by saved ID.
+	// Users must be informed that data that exists in IPFS files
+	// is not actually deleted, and user-friendly prompts need
+	// to be returned.
+	DeleteSaved(context.Context, *DeleteSavedRequest) (*DeleteSavedResponse, error)
+	// DeleteSaves This API is typically used when deleting an account.
+	// When a user's account is completely deleted, no data should remain.
+	DeleteAllSaves(context.Context, *DeleteAllSavesRequest) (*DeleteAllSavesResponse, error)
 	mustEmbedUnimplementedSavedServer()
 }
 
@@ -112,6 +148,12 @@ func (UnimplementedSavedServer) GetSaved(context.Context, *GetSavedRequest) (*Sa
 }
 func (UnimplementedSavedServer) EditSaved(context.Context, *EditSavedRequest) (*EditSavedResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method EditSaved not implemented")
+}
+func (UnimplementedSavedServer) DeleteSaved(context.Context, *DeleteSavedRequest) (*DeleteSavedResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteSaved not implemented")
+}
+func (UnimplementedSavedServer) DeleteAllSaves(context.Context, *DeleteAllSavesRequest) (*DeleteAllSavesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteAllSaves not implemented")
 }
 func (UnimplementedSavedServer) mustEmbedUnimplementedSavedServer() {}
 
@@ -198,6 +240,42 @@ func _Saved_EditSaved_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Saved_DeleteSaved_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteSavedRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SavedServer).DeleteSaved(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/hvxahv.v1alpha1.proto.Saved/DeleteSaved",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SavedServer).DeleteSaved(ctx, req.(*DeleteSavedRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Saved_DeleteAllSaves_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteAllSavesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SavedServer).DeleteAllSaves(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/hvxahv.v1alpha1.proto.Saved/DeleteAllSaves",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SavedServer).DeleteAllSaves(ctx, req.(*DeleteAllSavesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Saved_ServiceDesc is the grpc.ServiceDesc for Saved service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -220,6 +298,14 @@ var Saved_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "EditSaved",
 			Handler:    _Saved_EditSaved_Handler,
+		},
+		{
+			MethodName: "DeleteSaved",
+			Handler:    _Saved_DeleteSaved_Handler,
+		},
+		{
+			MethodName: "DeleteAllSaves",
+			Handler:    _Saved_DeleteAllSaves_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

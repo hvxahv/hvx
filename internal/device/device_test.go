@@ -11,10 +11,45 @@ import (
 	"context"
 	"fmt"
 	"github.com/hvxahv/hvxahv/api/device/v1alpha1"
+	"github.com/hvxahv/hvxahv/pkg/cockroach"
+	"github.com/mitchellh/go-homedir"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+	"os"
 	"testing"
 )
 
-func TestAccount_DeviceIsExistByHash(t *testing.T) {
+func init() {
+	home, err := homedir.Dir()
+	cobra.CheckErr(err)
+
+	// Search configs in home directory with name ".hvxahv" (without extension).
+	viper.AddConfigPath(home)
+	viper.SetConfigName(".hvxahv")
+
+	viper.AutomaticEnv()
+
+	// If a configs file is found, read it in.
+	if err := viper.ReadInConfig(); err == nil {
+		fmt.Fprintln(os.Stderr, "Using configs file:", viper.ConfigFileUsed())
+	}
+
+	// Initialize the database.
+	n := cockroach.NewDBAddr()
+	if err := n.InitDB(); err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	// If a configs file is found, read it in.
+	if err := viper.ReadInConfig(); err == nil {
+		fmt.Println(err)
+		fmt.Fprintln(os.Stderr, "Using configs file:", viper.ConfigFileUsed())
+		return
+	}
+}
+
+func TestDevice_DeviceIsExistByHash(t *testing.T) {
 	d := &v1alpha1.DeviceIsExistByHashRequest{
 		Hash: "7126762b-3b46-441e-8428-54b5effe6bb9s",
 	}
@@ -27,7 +62,20 @@ func TestAccount_DeviceIsExistByHash(t *testing.T) {
 	fmt.Println(exist)
 }
 
-func TestAccount_CreateDevice(t *testing.T) {
+func TestDevice_DeviceIsExistByID(t *testing.T) {
+	d := &v1alpha1.DeviceIsExistByIDRequest{
+		Id: "745875183290318849",
+	}
+	s := device{}
+	exist, err := s.DeviceIsExistByID(context.Background(), d)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	fmt.Println(exist)
+}
+
+func TestDevice_CreateDevice(t *testing.T) {
 	d := &v1alpha1.CreateDeviceRequest{
 		AccountId: "733124680636596225",
 		Ua:        "Edge",
@@ -42,7 +90,7 @@ func TestAccount_CreateDevice(t *testing.T) {
 	fmt.Println(c)
 }
 
-func TestAccount_GetDevicesByAccountID(t *testing.T) {
+func TestDevice_GetDevicesByAccountID(t *testing.T) {
 	d := &v1alpha1.GetDevicesByAccountIDRequest{
 		AccountId: "733124680636596225",
 	}
@@ -55,7 +103,7 @@ func TestAccount_GetDevicesByAccountID(t *testing.T) {
 	fmt.Println(devices)
 }
 
-func TestAccount_GetDeviceByID(t *testing.T) {
+func TestDevice_GetDeviceByID(t *testing.T) {
 	d := &v1alpha1.GetDeviceByIDRequest{
 		DeviceId: "737990596587618305",
 	}
@@ -68,7 +116,7 @@ func TestAccount_GetDeviceByID(t *testing.T) {
 	fmt.Println(device)
 }
 
-func TestAccount_GetDeviceByHash(t *testing.T) {
+func TestDevice_GetDeviceByHash(t *testing.T) {
 	d := &v1alpha1.GetDeviceByHashRequest{
 		Hash: "xx-xxx-x-xxx",
 	}
@@ -81,7 +129,7 @@ func TestAccount_GetDeviceByHash(t *testing.T) {
 	fmt.Println(device)
 }
 
-func TestAccount_DeleteAllByAccountID(t *testing.T) {
+func TestDevice_DeleteAllByAccountID(t *testing.T) {
 	d := &v1alpha1.DeleteDeviceAllByAccountIDRequest{
 		AccountId: "733124680636596225",
 	}
@@ -94,9 +142,10 @@ func TestAccount_DeleteAllByAccountID(t *testing.T) {
 	fmt.Println(del)
 }
 
-func TestAccount_DeleteDeviceByID(t *testing.T) {
+func TestDevice_DeleteDeviceByID(t *testing.T) {
 	d := &v1alpha1.DeleteDeviceByIDRequest{
-		DeviceId: "737991829363687425",
+		AccountId: "",
+		DeviceId:  "737991829363687425",
 	}
 	s := device{}
 	del, err := s.DeleteDeviceByID(context.Background(), d)
@@ -107,7 +156,7 @@ func TestAccount_DeleteDeviceByID(t *testing.T) {
 	fmt.Println(del)
 }
 
-func TestAccount_DeleteDeviceByHash(t *testing.T) {
+func TestDevice_DeleteDeviceByHash(t *testing.T) {
 	d := &v1alpha1.DeleteDeviceByHashRequest{
 		Hash: "xx-xxx-x-xxx-xxx",
 	}

@@ -46,7 +46,7 @@ func TestSaved_Create(t *testing.T) {
 		AccountId:   "733124680636596225",
 		Name:        "YUI",
 		Description: "description",
-		Hash:        "QmVgBz2p2P3PnfiicJUHpyPVaiXDCNAKBnhimF9rP8c2zD",
+		Cid:         "QmVgBz2p2P3PnfiicJUHpyPVaiXDCNAKBnhimF9rP8c2zD",
 		Types:       "jpeg/png",
 		IsPrivate:   false,
 	}
@@ -75,7 +75,8 @@ func TestSaved_GetSaves(t *testing.T) {
 func TestSaved_GetSaved(t *testing.T) {
 	s := saved{}
 	save, err := s.GetSaved(context.Background(), &v1alpha1.GetSavedRequest{
-		Id: "738165894748110849",
+		AccountId: "733124680636596225",
+		Id:        "738165894748110849",
 	})
 	if err != nil {
 		t.Error(err)
@@ -87,7 +88,7 @@ func TestSaved_GetSaved(t *testing.T) {
 func TestSaved_EditSaved(t *testing.T) {
 	d := v1alpha1.EditSavedRequest{
 		Id:          "738165894748110849",
-		Name:        "EDIT YUI.",
+		Name:        "",
 		Description: "",
 	}
 

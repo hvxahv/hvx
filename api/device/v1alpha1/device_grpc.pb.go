@@ -22,6 +22,7 @@ type DevicesClient interface {
 	// This method returns a boolean value. Returns true if it does not exist
 	// Otherwise returns false.
 	DeviceIsExistByHash(ctx context.Context, in *DeviceIsExistByHashRequest, opts ...grpc.CallOption) (*DeviceIsExistByHashResponse, error)
+	DeviceIsExistByID(ctx context.Context, in *DeviceIsExistByIDRequest, opts ...grpc.CallOption) (*DeviceIsExistByIDResponse, error)
 	// CreateDevice To create the logged-in device data, pass the account id
 	// and user agent and generate a hash as a unique identifier
 	// for the device.
@@ -51,6 +52,15 @@ func NewDevicesClient(cc grpc.ClientConnInterface) DevicesClient {
 func (c *devicesClient) DeviceIsExistByHash(ctx context.Context, in *DeviceIsExistByHashRequest, opts ...grpc.CallOption) (*DeviceIsExistByHashResponse, error) {
 	out := new(DeviceIsExistByHashResponse)
 	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Devices/DeviceIsExistByHash", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *devicesClient) DeviceIsExistByID(ctx context.Context, in *DeviceIsExistByIDRequest, opts ...grpc.CallOption) (*DeviceIsExistByIDResponse, error) {
+	out := new(DeviceIsExistByIDResponse)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Devices/DeviceIsExistByID", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -128,6 +138,7 @@ type DevicesServer interface {
 	// This method returns a boolean value. Returns true if it does not exist
 	// Otherwise returns false.
 	DeviceIsExistByHash(context.Context, *DeviceIsExistByHashRequest) (*DeviceIsExistByHashResponse, error)
+	DeviceIsExistByID(context.Context, *DeviceIsExistByIDRequest) (*DeviceIsExistByIDResponse, error)
 	// CreateDevice To create the logged-in device data, pass the account id
 	// and user agent and generate a hash as a unique identifier
 	// for the device.
@@ -153,6 +164,9 @@ type UnimplementedDevicesServer struct {
 
 func (UnimplementedDevicesServer) DeviceIsExistByHash(context.Context, *DeviceIsExistByHashRequest) (*DeviceIsExistByHashResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeviceIsExistByHash not implemented")
+}
+func (UnimplementedDevicesServer) DeviceIsExistByID(context.Context, *DeviceIsExistByIDRequest) (*DeviceIsExistByIDResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeviceIsExistByID not implemented")
 }
 func (UnimplementedDevicesServer) CreateDevice(context.Context, *CreateDeviceRequest) (*CreateDeviceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateDevice not implemented")
@@ -202,6 +216,24 @@ func _Devices_DeviceIsExistByHash_Handler(srv interface{}, ctx context.Context, 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(DevicesServer).DeviceIsExistByHash(ctx, req.(*DeviceIsExistByHashRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Devices_DeviceIsExistByID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeviceIsExistByIDRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(DevicesServer).DeviceIsExistByID(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/hvxahv.v1alpha1.proto.Devices/DeviceIsExistByID",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(DevicesServer).DeviceIsExistByID(ctx, req.(*DeviceIsExistByIDRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -342,6 +374,10 @@ var Devices_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeviceIsExistByHash",
 			Handler:    _Devices_DeviceIsExistByHash_Handler,
+		},
+		{
+			MethodName: "DeviceIsExistByID",
+			Handler:    _Devices_DeviceIsExistByID_Handler,
 		},
 		{
 			MethodName: "CreateDevice",
