@@ -19,6 +19,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ArticleServiceClient interface {
 	GetArticle(ctx context.Context, in *GetArticleRequest, opts ...grpc.CallOption) (*GetArticleResponse, error)
+	GetArticlesByAccountID(ctx context.Context, in *GetArticlesByAccountIDRequest, opts ...grpc.CallOption) (*GetArticlesByAccountIDResponse, error)
 	CreateArticle(ctx context.Context, in *CreateArticleRequest, opts ...grpc.CallOption) (*CreateArticleResponse, error)
 	UpdateArticle(ctx context.Context, in *UpdateArticleRequest, opts ...grpc.CallOption) (*UpdateArticleResponse, error)
 	DeleteArticle(ctx context.Context, in *DeleteArticleRequest, opts ...grpc.CallOption) (*DeleteArticleResponse, error)
@@ -35,6 +36,15 @@ func NewArticleServiceClient(cc grpc.ClientConnInterface) ArticleServiceClient {
 func (c *articleServiceClient) GetArticle(ctx context.Context, in *GetArticleRequest, opts ...grpc.CallOption) (*GetArticleResponse, error) {
 	out := new(GetArticleResponse)
 	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.ArticleService/GetArticle", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *articleServiceClient) GetArticlesByAccountID(ctx context.Context, in *GetArticlesByAccountIDRequest, opts ...grpc.CallOption) (*GetArticlesByAccountIDResponse, error) {
+	out := new(GetArticlesByAccountIDResponse)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.ArticleService/GetArticlesByAccountID", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -73,6 +83,7 @@ func (c *articleServiceClient) DeleteArticle(ctx context.Context, in *DeleteArti
 // for forward compatibility
 type ArticleServiceServer interface {
 	GetArticle(context.Context, *GetArticleRequest) (*GetArticleResponse, error)
+	GetArticlesByAccountID(context.Context, *GetArticlesByAccountIDRequest) (*GetArticlesByAccountIDResponse, error)
 	CreateArticle(context.Context, *CreateArticleRequest) (*CreateArticleResponse, error)
 	UpdateArticle(context.Context, *UpdateArticleRequest) (*UpdateArticleResponse, error)
 	DeleteArticle(context.Context, *DeleteArticleRequest) (*DeleteArticleResponse, error)
@@ -85,6 +96,9 @@ type UnimplementedArticleServiceServer struct {
 
 func (UnimplementedArticleServiceServer) GetArticle(context.Context, *GetArticleRequest) (*GetArticleResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetArticle not implemented")
+}
+func (UnimplementedArticleServiceServer) GetArticlesByAccountID(context.Context, *GetArticlesByAccountIDRequest) (*GetArticlesByAccountIDResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetArticlesByAccountID not implemented")
 }
 func (UnimplementedArticleServiceServer) CreateArticle(context.Context, *CreateArticleRequest) (*CreateArticleResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateArticle not implemented")
@@ -122,6 +136,24 @@ func _ArticleService_GetArticle_Handler(srv interface{}, ctx context.Context, de
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ArticleServiceServer).GetArticle(ctx, req.(*GetArticleRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ArticleService_GetArticlesByAccountID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetArticlesByAccountIDRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ArticleServiceServer).GetArticlesByAccountID(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/hvxahv.v1alpha1.proto.ArticleService/GetArticlesByAccountID",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ArticleServiceServer).GetArticlesByAccountID(ctx, req.(*GetArticlesByAccountIDRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -190,6 +222,10 @@ var ArticleService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetArticle",
 			Handler:    _ArticleService_GetArticle_Handler,
+		},
+		{
+			MethodName: "GetArticlesByAccountID",
+			Handler:    _ArticleService_GetArticlesByAccountID_Handler,
 		},
 		{
 			MethodName: "CreateArticle",

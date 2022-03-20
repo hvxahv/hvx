@@ -17,8 +17,9 @@ package cmd
 
 import (
 	"fmt"
-	"os"
+	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"github.com/spf13/cobra"
+	"os"
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
@@ -73,7 +74,7 @@ func initConfig() {
 
 		// Search config in home directory with name ".article" (without extension).
 		viper.AddConfigPath(home)
-		viper.SetConfigName(".article")
+		viper.SetConfigName(".hvxahv")
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match
@@ -81,5 +82,10 @@ func initConfig() {
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
+	}
+
+	if err := cockroach.NewDBAddr().InitDB(); err != nil {
+		fmt.Println(err)
+		return
 	}
 }

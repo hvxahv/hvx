@@ -5,23 +5,75 @@ option go_package = "github.com/hvxahv/hvxahv/api/article/v1alpha1";
 
 service ArticleService {
   rpc GetArticle(GetArticleRequest) returns (GetArticleResponse) {}
+  rpc GetArticlesByAccountID(GetArticlesByAccountIDRequest) returns (GetArticlesByAccountIDResponse) {}
   rpc CreateArticle(CreateArticleRequest) returns (CreateArticleResponse) {}
   rpc UpdateArticle(UpdateArticleRequest) returns (UpdateArticleResponse) {}
   rpc DeleteArticle(DeleteArticleRequest) returns (DeleteArticleResponse) {}
 }
 
-message GetArticleRequest {}
+message GetArticleRequest {
+  string id = 1;
+}
 
-message GetArticleResponse {}
+message GetArticleResponse {
+  string code = 1;
+  string id = 2;
+  CreateArticleRequest article = 3;
+}
 
-message CreateArticleRequest {}
+message GetArticlesByAccountIDRequest {
+  string account_id = 1;
+}
 
-message CreateArticleResponse {}
+message GetArticlesByAccountIDResponse {
+  string code = 1;
+  repeated CreateArticleRequest articles = 2;
+}
 
-message UpdateArticleRequest {}
+message CreateArticleRequest {
+  string account_id = 1;
+  string title = 2;
+  string summary = 3;
+  string article = 4;
+  repeated string tags = 5;
+  string attachmentType = 6;
+  repeated string attachments = 7;
+  repeated string to = 8;
+  repeated string cc = 9;
+  bool state = 10;
+  bool nsfw = 11;
+  string visibility = 12;
+}
 
-message UpdateArticleResponse {}
+message CreateArticleResponse {
+  string code = 1;
+  string reply = 2;
+}
 
-message DeleteArticleRequest {}
+message UpdateArticleRequest {
+  string id = 1;
+  string account_id = 2;
+  string title = 3;
+  string summary = 4;
+  string article = 5;
+  repeated string tags = 6;
+  string attachmentType = 7;
+  repeated string attachments = 8;
+  bool nsfw = 9;
+  string visibility = 10;
+}
 
-message DeleteArticleResponse {}
+message UpdateArticleResponse {
+  string code = 1;
+  string reply = 2;
+}
+
+message DeleteArticleRequest {
+  string id = 1;
+  string account_id = 2;
+}
+
+message DeleteArticleResponse {
+  string code = 1;
+  string reply = 2;
+}
