@@ -66,7 +66,7 @@ func DeleteAccountHandler(c *gin.Context) {
 		return
 	}
 
-	d, err := cli.Delete(c, &pb.DeleteRequest{
+	d, err := cli.DeleteAccount(c, &pb.DeleteAccountRequest{
 		Username: username,
 		Password: password,
 	})

@@ -38,7 +38,7 @@ type AccountsClient interface {
 	// First you need the password as a parameter to verify that the account
 	// is correct, and then delete the account system and actor table when
 	// the password is verified to be correct.
-	Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error)
+	DeleteAccount(ctx context.Context, in *DeleteAccountRequest, opts ...grpc.CallOption) (*DeleteAccountResponse, error)
 	// EditUsername Update the account username.
 	// will change both the username and preferred_username in the
 	// accounts and actors tables.
@@ -91,9 +91,9 @@ func (c *accountsClient) GetAccountByUsername(ctx context.Context, in *GetAccoun
 	return out, nil
 }
 
-func (c *accountsClient) Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error) {
-	out := new(DeleteResponse)
-	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Accounts/Delete", in, out, opts...)
+func (c *accountsClient) DeleteAccount(ctx context.Context, in *DeleteAccountRequest, opts ...grpc.CallOption) (*DeleteAccountResponse, error) {
+	out := new(DeleteAccountResponse)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Accounts/DeleteAccount", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -151,7 +151,7 @@ type AccountsServer interface {
 	// First you need the password as a parameter to verify that the account
 	// is correct, and then delete the account system and actor table when
 	// the password is verified to be correct.
-	Delete(context.Context, *DeleteRequest) (*DeleteResponse, error)
+	DeleteAccount(context.Context, *DeleteAccountRequest) (*DeleteAccountResponse, error)
 	// EditUsername Update the account username.
 	// will change both the username and preferred_username in the
 	// accounts and actors tables.
@@ -183,8 +183,8 @@ func (UnimplementedAccountsServer) Create(context.Context, *CreateRequest) (*Cre
 func (UnimplementedAccountsServer) GetAccountByUsername(context.Context, *GetAccountByUsernameRequest) (*GetAccountByUsernameResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAccountByUsername not implemented")
 }
-func (UnimplementedAccountsServer) Delete(context.Context, *DeleteRequest) (*DeleteResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
+func (UnimplementedAccountsServer) DeleteAccount(context.Context, *DeleteAccountRequest) (*DeleteAccountResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteAccount not implemented")
 }
 func (UnimplementedAccountsServer) EditUsername(context.Context, *EditUsernameRequest) (*EditUsernameResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method EditUsername not implemented")
@@ -262,20 +262,20 @@ func _Accounts_GetAccountByUsername_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Accounts_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteRequest)
+func _Accounts_DeleteAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteAccountRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AccountsServer).Delete(ctx, in)
+		return srv.(AccountsServer).DeleteAccount(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/hvxahv.v1alpha1.proto.Accounts/Delete",
+		FullMethod: "/hvxahv.v1alpha1.proto.Accounts/DeleteAccount",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccountsServer).Delete(ctx, req.(*DeleteRequest))
+		return srv.(AccountsServer).DeleteAccount(ctx, req.(*DeleteAccountRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -354,8 +354,8 @@ var Accounts_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Accounts_GetAccountByUsername_Handler,
 		},
 		{
-			MethodName: "Delete",
-			Handler:    _Accounts_Delete_Handler,
+			MethodName: "DeleteAccount",
+			Handler:    _Accounts_DeleteAccount_Handler,
 		},
 		{
 			MethodName: "EditUsername",

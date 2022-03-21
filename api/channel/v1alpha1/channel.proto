@@ -7,9 +7,7 @@ option go_package = "github.com/hvxahv/hvxahv/api/channel/v1alpha1";
 service ChannelService {
   rpc IsExistChannel(IsExistChannelRequest) returns (IsExistChannelResponse) {}
   rpc CreateChannel(CreateChannelRequest) returns (CreateChannelResponse) {}
-  rpc GetChannel(GetChannelRequest) returns (GetChannelResponse) {}
-  rpc GetChannelByAddress(GetChannelByAddressRequest) returns (GetChannelByAddressResponse) {}
-  rpc GetChannelByAccountID(GetChannelByAccountIDRequest) returns (GetChannelByAccountIDResponse) {}
+  rpc GetChannelsByAccountID(GetChannelsByAccountIDRequest) returns (GetChannelsByAccountIDResponse) {}
   rpc UpdateChannel(UpdateChannelRequest) returns (UpdateChannelResponse) {}
   rpc DeleteChannel(DeleteChannelRequest) returns (DeleteChannelResponse) {}
   rpc DeleteChannelHistory(DeleteChannelHistoryRequest) returns (DeleteChannelHistoryResponse) {}
@@ -34,25 +32,31 @@ message CreateChannelResponse {
   string reply = 2;
 }
 
-message GetChannelRequest {}
-
-message GetChannelResponse {}
-
-message GetChannelByAddressRequest {}
-
-message GetChannelByAddressResponse {}
-
-message GetChannelByAccountIDRequest {}
-
-message GetChannelByAccountIDResponse {}
+message GetChannelsByAccountIDRequest {
+  string account_id = 1;
+}
+message Channel {
+    string id = 1;
+    string channel_id = 2;
+}
+message GetChannelsByAccountIDResponse {
+  string code = 1;
+  repeated Channel channels = 2;
+}
 
 message UpdateChannelRequest {}
 
 message UpdateChannelResponse {}
 
-message DeleteChannelRequest {}
+message DeleteChannelRequest {
+  string account_id = 1;
+  string channel_id = 2;
+}
 
-message DeleteChannelResponse {}
+message DeleteChannelResponse {
+  string code = 1;
+  string reply = 2;
+}
 
 message DeleteChannelHistoryRequest {}
 

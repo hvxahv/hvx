@@ -94,3 +94,16 @@ func TestAccount_EditActor(t *testing.T) {
 	}
 	fmt.Println(actor)
 }
+
+func TestAccount_DeleteActorByChannelID(t *testing.T) {
+	s := account{}
+	r, err := s.DeleteActorByChannelID(context.Background(), &v1alpha1.DeleteActorByChannelIDRequest{
+		AccountId: "746166817947975681",
+		ChannelId: "",
+	})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	fmt.Println(r)
+}
