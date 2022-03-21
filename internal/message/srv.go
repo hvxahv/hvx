@@ -2,14 +2,17 @@ package message
 
 import (
 	"fmt"
+	"log"
+	"net"
+	"time"
+
 	pb "github.com/hvxahv/hvxahv/api/message/v1alpha1"
 	"github.com/hvxahv/hvxahv/pkg/microservices"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
-	"log"
-	"net"
-	"time"
 )
+
+const serviceName = "message"
 
 type message struct {
 	pb.MessagesServer
@@ -25,7 +28,7 @@ func Run() error {
 	pb.RegisterMessagesServer(s, &message{})
 	reflection.Register(s)
 
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", microservices.GetMessagePort()))
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", microservices.NewService(serviceName).GetPort()))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}

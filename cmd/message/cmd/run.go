@@ -17,15 +17,18 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/hvxahv/hvxahv/internal/message"
-	"github.com/hvxahv/hvxahv/pkg/microservices"
-	"github.com/hvxahv/hvxahv/pkg/microservices/consul"
 	"os"
 	"os/signal"
 	"syscall"
 
+	"github.com/hvxahv/hvxahv/internal/message"
+	"github.com/hvxahv/hvxahv/pkg/microservices"
+	"github.com/hvxahv/hvxahv/pkg/microservices/consul"
+
 	"github.com/spf13/cobra"
 )
+
+const serviceName = "message"
 
 // runCmd represents the run command
 var runCmd = &cobra.Command{
@@ -33,10 +36,10 @@ var runCmd = &cobra.Command{
 	Short: "Run message microservice",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		port := microservices.GetMessagePort()
+		port := microservices.NewService(serviceName).GetPort()
 
-		tags := []string{"Message", "gRPC"}
-		nr := consul.NewRegister("device", port, tags, "localhost")
+		tags := []string{serviceName, "gRPC"}
+		nr := consul.NewRegister(serviceName, port, tags, "localhost")
 		if err := nr.Register(); err != nil {
 			fmt.Println(err)
 			return
@@ -46,12 +49,12 @@ var runCmd = &cobra.Command{
 		signal.Notify(c, syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT)
 
 		if err := message.Run(); err != nil {
-			fmt.Printf("failed to start device gRPC service: %v", err)
+			fmt.Printf("failed to start %s gRPC service: %v", serviceName, err)
 			return
 		}
 
 		fmt.Println("Starting gRPC server...")
-		fmt.Println("Message gRPC server listening on port:", port)
+		fmt.Printf("%s gRPC server listening on port: %v", serviceName, port)
 
 		s := <-c
 		switch s {

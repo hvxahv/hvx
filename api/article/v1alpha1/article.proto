@@ -4,10 +4,19 @@ package hvxahv.v1alpha1.proto;
 option go_package = "github.com/hvxahv/hvxahv/api/article/v1alpha1";
 
 service ArticleService {
+  // GetArticle Get the content of an article or status by its article ID.
   rpc GetArticle(GetArticleRequest) returns (GetArticleResponse) {}
+
+  // GetArticlesByAccountID Get all posts or statuses published under this account by account ID.
   rpc GetArticlesByAccountID(GetArticlesByAccountIDRequest) returns (GetArticlesByAccountIDResponse) {}
+
+  // CreateArticle Create article or status.
   rpc CreateArticle(CreateArticleRequest) returns (CreateArticleResponse) {}
+
+  // UpdateArticle Edit article or status content.
   rpc UpdateArticle(UpdateArticleRequest) returns (UpdateArticleResponse) {}
+
+  // DeleteArticle Delete a post or status by post or status ID.
   rpc DeleteArticle(DeleteArticleRequest) returns (DeleteArticleResponse) {}
 }
 
