@@ -4,6 +4,8 @@ package hvxahv.v1alpha1.proto;
 option go_package = "github.com/hvxahv/hvxahv/api/account/v1alpha1";
 
 service Actor {
+  rpc CreateActor(CreateActorRequest) returns (CreateActorResponse) {}
+
   // GetActorByAccountUsername Get by username returns the actor
   // identified by the specified username.
   rpc GetActorByAccountUsername (GetActorByAccountUsernameRequest) returns (AccountDataResponse) {}
@@ -19,6 +21,17 @@ service Actor {
   // the allowed and changeable parameters.
   // By username.
   rpc EditActor (EditActorRequest) returns (EditActorResponse) {}
+}
+
+message CreateActorRequest {
+  string preferred_username = 1;
+  string public_key = 2;
+  string actor_type = 3;
+}
+
+message CreateActorResponse {
+  string code = 1;
+  string actor_id = 2;
 }
 
 message GetActorByAccountUsernameRequest {

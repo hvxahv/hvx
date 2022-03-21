@@ -3,6 +3,9 @@ package account
 import (
 	"encoding/json"
 	"fmt"
+	"net/url"
+	"strconv"
+
 	"github.com/go-resty/resty/v2"
 	pb "github.com/hvxahv/hvxahv/api/account/v1alpha1"
 	"github.com/hvxahv/hvxahv/pkg/activitypub"
@@ -10,8 +13,6 @@ import (
 	"github.com/spf13/viper"
 	"golang.org/x/net/context"
 	"gorm.io/gorm"
-	"net/url"
-	"strconv"
 )
 
 // Actors are used to support the ActivityPub protocol,
@@ -77,6 +78,28 @@ func (a *Actors) SetActorAvatar(avatar string) *Actors {
 func (a *Actors) SetActorSummary(summary string) *Actors {
 	a.Summary = summary
 	return a
+}
+
+func (a *account) CreateActor(ctx context.Context, in *pb.CreateActorRequest) (*pb.CreateActorResponse, error) {
+	db := cockroach.GetDB()
+
+	if err := db.Debug().
+		Table("actors").
+		Where("preferred_username = ? AND is_remote = ?", in.PreferredUsername, false).
+		First(&a.Actors); err != nil {
+		ok := cockroach.IsNotFound(err.Error)
+		if !ok {
+			return nil, fmt.Errorf("ACTOR_ALREADY_EXISTS")
+		}
+	}
+	actors := NewActors(in.PreferredUsername, in.PublicKey, in.ActorType)
+	if err := db.Debug().
+		Table("actors").
+		Create(&actors).
+		Error; err != nil {
+		return nil, err
+	}
+	return &pb.CreateActorResponse{Code: "200", ActorId: strconv.Itoa(int(actors.ID))}, nil
 }
 
 func (a *account) GetActorByAccountUsername(ctx context.Context, in *pb.GetActorByAccountUsernameRequest) (*pb.AccountDataResponse, error) {

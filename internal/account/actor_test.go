@@ -3,9 +3,29 @@ package account
 import (
 	"context"
 	"fmt"
-	"github.com/hvxahv/hvxahv/api/account/v1alpha1"
 	"testing"
+
+	"github.com/hvxahv/hvxahv/api/account/v1alpha1"
 )
+
+func TestAccount_CreateActor(t *testing.T) {
+	d := &v1alpha1.CreateActorRequest{
+		PreferredUsername: "hvturingga",
+		PublicKey:         "idi",
+		ActorType:         "Services",
+	}
+	s := account{}
+	r, err := s.CreateActor(context.Background(), d)
+	if err != nil {
+		t.Error("error:", err)
+		return
+	}
+	if r == nil {
+		t.Error("error:", "nil")
+		return
+	}
+	fmt.Println(r)
+}
 
 func TestAccount_GetActorByAccountUsername(t *testing.T) {
 	d := &v1alpha1.GetActorByAccountUsernameRequest{

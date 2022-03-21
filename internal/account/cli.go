@@ -22,7 +22,7 @@ func NewAuthClient() (pb.AuthClient, error) {
 	return pb.NewAuthClient(conn), nil
 }
 
-func NewActorClient() (pb.ActorClient, error) {
+func GetActorClient() (pb.ActorClient, error) {
 	conn, err := grpc.Dial(microservices.NewService("account").GetAddress(), grpc.WithInsecure())
 	if err != nil {
 		return nil, err

@@ -19,7 +19,7 @@ import (
 // service by the username, and return the JsonLD of the
 // standard activitypub protocol.
 func GetActorHandler(c *gin.Context) {
-	s, err := account.NewActorClient()
+	s, err := account.GetActorClient()
 	if err != nil {
 		return
 	}
@@ -36,7 +36,7 @@ func GetActorHandler(c *gin.Context) {
 }
 
 func SearchActorsHandler(c *gin.Context) {
-	s, err := account.NewActorClient()
+	s, err := account.GetActorClient()
 	if err != nil {
 		return
 	}

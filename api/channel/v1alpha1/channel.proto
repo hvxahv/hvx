@@ -3,21 +3,36 @@ syntax = "proto3";
 package hvxahv.v1alpha1.proto;
 option go_package = "github.com/hvxahv/hvxahv/api/channel/v1alpha1";
 
+
 service ChannelService {
   rpc IsExistChannel(IsExistChannelRequest) returns (IsExistChannelResponse) {}
+  rpc CreateChannel(CreateChannelRequest) returns (CreateChannelResponse) {}
   rpc GetChannel(GetChannelRequest) returns (GetChannelResponse) {}
   rpc GetChannelByAddress(GetChannelByAddressRequest) returns (GetChannelByAddressResponse) {}
   rpc GetChannelByAccountID(GetChannelByAccountIDRequest) returns (GetChannelByAccountIDResponse) {}
-  rpc CreateChannel(CreateChannelRequest) returns (CreateChannelResponse) {}
   rpc UpdateChannel(UpdateChannelRequest) returns (UpdateChannelResponse) {}
   rpc DeleteChannel(DeleteChannelRequest) returns (DeleteChannelResponse) {}
   rpc DeleteChannelHistory(DeleteChannelHistoryRequest) returns (DeleteChannelHistoryResponse) {}
   rpc DeleteChannelUserHistory(DeleteChannelUserHistoryRequest) returns (DeleteUserHistoryResponse) {}
 }
 
-message IsExistChannelRequest {}
+message IsExistChannelRequest {
+  string channel_id = 1;
+}
 
-message IsExistChannelResponse {}
+message IsExistChannelResponse {
+  bool is_exist = 1;
+}
+
+message CreateChannelRequest {
+  string preferredUsername = 1;
+  string account_id = 2;
+}
+
+message CreateChannelResponse {
+  string code = 1;
+  string reply = 2;
+}
 
 message GetChannelRequest {}
 
@@ -30,10 +45,6 @@ message GetChannelByAddressResponse {}
 message GetChannelByAccountIDRequest {}
 
 message GetChannelByAccountIDResponse {}
-
-message CreateChannelRequest {}
-
-message CreateChannelResponse {}
 
 message UpdateChannelRequest {}
 
