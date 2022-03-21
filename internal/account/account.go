@@ -108,7 +108,7 @@ func (a *account) GetAccountByUsername(ctx context.Context, in *pb.GetAccountByU
 	}, nil
 }
 
-func (a *account) Delete(ctx context.Context, in *pb.DeleteRequest) (*pb.DeleteResponse, error) {
+func (a *account) DeleteAccount(ctx context.Context, in *pb.DeleteAccountRequest) (*pb.DeleteAccountResponse, error) {
 	v := NewAuthorization(in.Username, in.Password)
 
 	db := cockroach.GetDB()
@@ -142,7 +142,7 @@ func (a *account) Delete(ctx context.Context, in *pb.DeleteRequest) (*pb.DeleteR
 		return nil, err
 	}
 
-	return &pb.DeleteResponse{Code: "200", Reply: s.Reply}, nil
+	return &pb.DeleteAccountResponse{Code: "200", Reply: s.Reply}, nil
 }
 
 func (a *account) EditUsername(ctx context.Context, in *pb.EditUsernameRequest) (*pb.EditUsernameResponse, error) {

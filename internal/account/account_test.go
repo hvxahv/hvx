@@ -98,12 +98,12 @@ func TestAccount_GetAccountByUsername(t *testing.T) {
 }
 
 func TestAccount_Delete(t *testing.T) {
-	d := &v1alpha1.DeleteRequest{
+	d := &v1alpha1.DeleteAccountRequest{
 		Username: "hvxahv2",
 		Password: "hvxahv123",
 	}
 	s := &account{}
-	a, err := s.Delete(context.Background(), d)
+	a, err := s.DeleteAccount(context.Background(), d)
 	if err != nil {
 		t.Error(err)
 		return

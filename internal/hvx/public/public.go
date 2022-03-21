@@ -41,3 +41,7 @@ func GetPublicInstanceDetailsHandler(c *gin.Context) {
 		},
 	})
 }
+
+func GetNodeInfoHandler(c *gin.Context) {
+
+}

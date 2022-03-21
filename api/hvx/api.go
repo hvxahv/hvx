@@ -38,6 +38,8 @@ func APIServer() *gin.Engine {
 	// ActivityPub WebFinger https://github.com/w3c/activitypub/issues/194 .
 	api.GET("/.well-known/webfinger", handler.GetWebFingerHandler)
 
+	api.GET("/.well-known/nodeinfo", public.GetNodeInfoHandler)
+
 	// Get the actors in the activityPub protocol.
 	// https://www.w3.org/TR/activitypub/#actor-objects
 	api.GET("/u/:actor", handler.GetActorHandler)
@@ -71,6 +73,8 @@ func APIServer() *gin.Engine {
 	v1alpha1.V1Articles(v1)
 
 	v1alpha1.V1Activity(v1)
+
+	v1alpha1.V1Channel(v1)
 
 	v1alpha1.V1Saved(v1)
 

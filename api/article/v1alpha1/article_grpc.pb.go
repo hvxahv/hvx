@@ -18,10 +18,15 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ArticleServiceClient interface {
+	// GetArticle Get the content of an article or status by its article ID.
 	GetArticle(ctx context.Context, in *GetArticleRequest, opts ...grpc.CallOption) (*GetArticleResponse, error)
+	// GetArticlesByAccountID Get all posts or statuses published under this account by account ID.
 	GetArticlesByAccountID(ctx context.Context, in *GetArticlesByAccountIDRequest, opts ...grpc.CallOption) (*GetArticlesByAccountIDResponse, error)
+	// CreateArticle Create article or status.
 	CreateArticle(ctx context.Context, in *CreateArticleRequest, opts ...grpc.CallOption) (*CreateArticleResponse, error)
+	// UpdateArticle Edit article or status content.
 	UpdateArticle(ctx context.Context, in *UpdateArticleRequest, opts ...grpc.CallOption) (*UpdateArticleResponse, error)
+	// DeleteArticle Delete a post or status by post or status ID.
 	DeleteArticle(ctx context.Context, in *DeleteArticleRequest, opts ...grpc.CallOption) (*DeleteArticleResponse, error)
 }
 
@@ -82,10 +87,15 @@ func (c *articleServiceClient) DeleteArticle(ctx context.Context, in *DeleteArti
 // All implementations must embed UnimplementedArticleServiceServer
 // for forward compatibility
 type ArticleServiceServer interface {
+	// GetArticle Get the content of an article or status by its article ID.
 	GetArticle(context.Context, *GetArticleRequest) (*GetArticleResponse, error)
+	// GetArticlesByAccountID Get all posts or statuses published under this account by account ID.
 	GetArticlesByAccountID(context.Context, *GetArticlesByAccountIDRequest) (*GetArticlesByAccountIDResponse, error)
+	// CreateArticle Create article or status.
 	CreateArticle(context.Context, *CreateArticleRequest) (*CreateArticleResponse, error)
+	// UpdateArticle Edit article or status content.
 	UpdateArticle(context.Context, *UpdateArticleRequest) (*UpdateArticleResponse, error)
+	// DeleteArticle Delete a post or status by post or status ID.
 	DeleteArticle(context.Context, *DeleteArticleRequest) (*DeleteArticleResponse, error)
 	mustEmbedUnimplementedArticleServiceServer()
 }

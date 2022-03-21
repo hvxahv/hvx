@@ -1,23 +1,12 @@
 /*
 Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
 */
 package cmd
 
 import (
 	"fmt"
-	"github.com/hvxahv/hvxahv/internal/account"
+	"github.com/hvxahv/hvxahv/internal/channel"
 	"github.com/hvxahv/hvxahv/pkg/microservices"
 	"github.com/hvxahv/hvxahv/pkg/microservices/consul"
 	"os"
@@ -27,12 +16,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const serviceName = "account"
+const serviceName = "channel"
 
 // runCmd represents the run command
 var runCmd = &cobra.Command{
 	Use:   "run",
-	Short: "Run the account microservice",
+	Short: "A brief description of your command",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		port := microservices.NewService(serviceName).GetPort()
@@ -47,12 +36,12 @@ var runCmd = &cobra.Command{
 		c := make(chan os.Signal, 1)
 		signal.Notify(c, syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT)
 
-		if err := account.Run(); err != nil {
+		if err := channel.Run(); err != nil {
 			fmt.Printf("failed to start %s gRPC service: %v", serviceName, err)
 			return
 		}
 		fmt.Println("Starting gRPC server...")
-		fmt.Printf("%s gRPC server listening on port: %v", serviceName, port)
+		fmt.Printf("%s gRPC server listening on port:%v", serviceName, port)
 
 		s := <-c
 		switch s {

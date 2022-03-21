@@ -64,3 +64,72 @@ func (c *channel) CreateChannel(ctx context.Context, in *pb.CreateChannelRequest
 	}
 	return &pb.CreateChannelResponse{Code: "200", Reply: "ok"}, nil
 }
+
+func (c *channel) GetChannelsByAccountID(ctx context.Context, in *pb.GetChannelsByAccountIDRequest) (*pb.GetChannelsByAccountIDResponse, error) {
+	db := cockroach.GetDB()
+	if err := db.AutoMigrate(&Channels{}); err != nil {
+		return nil, err
+	}
+
+	aid, err := strconv.Atoi(in.AccountId)
+	if err != nil {
+		return nil, err
+	}
+	var channels []Channels
+	if err := db.Debug().
+		Table("channels").
+		Where("account_id = ?", uint(aid)).
+		Find(&channels).
+		Error; err != nil {
+		return nil, err
+	}
+
+	var chs []*pb.Channel
+	for _, ch := range channels {
+		chs = append(chs, &pb.Channel{
+			Id:        strconv.Itoa(int(ch.ID)),
+			ChannelId: strconv.Itoa(int(ch.ActorID)),
+		})
+	}
+
+	return &pb.GetChannelsByAccountIDResponse{Code: "200", Channels: chs}, nil
+}
+
+func (c *channel) DeleteChannel(ctx context.Context, in *pb.DeleteChannelRequest) (*pb.DeleteChannelResponse, error) {
+	client, err := account.GetActorClient()
+	if err != nil {
+		return nil, err
+	}
+	d, err := client.DeleteActorByChannelID(ctx, &v1alpha1.DeleteActorByChannelIDRequest{
+		AccountId: in.AccountId,
+		ChannelId: in.ChannelId,
+	})
+	if err != nil && d.Code != "200" {
+		return nil, err
+	}
+
+	db := cockroach.GetDB()
+	if err := db.AutoMigrate(&Channels{}); err != nil {
+		return nil, err
+	}
+
+	aid, err := strconv.Atoi(in.AccountId)
+	if err != nil {
+		return nil, err
+	}
+
+	id, err := strconv.Atoi(in.ChannelId)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := db.Debug().
+		Table("channels").
+		Where("account_id = ? AND id = ?", uint(aid), uint(id)).
+		Unscoped().
+		Delete(&Channels{}).
+		Error; err != nil {
+		return nil, err
+	}
+	return &pb.DeleteChannelResponse{Code: "200", Reply: "ok"}, nil
+}
