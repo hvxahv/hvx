@@ -46,7 +46,7 @@ func init() {
 func TestChannel_CreateChannel(t *testing.T) {
 	s := &channel{}
 	createChannel, err := s.CreateChannel(context.Background(), &pb.CreateChannelRequest{
-		PreferredUsername: "hvxahvx",
+		PreferredUsername: "hvxahvv",
 		AccountId:         "746588397237010433",
 	})
 	if err != nil {
@@ -76,4 +76,16 @@ func TestChannel_DeleteChannel(t *testing.T) {
 		return
 	}
 	fmt.Println(deleteChannel.Reply)
+}
+
+func TestChannel_DeleteAllChannelsByAccountID(t *testing.T) {
+	s := &channel{}
+	deleteAllChannelsByAccountID, err := s.DeleteAllChannelsByAccountID(context.Background(), &pb.DeleteAllChannelsByAccountIDRequest{
+		AccountId: "746588397237010433",
+	})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	fmt.Println(deleteAllChannelsByAccountID.Reply)
 }

@@ -132,3 +132,22 @@ func (c *channel) DeleteChannel(ctx context.Context, in *pb.DeleteChannelRequest
 	}
 	return &pb.DeleteChannelResponse{Code: "200", Reply: "ok"}, nil
 }
+
+func (c *channel) DeleteAllChannelsByAccountID(ctx context.Context, in *pb.DeleteAllChannelsByAccountIDRequest) (*pb.DeleteAllChannelsByAccountIDResponse, error) {
+	db := cockroach.GetDB()
+
+	aid, err := strconv.Atoi(in.AccountId)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := db.Debug().
+		Table("channels").
+		Where("account_id = ?", uint(aid)).
+		Unscoped().
+		Delete(&Channels{}).
+		Error; err != nil {
+		return nil, err
+	}
+	return &pb.DeleteAllChannelsByAccountIDResponse{Code: "200", Reply: "ok"}, nil
+}

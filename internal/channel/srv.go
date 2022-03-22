@@ -2,19 +2,25 @@ package channel
 
 import (
 	"fmt"
+	"log"
+	"net"
+	"time"
+
 	pb "github.com/hvxahv/hvxahv/api/channel/v1alpha1"
 	"github.com/hvxahv/hvxahv/pkg/microservices"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
-	"log"
-	"net"
-	"time"
 )
 
 const serviceName = "channel"
 
 type channel struct {
 	pb.ChannelServiceServer
+	pb.AdministrativeServiceServer
+	pb.SubscriberServiceServer
+	*Channels
+	*Administrates
+	*Subscribes
 }
 
 // Run starts the server. It will block until the server is shutdown.
@@ -26,6 +32,7 @@ func Run() error {
 	s := grpc.NewServer()
 
 	pb.RegisterChannelServiceServer(s, &channel{})
+	pb.RegisterAdministrativeServiceServer(s, &channel{})
 
 	reflection.Register(s)
 

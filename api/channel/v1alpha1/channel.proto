@@ -5,21 +5,10 @@ option go_package = "github.com/hvxahv/hvxahv/api/channel/v1alpha1";
 
 
 service ChannelService {
-  rpc IsExistChannel(IsExistChannelRequest) returns (IsExistChannelResponse) {}
   rpc CreateChannel(CreateChannelRequest) returns (CreateChannelResponse) {}
   rpc GetChannelsByAccountID(GetChannelsByAccountIDRequest) returns (GetChannelsByAccountIDResponse) {}
-  rpc UpdateChannel(UpdateChannelRequest) returns (UpdateChannelResponse) {}
   rpc DeleteChannel(DeleteChannelRequest) returns (DeleteChannelResponse) {}
-  rpc DeleteChannelHistory(DeleteChannelHistoryRequest) returns (DeleteChannelHistoryResponse) {}
-  rpc DeleteChannelUserHistory(DeleteChannelUserHistoryRequest) returns (DeleteUserHistoryResponse) {}
-}
-
-message IsExistChannelRequest {
-  string channel_id = 1;
-}
-
-message IsExistChannelResponse {
-  bool is_exist = 1;
+  rpc DeleteAllChannelsByAccountID(DeleteAllChannelsByAccountIDRequest) returns (DeleteAllChannelsByAccountIDResponse) {}
 }
 
 message CreateChannelRequest {
@@ -44,9 +33,6 @@ message GetChannelsByAccountIDResponse {
   repeated Channel channels = 2;
 }
 
-message UpdateChannelRequest {}
-
-message UpdateChannelResponse {}
 
 message DeleteChannelRequest {
   string account_id = 1;
@@ -58,10 +44,11 @@ message DeleteChannelResponse {
   string reply = 2;
 }
 
-message DeleteChannelHistoryRequest {}
+message DeleteAllChannelsByAccountIDRequest {
+  string account_id = 1;
+}
 
-message DeleteChannelHistoryResponse {}
-
-message DeleteChannelUserHistoryRequest {}
-
-message DeleteUserHistoryResponse {}
+message DeleteAllChannelsByAccountIDResponse {
+  string code = 1;
+  string reply = 2;
+}

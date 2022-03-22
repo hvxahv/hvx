@@ -10,9 +10,15 @@ service SubscriberService {
   rpc GetSubscribers(GetSubscribersRequest) returns (GetSubscribersResponse) {}
 }
 
-message AddSubscriberRequest {}
+message AddSubscriberRequest {
+  string channel_id = 1;
+  string account_id = 2;
+}
 
-message AddSubscriberResponse {}
+message AddSubscriberResponse {
+  string code = 1;
+  string reply = 2;
+}
 
 message UnsubscribeRequest {}
 

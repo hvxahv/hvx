@@ -72,7 +72,10 @@ func (a *account) Create(ctx context.Context, in *pb.CreateRequest) (*pb.CreateR
 		return nil, errors.New("FAILED_TO_AUTOMATICALLY_CREATE_ACCOUNT_DATABASE")
 	}
 
-	if err := db.Debug().Table("accounts").Where("username = ? ", in.Username).Or("mail = ?", in.Mail).First(&Accounts{}); err != nil {
+	if err := db.Debug().
+		Table("accounts").
+		Where("username = ? ", in.Username).Or("mail = ?", in.Mail).
+		First(&Accounts{}); err != nil {
 		ok := cockroach.IsNotFound(err.Error)
 		if !ok {
 			return nil, errors.New("THE_USERNAME_OR_MAIL_ALREADY_EXISTS")
