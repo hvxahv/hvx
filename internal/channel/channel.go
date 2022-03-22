@@ -100,9 +100,8 @@ func (c *channel) DeleteChannel(ctx context.Context, in *pb.DeleteChannelRequest
 	if err != nil {
 		return nil, err
 	}
-	d, err := client.DeleteActorByChannelID(ctx, &v1alpha1.DeleteActorByChannelIDRequest{
+	d, err := client.DeleteActor(ctx, &v1alpha1.DeleteActorRequest{
 		AccountId: in.AccountId,
-		ChannelId: in.ChannelId,
 	})
 	if err != nil && d.Code != "200" {
 		return nil, err

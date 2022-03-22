@@ -22,7 +22,7 @@ service Actor {
   // By username.
   rpc EditActor (EditActorRequest) returns (EditActorResponse) {}
 
-  rpc DeleteActorByChannelID (DeleteActorByChannelIDRequest) returns (DeleteActorByChannelIDResponse) {}
+  rpc DeleteActor (DeleteActorRequest) returns (DeleteActorResponse) {}
 }
 
 message CreateActorRequest {
@@ -79,12 +79,11 @@ message EditActorResponse {
   string reply = 2;
 }
 
-message DeleteActorByChannelIDRequest {
+message DeleteActorRequest {
   string account_id = 1;
-  string channel_id = 2;
 }
 
-message DeleteActorByChannelIDResponse {
+message DeleteActorResponse {
   string code = 1;
   string reply = 2;
 }

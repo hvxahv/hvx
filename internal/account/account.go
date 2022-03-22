@@ -3,6 +3,8 @@ package account
 import (
 	"context"
 	"fmt"
+	"strconv"
+
 	"github.com/go-playground/validator/v10"
 	pb "github.com/hvxahv/hvxahv/api/account/v1alpha1"
 	"github.com/hvxahv/hvxahv/api/device/v1alpha1"
@@ -14,7 +16,6 @@ import (
 	"github.com/spf13/viper"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
-	"strconv"
 )
 
 // Accounts is a struct for account.

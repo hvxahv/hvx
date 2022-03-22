@@ -3,7 +3,6 @@ package account
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/hvxahv/hvxahv/internal/channel"
 	"net/url"
 	"strconv"
 
@@ -224,34 +223,30 @@ func (a *account) EditActor(ctx context.Context, in *pb.EditActorRequest) (*pb.E
 	return &pb.EditActorResponse{Code: "200", Reply: "ok"}, nil
 }
 
-func (a *account) DeleteActorByChannelID(ctx context.Context, in *pb.DeleteActorByChannelIDRequest) (*pb.DeleteActorByChannelIDResponse, error) {
+func (a *account) DeleteActor(ctx context.Context, in *pb.DeleteActorRequest) (*pb.DeleteActorResponse, error) {
 	db := cockroach.GetDB()
 	aid, err := strconv.Atoi(in.AccountId)
 	if err != nil {
 		return nil, err
 	}
-	cid, err := strconv.Atoi(in.ChannelId)
-	if err != nil {
-		return nil, err
-	}
-	c := channel.Channels{}
+	acct := Accounts{}
 	if err := db.Debug().
 		Table("channels").
-		Where("account_id = ? AND channel_id = ?", aid, cid).
-		First(&c).
+		Where("account_id = ?", aid).
+		First(&acct).
 		Error; err != nil {
 		return nil, err
 	}
 
 	if err := db.Debug().
 		Table("actors").
-		Where("id = ?", c.ActorID).
+		Where("id = ?", acct.ActorID).
 		Unscoped().
 		Delete(&Actors{}).
 		Error; err != nil {
 		return nil, err
 	}
-	return &pb.DeleteActorByChannelIDResponse{Code: "200", Reply: "ok"}, nil
+	return &pb.DeleteActorResponse{Code: "200", Reply: "ok"}, nil
 }
 
 func NewActorsAdd(preferredUsername, host, avatar, name, summary, inbox, address, publicKey, actorType string) *Actors {

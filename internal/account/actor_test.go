@@ -97,9 +97,8 @@ func TestAccount_EditActor(t *testing.T) {
 
 func TestAccount_DeleteActorByChannelID(t *testing.T) {
 	s := account{}
-	r, err := s.DeleteActorByChannelID(context.Background(), &v1alpha1.DeleteActorByChannelIDRequest{
+	r, err := s.DeleteActor(context.Background(), &v1alpha1.DeleteActorRequest{
 		AccountId: "746166817947975681",
-		ChannelId: "",
 	})
 	if err != nil {
 		t.Error(err)
