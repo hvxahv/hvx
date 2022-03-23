@@ -23,6 +23,8 @@ message IsChannelAdministratorResponse {
 message AddAdministratorRequest {
   string channel_id = 1;
   string account_id = 2;
+  string add_admin_id = 3;
+  bool is_owner = 4;
 }
 
 message AddAdministratorResponse {

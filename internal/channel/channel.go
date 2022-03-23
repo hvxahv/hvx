@@ -55,14 +55,23 @@ func (c *channel) CreateChannel(ctx context.Context, in *pb.CreateChannelRequest
 		return nil, err
 	}
 
+	ch := NewChannels(uint(id), uint(aid), string(privateKey))
 	if err := db.Debug().
 		Table("channels").
-		Create(NewChannels(uint(id), uint(aid), string(privateKey))).
+		Create(ch).
 		Error; err != nil {
 		return nil, err
 
 	}
-	return &pb.CreateChannelResponse{Code: "200", Reply: "ok"}, nil
+	administrator, err := c.AddAdministrator(ctx, &pb.AddAdministratorRequest{
+		ChannelId: strconv.Itoa(int(ch.ID)),
+		AccountId: in.AccountId,
+		IsOwner:   true,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &pb.CreateChannelResponse{Code: "200", Reply: administrator.Reply}, nil
 }
 
 func (c *channel) GetChannelsByAccountID(ctx context.Context, in *pb.GetChannelsByAccountIDRequest) (*pb.GetChannelsByAccountIDResponse, error) {

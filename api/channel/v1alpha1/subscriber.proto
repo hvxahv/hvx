@@ -6,6 +6,8 @@ option go_package = "github.com/hvxahv/hvxahv/api/channel/v1alpha1";
 service SubscriberService {
   rpc AddSubscriber(AddSubscriberRequest) returns (AddSubscriberResponse) {}
   rpc Unsubscribe(UnsubscribeRequest) returns (UnsubscribeResponse) {}
+
+  // RemoveSubscriber Only the administrator of the channel can call to remove the subscribers of the channel.
   rpc RemoveSubscriber(RemoveSubscriberRequest) returns (RemoveSubscriberResponse) {}
   rpc GetSubscribers(GetSubscribersRequest) returns (GetSubscribersResponse) {}
 }
@@ -20,13 +22,26 @@ message AddSubscriberResponse {
   string reply = 2;
 }
 
-message UnsubscribeRequest {}
+message UnsubscribeRequest {
+  string channel_id = 1;
+  string account_id = 2;
+}
 
-message UnsubscribeResponse {}
+message UnsubscribeResponse {
+  string code = 1;
+  string reply = 2;
+}
 
-message RemoveSubscriberRequest {}
+message RemoveSubscriberRequest {
+  string admin_id = 1;
+  string channel_id = 2;
+  string subscriber_id = 3;
+}
 
-message RemoveSubscriberResponse {}
+message RemoveSubscriberResponse {
+  string code = 1;
+  string reply = 2;
+}
 
 message GetSubscribersRequest {}
 

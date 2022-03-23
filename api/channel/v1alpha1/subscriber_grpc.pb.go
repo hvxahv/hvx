@@ -24,6 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 type SubscriberServiceClient interface {
 	AddSubscriber(ctx context.Context, in *AddSubscriberRequest, opts ...grpc.CallOption) (*AddSubscriberResponse, error)
 	Unsubscribe(ctx context.Context, in *UnsubscribeRequest, opts ...grpc.CallOption) (*UnsubscribeResponse, error)
+	// RemoveSubscriber Only the administrator of the channel can call to remove the subscribers of the channel.
 	RemoveSubscriber(ctx context.Context, in *RemoveSubscriberRequest, opts ...grpc.CallOption) (*RemoveSubscriberResponse, error)
 	GetSubscribers(ctx context.Context, in *GetSubscribersRequest, opts ...grpc.CallOption) (*GetSubscribersResponse, error)
 }
@@ -78,6 +79,7 @@ func (c *subscriberServiceClient) GetSubscribers(ctx context.Context, in *GetSub
 type SubscriberServiceServer interface {
 	AddSubscriber(context.Context, *AddSubscriberRequest) (*AddSubscriberResponse, error)
 	Unsubscribe(context.Context, *UnsubscribeRequest) (*UnsubscribeResponse, error)
+	// RemoveSubscriber Only the administrator of the channel can call to remove the subscribers of the channel.
 	RemoveSubscriber(context.Context, *RemoveSubscriberRequest) (*RemoveSubscriberResponse, error)
 	GetSubscribers(context.Context, *GetSubscribersRequest) (*GetSubscribersResponse, error)
 	mustEmbedUnimplementedSubscriberServiceServer()

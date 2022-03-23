@@ -15,6 +15,7 @@ type Administrates struct {
 
 	ChannelID uint `gorm:"primaryKey;channel_id"`
 	AccountID uint `gorm:"primaryKey;account_id"`
+	IsOwner   bool `gorm:"type:boolean;is_owner"`
 }
 
 func (c *channel) IsChannelAdministrator(ctx context.Context, in *pb.IsChannelAdministratorRequest) (*pb.IsChannelAdministratorResponse, error) {
@@ -39,24 +40,24 @@ func (c *channel) IsChannelAdministrator(ctx context.Context, in *pb.IsChannelAd
 	return &pb.IsChannelAdministratorResponse{IsAdministrator: false}, nil
 }
 
-func (c *channel) AddAdministrator(ctx context.Context, request *pb.AddAdministratorRequest) (*pb.AddAdministratorResponse, error) {
+func (c *channel) AddAdministrator(ctx context.Context, in *pb.AddAdministratorRequest) (*pb.AddAdministratorResponse, error) {
 	db := cockroach.GetDB()
 	if err := db.AutoMigrate(&Administrates{}); err != nil {
 		return nil, err
 	}
-	aid, err := strconv.Atoi(request.GetAccountId())
+	aid, err := strconv.Atoi(in.GetAccountId())
 	if err != nil {
 		return nil, err
 	}
-	cid, err := strconv.Atoi(request.GetChannelId())
+	cid, err := strconv.Atoi(in.GetChannelId())
 	if err != nil {
 		return nil, err
 	}
 	adm := &Administrates{
 		ChannelID: uint(cid),
 		AccountID: uint(aid),
+		IsOwner:   in.IsOwner,
 	}
-
 	if err := db.Debug().
 		Table("administrates").
 		Where("channel_id = ? AND account_id = ?", uint(cid), uint(aid)).
