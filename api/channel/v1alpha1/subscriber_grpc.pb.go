@@ -26,7 +26,7 @@ type SubscriberServiceClient interface {
 	Unsubscribe(ctx context.Context, in *UnsubscribeRequest, opts ...grpc.CallOption) (*UnsubscribeResponse, error)
 	// RemoveSubscriber Only the administrator of the channel can call to remove the subscribers of the channel.
 	RemoveSubscriber(ctx context.Context, in *RemoveSubscriberRequest, opts ...grpc.CallOption) (*RemoveSubscriberResponse, error)
-	GetSubscribers(ctx context.Context, in *GetSubscribersRequest, opts ...grpc.CallOption) (*GetSubscribersResponse, error)
+	GetAllSubscribers(ctx context.Context, in *GetAllSubscribersRequest, opts ...grpc.CallOption) (*GetAllSubscribersResponse, error)
 }
 
 type subscriberServiceClient struct {
@@ -64,9 +64,9 @@ func (c *subscriberServiceClient) RemoveSubscriber(ctx context.Context, in *Remo
 	return out, nil
 }
 
-func (c *subscriberServiceClient) GetSubscribers(ctx context.Context, in *GetSubscribersRequest, opts ...grpc.CallOption) (*GetSubscribersResponse, error) {
-	out := new(GetSubscribersResponse)
-	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.SubscriberService/GetSubscribers", in, out, opts...)
+func (c *subscriberServiceClient) GetAllSubscribers(ctx context.Context, in *GetAllSubscribersRequest, opts ...grpc.CallOption) (*GetAllSubscribersResponse, error) {
+	out := new(GetAllSubscribersResponse)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.SubscriberService/GetAllSubscribers", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -81,7 +81,7 @@ type SubscriberServiceServer interface {
 	Unsubscribe(context.Context, *UnsubscribeRequest) (*UnsubscribeResponse, error)
 	// RemoveSubscriber Only the administrator of the channel can call to remove the subscribers of the channel.
 	RemoveSubscriber(context.Context, *RemoveSubscriberRequest) (*RemoveSubscriberResponse, error)
-	GetSubscribers(context.Context, *GetSubscribersRequest) (*GetSubscribersResponse, error)
+	GetAllSubscribers(context.Context, *GetAllSubscribersRequest) (*GetAllSubscribersResponse, error)
 	mustEmbedUnimplementedSubscriberServiceServer()
 }
 
@@ -98,8 +98,8 @@ func (UnimplementedSubscriberServiceServer) Unsubscribe(context.Context, *Unsubs
 func (UnimplementedSubscriberServiceServer) RemoveSubscriber(context.Context, *RemoveSubscriberRequest) (*RemoveSubscriberResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RemoveSubscriber not implemented")
 }
-func (UnimplementedSubscriberServiceServer) GetSubscribers(context.Context, *GetSubscribersRequest) (*GetSubscribersResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetSubscribers not implemented")
+func (UnimplementedSubscriberServiceServer) GetAllSubscribers(context.Context, *GetAllSubscribersRequest) (*GetAllSubscribersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAllSubscribers not implemented")
 }
 func (UnimplementedSubscriberServiceServer) mustEmbedUnimplementedSubscriberServiceServer() {}
 
@@ -168,20 +168,20 @@ func _SubscriberService_RemoveSubscriber_Handler(srv interface{}, ctx context.Co
 	return interceptor(ctx, in, info, handler)
 }
 
-func _SubscriberService_GetSubscribers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetSubscribersRequest)
+func _SubscriberService_GetAllSubscribers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAllSubscribersRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(SubscriberServiceServer).GetSubscribers(ctx, in)
+		return srv.(SubscriberServiceServer).GetAllSubscribers(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/hvxahv.v1alpha1.proto.SubscriberService/GetSubscribers",
+		FullMethod: "/hvxahv.v1alpha1.proto.SubscriberService/GetAllSubscribers",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SubscriberServiceServer).GetSubscribers(ctx, req.(*GetSubscribersRequest))
+		return srv.(SubscriberServiceServer).GetAllSubscribers(ctx, req.(*GetAllSubscribersRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -206,8 +206,8 @@ var SubscriberService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _SubscriberService_RemoveSubscriber_Handler,
 		},
 		{
-			MethodName: "GetSubscribers",
-			Handler:    _SubscriberService_GetSubscribers_Handler,
+			MethodName: "GetAllSubscribers",
+			Handler:    _SubscriberService_GetAllSubscribers_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

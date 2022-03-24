@@ -21,8 +21,11 @@ message IsChannelAdministratorResponse {
 }
 
 message AddAdministratorRequest {
+  // The channel id.
   string channel_id = 1;
-  string account_id = 2;
+  // ID of the channel owner.
+  string admin_account_id = 2;
+  // Added administrator ID.
   string add_admin_id = 3;
   bool is_owner = 4;
 }
@@ -35,7 +38,7 @@ message AddAdministratorResponse {
 message RemoveAdministratorRequest {
   string owner_id = 1;
   string channel_id = 2;
-  string account_id = 3;
+  string remove_admin_id = 3;
 }
 
 message RemoveAdministratorResponse {

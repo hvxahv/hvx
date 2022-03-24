@@ -9,7 +9,7 @@ service SubscriberService {
 
   // RemoveSubscriber Only the administrator of the channel can call to remove the subscribers of the channel.
   rpc RemoveSubscriber(RemoveSubscriberRequest) returns (RemoveSubscriberResponse) {}
-  rpc GetSubscribers(GetSubscribersRequest) returns (GetSubscribersResponse) {}
+  rpc GetAllSubscribers(GetAllSubscribersRequest) returns (GetAllSubscribersResponse) {}
 }
 
 message AddSubscriberRequest {
@@ -43,6 +43,12 @@ message RemoveSubscriberResponse {
   string reply = 2;
 }
 
-message GetSubscribersRequest {}
+message GetAllSubscribersRequest {
+  string channel_id = 1;
+  string admin_id = 2;
+}
 
-message GetSubscribersResponse {}
+message GetAllSubscribersResponse {
+  string code = 1;
+  repeated string subscriber = 2;
+}

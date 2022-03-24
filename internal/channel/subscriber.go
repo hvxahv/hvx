@@ -2,8 +2,9 @@ package channel
 
 import (
 	"context"
-	"github.com/pkg/errors"
 	"strconv"
+
+	"github.com/pkg/errors"
 
 	pb "github.com/hvxahv/hvxahv/api/channel/v1alpha1"
 	"github.com/hvxahv/hvxahv/pkg/cockroach"
@@ -104,4 +105,37 @@ func (c *channel) RemoveSubscriber(ctx context.Context, in *pb.RemoveSubscriberR
 		return nil, err
 	}
 	return &pb.RemoveSubscriberResponse{Code: "200", Reply: "ok"}, nil
+}
+
+func (c *channel) GetAllSubscribers(ctx context.Context, in *pb.GetAllSubscribersRequest) (*pb.GetAllSubscribersResponse, error) {
+	administrator, err := c.IsChannelAdministrator(ctx, &pb.IsChannelAdministratorRequest{
+		ChannelId: in.ChannelId,
+		AccountId: in.AdminId,
+	})
+	if err != nil {
+		return nil, err
+	}
+	if !administrator.IsAdministrator {
+		return nil, errors.New(NotAdmin)
+	}
+	db := cockroach.GetDB()
+
+	cid, err := strconv.Atoi(in.ChannelId)
+	if err != nil {
+		return nil, err
+	}
+
+	var subscribers []Subscribes
+	if err := db.Debug().
+		Table("subscribes").
+		Where("channel_id = ?", cid).
+		Find(&subscribers).
+		Error; err != nil {
+		return nil, err
+	}
+	var subscriberIds []string
+	for _, i := range subscribers {
+		subscriberIds = append(subscriberIds, strconv.Itoa(int(i.AccountID)))
+	}
+	return &pb.GetAllSubscribersResponse{Code: "200", Subscriber: subscriberIds}, nil
 }

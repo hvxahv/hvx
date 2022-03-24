@@ -10,7 +10,7 @@ import (
 
 func TestAccount_CreateActor(t *testing.T) {
 	d := &v1alpha1.CreateActorRequest{
-		PreferredUsername: "hvturingga",
+		PreferredUsername: "hvx",
 		PublicKey:         "idi",
 		ActorType:         "Services",
 	}

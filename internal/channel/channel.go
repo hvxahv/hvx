@@ -2,6 +2,7 @@ package channel
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 
 	"github.com/hvxahv/hvxahv/api/account/v1alpha1"
@@ -12,9 +13,18 @@ import (
 	"gorm.io/gorm"
 )
 
+const (
+	// ErrNotFound is returned when a channel is not found.
+	ErrNotFound   = "CHANNEL_NOT_FOUND"
+	ChannelsTable = "channels"
+)
+
 type Channels struct {
 	gorm.Model
 
+	// ActorID This ID is associated with the Actor table, as an
+	// ActivityPub Actor service. This ID can be used
+	// to retrieve data from the Actor table. as the channel information.
 	ActorID    uint   `gorm:"primaryKey;type:bigint;actor_id"`
 	AccountID  uint   `gorm:"primaryKey;type:bigint;account_id"`
 	PrivateKey string `gorm:"private_key;type:text;private_key"`
@@ -36,7 +46,13 @@ func (c *channel) CreateChannel(ctx context.Context, in *pb.CreateChannelRequest
 		PublicKey:         string(publicKey),
 		ActorType:         "Service",
 	})
+	fmt.Println(err)
 	if err != nil {
+		return nil, err
+	}
+
+	db := cockroach.GetDB()
+	if err := db.AutoMigrate(&Channels{}); err != nil {
 		return nil, err
 	}
 
@@ -50,23 +66,19 @@ func (c *channel) CreateChannel(ctx context.Context, in *pb.CreateChannelRequest
 		return nil, err
 	}
 
-	db := cockroach.GetDB()
-	if err := db.AutoMigrate(&Channels{}); err != nil {
-		return nil, err
-	}
-
 	ch := NewChannels(uint(id), uint(aid), string(privateKey))
 	if err := db.Debug().
-		Table("channels").
+		Table(ChannelsTable).
 		Create(ch).
 		Error; err != nil {
 		return nil, err
 
 	}
 	administrator, err := c.AddAdministrator(ctx, &pb.AddAdministratorRequest{
-		ChannelId: strconv.Itoa(int(ch.ID)),
-		AccountId: in.AccountId,
-		IsOwner:   true,
+		ChannelId:      strconv.Itoa(int(ch.ID)),
+		AdminAccountId: in.AccountId,
+		AddAdminId:     in.AccountId,
+		IsOwner:        true,
 	})
 	if err != nil {
 		return nil, err
@@ -86,7 +98,7 @@ func (c *channel) GetChannelsByAccountID(ctx context.Context, in *pb.GetChannels
 	}
 	var channels []Channels
 	if err := db.Debug().
-		Table("channels").
+		Table(ChannelsTable).
 		Where("account_id = ?", uint(aid)).
 		Find(&channels).
 		Error; err != nil {
@@ -105,6 +117,16 @@ func (c *channel) GetChannelsByAccountID(ctx context.Context, in *pb.GetChannels
 }
 
 func (c *channel) DeleteChannel(ctx context.Context, in *pb.DeleteChannelRequest) (*pb.DeleteChannelResponse, error) {
+	administrator, err := c.IsChannelAdministrator(ctx, &pb.IsChannelAdministratorRequest{
+		ChannelId: in.ChannelId,
+		AccountId: in.AccountId,
+	})
+	if err != nil {
+		return nil, err
+	}
+	if !administrator.IsAdministrator {
+		return nil, fmt.Errorf("%s", NotAdmin)
+	}
 	client, err := account.GetActorClient()
 	if err != nil {
 		return nil, err
@@ -132,12 +154,22 @@ func (c *channel) DeleteChannel(ctx context.Context, in *pb.DeleteChannelRequest
 	}
 
 	if err := db.Debug().
-		Table("channels").
+		Table(ChannelsTable).
 		Where("account_id = ? AND id = ?", uint(aid), uint(id)).
 		Unscoped().
 		Delete(&Channels{}).
 		Error; err != nil {
 		return nil, err
+	}
+
+	if err := db.Debug().
+		Table(AdministrateTable).
+		Where("admin_id = ? AND c_id = ? AND is_owner = ?", uint(aid), uint(id), true).
+		Unscoped().
+		Delete(&Administrates{}).
+		Error; err != nil {
+		return nil, err
+
 	}
 	return &pb.DeleteChannelResponse{Code: "200", Reply: "ok"}, nil
 }
@@ -151,7 +183,7 @@ func (c *channel) DeleteAllChannelsByAccountID(ctx context.Context, in *pb.Delet
 	}
 
 	if err := db.Debug().
-		Table("channels").
+		Table(ChannelsTable).
 		Where("account_id = ?", uint(aid)).
 		Unscoped().
 		Delete(&Channels{}).
