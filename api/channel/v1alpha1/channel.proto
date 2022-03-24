@@ -26,7 +26,7 @@ message GetChannelsByAccountIDRequest {
 }
 message Channel {
     string id = 1;
-    string channel_id = 2;
+    string actor_id = 2;
 }
 message GetChannelsByAccountIDResponse {
   string code = 1;
