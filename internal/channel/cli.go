@@ -14,3 +14,11 @@ func GetChannelClient() (pb.ChannelServiceClient, error) {
 	}
 	return pb.NewChannelServiceClient(conn), nil
 }
+
+func GetChannelAdminClient() (pb.AdministrativeServiceClient, error) {
+	conn, err := grpc.Dial(microservices.NewService(serviceName).GetAddress(), grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		return nil, err
+	}
+	return pb.NewAdministrativeServiceClient(conn), nil
+}
