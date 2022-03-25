@@ -18,6 +18,10 @@ type Administrates struct {
 	IsOwner   bool `gorm:"type:boolean;is_owner"`
 }
 
+// Note:
+// In the process of implementation, the need to pay attention to the
+// division of permissions between channel owners and administrators.
+
 const (
 	// AdministrateTable is the table name for the administrates table.
 	AdministrateTable = "administrates"
@@ -28,7 +32,7 @@ const (
 
 func (c *channel) IsChannelAdministrator(ctx context.Context, in *pb.IsChannelAdministratorRequest) (*pb.IsChannelAdministratorResponse, error) {
 	db := cockroach.GetDB()
-	aid, err := strconv.Atoi(in.GetAccountId())
+	aid, err := strconv.Atoi(in.GetAdminId())
 	if err != nil {
 		return nil, err
 	}
@@ -37,8 +41,8 @@ func (c *channel) IsChannelAdministrator(ctx context.Context, in *pb.IsChannelAd
 		return nil, err
 	}
 	if err := db.Debug().
-		Table("channels").
-		Where("id = ? AND account_id = ?", uint(cid), uint(aid)).
+		Table("administrates").
+		Where("channel_id = ? AND admin_id = ?", uint(cid), uint(aid)).
 		First(&c.Channels); err != nil {
 		ok := cockroach.IsNotFound(err.Error)
 		if !ok {
@@ -50,7 +54,7 @@ func (c *channel) IsChannelAdministrator(ctx context.Context, in *pb.IsChannelAd
 
 func (c *channel) AddAdministrator(ctx context.Context, in *pb.AddAdministratorRequest) (*pb.AddAdministratorResponse, error) {
 	administrator, err := c.IsChannelAdministrator(ctx, &pb.IsChannelAdministratorRequest{
-		AccountId: in.GetAdminAccountId(),
+		AdminId:   in.GetAdminAccountId(),
 		ChannelId: in.GetChannelId(),
 	})
 	if err != nil {
@@ -98,7 +102,7 @@ func (c *channel) RemoveAdministrator(ctx context.Context, in *pb.RemoveAdminist
 	s := &channel{}
 	administrator, err := s.IsChannelAdministrator(ctx, &pb.IsChannelAdministratorRequest{
 		ChannelId: in.GetChannelId(),
-		AccountId: in.GetOwnerId(),
+		AdminId:   in.GetOwnerId(),
 	})
 	if err != nil {
 		return nil, err
@@ -135,7 +139,7 @@ func (c *channel) GetAdministrators(ctx context.Context, in *pb.GetAdministrator
 	s := &channel{}
 	administrator, err := s.IsChannelAdministrator(ctx, &pb.IsChannelAdministratorRequest{
 		ChannelId: in.GetChannelId(),
-		AccountId: in.GetAccountId(),
+		AdminId:   in.GetAccountId(),
 	})
 	if err != nil {
 		return nil, err

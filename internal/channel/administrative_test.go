@@ -11,8 +11,8 @@ import (
 func TestChannel_IsChannelAdministrator(t *testing.T) {
 	c := &channel{}
 	administrator, err := c.IsChannelAdministrator(context.Background(), &v1alpha1.IsChannelAdministratorRequest{
-		ChannelId: "747198189416415233",
-		AccountId: "746931987134185473",
+		ChannelId: "747232969484730369",
+		AdminId:   "",
 	})
 	if err != nil {
 		return
@@ -23,7 +23,7 @@ func TestChannel_IsChannelAdministrator(t *testing.T) {
 func TestChannel_AddAdministrator(t *testing.T) {
 	c := &channel{}
 	administrator, err := c.AddAdministrator(context.Background(), &v1alpha1.AddAdministratorRequest{
-		ChannelId:      "747198189416415233",
+		ChannelId:      "747232969484730369",
 		AdminAccountId: "746931987134185473",
 		AddAdminId:     "746932029522116609",
 		IsOwner:        false,

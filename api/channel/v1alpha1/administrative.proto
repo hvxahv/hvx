@@ -13,7 +13,7 @@ service AdministrativeService {
 
 message IsChannelAdministratorRequest {
   string channel_id = 1;
-  string account_id = 2;
+  string admin_id = 2;
 }
 
 message IsChannelAdministratorResponse {

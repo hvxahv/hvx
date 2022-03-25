@@ -18,6 +18,7 @@ type channel struct {
 	pb.ChannelServiceServer
 	pb.AdministrativeServiceServer
 	pb.SubscriberServiceServer
+	pb.BroadcastServiceServer
 	*Channels
 	*Administrates
 	*Subscribes

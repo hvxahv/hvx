@@ -5,13 +5,21 @@ option go_package = "github.com/hvxahv/hvxahv/api/channel/v1alpha1";
 
 service BroadcastService {
   rpc CreateBroadcast (CreateBroadcastRequest) returns (CreateBroadcastResponse) {}
-  rpc GetBroadcasts (GetBroadcastsRequest) returns (GetBroadcastsResponse) {}
+  rpc GetAllBroadcasts (GetAllBroadcastsRequest) returns (GetAllBroadcastsResponse) {}
   rpc DeleteBroadcast (DeleteBroadcastRequest) returns (DeleteBroadcastResponse) {}
+}
+
+message Broadcast {
+  string channel_id = 1;
+  string admin_id = 2;
+  string article_id = 3;
+  string cid = 4;
 }
 
 message CreateBroadcastRequest {
   string channel_id = 1;
-  string cid = 2;
+  string admin_id = 2;
+  string article_id = 3;
 }
 
 message CreateBroadcastResponse {
@@ -19,11 +27,23 @@ message CreateBroadcastResponse {
   string reply = 2;
 }
 
-message GetBroadcastsRequest {}
+message GetAllBroadcastsRequest {
+  string channel_id = 1;
+}
 
-message GetBroadcastsResponse {}
+message GetAllBroadcastsResponse {
+  string code = 1;
+  repeated Broadcast broadcasts = 2;
+}
 
-message DeleteBroadcastRequest {}
+message DeleteBroadcastRequest {
+  string channel_id = 1;
+  string admin_id = 2;
+  string broadcast_id = 3;
+}
 
-message DeleteBroadcastResponse {}
+message DeleteBroadcastResponse {
+  string code = 1;
+  string reply = 2;
+}
 

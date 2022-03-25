@@ -59,7 +59,7 @@ func TestChannel_CreateChannel(t *testing.T) {
 func TestChannel_GetChannelsByAccountID(t *testing.T) {
 	s := &channel{}
 	getChannelsByAccountID, err := s.GetChannelsByAccountID(context.Background(), &pb.GetChannelsByAccountIDRequest{
-		AccountId: "747297716719550465",
+		AccountId: "746931987134185473",
 	})
 	if err != nil {
 		return

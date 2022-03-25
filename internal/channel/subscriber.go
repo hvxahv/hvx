@@ -77,7 +77,7 @@ func (c *channel) RemoveSubscriber(ctx context.Context, in *pb.RemoveSubscriberR
 
 	administrator, err := c.IsChannelAdministrator(ctx, &pb.IsChannelAdministratorRequest{
 		ChannelId: in.ChannelId,
-		AccountId: in.AdminId,
+		AdminId:   in.AdminId,
 	})
 	if err != nil {
 		return nil, err
@@ -110,7 +110,7 @@ func (c *channel) RemoveSubscriber(ctx context.Context, in *pb.RemoveSubscriberR
 func (c *channel) GetAllSubscribers(ctx context.Context, in *pb.GetAllSubscribersRequest) (*pb.GetAllSubscribersResponse, error) {
 	administrator, err := c.IsChannelAdministrator(ctx, &pb.IsChannelAdministratorRequest{
 		ChannelId: in.ChannelId,
-		AccountId: in.AdminId,
+		AdminId:   in.AdminId,
 	})
 	if err != nil {
 		return nil, err

@@ -108,8 +108,8 @@ func (c *channel) GetChannelsByAccountID(ctx context.Context, in *pb.GetChannels
 	var chs []*pb.Channel
 	for _, ch := range channels {
 		chs = append(chs, &pb.Channel{
-			Id:      strconv.Itoa(int(ch.ID)),
-			ActorId: strconv.Itoa(int(ch.ActorID)),
+			Id:        strconv.Itoa(int(ch.ID)),
+			ChannelId: strconv.Itoa(int(ch.ActorID)),
 		})
 	}
 
@@ -119,7 +119,7 @@ func (c *channel) GetChannelsByAccountID(ctx context.Context, in *pb.GetChannels
 func (c *channel) DeleteChannel(ctx context.Context, in *pb.DeleteChannelRequest) (*pb.DeleteChannelResponse, error) {
 	administrator, err := c.IsChannelAdministrator(ctx, &pb.IsChannelAdministratorRequest{
 		ChannelId: in.ChannelId,
-		AccountId: in.AccountId,
+		AdminId:   in.AccountId,
 	})
 	if err != nil {
 		return nil, err
@@ -164,7 +164,7 @@ func (c *channel) DeleteChannel(ctx context.Context, in *pb.DeleteChannelRequest
 
 	if err := db.Debug().
 		Table(AdministrateTable).
-		Where("admin_id = ? AND channel_id = ? AND is_owner = ?", uint(aid), uint(id), true).
+		Where("admin_id = ? AND c_id = ? AND is_owner = ?", uint(aid), uint(id), true).
 		Unscoped().
 		Delete(&Administrates{}).
 		Error; err != nil {
