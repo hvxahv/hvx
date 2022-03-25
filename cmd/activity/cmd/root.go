@@ -73,7 +73,7 @@ func initConfig() {
 
 		// Search config in home directory with name ".activitypub" (without extension).
 		viper.AddConfigPath(home)
-		viper.SetConfigName(".activitypub")
+		viper.SetConfigName(".hvxahv")
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match
