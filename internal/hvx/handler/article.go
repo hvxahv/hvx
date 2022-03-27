@@ -73,13 +73,12 @@ func UpdateArticleHandler(c *gin.Context) {
 }
 
 func GetArticleHandler(c *gin.Context) {
-	id := c.Param("id")
 	client, err := article.GetArticleClient()
 	if err != nil {
 		return
 	}
 	articles, err := client.GetArticle(c, &pb.GetArticleRequest{
-		Id: id,
+		Id: c.Param("id"),
 	})
 	if err != nil {
 		return

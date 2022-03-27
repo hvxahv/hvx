@@ -164,7 +164,7 @@ func (a *article) GetArticle(ctx context.Context, in *pb.GetArticleRequest) (*pb
 
 	if err := db.Debug().
 		Table("articles").
-		Where("id = ?", id).
+		Where("id = ?", uint(id)).
 		First(&a.Articles).
 		Error; err != nil {
 		return nil, err
@@ -208,6 +208,7 @@ func (a *article) GetArticlesByAccountID(ctx context.Context, in *pb.GetArticles
 	var r []*pb.CreateArticleRequest
 	for _, v := range articles {
 		r = append(r, &pb.CreateArticleRequest{
+			Id:             strconv.Itoa(int(v.ID)),
 			AccountId:      strconv.Itoa(int(v.AccountID)),
 			Title:          v.Title,
 			Summary:        v.Summary,
