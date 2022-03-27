@@ -77,6 +77,7 @@ func (c *channel) GetAllBroadcasts(ctx context.Context, in *pb.GetAllBroadcastsR
 	var reply []*pb.Broadcast
 	for _, v := range b {
 		reply = append(reply, &pb.Broadcast{
+			Id:        strconv.Itoa(int(v.ID)),
 			ChannelId: strconv.Itoa(int(v.ChannelID)),
 			AdminId:   strconv.Itoa(int(v.AdminID)),
 			ArticleId: strconv.Itoa(int(v.ArticleID)),

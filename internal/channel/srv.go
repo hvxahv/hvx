@@ -22,6 +22,7 @@ type channel struct {
 	*Channels
 	*Administrates
 	*Subscribes
+	*Broadcasts
 }
 
 // Run starts the server. It will block until the server is shutdown.
@@ -34,6 +35,8 @@ func Run() error {
 
 	pb.RegisterChannelServiceServer(s, &channel{})
 	pb.RegisterAdministrativeServiceServer(s, &channel{})
+	pb.RegisterSubscriberServiceServer(s, &channel{})
+	pb.RegisterBroadcastServiceServer(s, &channel{})
 
 	reflection.Register(s)
 

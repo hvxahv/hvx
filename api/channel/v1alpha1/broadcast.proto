@@ -10,10 +10,11 @@ service BroadcastService {
 }
 
 message Broadcast {
-  string channel_id = 1;
-  string admin_id = 2;
-  string article_id = 3;
-  string cid = 4;
+  string id = 1;
+  string channel_id = 2;
+  string admin_id = 3;
+  string article_id = 4;
+  string cid = 5;
 }
 
 message CreateBroadcastRequest {

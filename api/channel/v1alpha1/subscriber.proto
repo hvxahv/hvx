@@ -7,7 +7,8 @@ service SubscriberService {
   rpc AddSubscriber(AddSubscriberRequest) returns (AddSubscriberResponse) {}
   rpc Unsubscribe(UnsubscribeRequest) returns (UnsubscribeResponse) {}
 
-  // RemoveSubscriber Only the administrator of the channel can call to remove the subscribers of the channel.
+  // RemoveSubscriber Only the administrator of the channel
+  // can call to remove the subscribers of the channel.
   rpc RemoveSubscriber(RemoveSubscriberRequest) returns (RemoveSubscriberResponse) {}
   rpc GetAllSubscribers(GetAllSubscribersRequest) returns (GetAllSubscribersResponse) {}
 }
