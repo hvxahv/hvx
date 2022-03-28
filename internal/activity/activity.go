@@ -24,7 +24,6 @@ func NewActivityInbox(name string, body []byte) *Inbox {
 	if err := json.Unmarshal(body, &a); err != nil {
 		fmt.Printf("Unmarshal acticity type:%v", err)
 	}
-	
 	return &Inbox{
 		CurrentUsername: name,
 		ActivityActor:   a.Actor,

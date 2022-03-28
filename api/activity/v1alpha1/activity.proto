@@ -4,25 +4,29 @@ package hvxahv.v1alpha1.proto;
 option go_package = "github.com/hvxahv/hvxahv/api/activity/v1alpha1";
 
 service Activity {
-  rpc CreateInbox (CreateInboxRequest) returns (CreateInboxResponse) {}
+  rpc Inbox (InboxRequest) returns (InboxResponse) {}
   rpc GetInboxByActivityID (GetInboxByActivityIDRequest) returns (GetInboxByActivityIDResponse) {}
-  rpc GetInboxesByActivityID (GetInboxesByActivityIDRequest) returns (GetInboxesByActivityIDResponse) {}
+  rpc GetInboxesByAccountID (GetInboxesByAccountIDRequest) returns (GetInboxesByAccountIDResponse) {}
+  rpc DeleteInboxByInboxesID (DeleteInboxByInboxesIDRequest) returns (DeleteInboxByInboxesIDResponse) {}
+
   rpc CreateOutbox (CreateOutboxRequest) returns (CreateOutboxResponse) {}
   rpc GetOutboxByActivityID (GetOutboxByActivityIDRequest) returns (GetOutboxByActivityIDResponse) {}
 }
 
 message Inboxes {
-  string actor_id = 1;
-  string activity_id = 2;
-  string activity_type = 3;
-  bytes activity_body = 4;
+  string id = 1;
+  string actor_id = 2;
+  string activity_id = 3;
+  string activity_type = 4;
+  bytes activity_body = 5;
 }
-message CreateInboxRequest {
+
+message InboxRequest {
   string name = 1;
   bytes data = 2;
 }
 
-message CreateInboxResponse {
+message InboxResponse {
   string code = 1;
   string response = 2;
 }
@@ -36,13 +40,23 @@ message GetInboxByActivityIDResponse {
   Inboxes inbox = 2;
 }
 
-message GetInboxesByActivityIDRequest {
+message GetInboxesByAccountIDRequest {
   string account_id = 1;
 }
 
-message GetInboxesByActivityIDResponse {
+message GetInboxesByAccountIDResponse {
   string code = 1;
   repeated Inboxes inboxes = 2;
+}
+
+message DeleteInboxByInboxesIDRequest {
+  string activity_id = 1;
+  string account_id = 2;
+}
+
+message DeleteInboxByInboxesIDResponse {
+  string code = 1;
+  string reply = 2;
 }
 
 message CreateOutboxRequest {}

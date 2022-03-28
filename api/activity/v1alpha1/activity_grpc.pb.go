@@ -18,9 +18,10 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ActivityClient interface {
-	CreateInbox(ctx context.Context, in *CreateInboxRequest, opts ...grpc.CallOption) (*CreateInboxResponse, error)
+	Inbox(ctx context.Context, in *InboxRequest, opts ...grpc.CallOption) (*InboxResponse, error)
 	GetInboxByActivityID(ctx context.Context, in *GetInboxByActivityIDRequest, opts ...grpc.CallOption) (*GetInboxByActivityIDResponse, error)
-	GetInboxesByActivityID(ctx context.Context, in *GetInboxesByActivityIDRequest, opts ...grpc.CallOption) (*GetInboxesByActivityIDResponse, error)
+	GetInboxesByAccountID(ctx context.Context, in *GetInboxesByAccountIDRequest, opts ...grpc.CallOption) (*GetInboxesByAccountIDResponse, error)
+	DeleteInboxByInboxesID(ctx context.Context, in *DeleteInboxByInboxesIDRequest, opts ...grpc.CallOption) (*DeleteInboxByInboxesIDResponse, error)
 	CreateOutbox(ctx context.Context, in *CreateOutboxRequest, opts ...grpc.CallOption) (*CreateOutboxResponse, error)
 	GetOutboxByActivityID(ctx context.Context, in *GetOutboxByActivityIDRequest, opts ...grpc.CallOption) (*GetOutboxByActivityIDResponse, error)
 }
@@ -33,9 +34,9 @@ func NewActivityClient(cc grpc.ClientConnInterface) ActivityClient {
 	return &activityClient{cc}
 }
 
-func (c *activityClient) CreateInbox(ctx context.Context, in *CreateInboxRequest, opts ...grpc.CallOption) (*CreateInboxResponse, error) {
-	out := new(CreateInboxResponse)
-	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Activity/CreateInbox", in, out, opts...)
+func (c *activityClient) Inbox(ctx context.Context, in *InboxRequest, opts ...grpc.CallOption) (*InboxResponse, error) {
+	out := new(InboxResponse)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Activity/Inbox", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -51,9 +52,18 @@ func (c *activityClient) GetInboxByActivityID(ctx context.Context, in *GetInboxB
 	return out, nil
 }
 
-func (c *activityClient) GetInboxesByActivityID(ctx context.Context, in *GetInboxesByActivityIDRequest, opts ...grpc.CallOption) (*GetInboxesByActivityIDResponse, error) {
-	out := new(GetInboxesByActivityIDResponse)
-	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Activity/GetInboxesByActivityID", in, out, opts...)
+func (c *activityClient) GetInboxesByAccountID(ctx context.Context, in *GetInboxesByAccountIDRequest, opts ...grpc.CallOption) (*GetInboxesByAccountIDResponse, error) {
+	out := new(GetInboxesByAccountIDResponse)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Activity/GetInboxesByAccountID", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *activityClient) DeleteInboxByInboxesID(ctx context.Context, in *DeleteInboxByInboxesIDRequest, opts ...grpc.CallOption) (*DeleteInboxByInboxesIDResponse, error) {
+	out := new(DeleteInboxByInboxesIDResponse)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Activity/DeleteInboxByInboxesID", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -82,9 +92,10 @@ func (c *activityClient) GetOutboxByActivityID(ctx context.Context, in *GetOutbo
 // All implementations must embed UnimplementedActivityServer
 // for forward compatibility
 type ActivityServer interface {
-	CreateInbox(context.Context, *CreateInboxRequest) (*CreateInboxResponse, error)
+	Inbox(context.Context, *InboxRequest) (*InboxResponse, error)
 	GetInboxByActivityID(context.Context, *GetInboxByActivityIDRequest) (*GetInboxByActivityIDResponse, error)
-	GetInboxesByActivityID(context.Context, *GetInboxesByActivityIDRequest) (*GetInboxesByActivityIDResponse, error)
+	GetInboxesByAccountID(context.Context, *GetInboxesByAccountIDRequest) (*GetInboxesByAccountIDResponse, error)
+	DeleteInboxByInboxesID(context.Context, *DeleteInboxByInboxesIDRequest) (*DeleteInboxByInboxesIDResponse, error)
 	CreateOutbox(context.Context, *CreateOutboxRequest) (*CreateOutboxResponse, error)
 	GetOutboxByActivityID(context.Context, *GetOutboxByActivityIDRequest) (*GetOutboxByActivityIDResponse, error)
 	mustEmbedUnimplementedActivityServer()
@@ -94,14 +105,17 @@ type ActivityServer interface {
 type UnimplementedActivityServer struct {
 }
 
-func (UnimplementedActivityServer) CreateInbox(context.Context, *CreateInboxRequest) (*CreateInboxResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateInbox not implemented")
+func (UnimplementedActivityServer) Inbox(context.Context, *InboxRequest) (*InboxResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Inbox not implemented")
 }
 func (UnimplementedActivityServer) GetInboxByActivityID(context.Context, *GetInboxByActivityIDRequest) (*GetInboxByActivityIDResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetInboxByActivityID not implemented")
 }
-func (UnimplementedActivityServer) GetInboxesByActivityID(context.Context, *GetInboxesByActivityIDRequest) (*GetInboxesByActivityIDResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetInboxesByActivityID not implemented")
+func (UnimplementedActivityServer) GetInboxesByAccountID(context.Context, *GetInboxesByAccountIDRequest) (*GetInboxesByAccountIDResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetInboxesByAccountID not implemented")
+}
+func (UnimplementedActivityServer) DeleteInboxByInboxesID(context.Context, *DeleteInboxByInboxesIDRequest) (*DeleteInboxByInboxesIDResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteInboxByInboxesID not implemented")
 }
 func (UnimplementedActivityServer) CreateOutbox(context.Context, *CreateOutboxRequest) (*CreateOutboxResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateOutbox not implemented")
@@ -122,20 +136,20 @@ func RegisterActivityServer(s grpc.ServiceRegistrar, srv ActivityServer) {
 	s.RegisterService(&Activity_ServiceDesc, srv)
 }
 
-func _Activity_CreateInbox_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateInboxRequest)
+func _Activity_Inbox_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(InboxRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ActivityServer).CreateInbox(ctx, in)
+		return srv.(ActivityServer).Inbox(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/hvxahv.v1alpha1.proto.Activity/CreateInbox",
+		FullMethod: "/hvxahv.v1alpha1.proto.Activity/Inbox",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ActivityServer).CreateInbox(ctx, req.(*CreateInboxRequest))
+		return srv.(ActivityServer).Inbox(ctx, req.(*InboxRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -158,20 +172,38 @@ func _Activity_GetInboxByActivityID_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Activity_GetInboxesByActivityID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetInboxesByActivityIDRequest)
+func _Activity_GetInboxesByAccountID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetInboxesByAccountIDRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ActivityServer).GetInboxesByActivityID(ctx, in)
+		return srv.(ActivityServer).GetInboxesByAccountID(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/hvxahv.v1alpha1.proto.Activity/GetInboxesByActivityID",
+		FullMethod: "/hvxahv.v1alpha1.proto.Activity/GetInboxesByAccountID",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ActivityServer).GetInboxesByActivityID(ctx, req.(*GetInboxesByActivityIDRequest))
+		return srv.(ActivityServer).GetInboxesByAccountID(ctx, req.(*GetInboxesByAccountIDRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Activity_DeleteInboxByInboxesID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteInboxByInboxesIDRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ActivityServer).DeleteInboxByInboxesID(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/hvxahv.v1alpha1.proto.Activity/DeleteInboxByInboxesID",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ActivityServer).DeleteInboxByInboxesID(ctx, req.(*DeleteInboxByInboxesIDRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -220,16 +252,20 @@ var Activity_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*ActivityServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "CreateInbox",
-			Handler:    _Activity_CreateInbox_Handler,
+			MethodName: "Inbox",
+			Handler:    _Activity_Inbox_Handler,
 		},
 		{
 			MethodName: "GetInboxByActivityID",
 			Handler:    _Activity_GetInboxByActivityID_Handler,
 		},
 		{
-			MethodName: "GetInboxesByActivityID",
-			Handler:    _Activity_GetInboxesByActivityID_Handler,
+			MethodName: "GetInboxesByAccountID",
+			Handler:    _Activity_GetInboxesByAccountID_Handler,
+		},
+		{
+			MethodName: "DeleteInboxByInboxesID",
+			Handler:    _Activity_DeleteInboxByInboxesID_Handler,
 		},
 		{
 			MethodName: "CreateOutbox",
