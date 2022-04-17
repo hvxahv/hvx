@@ -2,8 +2,8 @@ package account
 
 import (
 	"github.com/google/uuid"
-	pb "github.com/hvxahv/hvxahv/api/account/v1alpha1"
-	"github.com/hvxahv/hvxahv/api/device/v1alpha1"
+	pb "github.com/hvxahv/hvxahv/api/v1alpha1/proto/account/v1alpha1"
+	"github.com/hvxahv/hvxahv/api/v1alpha1/proto/device/v1alpha1"
 	"github.com/hvxahv/hvxahv/internal/device"
 	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"github.com/hvxahv/hvxahv/pkg/identity"

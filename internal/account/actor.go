@@ -7,7 +7,7 @@ import (
 	"strconv"
 
 	"github.com/go-resty/resty/v2"
-	pb "github.com/hvxahv/hvxahv/api/account/v1alpha1"
+	pb "github.com/hvxahv/hvxahv/api/v1alpha1/proto/account/v1alpha1"
 	"github.com/hvxahv/hvxahv/pkg/activitypub"
 	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"github.com/spf13/viper"

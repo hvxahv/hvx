@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+package hvxahv.v1alpha1.proto;
+
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+
+option go_package = "github.com/hvxahv/hvxahv/api/proto/public/v1alpha1";
+
+service PublicService {
+  rpc GetPublicInstance(google.protobuf.Empty) returns (GetPublicInstanceResponse) {
+    option (google.api.http) = {
+      get: "/instances"
+    };
+  }
+
+  rpc GetPublicAccountCount(google.protobuf.Empty) returns (GetPublicAccountCountResponse) {
+    option (google.api.http) = {
+      get: "/accounts/count"
+    };
+  }
+
+  rpc GetWebfinger(GetWebfingerRequest) returns (GetWebfingerResponse) {
+    option (google.api.http) = {
+      get: "/.well-known/webfinger"
+    };
+  }
+
+}
+
+message GetPublicInstanceResponse {
+  string code = 1;
+  string version = 2;
+  string build = 3;
+  string maintainer = 4;
+  string repo = 5;
+  string host = 6;
+}
+
+message GetPublicAccountCountResponse {
+  string code = 1;
+  string accountCount = 2;
+}
+
+message GetWebfingerRequest {
+  string resource = 1;
+}
+
+message GetWebfingerResponse {
+  message PublicKey {
+    string id = 1;
+    string owner = 2;
+    string publicKeyPem = 3;
+  }
+
+  repeated string context = 1;
+  string id = 2;
+  string type = 3;
+  PublicKey publicKey = 4;
+}
