@@ -10,6 +10,7 @@ require (
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/uuid v1.1.2
+	github.com/grpc-ecosystem/grpc-gateway/v2 v2.10.0
 	github.com/hashicorp/consul/api v1.12.0
 	github.com/lib/pq v1.10.4
 	github.com/matrix-org/gomatrix v0.0.0-20210324163249-be2af5ef2e16
@@ -18,9 +19,10 @@ require (
 	github.com/spf13/cobra v1.4.0
 	github.com/spf13/viper v1.10.1
 	golang.org/x/crypto v0.0.0-20211108221036-ceb1ce70b4fa
-	golang.org/x/net v0.0.0-20211029224645-99673261e6eb
-	google.golang.org/grpc v1.43.0
-	google.golang.org/protobuf v1.27.1
+	golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd
+	google.golang.org/grpc v1.45.0
+	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.2.0
+	google.golang.org/protobuf v1.28.0
 	gorm.io/driver/postgres v1.2.3
 	gorm.io/gorm v1.22.5
 )
@@ -34,6 +36,7 @@ require (
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect
+	github.com/golang/glog v1.0.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/hashicorp/go-hclog v1.0.0 // indirect
@@ -70,7 +73,8 @@ require (
 	github.com/ugorji/go/codec v1.1.7 // indirect
 	golang.org/x/sys v0.0.0-20220227234510-4e6760a101f9 // indirect
 	golang.org/x/text v0.3.7 // indirect
-	google.golang.org/genproto v0.0.0-20211208223120-3a66f561d7aa // indirect
+	google.golang.org/genproto v0.0.0-20220414192740-2d67ff6cf2b4 // indirect
 	gopkg.in/ini.v1 v1.66.4 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
+	sigs.k8s.io/yaml v1.3.0 // indirect
 )

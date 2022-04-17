@@ -9,7 +9,7 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/hvxahv/hvxahv/api/hvx"
+	"github.com/hvxahv/hvxahv/api/proto/hvx"
 	"github.com/hvxahv/hvxahv/pkg/microservices"
 	"github.com/hvxahv/hvxahv/pkg/microservices/consul"
 	"github.com/spf13/cobra"

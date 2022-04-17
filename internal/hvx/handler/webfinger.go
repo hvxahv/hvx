@@ -10,7 +10,7 @@ package handler
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	pb "github.com/hvxahv/hvxahv/api/account/v1alpha1"
+	pb "github.com/hvxahv/hvxahv/api/v1alpha1/proto/account/v1alpha1"
 	"github.com/hvxahv/hvxahv/internal/account"
 	"github.com/hvxahv/hvxahv/pkg/activitypub"
 )
