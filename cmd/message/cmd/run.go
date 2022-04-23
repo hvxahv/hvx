@@ -22,8 +22,8 @@ import (
 	"syscall"
 
 	"github.com/hvxahv/hvxahv/internal/message"
-	"github.com/hvxahv/hvxahv/pkg/microservices"
-	"github.com/hvxahv/hvxahv/pkg/microservices/consul"
+	"github.com/hvxahv/hvxahv/pkg/x"
+	"github.com/hvxahv/hvxahv/pkg/x/consul"
 
 	"github.com/spf13/cobra"
 )
@@ -36,7 +36,7 @@ var runCmd = &cobra.Command{
 	Short: "Run message microservice",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		port := microservices.NewService(serviceName).GetPort()
+		port := x.NewService(serviceName).GetPort()
 
 		tags := []string{serviceName, "gRPC"}
 		nr := consul.NewRegister(serviceName, port, tags, "localhost")

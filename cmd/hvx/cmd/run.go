@@ -10,8 +10,8 @@ package cmd
 import (
 	"fmt"
 	"github.com/hvxahv/hvxahv/api/proto/hvx"
-	"github.com/hvxahv/hvxahv/pkg/microservices"
-	"github.com/hvxahv/hvxahv/pkg/microservices/consul"
+	"github.com/hvxahv/hvxahv/pkg/x"
+	"github.com/hvxahv/hvxahv/pkg/x/consul"
 	"github.com/spf13/cobra"
 	"log"
 	"os"
@@ -25,7 +25,7 @@ var runCmd = &cobra.Command{
 	Short: "",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		p := microservices.NewService("hvx").GetPort()
+		p := x.NewService("hvx").GetPort()
 
 		tags := []string{"hvx", "http", "RESTFul"}
 		nr := consul.NewRegister("hvx", p, tags, "localhost")

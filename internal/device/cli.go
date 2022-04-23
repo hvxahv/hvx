@@ -9,12 +9,12 @@ package device
 
 import (
 	"github.com/hvxahv/hvxahv/api/device/v1alpha1"
-	"github.com/hvxahv/hvxahv/pkg/microservices"
+	"github.com/hvxahv/hvxahv/pkg/x"
 	"google.golang.org/grpc"
 )
 
 func GetDeviceClient() (v1alpha1.DevicesClient, error) {
-	conn, err := grpc.Dial(microservices.NewService("device").GetAddress(), grpc.WithInsecure())
+	conn, err := grpc.Dial(x.NewService("device").GetAddress(), grpc.WithInsecure())
 	if err != nil {
 		return nil, err
 	}
