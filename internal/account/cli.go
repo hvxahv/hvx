@@ -2,12 +2,12 @@ package account
 
 import (
 	pb "github.com/hvxahv/hvxahv/api/account/v1alpha1"
-	"github.com/hvxahv/hvxahv/pkg/microservices"
+	"github.com/hvxahv/hvxahv/pkg/x"
 	"google.golang.org/grpc"
 )
 
 func NewAccountClient() (pb.AccountsClient, error) {
-	conn, err := grpc.Dial(microservices.NewService("account").GetAddress(), grpc.WithInsecure())
+	conn, err := grpc.Dial(x.NewService("account").GetAddress(), grpc.WithInsecure())
 	if err != nil {
 		return nil, err
 	}
@@ -15,7 +15,7 @@ func NewAccountClient() (pb.AccountsClient, error) {
 }
 
 func NewAuthClient() (pb.AuthClient, error) {
-	conn, err := grpc.Dial(microservices.NewService("account").GetAddress(), grpc.WithInsecure())
+	conn, err := grpc.Dial(x.NewService("account").GetAddress(), grpc.WithInsecure())
 	if err != nil {
 		return nil, err
 	}
@@ -23,7 +23,7 @@ func NewAuthClient() (pb.AuthClient, error) {
 }
 
 func GetActorClient() (pb.ActorClient, error) {
-	conn, err := grpc.Dial(microservices.NewService("account").GetAddress(), grpc.WithInsecure())
+	conn, err := grpc.Dial(x.NewService("account").GetAddress(), grpc.WithInsecure())
 	if err != nil {
 		return nil, err
 	}

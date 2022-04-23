@@ -2,12 +2,7 @@ package activity
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
-	actor "github.com/hvxahv/hvxahv/api/v1alpha1/proto/account/v1alpha1"
 	pb "github.com/hvxahv/hvxahv/api/v1alpha1/proto/activity/v1alpha1"
-	"github.com/hvxahv/hvxahv/internal/account"
-	"github.com/hvxahv/hvxahv/pkg/activitypub"
 	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"gorm.io/gorm"
 	"strconv"
@@ -74,91 +69,91 @@ func (i *Inboxes) DeleteByActivityID() error {
 }
 
 func (a *activity) Inbox(ctx context.Context, in *pb.InboxRequest) (*pb.InboxResponse, error) {
-	ibx := NewActivityInbox(in.GetName(), in.GetData())
-	client, err := account.GetActorClient()
-	if err != nil {
-		return nil, err
-	}
-	act, err := client.GetActorByAccountUsername(ctx, &actor.GetActorByAccountUsernameRequest{
-		Username: ibx.CurrentUsername,
-	})
-	if err != nil {
-		return nil, err
-	}
-	address, err := client.GetActorByAddress(ctx, &actor.GetActorByAddressRequest{
-		Address: ibx.ActivityActor,
-	})
-	if err != nil {
-		return nil, err
-	}
+	//ibx := NewActivityInbox(in.GetName(), in.GetData())
+	//client, err := account.GetActorClient()
+	//if err != nil {
+	//	return nil, err
+	//}
+	//act, err := client.GetActorByAccountUsername(ctx, &actor.GetActorByAccountUsernameRequest{
+	//	Username: ibx.CurrentUsername,
+	//})
+	//if err != nil {
+	//	return nil, err
+	//}
+	//address, err := client.GetActorByAddress(ctx, &actor.GetActorByAddressRequest{
+	//	Address: ibx.ActivityActor,
+	//})
+	//if err != nil {
+	//	return nil, err
+	//}
+	//
+	//aid, err := strconv.Atoi(act.Id)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//addressID, err := strconv.Atoi(address.Id)
+	//if err != nil {
+	//	return nil, err
+	//}
 
-	aid, err := strconv.Atoi(act.Id)
-	if err != nil {
-		return nil, err
-	}
-	addressID, err := strconv.Atoi(address.Id)
-	if err != nil {
-		return nil, err
-	}
-
-	switch ibx.ActivityType {
-	case "Follow":
-		fmt.Println("Follow")
-		if err := NewInboxes(uint(aid), ibx.ActivityId, uint(addressID), ibx.ActivityType, ibx.ActivityData).Create(); err != nil {
-			return nil, err
-		}
-	case "Undo":
-		undo := activitypub.Undo{}
-		if err := json.Unmarshal(in.Data, &undo); err != nil {
-			fmt.Println(err)
-		}
-		fmt.Println("Undo")
-		if err := NewActivityID(undo.Object.Object).DeleteByActivityID(); err != nil {
-			return nil, err
-		}
-	case "Accept":
-		accept := activitypub.Accept{}
-		if err := json.Unmarshal(in.Data, &accept); err != nil {
-			return nil, err
-		}
-		fmt.Println(accept)
-		fmt.Println("Accept")
-	case "Reject":
-		reject := activitypub.Reject{}
-		if err := json.Unmarshal(in.Data, &reject); err != nil {
-			fmt.Println(err)
-		}
-		fmt.Println("Reject")
-	case "Create":
-		fmt.Println("Create")
-	case "Announce":
-		fmt.Println("Announce")
-	case "Like":
-		fmt.Println("Like")
-	case "Dislike":
-		fmt.Println("Dislike")
-	case "Delete":
-		fmt.Println("Delete")
-	case "Update":
-		fmt.Println("Update")
-	case "Add":
-		fmt.Println("Add")
-	case "Remove":
-		fmt.Println("Remove")
-	case "Move":
-		fmt.Println("Move")
-	case "Block":
-		fmt.Println("Block")
-	case "Unblock":
-		fmt.Println("Unblock")
-	case "Flag":
-		fmt.Println("Flag")
-	case "Unflag":
-		fmt.Println("Unflag")
-	default:
-		fmt.Println("default")
-	}
-
+	//switch ibx.ActivityType {
+	//case "Follow":
+	//	fmt.Println("Follow")
+	//	if err := NewInboxes(uint(aid), ibx.ActivityId, uint(addressID), ibx.ActivityType, ibx.ActivityData).Create(); err != nil {
+	//		return nil, err
+	//	}
+	//case "Undo":
+	//	undo := activitypub.Undo{}
+	//	if err := json.Unmarshal(in.Data, &undo); err != nil {
+	//		fmt.Println(err)
+	//	}
+	//	fmt.Println("Undo")
+	//	if err := NewActivityID(undo.Object.Object).DeleteByActivityID(); err != nil {
+	//		return nil, err
+	//	}
+	//case "Accept":
+	//	accept := activitypub.Accept{}
+	//	if err := json.Unmarshal(in.Data, &accept); err != nil {
+	//		return nil, err
+	//	}
+	//	fmt.Println(accept)
+	//	fmt.Println("Accept")
+	//case "Reject":
+	//	reject := activitypub.Reject{}
+	//	if err := json.Unmarshal(in.Data, &reject); err != nil {
+	//		fmt.Println(err)
+	//	}
+	//	fmt.Println("Reject")
+	//case "Create":
+	//	fmt.Println("Create")
+	//case "Announce":
+	//	fmt.Println("Announce")
+	//case "Like":
+	//	fmt.Println("Like")
+	//case "Dislike":
+	//	fmt.Println("Dislike")
+	//case "Delete":
+	//	fmt.Println("Delete")
+	//case "Update":
+	//	fmt.Println("Update")
+	//case "Add":
+	//	fmt.Println("Add")
+	//case "Remove":
+	//	fmt.Println("Remove")
+	//case "Move":
+	//	fmt.Println("Move")
+	//case "Block":
+	//	fmt.Println("Block")
+	//case "Unblock":
+	//	fmt.Println("Unblock")
+	//case "Flag":
+	//	fmt.Println("Flag")
+	//case "Unflag":
+	//	fmt.Println("Unflag")
+	//default:
+	//	fmt.Println("default")
+	//}
+	//
 	return &pb.InboxResponse{
 		Code:     "200",
 		Response: "ok",

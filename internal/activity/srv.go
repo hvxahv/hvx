@@ -3,7 +3,7 @@ package activity
 import (
 	"fmt"
 	pb "github.com/hvxahv/hvxahv/api/activity/v1alpha1"
-	"github.com/hvxahv/hvxahv/pkg/microservices"
+	"github.com/hvxahv/hvxahv/pkg/x"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"log"
@@ -29,7 +29,7 @@ func Run() error {
 
 	reflection.Register(s)
 
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", microservices.NewService(serviceName).GetPort()))
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", x.NewService(serviceName).GetPort()))
 	if err != nil {
 		return err
 	}

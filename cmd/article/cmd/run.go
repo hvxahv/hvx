@@ -7,8 +7,8 @@ package cmd
 import (
 	"fmt"
 	"github.com/hvxahv/hvxahv/internal/article"
-	"github.com/hvxahv/hvxahv/pkg/microservices"
-	"github.com/hvxahv/hvxahv/pkg/microservices/consul"
+	"github.com/hvxahv/hvxahv/pkg/x"
+	"github.com/hvxahv/hvxahv/pkg/x/consul"
 	"os"
 	"os/signal"
 	"syscall"
@@ -25,7 +25,7 @@ var runCmd = &cobra.Command{
 	Short:   "",
 	Long:    ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		port := microservices.NewService(serviceName).GetPort()
+		port := x.NewService(serviceName).GetPort()
 
 		tags := []string{serviceName, "gRPC"}
 		nr := consul.NewRegister(serviceName, port, tags, "localhost")

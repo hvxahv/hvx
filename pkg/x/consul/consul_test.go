@@ -31,7 +31,7 @@ func init() {
 }
 
 func TestRegister_Register(t *testing.T) {
-	p := viper.GetString("microservices.hvx.port")
+	p := viper.GetString("x.hvx.port")
 
 	tags := []string{"hvx", "http", "RESTFul"}
 	nr := NewRegister("hvx", p, tags, "localhost")

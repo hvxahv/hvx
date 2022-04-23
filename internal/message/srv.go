@@ -7,7 +7,7 @@ import (
 	"time"
 
 	pb "github.com/hvxahv/hvxahv/api/message/v1alpha1"
-	"github.com/hvxahv/hvxahv/pkg/microservices"
+	"github.com/hvxahv/hvxahv/pkg/x"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
@@ -28,7 +28,7 @@ func Run() error {
 	pb.RegisterMessagesServer(s, &message{})
 	reflection.Register(s)
 
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", microservices.NewService(serviceName).GetPort()))
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", x.NewService(serviceName).GetPort()))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}

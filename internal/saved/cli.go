@@ -26,12 +26,12 @@ package saved
 
 import (
 	pb "github.com/hvxahv/hvxahv/api/saved/v1alpha1"
-	"github.com/hvxahv/hvxahv/pkg/microservices"
+	"github.com/hvxahv/hvxahv/pkg/x"
 	"google.golang.org/grpc"
 )
 
 func GetSavedClient() (pb.SavedClient, error) {
-	conn, err := grpc.Dial(microservices.NewService("saved").GetAddress(), grpc.WithInsecure())
+	conn, err := grpc.Dial(x.NewService("saved").GetAddress(), grpc.WithInsecure())
 	if err != nil {
 		return nil, err
 	}

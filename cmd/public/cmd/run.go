@@ -14,7 +14,7 @@ import (
 // runCmd represents the run command
 var runCmd = &cobra.Command{
 	Use:   "run",
-	Short: "A brief description of your command",
+	Short: "",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		if err := public.Run(); err != nil {
