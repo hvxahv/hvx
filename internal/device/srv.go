@@ -9,7 +9,7 @@ package device
 
 import (
 	"fmt"
-	pb "github.com/hvxahv/hvxahv/api/device/v1alpha1"
+	pb "github.com/hvxahv/hvxahv/api/device/v1alpha"
 	"github.com/hvxahv/hvxahv/pkg/x"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"

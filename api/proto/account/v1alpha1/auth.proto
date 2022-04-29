@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package hvxahv.v1alpha1.proto;
-option go_package = "github.com/hvxahv/hvxahv/api/account/v1alpha1";
+option go_package = "github.com/hvxahv/hvx/api/account/v1alpha";
 
 service Auth {
   // Verify Authentication Sign in with a valid user.

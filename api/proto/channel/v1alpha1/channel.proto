@@ -1,10 +1,10 @@
 syntax = "proto3";
 
 package hvxahv.v1alpha1.proto;
-option go_package = "github.com/hvxahv/hvxahv/api/channel/v1alpha1";
+option go_package = "github.com/hvxahv/hvx/api/channel/v1alpha";
 
 
-service ChannelService {
+service Channel {
   rpc CreateChannel(CreateChannelRequest) returns (CreateChannelResponse) {}
   rpc GetChannelsByAccountID(GetChannelsByAccountIDRequest) returns (GetChannelsByAccountIDResponse) {}
   rpc DeleteChannel(DeleteChannelRequest) returns (DeleteChannelResponse) {}
@@ -24,13 +24,13 @@ message CreateChannelResponse {
 message GetChannelsByAccountIDRequest {
   string account_id = 1;
 }
-message Channel {
+message ChannelData {
     string id = 1;
     string channel_id = 2;
 }
 message GetChannelsByAccountIDResponse {
   string code = 1;
-  repeated Channel channels = 2;
+  repeated ChannelData channels = 2;
 }
 
 

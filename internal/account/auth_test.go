@@ -3,12 +3,12 @@ package account
 import (
 	"context"
 	"fmt"
-	"github.com/hvxahv/hvxahv/api/account/v1alpha1"
+	pb "github.com/hvxahv/hvx/api/grpc/proto/account/v1alpha1"
 	"testing"
 )
 
 func TestAccount_Verify(t *testing.T) {
-	d := &v1alpha1.VerifyRequest{
+	d := &pb.VerifyRequest{
 		Username: "hvxahv2",
 		Password: "hvxahv1234",
 		Ua:       "chrome",
@@ -23,7 +23,7 @@ func TestAccount_Verify(t *testing.T) {
 }
 
 func TestAccount_GetPublicKeyByAccountUsername(t *testing.T) {
-	d := &v1alpha1.GetPublicKeyByAccountUsernameRequest{
+	d := &pb.GetPublicKeyByAccountUsernameRequest{
 		Username: "hvxahv2",
 	}
 	s := account{}

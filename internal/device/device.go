@@ -10,7 +10,7 @@ package device
 import (
 	"fmt"
 	"github.com/SherClockHolmes/webpush-go"
-	pb "github.com/hvxahv/hvxahv/api/device/v1alpha1"
+	pb "github.com/hvxahv/hvxahv/api/device/v1alpha"
 	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"golang.org/x/net/context"
 	"gorm.io/gorm"
@@ -175,8 +175,7 @@ func (a *device) DeleteDeviceByID(ctx context.Context, in *pb.DeleteDeviceByIDRe
 		Where("id = ? AND account_id = ?", uint(id), uint(aid)).
 		Unscoped().
 		Delete(&Devices{}).
-		Error;
-		err != nil {
+		Error; err != nil {
 		return nil, err
 	}
 	return &pb.DeleteDeviceByIDResponse{Code: "200", Reply: "ok"}, nil

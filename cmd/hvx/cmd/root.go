@@ -29,7 +29,7 @@ var cfgFile string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "hvx",
+	Use:   "gateway",
 	Short: "",
 	Long:  ``,
 	// Uncomment the following line if your bare application
@@ -50,7 +50,7 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.hvx.yaml)")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.gateway.yaml)")
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
@@ -67,7 +67,7 @@ func initConfig() {
 		home, err := homedir.Dir()
 		cobra.CheckErr(err)
 
-		// Search config in home directory with name ".hvx" (without extension).
+		// Search config in home directory with name ".gateway" (without extension).
 		viper.AddConfigPath(home)
 		viper.SetConfigName(".hvxahv")
 	}

@@ -1,15 +1,15 @@
 syntax = "proto3";
 
 package hvxahv.v1alpha1.proto;
-option go_package = "github.com/hvxahv/hvxahv/api/channel/v1alpha1";
+option go_package = "github.com/hvxahv/hvx/api/channel/v1alpha";
 
-service BroadcastService {
+service Broadcast {
   rpc CreateBroadcast (CreateBroadcastRequest) returns (CreateBroadcastResponse) {}
   rpc GetAllBroadcasts (GetAllBroadcastsRequest) returns (GetAllBroadcastsResponse) {}
   rpc DeleteBroadcast (DeleteBroadcastRequest) returns (DeleteBroadcastResponse) {}
 }
 
-message Broadcast {
+message BroadcastData {
   string id = 1;
   string channel_id = 2;
   string admin_id = 3;
@@ -34,7 +34,7 @@ message GetAllBroadcastsRequest {
 
 message GetAllBroadcastsResponse {
   string code = 1;
-  repeated Broadcast broadcasts = 2;
+  repeated BroadcastData broadcasts = 2;
 }
 
 message DeleteBroadcastRequest {

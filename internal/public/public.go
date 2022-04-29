@@ -1,8 +1,8 @@
 package public
 
 import (
-	pb "github.com/hvxahv/hvxahv/api/v1alpha1/proto/public/v1alpha1"
-	"github.com/hvxahv/hvxahv/pkg/cockroach"
+	pb "github.com/hvxahv/hvx/api/grpc/proto/public/v1alpha1"
+	"github.com/hvxahv/hvx/pkg/cockroach"
 	"github.com/spf13/viper"
 	"golang.org/x/net/context"
 	"google.golang.org/protobuf/types/known/emptypb"

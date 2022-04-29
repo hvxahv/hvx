@@ -1,19 +1,16 @@
 package account
 
 import (
-	"github.com/google/uuid"
-	pb "github.com/hvxahv/hvxahv/api/v1alpha1/proto/account/v1alpha1"
-	"github.com/hvxahv/hvxahv/api/v1alpha1/proto/device/v1alpha1"
-	"github.com/hvxahv/hvxahv/internal/device"
-	"github.com/hvxahv/hvxahv/pkg/cockroach"
-	"github.com/hvxahv/hvxahv/pkg/identity"
+	pb "github.com/hvxahv/hvx/api/grpc/proto/account/v1alpha1"
+	"github.com/hvxahv/hvx/pkg/cockroach"
+	"github.com/hvxahv/hvx/pkg/identity"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
 	"golang.org/x/net/context"
 	"strconv"
 )
 
-func (a *account) Verify(ctx context.Context, in *pb.VerifyRequest) (*pb.VerifyResponse, error) {
+func (a *server) Verify(ctx context.Context, in *pb.VerifyRequest) (*pb.VerifyResponse, error) {
 	db := cockroach.GetDB()
 
 	v := NewAuthorization(in.Username, in.Password)
@@ -25,22 +22,12 @@ func (a *account) Verify(ctx context.Context, in *pb.VerifyRequest) (*pb.VerifyR
 		return nil, errors.Errorf("PASSWORD_VERIFICATION_FAILED")
 	}
 
-	client, err := device.GetDeviceClient()
-	if err != nil {
-		return nil, err
-	}
+	// TODO - Added to device management.
 
-	d, err := client.CreateDevice(ctx, &v1alpha1.CreateDeviceRequest{
-		AccountId: strconv.Itoa(int(v.ID)),
-		Ua:        in.Ua,
-		Hash:      uuid.New().String(),
-	})
-	if err != nil {
-		return nil, err
-	}
-
+	deviceID := ""
+	publicKey := ""
 	// Creating an authorization token.
-	k, err := identity.GenToken(strconv.Itoa(int(v.ID)), v.Mail, v.Username, d.DeviceId)
+	k, err := identity.GenToken(strconv.Itoa(int(v.ID)), v.Mail, v.Username, deviceID)
 	if err != nil {
 		return &pb.VerifyResponse{Code: "401", Reply: err.Error()}, err
 	}
@@ -51,12 +38,12 @@ func (a *account) Verify(ctx context.Context, in *pb.VerifyRequest) (*pb.VerifyR
 		Id:        strconv.Itoa(int(v.ID)),
 		Token:     k,
 		Mail:      v.Mail,
-		DeviceId:  d.DeviceId,
-		PublicKey: d.PublicKey,
+		DeviceId:  deviceID,
+		PublicKey: publicKey,
 	}, nil
 }
 
-func (a *account) GetPublicKeyByAccountUsername(ctx context.Context, in *pb.GetPublicKeyByAccountUsernameRequest) (*pb.GetPublicKeyByAccountUsernameResponse, error) {
+func (a *server) GetPublicKeyByAccountUsername(ctx context.Context, in *pb.GetPublicKeyByAccountUsernameRequest) (*pb.GetPublicKeyByAccountUsernameResponse, error) {
 	db := cockroach.GetDB()
 
 	if err := db.Debug().Table("accounts").Where("username = ?", in.Username).First(&a.Accounts).Error; err != nil {

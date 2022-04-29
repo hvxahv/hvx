@@ -2,8 +2,8 @@ package account
 
 import (
 	"fmt"
-	"github.com/hvxahv/hvxahv/api/account/v1alpha1"
-	"github.com/hvxahv/hvxahv/pkg/cockroach"
+	pb "github.com/hvxahv/hvx/api/grpc/proto/account/v1alpha1"
+	"github.com/hvxahv/hvx/pkg/cockroach"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -44,7 +44,7 @@ func init() {
 
 func TestAccount_IsExist(t *testing.T) {
 	// Output: false if Exist in database.
-	d := &v1alpha1.IsExistRequest{
+	d := &pb.IsExistRequest{
 		Username: "hvturingga",
 	}
 	s := &account{}
@@ -56,7 +56,7 @@ func TestAccount_IsExist(t *testing.T) {
 	fmt.Println(a.IsExist)
 
 	// Output: true if not found in database.
-	d2 := &v1alpha1.IsExistRequest{
+	d2 := &pb.IsExistRequest{
 		Username: "isNotExist",
 	}
 	s2 := &account{}
@@ -69,7 +69,7 @@ func TestAccount_IsExist(t *testing.T) {
 }
 
 func TestAccount_Create(t *testing.T) {
-	d := &v1alpha1.CreateRequest{
+	d := &pb.CreateRequest{
 		Username:  "hvxahv",
 		Mail:      "hvxahv@halfmemories.com",
 		Password:  "hvxahv123",
@@ -85,7 +85,7 @@ func TestAccount_Create(t *testing.T) {
 }
 
 func TestAccount_GetAccountByUsername(t *testing.T) {
-	d := &v1alpha1.GetAccountByUsernameRequest{
+	d := &pb.GetAccountByUsernameRequest{
 		Username: "hvturingga",
 	}
 	s := &account{}
@@ -98,7 +98,7 @@ func TestAccount_GetAccountByUsername(t *testing.T) {
 }
 
 func TestAccount_Delete(t *testing.T) {
-	d := &v1alpha1.DeleteAccountRequest{
+	d := &pb.DeleteAccountRequest{
 		Username: "hvxahv2",
 		Password: "hvxahv123",
 	}
@@ -112,7 +112,7 @@ func TestAccount_Delete(t *testing.T) {
 }
 
 func TestAccount_EditUsername(t *testing.T) {
-	d := &v1alpha1.EditUsernameRequest{
+	d := &pb.EditUsernameRequest{
 		Id:       "737973421798785025",
 		Username: "hvxahv2",
 	}
@@ -126,7 +126,7 @@ func TestAccount_EditUsername(t *testing.T) {
 }
 
 func TestAccount_EditPassword(t *testing.T) {
-	d := &v1alpha1.EditPasswordRequest{
+	d := &pb.EditPasswordRequest{
 		Username: "hvxahv2",
 		Password: "hvxahv123",
 		New:      "hvxahv1234",
@@ -141,7 +141,7 @@ func TestAccount_EditPassword(t *testing.T) {
 }
 
 func TestAccount_EditEmail(t *testing.T) {
-	d := &v1alpha1.EditEmailRequest{
+	d := &pb.EditEmailRequest{
 		Id:   "737973421798785025",
 		Mail: "hvxahv2@halfmemories.com",
 	}
