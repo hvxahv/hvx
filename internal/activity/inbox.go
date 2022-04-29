@@ -2,7 +2,7 @@ package activity
 
 import (
 	"context"
-	pb "github.com/hvxahv/hvxahv/api/v1alpha1/proto/activity/v1alpha1"
+	pb "github.com/hvxahv/hvxahv/api/v1alpha/proto/activity/v1alpha"
 	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"gorm.io/gorm"
 	"strconv"

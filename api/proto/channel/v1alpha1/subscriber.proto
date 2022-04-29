@@ -1,9 +1,9 @@
 syntax = "proto3";
 
 package hvxahv.v1alpha1.proto;
-option go_package = "github.com/hvxahv/hvxahv/api/channel/v1alpha1";
+option go_package = "github.com/hvxahv/hvx/api/channel/v1alpha";
 
-service SubscriberService {
+service Subscriber {
   rpc AddSubscriber(AddSubscriberRequest) returns (AddSubscriberResponse) {}
   rpc Unsubscribe(UnsubscribeRequest) returns (UnsubscribeResponse) {}
 

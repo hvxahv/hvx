@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	pb "github.com/hvxahv/hvxahv/api/channel/v1alpha1"
+	pb "github.com/hvxahv/hvxahv/api/channel/v1alpha"
 	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
@@ -46,7 +46,7 @@ func init() {
 func TestChannel_CreateChannel(t *testing.T) {
 	s := &channel{}
 	createChannel, err := s.CreateChannel(context.Background(), &pb.CreateChannelRequest{
-		PreferredUsername: "hvx",
+		PreferredUsername: "gateway",
 		AccountId:         "746931987134185473",
 	})
 	if err != nil {

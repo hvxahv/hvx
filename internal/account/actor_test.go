@@ -3,14 +3,13 @@ package account
 import (
 	"context"
 	"fmt"
+	pb "github.com/hvxahv/hvx/api/grpc/proto/account/v1alpha1"
 	"testing"
-
-	"github.com/hvxahv/hvxahv/api/account/v1alpha1"
 )
 
 func TestAccount_CreateActor(t *testing.T) {
-	d := &v1alpha1.CreateActorRequest{
-		PreferredUsername: "hvx",
+	d := &pb.CreateActorRequest{
+		PreferredUsername: "gateway",
 		PublicKey:         "idi",
 		ActorType:         "Services",
 	}
@@ -28,7 +27,7 @@ func TestAccount_CreateActor(t *testing.T) {
 }
 
 func TestAccount_GetActorByAccountUsername(t *testing.T) {
-	d := &v1alpha1.GetActorByAccountUsernameRequest{
+	d := &pb.GetActorByAccountUsernameRequest{
 		Username: "hvxahv2",
 	}
 	s := account{}
@@ -41,7 +40,7 @@ func TestAccount_GetActorByAccountUsername(t *testing.T) {
 }
 
 func TestAccount_GetActorsByPreferredUsername(t *testing.T) {
-	d := &v1alpha1.GetActorsByPreferredUsernameRequest{
+	d := &pb.GetActorsByPreferredUsernameRequest{
 		PreferredUsername: "hvxahv2",
 	}
 	s := account{}
@@ -55,7 +54,7 @@ func TestAccount_GetActorsByPreferredUsername(t *testing.T) {
 
 func TestAccount_GetActorByAddress(t *testing.T) {
 	// Local
-	d := &v1alpha1.GetActorByAddressRequest{
+	d := &pb.GetActorByAddressRequest{
 		Address: "https://6ae9-240e-30d-2200-b600-2db1-88c6-2b4b-ab49.ngrok.io/u/hvturingga",
 	}
 	s := account{}
@@ -67,7 +66,7 @@ func TestAccount_GetActorByAddress(t *testing.T) {
 	fmt.Println(actor)
 
 	// Remote
-	d2 := &v1alpha1.GetActorByAddressRequest{
+	d2 := &pb.GetActorByAddressRequest{
 		Address: "https://mastodon.social/users/hvturingga",
 	}
 	s2 := account{}
@@ -80,7 +79,7 @@ func TestAccount_GetActorByAddress(t *testing.T) {
 }
 
 func TestAccount_EditActor(t *testing.T) {
-	d := &v1alpha1.EditActorRequest{
+	d := &pb.EditActorRequest{
 		AccountUsername: "hvxahv2",
 		Name:            "HVXAHV Test",
 		Avatar:          "https://avatars.githubusercontent.com/u/94792300?s=200&v=4",
@@ -97,7 +96,7 @@ func TestAccount_EditActor(t *testing.T) {
 
 func TestAccount_DeleteActorByChannelID(t *testing.T) {
 	s := account{}
-	r, err := s.DeleteActor(context.Background(), &v1alpha1.DeleteActorRequest{
+	r, err := s.DeleteActor(context.Background(), &pb.DeleteActorRequest{
 		AccountId: "746166817947975681",
 	})
 	if err != nil {

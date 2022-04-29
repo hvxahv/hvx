@@ -7,7 +7,7 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/hvxahv/hvxahv/internal/public"
+	"github.com/hvxahv/hvx/internal/public"
 	"github.com/spf13/cobra"
 )
 

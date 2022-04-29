@@ -3,15 +3,11 @@ package account
 import (
 	"context"
 	"fmt"
+	pb "github.com/hvxahv/hvx/api/grpc/proto/account/v1alpha1"
+	"github.com/hvxahv/hvx/pkg/cockroach"
 	"strconv"
 
 	"github.com/go-playground/validator/v10"
-	pb "github.com/hvxahv/hvxahv/api/account/v1alpha1"
-	"github.com/hvxahv/hvxahv/api/device/v1alpha1"
-	saves "github.com/hvxahv/hvxahv/api/saved/v1alpha1"
-	"github.com/hvxahv/hvxahv/internal/device"
-	"github.com/hvxahv/hvxahv/internal/saved"
-	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	"golang.org/x/crypto/bcrypt"
@@ -47,7 +43,7 @@ type Accounts struct {
 	IsPrivate bool `gorm:"type:boolean;is_private"`
 }
 
-func (a *account) IsExist(ctx context.Context, in *pb.IsExistRequest) (*pb.IsExistResponse, error) {
+func (a *server) IsExist(ctx context.Context, in *pb.IsExistRequest) (*pb.IsExistResponse, error) {
 	db := cockroach.GetDB()
 
 	if err := db.Debug().Table("accounts").Where("username = ? ", in.Username).First(&Accounts{}); err != nil {
@@ -57,7 +53,7 @@ func (a *account) IsExist(ctx context.Context, in *pb.IsExistRequest) (*pb.IsExi
 	return &pb.IsExistResponse{IsExist: false}, nil
 }
 
-func (a *account) Create(ctx context.Context, in *pb.CreateRequest) (*pb.CreateResponse, error) {
+func (a *server) Create(ctx context.Context, in *pb.CreateRequest) (*pb.CreateResponse, error) {
 	if err := validator.New().Struct(in); err != nil {
 		return nil, errors.New("FAILED_TO_VALIDATOR")
 	}
@@ -95,7 +91,7 @@ func (a *account) Create(ctx context.Context, in *pb.CreateRequest) (*pb.CreateR
 	return &pb.CreateResponse{Code: "200", Reply: "ok"}, nil
 }
 
-func (a *account) GetAccountByUsername(ctx context.Context, in *pb.GetAccountByUsernameRequest) (*pb.GetAccountByUsernameResponse, error) {
+func (a *server) GetAccountByUsername(ctx context.Context, in *pb.GetAccountByUsernameRequest) (*pb.GetAccountByUsernameResponse, error) {
 	db := cockroach.GetDB()
 
 	if err := db.Debug().Table("accounts").Where("username = ?", in.Username).First(&a.Accounts).Error; err != nil {
@@ -112,7 +108,7 @@ func (a *account) GetAccountByUsername(ctx context.Context, in *pb.GetAccountByU
 	}, nil
 }
 
-func (a *account) DeleteAccount(ctx context.Context, in *pb.DeleteAccountRequest) (*pb.DeleteAccountResponse, error) {
+func (a *server) DeleteAccount(ctx context.Context, in *pb.DeleteAccountRequest) (*pb.DeleteAccountResponse, error) {
 	v := NewAuthorization(in.Username, in.Password)
 
 	db := cockroach.GetDB()
@@ -132,24 +128,11 @@ func (a *account) DeleteAccount(ctx context.Context, in *pb.DeleteAccountRequest
 		return nil, err
 	}
 
-	d, err := deleteAllDevicesByAccountID(ctx, v.ID)
-	if err != nil {
-		return nil, err
-	}
-
-	if d.Reply != "ok" {
-		return nil, errors.Errorf("FAILED_TO_DELETE_DEVICES")
-	}
-
-	s, err := deleteAllSavesByAccountID(ctx, v.ID)
-	if err != nil {
-		return nil, err
-	}
-
-	return &pb.DeleteAccountResponse{Code: "200", Reply: s.Reply}, nil
+	// TODO - Delete Account related data.
+	return &pb.DeleteAccountResponse{Code: "200", Reply: "ok"}, nil
 }
 
-func (a *account) EditUsername(ctx context.Context, in *pb.EditUsernameRequest) (*pb.EditUsernameResponse, error) {
+func (a *server) EditUsername(ctx context.Context, in *pb.EditUsernameRequest) (*pb.EditUsernameResponse, error) {
 	id, err := strconv.Atoi(in.Id)
 	if err != nil {
 		return nil, err
@@ -183,7 +166,7 @@ func (a *account) EditUsername(ctx context.Context, in *pb.EditUsernameRequest) 
 	return &pb.EditUsernameResponse{Code: "200", Reply: "ok"}, nil
 }
 
-func (a *account) EditPassword(ctx context.Context, in *pb.EditPasswordRequest) (*pb.EditPasswordResponse, error) {
+func (a *server) EditPassword(ctx context.Context, in *pb.EditPasswordRequest) (*pb.EditPasswordResponse, error) {
 	v := NewAuthorization(in.Username, in.Password)
 
 	db := cockroach.GetDB()
@@ -200,14 +183,11 @@ func (a *account) EditPassword(ctx context.Context, in *pb.EditPasswordRequest) 
 		return nil, err
 	}
 
-	d, err := deleteAllDevicesByAccountID(ctx, v.ID)
-	if err != nil {
-		return nil, err
-	}
-	return &pb.EditPasswordResponse{Code: "200", Reply: d.Reply}, nil
+	// TODO - Edit Account related data.
+	return &pb.EditPasswordResponse{Code: "200", Reply: "ok"}, nil
 }
 
-func (a *account) EditEmail(ctx context.Context, in *pb.EditEmailRequest) (*pb.EditEmailResponse, error) {
+func (a *server) EditEmail(ctx context.Context, in *pb.EditEmailRequest) (*pb.EditEmailResponse, error) {
 	id, err := strconv.Atoi(in.Id)
 	if err != nil {
 		return nil, err
@@ -233,33 +213,4 @@ func NewAccounts(actorID uint, username, mail, password string) *Accounts {
 		Password: string(hash),
 		ActorID:  actorID,
 	}
-}
-
-func deleteAllDevicesByAccountID(ctx context.Context, accountID uint) (*v1alpha1.DeleteDeviceAllByAccountIDResponse, error) {
-	client, err := device.GetDeviceClient()
-	if err != nil {
-		return nil, err
-	}
-	d := &v1alpha1.DeleteDeviceAllByAccountIDRequest{
-		AccountId: strconv.Itoa(int(accountID)),
-	}
-	da, err := client.DeleteDeviceAllByAccountID(ctx, d)
-	if err != nil {
-		return nil, err
-	}
-	return da, nil
-}
-
-func deleteAllSavesByAccountID(ctx context.Context, accountID uint) (*saves.DeleteAllSavesResponse, error) {
-	client, err := saved.GetSavedClient()
-	if err != nil {
-		return nil, err
-	}
-	da, err := client.DeleteAllSaves(ctx, &saves.DeleteAllSavesRequest{
-		AccountId: strconv.Itoa(int(accountID)),
-	})
-	if err != nil {
-		return nil, err
-	}
-	return da, nil
 }

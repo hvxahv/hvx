@@ -25,7 +25,7 @@
 package saved
 
 import (
-	pb "github.com/hvxahv/hvxahv/api/saved/v1alpha1"
+	pb "github.com/hvxahv/hvxahv/api/saved/v1alpha"
 	"github.com/hvxahv/hvxahv/pkg/x"
 	"google.golang.org/grpc"
 )

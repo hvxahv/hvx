@@ -1,9 +1,9 @@
 syntax = "proto3";
 
 package hvxahv.v1alpha1.proto;
-option go_package = "github.com/hvxahv/hvxahv/api/activity/v1alpha1";
+option go_package = "github.com/hvxahv/hvx/api/activity/v1alpha";
 
-service FollowServices {
+service Follow {
   rpc CreateFollow (CreateFollowRequest) returns (CreateFollowResponse) {}
   rpc GetFollowers (GetFollowersRequest) returns (GetFollowersResponse) {}
   rpc GetFollowing (GetFollowingRequest) returns (GetFollowingResponse) {}

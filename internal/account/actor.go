@@ -7,9 +7,9 @@ import (
 	"strconv"
 
 	"github.com/go-resty/resty/v2"
-	pb "github.com/hvxahv/hvxahv/api/v1alpha1/proto/account/v1alpha1"
-	"github.com/hvxahv/hvxahv/pkg/activitypub"
-	"github.com/hvxahv/hvxahv/pkg/cockroach"
+	pb "github.com/hvxahv/hvx/api/grpc/proto/account/v1alpha1"
+	"github.com/hvxahv/hvx/pkg/activitypub"
+	"github.com/hvxahv/hvx/pkg/cockroach"
 	"github.com/spf13/viper"
 	"golang.org/x/net/context"
 	"gorm.io/gorm"
@@ -80,7 +80,7 @@ func (a *Actors) SetActorSummary(summary string) *Actors {
 	return a
 }
 
-func (a *account) CreateActor(ctx context.Context, in *pb.CreateActorRequest) (*pb.CreateActorResponse, error) {
+func (a *server) CreateActor(ctx context.Context, in *pb.CreateActorRequest) (*pb.CreateActorResponse, error) {
 	db := cockroach.GetDB()
 
 	if err := db.Debug().
@@ -102,7 +102,7 @@ func (a *account) CreateActor(ctx context.Context, in *pb.CreateActorRequest) (*
 	return &pb.CreateActorResponse{Code: "200", ActorId: strconv.Itoa(int(actors.ID))}, nil
 }
 
-func (a *account) GetActorByAccountUsername(ctx context.Context, in *pb.GetActorByAccountUsernameRequest) (*pb.AccountDataResponse, error) {
+func (a *server) GetActorByAccountUsername(ctx context.Context, in *pb.GetActorByAccountUsernameRequest) (*pb.AccountDataResponse, error) {
 	db := cockroach.GetDB()
 
 	if err := db.Debug().Table("accounts").Where("username = ? ", in.Username).First(&a.Accounts).Error; err != nil {
@@ -127,7 +127,7 @@ func (a *account) GetActorByAccountUsername(ctx context.Context, in *pb.GetActor
 	}, nil
 }
 
-func (a *account) GetActorsByPreferredUsername(ctx context.Context, in *pb.GetActorsByPreferredUsernameRequest) (*pb.GetActorsByPreferredUsernameResponse, error) {
+func (a *server) GetActorsByPreferredUsername(ctx context.Context, in *pb.GetActorsByPreferredUsernameRequest) (*pb.GetActorsByPreferredUsernameResponse, error) {
 	db := cockroach.GetDB()
 
 	var actors []*pb.AccountDataResponse
@@ -138,7 +138,7 @@ func (a *account) GetActorsByPreferredUsername(ctx context.Context, in *pb.GetAc
 	return &pb.GetActorsByPreferredUsernameResponse{Code: "200", Actors: actors}, nil
 }
 
-func (a *account) GetActorByAddress(ctx context.Context, in *pb.GetActorByAddressRequest) (*pb.AccountDataResponse, error) {
+func (a *server) GetActorByAddress(ctx context.Context, in *pb.GetActorByAddressRequest) (*pb.AccountDataResponse, error) {
 	db := cockroach.GetDB()
 	actor := &Actors{}
 	if err := db.Debug().Table("actors").Where("address = ?", in.Address).First(&actor).Error; err != nil {
@@ -199,7 +199,7 @@ func (a *account) GetActorByAddress(ctx context.Context, in *pb.GetActorByAddres
 	}, nil
 }
 
-func (a *account) EditActor(ctx context.Context, in *pb.EditActorRequest) (*pb.EditActorResponse, error) {
+func (a *server) EditActor(ctx context.Context, in *pb.EditActorRequest) (*pb.EditActorResponse, error) {
 	db := cockroach.GetDB()
 
 	if err := db.Debug().Table("accounts").Where("username = ? ", in.AccountUsername).First(&a.Accounts).Error; err != nil {
@@ -223,7 +223,7 @@ func (a *account) EditActor(ctx context.Context, in *pb.EditActorRequest) (*pb.E
 	return &pb.EditActorResponse{Code: "200", Reply: "ok"}, nil
 }
 
-func (a *account) DeleteActor(ctx context.Context, in *pb.DeleteActorRequest) (*pb.DeleteActorResponse, error) {
+func (a *server) DeleteActor(ctx context.Context, in *pb.DeleteActorRequest) (*pb.DeleteActorResponse, error) {
 	db := cockroach.GetDB()
 	aid, err := strconv.Atoi(in.AccountId)
 	if err != nil {

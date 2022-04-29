@@ -1,17 +1,12 @@
 package account
 
 import (
-	"fmt"
-	pb "github.com/hvxahv/hvxahv/api/account/v1alpha1"
-	"github.com/hvxahv/hvxahv/pkg/x"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
-	"log"
-	"net"
-	"time"
+	"github.com/google/uuid"
+	pb "github.com/hvxahv/hvx/api/grpc/proto/account/v1alpha1"
+	"github.com/hvxahv/hvx/pkg/v"
 )
 
-type account struct {
+type server struct {
 	pb.AccountsServer
 	pb.ActorServer
 	pb.AuthServer
@@ -19,31 +14,26 @@ type account struct {
 	*Actors
 }
 
+const (
+	serviceName = "account"
+)
+
 // Run starts the server. It will block until the server is shutdown. If the server fails to start, it will return an error.
 func Run() error {
-	name := "account"
-	log.Printf("App %s Started at %s\n", name, time.Now())
 
-	// Create a new server instance.
-	s := grpc.NewServer()
+	s := v.New(
+		v.WithServiceName(serviceName),
+		v.WithServiceVersion("v1alpha"),
+		v.WithServiceID(uuid.New().String()),
+	).NewServer()
 
-	pb.RegisterAccountsServer(s, &account{})
-	pb.RegisterActorServer(s, &account{})
-	pb.RegisterAuthServer(s, &account{})
+	pb.RegisterAccountsServer(s, &server{})
+	pb.RegisterActorServer(s, &server{})
+	pb.RegisterAuthServer(s, &server{})
 
-	reflection.Register(s)
-
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", x.NewService("account").GetPort()))
-	if err != nil {
+	if err := s.Run(); err != nil {
 		return err
 	}
-
-	go func() {
-		if err := s.Serve(lis); err != nil {
-			fmt.Println(err)
-			return
-		}
-	}()
 
 	return nil
 }

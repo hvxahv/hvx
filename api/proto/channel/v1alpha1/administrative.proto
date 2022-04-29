@@ -1,9 +1,9 @@
 syntax = "proto3";
 
 package hvxahv.v1alpha1.proto;
-option go_package = "github.com/hvxahv/hvxahv/api/channel/v1alpha1";
+option go_package = "github.com/hvxahv/hvx/api/channel/v1alpha";
 
-service AdministrativeService {
+service Administrative {
   // IsChannelAdministrator It is the admin that returns true not false.
   rpc IsChannelAdministrator(IsChannelAdministratorRequest) returns (IsChannelAdministratorResponse) {}
   rpc AddAdministrator(AddAdministratorRequest) returns (AddAdministratorResponse) {}

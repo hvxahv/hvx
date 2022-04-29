@@ -6,7 +6,7 @@ import (
 
 	"github.com/pkg/errors"
 
-	pb "github.com/hvxahv/hvxahv/api/channel/v1alpha1"
+	pb "github.com/hvxahv/hvxahv/api/channel/v1alpha"
 	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"gorm.io/gorm"
 )

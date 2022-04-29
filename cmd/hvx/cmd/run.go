@@ -25,10 +25,10 @@ var runCmd = &cobra.Command{
 	Short: "",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		p := x.NewService("hvx").GetPort()
+		p := x.NewService("gateway").GetPort()
 
-		tags := []string{"hvx", "http", "RESTFul"}
-		nr := consul.NewRegister("hvx", p, tags, "localhost")
+		tags := []string{"gateway", "http", "RESTFul"}
+		nr := consul.NewRegister("gateway", p, tags, "localhost")
 		err := nr.Register()
 		if err != nil {
 			fmt.Println(err)
