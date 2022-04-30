@@ -8,8 +8,6 @@
 package device
 
 import (
-	"github.com/hvxahv/hvxahv/api/device/v1alpha1"
-	"github.com/hvxahv/hvxahv/pkg/x"
 	"google.golang.org/grpc"
 )
 

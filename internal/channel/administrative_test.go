@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/hvxahv/hvxahv/api/channel/v1alpha1"
 	"golang.org/x/net/context"
 )
 

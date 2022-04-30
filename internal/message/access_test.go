@@ -3,7 +3,7 @@ package message
 import (
 	"context"
 	"fmt"
-	"github.com/hvxahv/hvxahv/api/message/v1alpha1"
+	"github.com/hvxahv/hvx/api/message/v1alpha1"
 	"testing"
 )
 

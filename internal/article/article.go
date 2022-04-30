@@ -11,8 +11,8 @@ import (
 	"context"
 	"strconv"
 
-	pb "github.com/hvxahv/hvxahv/api/article/v1alpha"
-	"github.com/hvxahv/hvxahv/pkg/cockroach"
+	pb "github.com/hvxahv/hvx/api/article/v1alpha"
+	"github.com/hvxahv/hvx/pkg/cockroach"
 	"github.com/lib/pq"
 	"gorm.io/gorm"
 )

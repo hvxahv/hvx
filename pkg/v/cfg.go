@@ -44,15 +44,7 @@ func New(opts ...Option) *Cfg {
 	}
 }
 
-func GetServiceAddresses(name string) string {
-	return viper.GetString(fmt.Sprintf("microservices.%s.port", name))
-}
-
-func GetServiceEndpoint(name string) string {
-	h := viper.GetString(fmt.Sprintf("microservices.%s.host", name))
-	return fmt.Sprintf("%s:%s", h, GetServiceAddresses(name))
-}
-
-func GetRestEndpoint(name string) string {
-	return viper.GetString(fmt.Sprintf("microservices.%s.gw", name))
+func GetGRPCServiceAddress(name string) string {
+	return fmt.Sprintf("%s:%s", viper.GetString(fmt.Sprintf("microservices.%s.address", name)),
+		viper.GetString(fmt.Sprintf("microservices.%s.gp", name)))
 }

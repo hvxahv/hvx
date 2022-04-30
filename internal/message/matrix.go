@@ -1,7 +1,7 @@
 package message
 
 import (
-	"github.com/hvxahv/hvxahv/pkg/cockroach"
+	"github.com/hvxahv/hvx/pkg/cockroach"
 	"gorm.io/gorm"
 )
 

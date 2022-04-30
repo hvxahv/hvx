@@ -1,6 +1,6 @@
 module github.com/hvxahv/hvx
 
-go 1.17
+go 1.18
 
 require (
 	github.com/SherClockHolmes/webpush-go v1.2.0

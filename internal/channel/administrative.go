@@ -4,8 +4,7 @@ import (
 	"context"
 	"strconv"
 
-	pb "github.com/hvxahv/hvxahv/api/channel/v1alpha"
-	"github.com/hvxahv/hvxahv/pkg/cockroach"
+	"github.com/hvxahv/hvx/pkg/cockroach"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
 )

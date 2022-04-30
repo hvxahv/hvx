@@ -9,9 +9,6 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hvxahv/hvxahv/api/channel/v1alpha1"
-	"github.com/hvxahv/hvxahv/internal/channel"
-	"github.com/hvxahv/hvxahv/pkg/identity/middleware"
 )
 
 func AddAdminToChannelHandler(c *gin.Context) {

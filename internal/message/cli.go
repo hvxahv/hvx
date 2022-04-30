@@ -1,8 +1,6 @@
 package message
 
 import (
-	pb "github.com/hvxahv/hvxahv/api/message/v1alpha"
-	"github.com/hvxahv/hvxahv/pkg/x"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )

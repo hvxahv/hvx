@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package hvxahv.v1alpha1.proto;
-option go_package = "github.com/hvxahv/hvx/api/saved/v1alpha";
+option go_package = "github.com/hvxahv/gateway/api/saved/v1alpha";
 
 service Saved {
   // CreateSaved Save the hash of the uploaded file to the database,

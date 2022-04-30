@@ -10,8 +10,8 @@ package article
 import (
 	"context"
 	"fmt"
-	"github.com/hvxahv/hvxahv/api/article/v1alpha1"
-	"github.com/hvxahv/hvxahv/pkg/cockroach"
+	"github.com/hvxahv/hvx/api/article/v1alpha1"
+	"github.com/hvxahv/hvx/pkg/cockroach"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"

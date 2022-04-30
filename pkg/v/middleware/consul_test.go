@@ -1,8 +1,8 @@
-package discoverer
+package middleware
 
 import (
 	"fmt"
-	"github.com/hvxahv/hvxahv/pkg/cache"
+	"github.com/hvxahv/hvx/pkg/cache"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"

@@ -12,6 +12,6 @@ if [ "$version" == 0 ]; then
 fi
 
 binary_dir="../.release/binary/"
-pkg_dir="github.com/hvxahv/hvxahv/cmd/$1"
+pkg_dir="github.com/hvxahv/hvx/cmd/$1"
 
 go build -o $binary_dir -ldflags "-X '$pkg_dir/cmd.Version=$version' -X '$pkg_dir/cmd.GoVersion=$go_version'" ../cmd/"$1"

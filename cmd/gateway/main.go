@@ -15,7 +15,7 @@ limitations under the License.
 */
 package main
 
-import "github.com/hvxahv/hvxahv/cmd/hvx/cmd"
+import "github.com/hvxahv/hvx/cmd/gateway/cmd"
 
 func main() {
 	cmd.Execute()

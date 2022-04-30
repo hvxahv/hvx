@@ -10,8 +10,6 @@ package device
 import (
 	"fmt"
 	"github.com/SherClockHolmes/webpush-go"
-	pb "github.com/hvxahv/hvxahv/api/device/v1alpha"
-	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"golang.org/x/net/context"
 	"gorm.io/gorm"
 	"strconv"

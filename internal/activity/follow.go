@@ -3,7 +3,7 @@ package activity
 import (
 	"fmt"
 
-	"github.com/hvxahv/hvxahv/pkg/cockroach"
+	"github.com/hvxahv/hvx/pkg/cockroach"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
 )

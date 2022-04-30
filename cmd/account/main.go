@@ -15,7 +15,7 @@ limitations under the License.
 */
 package main
 
-import "github.com/hvxahv/hvxahv/cmd/account/cmd"
+import "github.com/hvxahv/hvx/cmd/account/cmd"
 
 func main() {
 	cmd.Execute()

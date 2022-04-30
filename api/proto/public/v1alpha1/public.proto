@@ -4,8 +4,10 @@ package hvxahv.v1alpha1.proto;
 
 import "google/protobuf/empty.proto";
 import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
+import "google/protobuf/any.proto";
 
-option go_package = "github.com/hvxahv/hvx/api/proto/public/v1alpha";
+option go_package = "github.com/hvxahv/gateway/api/proto/public/v1alpha";
 
 service Public {
   rpc GetPublicInstance(google.protobuf.Empty) returns (GetPublicInstanceResponse) {
@@ -26,6 +28,11 @@ service Public {
     };
   }
 
+  rpc GetActor(GetActorRequest) returns (GetActorResponse) {
+    option (google.api.http) = {
+      get: "/u/{actor}"
+    };
+  }
 }
 
 message GetPublicInstanceResponse {
@@ -47,14 +54,43 @@ message GetWebfingerRequest {
 }
 
 message GetWebfingerResponse {
+  message link {
+    string rel = 1;
+    string type = 2;
+    string href = 3;
+  }
+  string subject = 1;
+  repeated string aliases = 2;
+  repeated link links = 3;
+}
+
+message GetActorRequest {
+  string actor = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message GetActorResponse {
   message PublicKey {
     string id = 1;
     string owner = 2;
     string publicKeyPem = 3;
   }
 
-  repeated string context = 1;
+  message Icon {
+    string type = 1;
+    string url = 2;
+    string mediaType = 3;
+  }
+
+  repeated string context = 1 [json_name = "@context"];
   string id = 2;
   string type = 3;
-  PublicKey publicKey = 4;
+  string following = 4;
+  string followers = 5;
+  string inbox = 6;
+  string outbox = 7;
+  string preferredUsername = 8;
+  string name = 9;
+  string summary = 10;
+  string url = 11;
+  PublicKey publicKey = 12;
 }

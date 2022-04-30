@@ -17,7 +17,7 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/hvxahv/hvxahv/pkg/cockroach"
+	"github.com/hvxahv/hvx/pkg/cockroach"
 	"github.com/spf13/cobra"
 	"os"
 

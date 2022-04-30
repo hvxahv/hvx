@@ -22,6 +22,7 @@ type PublicClient interface {
 	GetPublicInstance(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetPublicInstanceResponse, error)
 	GetPublicAccountCount(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetPublicAccountCountResponse, error)
 	GetWebfinger(ctx context.Context, in *GetWebfingerRequest, opts ...grpc.CallOption) (*GetWebfingerResponse, error)
+	GetActor(ctx context.Context, in *GetActorRequest, opts ...grpc.CallOption) (*GetActorResponse, error)
 }
 
 type publicClient struct {
@@ -59,6 +60,15 @@ func (c *publicClient) GetWebfinger(ctx context.Context, in *GetWebfingerRequest
 	return out, nil
 }
 
+func (c *publicClient) GetActor(ctx context.Context, in *GetActorRequest, opts ...grpc.CallOption) (*GetActorResponse, error) {
+	out := new(GetActorResponse)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Public/GetActor", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PublicServer is the server API for Public service.
 // All implementations should embed UnimplementedPublicServer
 // for forward compatibility
@@ -66,6 +76,7 @@ type PublicServer interface {
 	GetPublicInstance(context.Context, *emptypb.Empty) (*GetPublicInstanceResponse, error)
 	GetPublicAccountCount(context.Context, *emptypb.Empty) (*GetPublicAccountCountResponse, error)
 	GetWebfinger(context.Context, *GetWebfingerRequest) (*GetWebfingerResponse, error)
+	GetActor(context.Context, *GetActorRequest) (*GetActorResponse, error)
 }
 
 // UnimplementedPublicServer should be embedded to have forward compatible implementations.
@@ -80,6 +91,9 @@ func (UnimplementedPublicServer) GetPublicAccountCount(context.Context, *emptypb
 }
 func (UnimplementedPublicServer) GetWebfinger(context.Context, *GetWebfingerRequest) (*GetWebfingerResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetWebfinger not implemented")
+}
+func (UnimplementedPublicServer) GetActor(context.Context, *GetActorRequest) (*GetActorResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetActor not implemented")
 }
 
 // UnsafePublicServer may be embedded to opt out of forward compatibility for this service.
@@ -147,6 +161,24 @@ func _Public_GetWebfinger_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Public_GetActor_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetActorRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PublicServer).GetActor(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/hvxahv.v1alpha1.proto.Public/GetActor",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PublicServer).GetActor(ctx, req.(*GetActorRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Public_ServiceDesc is the grpc.ServiceDesc for Public service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -165,6 +197,10 @@ var Public_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetWebfinger",
 			Handler:    _Public_GetWebfinger_Handler,
+		},
+		{
+			MethodName: "GetActor",
+			Handler:    _Public_GetActor_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

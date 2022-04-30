@@ -5,8 +5,6 @@ import (
 	"os"
 	"testing"
 
-	pb "github.com/hvxahv/hvxahv/api/channel/v1alpha"
-	"github.com/hvxahv/hvxahv/pkg/cockroach"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"

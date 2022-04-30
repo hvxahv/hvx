@@ -5,6 +5,7 @@ import (
 	"fmt"
 	pb "github.com/hvxahv/hvx/api/grpc/proto/account/v1alpha1"
 	"github.com/hvxahv/hvx/pkg/cockroach"
+	"google.golang.org/protobuf/types/known/emptypb"
 	"strconv"
 
 	"github.com/go-playground/validator/v10"
@@ -203,6 +204,19 @@ func (a *server) EditEmail(ctx context.Context, in *pb.EditEmailRequest) (*pb.Ed
 	}
 
 	return &pb.EditEmailResponse{Code: "200", Reply: "ok"}, nil
+}
+
+func (a *server) GetAccountCount(ctx context.Context, g *emptypb.Empty) (*pb.GetAccountCountResponse, error) {
+	db := cockroach.GetDB()
+	var count int64
+	if err := db.Debug().Table("accounts").Count(&count).Error; err != nil {
+		return nil, err
+	}
+
+	return &pb.GetAccountCountResponse{
+		Code:         "200",
+		AccountCount: strconv.Itoa(int(count)),
+	}, nil
 }
 
 func NewAccounts(actorID uint, username, mail, password string) *Accounts {
