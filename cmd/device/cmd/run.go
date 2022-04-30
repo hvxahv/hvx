@@ -6,9 +6,7 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/hvxahv/hvxahv/internal/device"
-	"github.com/hvxahv/hvxahv/pkg/x"
-	"github.com/hvxahv/hvxahv/pkg/x/consul"
+	"github.com/hvxahv/hvx/internal/device"
 	"os"
 	"os/signal"
 	"syscall"

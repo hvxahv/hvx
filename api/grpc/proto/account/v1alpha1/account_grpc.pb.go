@@ -7,6 +7,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -54,6 +55,8 @@ type AccountsClient interface {
 	// EditEmail Edit the unique email for the account.
 	// All devices should be taken offline.
 	EditEmail(ctx context.Context, in *EditEmailRequest, opts ...grpc.CallOption) (*EditEmailResponse, error)
+	// GetAccountCount Get the total number of accounts for this instance for public data.
+	GetAccountCount(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetAccountCountResponse, error)
 }
 
 type accountsClient struct {
@@ -127,6 +130,15 @@ func (c *accountsClient) EditEmail(ctx context.Context, in *EditEmailRequest, op
 	return out, nil
 }
 
+func (c *accountsClient) GetAccountCount(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetAccountCountResponse, error) {
+	out := new(GetAccountCountResponse)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Accounts/GetAccountCount", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AccountsServer is the server API for Accounts service.
 // All implementations should embed UnimplementedAccountsServer
 // for forward compatibility
@@ -167,6 +179,8 @@ type AccountsServer interface {
 	// EditEmail Edit the unique email for the account.
 	// All devices should be taken offline.
 	EditEmail(context.Context, *EditEmailRequest) (*EditEmailResponse, error)
+	// GetAccountCount Get the total number of accounts for this instance for public data.
+	GetAccountCount(context.Context, *emptypb.Empty) (*GetAccountCountResponse, error)
 }
 
 // UnimplementedAccountsServer should be embedded to have forward compatible implementations.
@@ -193,6 +207,9 @@ func (UnimplementedAccountsServer) EditPassword(context.Context, *EditPasswordRe
 }
 func (UnimplementedAccountsServer) EditEmail(context.Context, *EditEmailRequest) (*EditEmailResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method EditEmail not implemented")
+}
+func (UnimplementedAccountsServer) GetAccountCount(context.Context, *emptypb.Empty) (*GetAccountCountResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAccountCount not implemented")
 }
 
 // UnsafeAccountsServer may be embedded to opt out of forward compatibility for this service.
@@ -332,6 +349,24 @@ func _Accounts_EditEmail_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Accounts_GetAccountCount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountsServer).GetAccountCount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/hvxahv.v1alpha1.proto.Accounts/GetAccountCount",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountsServer).GetAccountCount(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Accounts_ServiceDesc is the grpc.ServiceDesc for Accounts service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -366,6 +401,10 @@ var Accounts_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "EditEmail",
 			Handler:    _Accounts_EditEmail_Handler,
+		},
+		{
+			MethodName: "GetAccountCount",
+			Handler:    _Accounts_GetAccountCount_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -1,6 +1,6 @@
 # hvxahv
 
-[![Go Report Card](https://goreportcard.com/badge/github.com/hvxahv/hvxahv)](https://goreportcard.com/report/github.com/hvxahv/hvxahv) [![Go](https://github.com/hvxahv/hvxahv/actions/workflows/lint.yml/badge.svg)](https://github.com/hvxahv/hvxahv/actions/workflows/lint.yml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/hvxahv/hvx)](https://goreportcard.com/report/github.com/hvxahv/hvxahv) [![Go](https://github.com/hvxahv/hvxahv/actions/workflows/lint.yml/badge.svg)](https://github.com/hvxahv/hvxahv/actions/workflows/lint.yml)
 
 Currently, the first version of hvxahv is being implemented, and the current plan is to make the program work first, and then optimize the performance, so the current program code will be very confusing, please pay attention.
 
@@ -69,7 +69,7 @@ FOR CLIENT DEVELOPERS:
 
 Everyone has the right to control their own data and privacy and to choose who they share it with.
 
-MIT License: [LISENSE](https://github.com/hvxahv/hvxahv/blob/main/LICENSE).
+MIT License: [LISENSE](https://github.com/hvxahv/hvx/blob/main/LICENSE).
 
 [disism.com](https://disism.com/) OPEN SOURCE. 
 

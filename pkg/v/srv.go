@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/pkg/errors"
+	"github.com/spf13/viper"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -16,23 +17,29 @@ type Server struct {
 	*grpc.Server
 	listener net.Listener
 	address  string
-	endpoint string
-	rest     string
-	err      error
-	ctx      context.Context
-	conn     *grpc.ClientConn
-	mux      *runtime.ServeMux
+	*port
+	err  error
+	ctx  context.Context
+	conn *grpc.ClientConn
+	mux  *runtime.ServeMux
+}
+
+type port struct {
+	grpc string
+	rest string
 }
 
 func NewServer(name string, server *grpc.Server, ctx context.Context, mux *runtime.ServeMux) *Server {
 	return &Server{
-		Server:   server,
-		address:  GetServiceAddresses(name),
-		endpoint: GetServiceEndpoint(name),
-		rest:     GetRestEndpoint(name),
-		ctx:      ctx,
-		conn:     &grpc.ClientConn{},
-		mux:      mux,
+		Server:  server,
+		address: viper.GetString(fmt.Sprintf("microservices.%s.address", name)),
+		port: &port{
+			grpc: viper.GetString(fmt.Sprintf("microservices.%s.gp", name)),
+			rest: viper.GetString(fmt.Sprintf("microservices.%s.gwp", name)),
+		},
+		ctx:  ctx,
+		conn: &grpc.ClientConn{},
+		mux:  mux,
 	}
 }
 
@@ -44,39 +51,21 @@ func (c *Cfg) NewServer() *Server {
 }
 
 func (s *Server) ListenerWithEndpoints() *Server {
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", s.address))
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", s.grpc))
 	if err != nil {
 		s.err = errors.Wrap(err, "failed to listen")
 	}
 	conn, err := grpc.Dial(
-		s.endpoint,
+		fmt.Sprintf("%s:%s", s.address, s.grpc),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
-		s.err = errors.Wrap(err, "Failed to dial server...")
+		s.err = errors.Wrap(err, "failed to dial server...")
 	}
+
 	s.conn = conn
 	s.listener = lis
 	return s
-}
-
-func (s *Server) Run() error {
-	go func() {
-		if err := s.Serve(s.listener); err != nil {
-			s.err = errors.Wrap(err, "failed to serve")
-		}
-	}()
-
-	log.Println("Server is running on: ", s.endpoint)
-
-	gw := &http.Server{
-		Addr:    fmt.Sprintf(":%s", s.rest),
-		Handler: s.mux,
-	}
-
-	log.Println("Serving gRPC-Gateway on http://0.0.0.0:" + s.rest)
-	log.Fatalln(gw.ListenAndServe())
-	return nil
 }
 
 func (s *Server) GetCtx() context.Context {
@@ -89,4 +78,25 @@ func (s *Server) GetConn() *grpc.ClientConn {
 
 func (s *Server) GetMux() *runtime.ServeMux {
 	return s.mux
+}
+
+func (s *Server) Run() error {
+	if s.err != nil {
+		return s.err
+	}
+	go func() {
+		if err := s.Serve(s.listener); err != nil {
+			s.err = errors.Wrap(err, "failed to serve")
+		}
+	}()
+	log.Println("grpc server is running on: ", s.grpc)
+
+	gw := &http.Server{
+		Addr:    fmt.Sprintf(":%s", s.rest),
+		Handler: s.mux,
+	}
+
+	log.Println("server gRPC-Gateway is running on: ", s.rest)
+	log.Fatalln(gw.ListenAndServe())
+	return nil
 }

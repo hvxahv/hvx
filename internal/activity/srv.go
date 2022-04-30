@@ -2,8 +2,7 @@ package activity
 
 import (
 	"fmt"
-	pb "github.com/hvxahv/hvxahv/api/activity/v1alpha"
-	"github.com/hvxahv/hvxahv/pkg/x"
+	pb "github.com/hvxahv/hvx/api/activity/v1alpha"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"log"

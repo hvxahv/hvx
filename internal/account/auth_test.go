@@ -13,7 +13,7 @@ func TestAccount_Verify(t *testing.T) {
 		Password: "hvxahv1234",
 		Ua:       "chrome",
 	}
-	s := account{}
+	s := server{}
 	verify, err := s.Verify(context.Background(), d)
 	if err != nil {
 		t.Error(err)
@@ -26,7 +26,7 @@ func TestAccount_GetPublicKeyByAccountUsername(t *testing.T) {
 	d := &pb.GetPublicKeyByAccountUsernameRequest{
 		Username: "hvxahv2",
 	}
-	s := account{}
+	s := server{}
 	publicKey, err := s.GetPublicKeyByAccountUsername(context.Background(), d)
 	if err != nil {
 		t.Error(err)

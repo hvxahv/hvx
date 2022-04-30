@@ -9,8 +9,8 @@ package article
 
 import (
 	"fmt"
-	pb "github.com/hvxahv/hvxahv/api/article/v1alpha"
-	"github.com/hvxahv/hvxahv/pkg/x"
+	pb "github.com/hvxahv/hvx/api/article/v1alpha"
+	"github.com/hvxahv/hvx/pkg/x"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"log"

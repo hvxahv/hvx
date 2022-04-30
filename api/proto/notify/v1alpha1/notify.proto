@@ -1,4 +1,4 @@
 syntax = "proto3";
 
 package hvxahv.v1alpha1.proto;
-option go_package = "github.com/hvxahv/hvx/api/notify/v1alpha";
+option go_package = "github.com/hvxahv/gateway/api/notify/v1alpha";

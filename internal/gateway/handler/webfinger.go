@@ -10,9 +10,8 @@ package handler
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	pb "github.com/hvxahv/hvxahv/api/v1alpha/proto/account/v1alpha"
-	"github.com/hvxahv/hvxahv/internal/account"
-	"github.com/hvxahv/hvxahv/pkg/activitypub"
+	pb "github.com/hvxahv/hvx/api/grpc/proto/account/v1alpha1"
+	"github.com/hvxahv/hvx/pkg/activitypub"
 )
 
 func GetWebFingerHandler(c *gin.Context) {

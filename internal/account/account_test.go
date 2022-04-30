@@ -47,7 +47,7 @@ func TestAccount_IsExist(t *testing.T) {
 	d := &pb.IsExistRequest{
 		Username: "hvturingga",
 	}
-	s := &account{}
+	s := &server{}
 	a, err := s.IsExist(context.Background(), d)
 	if err != nil {
 		t.Error(err)
@@ -59,7 +59,7 @@ func TestAccount_IsExist(t *testing.T) {
 	d2 := &pb.IsExistRequest{
 		Username: "isNotExist",
 	}
-	s2 := &account{}
+	s2 := &server{}
 	a2, err := s2.IsExist(context.Background(), d2)
 	if err != nil {
 		t.Error(err)
@@ -75,7 +75,7 @@ func TestAccount_Create(t *testing.T) {
 		Password:  "hvxahv123",
 		PublicKey: "public_key",
 	}
-	s := &account{}
+	s := &server{}
 	a, err := s.Create(context.Background(), d)
 	if err != nil {
 		t.Error(err)
@@ -88,7 +88,7 @@ func TestAccount_GetAccountByUsername(t *testing.T) {
 	d := &pb.GetAccountByUsernameRequest{
 		Username: "hvturingga",
 	}
-	s := &account{}
+	s := &server{}
 	a, err := s.GetAccountByUsername(context.Background(), d)
 	if err != nil {
 		t.Error(err)
@@ -102,7 +102,7 @@ func TestAccount_Delete(t *testing.T) {
 		Username: "hvxahv2",
 		Password: "hvxahv123",
 	}
-	s := &account{}
+	s := &server{}
 	a, err := s.DeleteAccount(context.Background(), d)
 	if err != nil {
 		t.Error(err)
@@ -116,7 +116,7 @@ func TestAccount_EditUsername(t *testing.T) {
 		Id:       "737973421798785025",
 		Username: "hvxahv2",
 	}
-	s := &account{}
+	s := &server{}
 	a, err := s.EditUsername(context.Background(), d)
 	if err != nil {
 		t.Error(err)
@@ -131,7 +131,7 @@ func TestAccount_EditPassword(t *testing.T) {
 		Password: "hvxahv123",
 		New:      "hvxahv1234",
 	}
-	s := &account{}
+	s := &server{}
 	a, err := s.EditPassword(context.Background(), d)
 	if err != nil {
 		t.Error(err)
@@ -146,7 +146,7 @@ func TestAccount_EditEmail(t *testing.T) {
 		Mail: "hvxahv2@halfmemories.com",
 	}
 
-	s := &account{}
+	s := &server{}
 
 	a, err := s.EditEmail(context.Background(), d)
 	if err != nil {

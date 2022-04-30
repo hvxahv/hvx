@@ -1,4 +1,4 @@
-package discoverer
+package middleware
 
 import (
 	"fmt"

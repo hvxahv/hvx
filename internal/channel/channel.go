@@ -5,11 +5,6 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/hvxahv/hvxahv/api/account/v1alpha1"
-	pb "github.com/hvxahv/hvxahv/api/channel/v1alpha"
-	"github.com/hvxahv/hvxahv/internal/account"
-	"github.com/hvxahv/hvxahv/pkg/cockroach"
-	"github.com/hvxahv/hvxahv/pkg/identity"
 	"gorm.io/gorm"
 )
 

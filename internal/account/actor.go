@@ -105,25 +105,23 @@ func (a *server) CreateActor(ctx context.Context, in *pb.CreateActorRequest) (*p
 func (a *server) GetActorByAccountUsername(ctx context.Context, in *pb.GetActorByAccountUsernameRequest) (*pb.AccountDataResponse, error) {
 	db := cockroach.GetDB()
 
-	if err := db.Debug().Table("accounts").Where("username = ? ", in.Username).First(&a.Accounts).Error; err != nil {
-		return nil, err
-	}
-
-	if err := db.Debug().Table("actors").Where("id = ?", a.Accounts.ActorID).First(&a.Actors).Error; err != nil {
+	domain := viper.GetString("domain")
+	actor := &Actors{}
+	if err := db.Debug().Table("actors").Where("preferred_username = ? AND domain = ?", in.Username, domain).First(&actor).Error; err != nil {
 		return nil, err
 	}
 	return &pb.AccountDataResponse{
-		Id:                strconv.Itoa(int(a.Actors.ID)),
-		PreferredUsername: a.Actors.PreferredUsername,
-		Domain:            a.Actors.Domain,
-		Avatar:            a.Actors.Avatar,
-		Name:              a.Actors.Name,
-		Summary:           a.Actors.Summary,
-		Inbox:             a.Actors.Inbox,
-		Address:           a.Actors.Address,
-		PublicKey:         a.Actors.PublicKey,
-		ActorType:         a.Actors.ActorType,
-		IsRemote:          strconv.FormatBool(a.Actors.IsRemote),
+		Id:                strconv.Itoa(int(actor.ID)),
+		PreferredUsername: actor.PreferredUsername,
+		Domain:            actor.Domain,
+		Avatar:            actor.Avatar,
+		Name:              actor.Name,
+		Summary:           actor.Summary,
+		Inbox:             actor.Inbox,
+		Address:           actor.Address,
+		PublicKey:         actor.PublicKey,
+		ActorType:         actor.ActorType,
+		IsRemote:          strconv.FormatBool(actor.IsRemote),
 	}, nil
 }
 

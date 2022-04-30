@@ -4,7 +4,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-// conn, err := grpc.DialContext(ctx, "grpc://0.0.0.0:0000", grpc.WithInsecure())
+// conn, err := grpc.DialContext(ctx, "grpc://0.0.0.0:0000", grpc.grpc.WithTransportCredentials(insecure.NewCredentials())
 //	if err != nil {
 //		return err
 //	}

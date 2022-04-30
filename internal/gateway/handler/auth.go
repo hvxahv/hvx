@@ -9,11 +9,6 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
-	pb "github.com/hvxahv/hvxahv/api/account/v1alpha"
-	"github.com/hvxahv/hvxahv/api/device/v1alpha1"
-	"github.com/hvxahv/hvxahv/internal/account"
-	"github.com/hvxahv/hvxahv/internal/device"
-	"github.com/hvxahv/hvxahv/pkg/identity/middleware"
 )
 
 func AuthAccountHandler(c *gin.Context) {

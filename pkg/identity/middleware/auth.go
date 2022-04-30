@@ -9,9 +9,9 @@ package middleware
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hvxahv/hvxahv/api/device/v1alpha1"
-	"github.com/hvxahv/hvxahv/internal/device"
-	"github.com/hvxahv/hvxahv/pkg/identity"
+
+	"github.com/hvxahv/hvx/internal/device"
+	"github.com/hvxahv/hvx/pkg/identity"
 	"log"
 	"strings"
 )

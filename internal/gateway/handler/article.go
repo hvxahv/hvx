@@ -9,9 +9,6 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
-	pb "github.com/hvxahv/hvxahv/api/article/v1alpha"
-	"github.com/hvxahv/hvxahv/internal/article"
-	"github.com/hvxahv/hvxahv/pkg/identity/middleware"
 )
 
 func CreateArticleHandler(c *gin.Context) {

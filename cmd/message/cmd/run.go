@@ -13,18 +13,10 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+
 package cmd
 
 import (
-	"fmt"
-	"os"
-	"os/signal"
-	"syscall"
-
-	"github.com/hvxahv/hvxahv/internal/message"
-	"github.com/hvxahv/hvxahv/pkg/x"
-	"github.com/hvxahv/hvxahv/pkg/x/consul"
-
 	"github.com/spf13/cobra"
 )
 
@@ -36,35 +28,7 @@ var runCmd = &cobra.Command{
 	Short: "Run message microservice",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		port := x.NewService(serviceName).GetPort()
 
-		tags := []string{serviceName, "gRPC"}
-		nr := consul.NewRegister(serviceName, port, tags, "localhost")
-		if err := nr.Register(); err != nil {
-			fmt.Println(err)
-			return
-		}
-
-		c := make(chan os.Signal, 1)
-		signal.Notify(c, syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT)
-
-		if err := message.Run(); err != nil {
-			fmt.Printf("failed to start %s gRPC service: %v", serviceName, err)
-			return
-		}
-
-		fmt.Println("Starting gRPC server...")
-		fmt.Printf("%s gRPC server listening on port: %v", serviceName, port)
-
-		s := <-c
-		switch s {
-		case syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT:
-			if err := consul.Deregister(nr.ID); err != nil {
-				fmt.Println(err)
-			}
-			return
-		default:
-		}
 	},
 }
 

@@ -1,7 +1,8 @@
 syntax = "proto3";
 
 package hvxahv.v1alpha1.proto;
-option go_package = "github.com/hvxahv/hvx/api/account/v1alpha";
+import "google/protobuf/empty.proto";
+option go_package = "github.com/hvxahv/gateway/api/account/v1alpha";
 
 service Accounts {
   // IsExist Check the account creation status by username,
@@ -46,6 +47,9 @@ service Accounts {
   // EditEmail Edit the unique email for the account.
   // All devices should be taken offline.
   rpc EditEmail (EditEmailRequest) returns (EditEmailResponse) {}
+
+  // GetAccountCount Get the total number of accounts for this instance for public data.
+  rpc GetAccountCount (google.protobuf.Empty) returns (GetAccountCountResponse) {}
 }
 
 message IsExistRequest {
@@ -120,4 +124,9 @@ message EditEmailRequest {
 message EditEmailResponse {
   string code = 1;
   string reply = 2;
+}
+
+message GetAccountCountResponse {
+  string code = 1;
+  string accountCount = 2;
 }

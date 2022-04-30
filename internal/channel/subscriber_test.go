@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"testing"
-
-	"github.com/hvxahv/hvxahv/api/channel/v1alpha1"
 )
 
 func TestChannel_AddSubscriber(t *testing.T) {

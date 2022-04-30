@@ -1,9 +1,8 @@
 package message
 
 import (
-	pb "github.com/hvxahv/hvxahv/api/message/v1alpha"
-	"github.com/hvxahv/hvxahv/pkg/cockroach"
-	"github.com/hvxahv/hvxahv/pkg/matrix"
+	"github.com/hvxahv/hvx/pkg/cockroach"
+	"github.com/hvxahv/hvx/pkg/matrix"
 	"github.com/matrix-org/gomatrix"
 	"golang.org/x/net/context"
 	"strconv"

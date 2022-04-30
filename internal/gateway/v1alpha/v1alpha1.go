@@ -34,7 +34,7 @@ func V1Accounts(v1 *gin.RouterGroup) {
 	/**
 	 * ECDH for v1 version of the server api endpoints for the account resource type (gateway.hvxahv.com/v1/dh).
 	 */
-	//	https://github.com/hvxahv/hvxahv/blob/main/SECURITY.md
+	//	https://github.com/hvxahv/hvx/blob/main/SECURITY.md
 	v1.GET("/dh/private")
 	v1.POST("/dh")
 	v1.GET("/dh/wait")

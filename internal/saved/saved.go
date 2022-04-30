@@ -25,8 +25,7 @@
 package saved
 
 import (
-	pb "github.com/hvxahv/hvxahv/api/saved/v1alpha"
-	"github.com/hvxahv/hvxahv/pkg/cockroach"
+	"github.com/hvxahv/hvx/pkg/cockroach"
 	"golang.org/x/net/context"
 	"gorm.io/gorm"
 	"strconv"
