@@ -29,7 +29,7 @@ var cfgFile string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "gateway",
+	Use:   "gateway.bac",
 	Short: "",
 	Long:  ``,
 	// Uncomment the following line if your bare application
@@ -67,7 +67,7 @@ func initConfig() {
 		home, err := homedir.Dir()
 		cobra.CheckErr(err)
 
-		// Search config in home directory with name ".gateway" (without extension).
+		// Search config in home directory with name ".gateway.bac" (without extension).
 		viper.AddConfigPath(home)
 		viper.SetConfigName(".hvxahv")
 	}

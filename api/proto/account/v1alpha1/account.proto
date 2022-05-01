@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package hvxahv.v1alpha1.proto;
 import "google/protobuf/empty.proto";
-option go_package = "github.com/hvxahv/gateway/api/account/v1alpha";
+option go_package = "github.com/hvxahv/hvx/api/proto/account/v1alpha";
 
 service Accounts {
   // IsExist Check the account creation status by username,
@@ -10,14 +10,14 @@ service Accounts {
   // when checking if the user exists.
   rpc IsExist (IsExistRequest) returns (IsExistResponse) {}
 
-  // Create a new account.
+  // CreateAccount a new account.
   // Actor is created first and then the returned ActorID is used to
   //  create a unique account for the current instance account system.
   // The Actor's PreferredUsername is used to identify the actor in the
   // current instance account system. The username in the account system
   // is unique, but the Actor's PreferredUsername is not unique,
   // as it may have the same username in different instances.
-  rpc Create (CreateRequest) returns (CreateResponse) {}
+  rpc CreateAccount (CreateAccountRequest) returns (CreateAccountResponse) {}
 
   // Get the account by username.
   // Internal methods in the program should not be exposed to API
@@ -60,14 +60,14 @@ message IsExistResponse {
   bool is_exist = 1;
 }
 
-message CreateRequest {
+message CreateAccountRequest {
   string username = 1;
   string mail = 2;
   string password = 3;
   string publicKey = 4;
 }
 
-message CreateResponse {
+message CreateAccountResponse {
   string code = 1;
   string reply = 2;
 }

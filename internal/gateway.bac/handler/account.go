@@ -9,6 +9,7 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
+	pb "github.com/hvxahv/hvx/api/grpc/proto/account/v1alpha1"
 	"github.com/hvxahv/hvx/internal/account"
 	"github.com/hvxahv/hvx/pkg/identity/middleware"
 )

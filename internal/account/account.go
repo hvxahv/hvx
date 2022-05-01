@@ -54,7 +54,7 @@ func (a *server) IsExist(ctx context.Context, in *pb.IsExistRequest) (*pb.IsExis
 	return &pb.IsExistResponse{IsExist: false}, nil
 }
 
-func (a *server) Create(ctx context.Context, in *pb.CreateRequest) (*pb.CreateResponse, error) {
+func (a *server) CreateAccount(ctx context.Context, in *pb.CreateAccountRequest) (*pb.CreateAccountResponse, error) {
 	if err := validator.New().Struct(in); err != nil {
 		return nil, errors.New("FAILED_TO_VALIDATOR")
 	}
@@ -89,7 +89,7 @@ func (a *server) Create(ctx context.Context, in *pb.CreateRequest) (*pb.CreateRe
 		return nil, errors.Errorf("FAILED_TO_CREATE_ACCOUNT")
 	}
 
-	return &pb.CreateResponse{Code: "200", Reply: "ok"}, nil
+	return &pb.CreateAccountResponse{Code: "200", Reply: "ok"}, nil
 }
 
 func (a *server) GetAccountByUsername(ctx context.Context, in *pb.GetAccountByUsernameRequest) (*pb.GetAccountByUsernameResponse, error) {

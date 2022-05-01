@@ -9,7 +9,7 @@ import (
 
 func TestAccount_CreateActor(t *testing.T) {
 	d := &pb.CreateActorRequest{
-		PreferredUsername: "gateway",
+		PreferredUsername: "gateway.bac",
 		PublicKey:         "idi",
 		ActorType:         "Services",
 	}

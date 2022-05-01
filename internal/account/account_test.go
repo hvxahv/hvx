@@ -69,7 +69,7 @@ func TestAccount_IsExist(t *testing.T) {
 }
 
 func TestAccount_Create(t *testing.T) {
-	d := &pb.CreateRequest{
+	d := &pb.CreateAccountRequest{
 		Username:  "hvxahv",
 		Mail:      "hvxahv@halfmemories.com",
 		Password:  "hvxahv123",

@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package hvxahv.v1alpha1.proto;
-option go_package = "github.com/hvxahv/gateway/api/message/v1alpha";
+option go_package = "github.com/hvxahv/gateway.bac/api/message/v1alpha";
 
 service Messages {
   // MessageAccessRegister Create a matrix account with a username and password.

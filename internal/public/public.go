@@ -2,7 +2,7 @@ package public
 
 import (
 	"fmt"
-	v1alpha "github.com/hvxahv/hvx/api/grpc/proto/account/v1alpha1"
+	acct "github.com/hvxahv/hvx/api/grpc/proto/account/v1alpha1"
 	pb "github.com/hvxahv/hvx/api/grpc/proto/public/v1alpha1"
 	"github.com/hvxahv/hvx/pkg/activitypub"
 	"github.com/hvxahv/hvx/pkg/v"
@@ -55,7 +55,7 @@ func (s *server) GetWebfinger(ctx context.Context, in *pb.GetWebfingerRequest) (
 	defer conn.Close()
 	client := cli.NewHvxClient(conn)
 
-	exist, err := client.IsExist(ctx, &v1alpha.IsExistRequest{
+	exist, err := client.IsExist(ctx, &acct.IsExistRequest{
 		Username: name,
 	})
 	if err != nil {
@@ -88,7 +88,7 @@ func (s *server) GetActor(ctx context.Context, in *pb.GetActorRequest) (*pb.GetA
 	}
 	defer conn.Close()
 	client := cli.NewHvxClient(conn)
-	a, err := client.GetActorByAccountUsername(ctx, &v1alpha.GetActorByAccountUsernameRequest{
+	a, err := client.GetActorByAccountUsername(ctx, &acct.GetActorByAccountUsernameRequest{
 		Username: in.Actor,
 	})
 	if err != nil {
@@ -123,5 +123,50 @@ func (s *server) GetActor(ctx context.Context, in *pb.GetActorRequest) (*pb.GetA
 			Owner:        a.Address,
 			PublicKeyPem: a.PublicKey,
 		},
+	}, nil
+}
+
+func (s *server) CreateAccounts(ctx context.Context, in *pb.CreateAccountsRequest) (*pb.CreateAccountsResponse, error) {
+	conn, err := grpc.DialContext(ctx, v.GetGRPCServiceAddress("account"), grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		return nil, err
+	}
+	defer conn.Close()
+	client := cli.NewHvxClient(conn)
+	reply, err := client.CreateAccount(ctx, &acct.CreateAccountRequest{
+		Username:  in.Username,
+		Mail:      in.Mail,
+		Password:  in.Password,
+		PublicKey: in.PublicKey,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.CreateAccountsResponse{
+		Code:     reply.Code,
+		Response: reply.Reply,
+	}, nil
+}
+
+func (s *server) Authenticate(ctx context.Context, in *pb.AuthenticateRequest) (*pb.AuthenticateResponse, error) {
+	conn, err := grpc.DialContext(ctx, v.GetGRPCServiceAddress("account"), grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		return nil, err
+	}
+	defer conn.Close()
+	client := cli.NewHvxClient(conn)
+	reply, err := client.Verify(ctx, &acct.VerifyRequest{
+		Username: in.Username,
+		Password: in.Password,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.AuthenticateResponse{
+		Code:     reply.Code,
+		Token:    reply.Token,
+		DeviceId: reply.Id,
 	}, nil
 }

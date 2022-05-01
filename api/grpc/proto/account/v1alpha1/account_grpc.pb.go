@@ -23,14 +23,14 @@ type AccountsClient interface {
 	// return true if not created, otherwise return false, used
 	// when checking if the user exists.
 	IsExist(ctx context.Context, in *IsExistRequest, opts ...grpc.CallOption) (*IsExistResponse, error)
-	// Create a new account.
+	// CreateAccount a new account.
 	// Actor is created first and then the returned ActorID is used to
 	//  create a unique account for the current instance account system.
 	// The Actor's PreferredUsername is used to identify the actor in the
 	// current instance account system. The username in the account system
 	// is unique, but the Actor's PreferredUsername is not unique,
 	// as it may have the same username in different instances.
-	Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error)
+	CreateAccount(ctx context.Context, in *CreateAccountRequest, opts ...grpc.CallOption) (*CreateAccountResponse, error)
 	// Get the account by username.
 	// Internal methods in the program should not be exposed to API
 	// structures for users to call. There is no other solution for
@@ -76,9 +76,9 @@ func (c *accountsClient) IsExist(ctx context.Context, in *IsExistRequest, opts .
 	return out, nil
 }
 
-func (c *accountsClient) Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error) {
-	out := new(CreateResponse)
-	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Accounts/Create", in, out, opts...)
+func (c *accountsClient) CreateAccount(ctx context.Context, in *CreateAccountRequest, opts ...grpc.CallOption) (*CreateAccountResponse, error) {
+	out := new(CreateAccountResponse)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Accounts/CreateAccount", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -147,14 +147,14 @@ type AccountsServer interface {
 	// return true if not created, otherwise return false, used
 	// when checking if the user exists.
 	IsExist(context.Context, *IsExistRequest) (*IsExistResponse, error)
-	// Create a new account.
+	// CreateAccount a new account.
 	// Actor is created first and then the returned ActorID is used to
 	//  create a unique account for the current instance account system.
 	// The Actor's PreferredUsername is used to identify the actor in the
 	// current instance account system. The username in the account system
 	// is unique, but the Actor's PreferredUsername is not unique,
 	// as it may have the same username in different instances.
-	Create(context.Context, *CreateRequest) (*CreateResponse, error)
+	CreateAccount(context.Context, *CreateAccountRequest) (*CreateAccountResponse, error)
 	// Get the account by username.
 	// Internal methods in the program should not be exposed to API
 	// structures for users to call. There is no other solution for
@@ -190,8 +190,8 @@ type UnimplementedAccountsServer struct {
 func (UnimplementedAccountsServer) IsExist(context.Context, *IsExistRequest) (*IsExistResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method IsExist not implemented")
 }
-func (UnimplementedAccountsServer) Create(context.Context, *CreateRequest) (*CreateResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
+func (UnimplementedAccountsServer) CreateAccount(context.Context, *CreateAccountRequest) (*CreateAccountResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateAccount not implemented")
 }
 func (UnimplementedAccountsServer) GetAccountByUsername(context.Context, *GetAccountByUsernameRequest) (*GetAccountByUsernameResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAccountByUsername not implemented")
@@ -241,20 +241,20 @@ func _Accounts_IsExist_Handler(srv interface{}, ctx context.Context, dec func(in
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Accounts_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateRequest)
+func _Accounts_CreateAccount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateAccountRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AccountsServer).Create(ctx, in)
+		return srv.(AccountsServer).CreateAccount(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/hvxahv.v1alpha1.proto.Accounts/Create",
+		FullMethod: "/hvxahv.v1alpha1.proto.Accounts/CreateAccount",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AccountsServer).Create(ctx, req.(*CreateRequest))
+		return srv.(AccountsServer).CreateAccount(ctx, req.(*CreateAccountRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -379,8 +379,8 @@ var Accounts_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Accounts_IsExist_Handler,
 		},
 		{
-			MethodName: "Create",
-			Handler:    _Accounts_Create_Handler,
+			MethodName: "CreateAccount",
+			Handler:    _Accounts_CreateAccount_Handler,
 		},
 		{
 			MethodName: "GetAccountByUsername",

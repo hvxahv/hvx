@@ -31,10 +31,10 @@ func init() {
 }
 
 func TestRegister_Register(t *testing.T) {
-	p := viper.GetString("x.gateway.port")
+	p := viper.GetString("x.gateway.bac.port")
 
-	tags := []string{"gateway", "http", "RESTFul"}
-	nr := NewRegister("gateway", p, tags, "localhost")
+	tags := []string{"gateway.bac", "http", "RESTFul"}
+	nr := NewRegister("gateway.bac", p, tags, "localhost")
 	err := nr.Register()
 	if err != nil {
 		fmt.Println(err)

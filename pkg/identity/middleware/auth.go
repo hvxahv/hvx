@@ -10,7 +10,6 @@ package middleware
 import (
 	"github.com/gin-gonic/gin"
 
-	"github.com/hvxahv/hvx/internal/device"
 	"github.com/hvxahv/hvx/pkg/identity"
 	"log"
 	"strings"
@@ -53,26 +52,26 @@ func Auth(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	client, err := device.GetDeviceClient()
-	if err != nil {
-		return
-	}
-
-	exist, err := client.DeviceIsExistByID(c, &v1alpha1.DeviceIsExistByIDRequest{
-		Id: pares.DeviceID,
-	})
-	if err != nil {
-		return
-	}
-
-	if exist.IsExist {
-		c.JSON(400, gin.H{
-			"code":    "400",
-			"message": "AUTH_TOKEN_INVALID",
-		})
-		c.Abort()
-		return
-	}
+	//client, err := device.GetDeviceClient()
+	//if err != nil {
+	//	return
+	//}
+	//
+	//exist, err := client.DeviceIsExistByID(c, &v1alpha1.DeviceIsExistByIDRequest{
+	//	Id: pares.DeviceID,
+	//})
+	//if err != nil {
+	//	return
+	//}
+	//
+	//if exist.IsExist {
+	//	c.JSON(400, gin.H{
+	//		"code":    "400",
+	//		"message": "AUTH_TOKEN_INVALID",
+	//	})
+	//	c.Abort()
+	//	return
+	//}
 
 	c.Set("device_id", pares.DeviceID)
 	c.Set("username", pares.Username)
