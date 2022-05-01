@@ -22,7 +22,7 @@ func Run() error {
 
 	pb.RegisterPublicServer(s, &server{})
 	if err := pb.RegisterPublicHandler(s.GetCtx(), s.GetMux(), s.GetConn()); err != nil {
-		return errors.Errorf("Failed to register gateway: %v", err)
+		return errors.Errorf("Failed to register public services: %v", err)
 	}
 	if err := s.Run(); err != nil {
 		return err

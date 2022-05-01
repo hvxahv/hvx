@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package hvxahv.v1alpha1.proto;
-option go_package = "github.com/hvxahv/gateway/api/device/v1alpha";
+option go_package = "github.com/hvxahv/api/proto/device/v1alpha";
 
 service Devices {
   // DeviceIsExistByHash Gets whether the device is authenticated by the device hash.

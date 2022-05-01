@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package hvxahv.v1alpha1.proto;
-option go_package = "github.com/hvxahv/gateway/api/article/v1alpha";
+option go_package = "github.com/hvxahv/gateway.bac/api/article/v1alpha";
 
 service Article {
   // GetArticle Get the content of an article or status by its article ID.

@@ -1,7 +1,11 @@
 syntax = "proto3";
 
 package hvxahv.v1alpha1.proto;
-option go_package = "github.com/hvxahv/gateway/api/account/v1alpha";
+option go_package = "github.com/hvxahv/hvx/api/proto/account/v1alpha";
+
+import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
+import "google/protobuf/empty.proto";
 
 service Actor {
   rpc CreateActor(CreateActorRequest) returns (CreateActorResponse) {}
@@ -12,7 +16,11 @@ service Actor {
 
   // GetActorsByPreferredUsername Returns the set of actors by the
   // specified GetActorsByPreferredUsername by PreferredUsername.
-  rpc GetActorsByPreferredUsername (GetActorsByPreferredUsernameRequest) returns (GetActorsByPreferredUsernameResponse) {}
+  rpc GetActorsByPreferredUsername (GetActorsByPreferredUsernameRequest) returns (GetActorsByPreferredUsernameResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/search/{preferred_username}"
+    };
+  }
 
   // GetActorByAddress Returns the actor identified by the specified address.
   rpc GetActorByAddress (GetActorByAddressRequest) returns (AccountDataResponse) {}
@@ -55,7 +63,7 @@ message AccountDataResponse {
 }
 
 message GetActorsByPreferredUsernameRequest {
-  string preferred_username = 1;
+  string preferred_username = 1 [(google.api.field_behavior) = REQUIRED];
 }
 
 message GetActorsByPreferredUsernameResponse {

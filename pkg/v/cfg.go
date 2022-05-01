@@ -48,3 +48,8 @@ func GetGRPCServiceAddress(name string) string {
 	return fmt.Sprintf("%s:%s", viper.GetString(fmt.Sprintf("microservices.%s.address", name)),
 		viper.GetString(fmt.Sprintf("microservices.%s.gp", name)))
 }
+
+func GetRestServiceAddress(name string) string {
+	return fmt.Sprintf("http://%s:%s", "localhost",
+		viper.GetString(fmt.Sprintf("microservices.%s.gwp", name)))
+}

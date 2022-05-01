@@ -19,9 +19,19 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type PublicClient interface {
+	// Get the instance details of the current instance.
 	GetPublicInstance(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetPublicInstanceResponse, error)
+	// Get the total number of users of the current instance.
 	GetPublicAccountCount(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetPublicAccountCountResponse, error)
+	CreateAccounts(ctx context.Context, in *CreateAccountsRequest, opts ...grpc.CallOption) (*CreateAccountsResponse, error)
+	Authenticate(ctx context.Context, in *AuthenticateRequest, opts ...grpc.CallOption) (*AuthenticateResponse, error)
+	// Open API routing for the ActivityPub protocol.
+	// ActivityPub https://www.w3.org/TR/activitypub/
+	// HTTP API for public query of ActivityPub.
+	// ActivityPub WebFinger https://github.com/w3c/activitypub/issues/194 .
 	GetWebfinger(ctx context.Context, in *GetWebfingerRequest, opts ...grpc.CallOption) (*GetWebfingerResponse, error)
+	// Get the actors in the activityPub protocol.
+	// https://www.w3.org/TR/activitypub/#actor-objects
 	GetActor(ctx context.Context, in *GetActorRequest, opts ...grpc.CallOption) (*GetActorResponse, error)
 }
 
@@ -51,6 +61,24 @@ func (c *publicClient) GetPublicAccountCount(ctx context.Context, in *emptypb.Em
 	return out, nil
 }
 
+func (c *publicClient) CreateAccounts(ctx context.Context, in *CreateAccountsRequest, opts ...grpc.CallOption) (*CreateAccountsResponse, error) {
+	out := new(CreateAccountsResponse)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Public/CreateAccounts", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *publicClient) Authenticate(ctx context.Context, in *AuthenticateRequest, opts ...grpc.CallOption) (*AuthenticateResponse, error) {
+	out := new(AuthenticateResponse)
+	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Public/Authenticate", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *publicClient) GetWebfinger(ctx context.Context, in *GetWebfingerRequest, opts ...grpc.CallOption) (*GetWebfingerResponse, error) {
 	out := new(GetWebfingerResponse)
 	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Public/GetWebfinger", in, out, opts...)
@@ -73,9 +101,19 @@ func (c *publicClient) GetActor(ctx context.Context, in *GetActorRequest, opts .
 // All implementations should embed UnimplementedPublicServer
 // for forward compatibility
 type PublicServer interface {
+	// Get the instance details of the current instance.
 	GetPublicInstance(context.Context, *emptypb.Empty) (*GetPublicInstanceResponse, error)
+	// Get the total number of users of the current instance.
 	GetPublicAccountCount(context.Context, *emptypb.Empty) (*GetPublicAccountCountResponse, error)
+	CreateAccounts(context.Context, *CreateAccountsRequest) (*CreateAccountsResponse, error)
+	Authenticate(context.Context, *AuthenticateRequest) (*AuthenticateResponse, error)
+	// Open API routing for the ActivityPub protocol.
+	// ActivityPub https://www.w3.org/TR/activitypub/
+	// HTTP API for public query of ActivityPub.
+	// ActivityPub WebFinger https://github.com/w3c/activitypub/issues/194 .
 	GetWebfinger(context.Context, *GetWebfingerRequest) (*GetWebfingerResponse, error)
+	// Get the actors in the activityPub protocol.
+	// https://www.w3.org/TR/activitypub/#actor-objects
 	GetActor(context.Context, *GetActorRequest) (*GetActorResponse, error)
 }
 
@@ -88,6 +126,12 @@ func (UnimplementedPublicServer) GetPublicInstance(context.Context, *emptypb.Emp
 }
 func (UnimplementedPublicServer) GetPublicAccountCount(context.Context, *emptypb.Empty) (*GetPublicAccountCountResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPublicAccountCount not implemented")
+}
+func (UnimplementedPublicServer) CreateAccounts(context.Context, *CreateAccountsRequest) (*CreateAccountsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateAccounts not implemented")
+}
+func (UnimplementedPublicServer) Authenticate(context.Context, *AuthenticateRequest) (*AuthenticateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Authenticate not implemented")
 }
 func (UnimplementedPublicServer) GetWebfinger(context.Context, *GetWebfingerRequest) (*GetWebfingerResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetWebfinger not implemented")
@@ -143,6 +187,42 @@ func _Public_GetPublicAccountCount_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Public_CreateAccounts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateAccountsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PublicServer).CreateAccounts(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/hvxahv.v1alpha1.proto.Public/CreateAccounts",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PublicServer).CreateAccounts(ctx, req.(*CreateAccountsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Public_Authenticate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AuthenticateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PublicServer).Authenticate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/hvxahv.v1alpha1.proto.Public/Authenticate",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PublicServer).Authenticate(ctx, req.(*AuthenticateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Public_GetWebfinger_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetWebfingerRequest)
 	if err := dec(in); err != nil {
@@ -193,6 +273,14 @@ var Public_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetPublicAccountCount",
 			Handler:    _Public_GetPublicAccountCount_Handler,
+		},
+		{
+			MethodName: "CreateAccounts",
+			Handler:    _Public_CreateAccounts_Handler,
+		},
+		{
+			MethodName: "Authenticate",
+			Handler:    _Public_Authenticate_Handler,
 		},
 		{
 			MethodName: "GetWebfinger",

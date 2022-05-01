@@ -8,7 +8,10 @@
 package cmd
 
 import (
+	"fmt"
+	"github.com/hvxahv/hvx/internal/gateway"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 // runCmd represents the run command
@@ -17,7 +20,11 @@ var runCmd = &cobra.Command{
 	Short: "",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-
+		api := gateway.APIServer()
+		if err := api.Run(fmt.Sprintf(":%s", viper.GetString("microservices.gateway.gwp"))); err != nil {
+			fmt.Println(err)
+			return
+		}
 	},
 }
 

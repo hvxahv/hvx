@@ -44,7 +44,7 @@ func init() {
 func TestChannel_CreateChannel(t *testing.T) {
 	s := &channel{}
 	createChannel, err := s.CreateChannel(context.Background(), &pb.CreateChannelRequest{
-		PreferredUsername: "gateway",
+		PreferredUsername: "gateway.bac",
 		AccountId:         "746931987134185473",
 	})
 	if err != nil {

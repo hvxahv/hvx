@@ -8,12 +8,7 @@
 package device
 
 import (
-	"fmt"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
-	"log"
-	"net"
-	"time"
+	pb "github.com/hvxahv/hvx/api/grpc/proto/device/v1alpha1"
 )
 
 const serverName = "device"
@@ -25,26 +20,6 @@ type device struct {
 
 // Run starts the server. It will block until the server is shutdown. If the server fails to start, it will return an error.
 func Run() error {
-	log.Printf("App %s Started at %s\n", serverName, time.Now())
-
-	// Create a new server instance.
-	s := grpc.NewServer()
-
-	pb.RegisterDevicesServer(s, &device{})
-
-	reflection.Register(s)
-
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", x.NewService("device").GetPort()))
-	if err != nil {
-		return err
-	}
-
-	go func() {
-		if err := s.Serve(lis); err != nil {
-			fmt.Println(err)
-			return
-		}
-	}()
 
 	return nil
 }
