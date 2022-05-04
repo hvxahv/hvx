@@ -1,33 +1,50 @@
 package account
 
 import (
+	"github.com/google/uuid"
 	pb "github.com/hvxahv/hvx/api/grpc/proto/account/v1alpha1"
+	v1alpha "github.com/hvxahv/hvx/api/grpc/proto/device/v1alpha1"
 	"github.com/hvxahv/hvx/pkg/cockroach"
+	"github.com/hvxahv/hvx/pkg/conv"
 	"github.com/hvxahv/hvx/pkg/identity"
+	"github.com/hvxahv/hvx/pkg/v"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
 	"golang.org/x/net/context"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"strconv"
 )
 
 func (a *server) Verify(ctx context.Context, in *pb.VerifyRequest) (*pb.VerifyResponse, error) {
 	db := cockroach.GetDB()
 
-	v := NewAuthorization(in.Username, in.Password)
-	if err := db.Debug().Table("accounts").Where("username = ?", in.Username).First(&v).Error; err != nil {
+	auth := NewAuthorization(in.Username, in.Password)
+	if err := db.Debug().Table("accounts").Where("username = ?", in.Username).First(&auth).Error; err != nil {
 		return nil, err
 	}
 
-	if err := bcrypt.CompareHashAndPassword([]byte(v.Password), []byte(in.Password)); err != nil {
+	if err := bcrypt.CompareHashAndPassword([]byte(auth.Password), []byte(in.Password)); err != nil {
 		return nil, errors.Errorf("PASSWORD_VERIFICATION_FAILED")
 	}
 
-	// TODO - Added to device management.
+	conn, err := grpc.DialContext(ctx, v.GetGRPCServiceAddress("device"), grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		return nil, err
+	}
+	defer conn.Close()
+	client := v1alpha.NewDevicesClient(conn)
+	device, err := client.CreateDevice(ctx, &v1alpha.CreateDeviceRequest{
+		AccountId: conv.UintToString(auth.ID),
+		Ua:        in.Ua,
+		Hash:      uuid.New().String(),
+	})
+	if err != nil {
+		return nil, err
+	}
 
-	deviceID := ""
-	publicKey := ""
 	// Creating an authorization token.
-	k, err := identity.GenToken(strconv.Itoa(int(v.ID)), v.Mail, v.Username, deviceID)
+	k, err := identity.GenToken(strconv.Itoa(int(auth.ID)), auth.Mail, auth.Username, device.DeviceId)
 	if err != nil {
 		return &pb.VerifyResponse{Code: "401", Reply: err.Error()}, err
 	}
@@ -35,11 +52,11 @@ func (a *server) Verify(ctx context.Context, in *pb.VerifyRequest) (*pb.VerifyRe
 	return &pb.VerifyResponse{
 		Code:      "200",
 		Reply:     "ok",
-		Id:        strconv.Itoa(int(v.ID)),
+		Id:        strconv.Itoa(int(auth.ID)),
 		Token:     k,
-		Mail:      v.Mail,
-		DeviceId:  deviceID,
-		PublicKey: publicKey,
+		Mail:      auth.Mail,
+		DeviceId:  device.DeviceId,
+		PublicKey: device.PublicKey,
 	}, nil
 }
 

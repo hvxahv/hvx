@@ -1,8 +1,11 @@
 syntax = "proto3";
 
 package hvxahv.v1alpha1.proto;
-import "google/protobuf/empty.proto";
 option go_package = "github.com/hvxahv/hvx/api/proto/account/v1alpha";
+
+import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
+import "google/protobuf/empty.proto";
 
 service Accounts {
   // IsExist Check the account creation status by username,
@@ -28,7 +31,12 @@ service Accounts {
   // First you need the password as a parameter to verify that the account
   // is correct, and then delete the account system and actor table when
   // the password is verified to be correct.
-  rpc DeleteAccount (DeleteAccountRequest) returns (DeleteAccountResponse) {}
+  rpc DeleteAccount (DeleteAccountRequest) returns (DeleteAccountResponse) {
+    option (google.api.http) = {
+      delete: "/api/v1/account"
+      body: "*"
+    };
+  }
 
   // EditUsername Update the account username.
   // will change both the username and preferred_username in the
@@ -86,8 +94,7 @@ message GetAccountByUsernameResponse {
 }
 
 message DeleteAccountRequest {
-  string username = 1;
-  string password = 3;
+  string password = 1;
 }
 
 message DeleteAccountResponse {

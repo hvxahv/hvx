@@ -9,7 +9,7 @@ package gateway_bac
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hvxahv/hvx/pkg/identity/middleware"
+	"github.com/hvxahv/hvx/internal/gateway/middleware"
 )
 
 func APIServer() *gin.Engine {

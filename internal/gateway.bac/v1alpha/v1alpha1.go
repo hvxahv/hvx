@@ -1,4 +1,4 @@
-package v1alpha
+package v1alpha1
 
 import (
 	"github.com/gin-gonic/gin"

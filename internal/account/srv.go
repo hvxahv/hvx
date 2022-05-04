@@ -36,6 +36,10 @@ func Run() error {
 		return errors.Errorf("Failed to register actor services: %v", err)
 	}
 
+	if err := pb.RegisterAccountsHandler(s.GetCtx(), s.GetMux(), s.GetConn()); err != nil {
+		return errors.Errorf("Failed to register actor services: %v", err)
+	}
+
 	if err := s.Run(); err != nil {
 		return err
 	}
