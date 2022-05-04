@@ -7,10 +7,6 @@ package cmd
 import (
 	"fmt"
 	"github.com/hvxahv/hvx/internal/device"
-	"os"
-	"os/signal"
-	"syscall"
-
 	"github.com/spf13/cobra"
 )
 
@@ -22,33 +18,9 @@ var runCmd = &cobra.Command{
 	Short: "",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		port := x.NewService(serviceName).GetPort()
-
-		tags := []string{serviceName, "gRPC"}
-		nr := consul.NewRegister(serviceName, port, tags, "localhost")
-		if err := nr.Register(); err != nil {
+		if err := device.Run(); err != nil {
 			fmt.Println(err)
 			return
-		}
-
-		c := make(chan os.Signal, 1)
-		signal.Notify(c, syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT)
-
-		if err := device.Run(); err != nil {
-			fmt.Printf("failed to start %s gRPC service: %v", serviceName, err)
-			return
-		}
-		fmt.Println("Starting gRPC server...")
-		fmt.Printf("%s gRPC server listening on port: %v", serviceName, port)
-
-		s := <-c
-		switch s {
-		case syscall.SIGQUIT, syscall.SIGTERM, syscall.SIGINT:
-			if err := consul.Deregister(nr.ID); err != nil {
-				fmt.Println(err)
-			}
-			return
-		default:
 		}
 	},
 }

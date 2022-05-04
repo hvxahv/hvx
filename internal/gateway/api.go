@@ -9,9 +9,9 @@ package gateway
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/hvxahv/hvx/internal/gateway/middleware"
 	"github.com/hvxahv/hvx/internal/gateway/public"
-	"github.com/hvxahv/hvx/internal/gateway/v1alpha"
-	"github.com/hvxahv/hvx/pkg/identity/middleware"
+	"github.com/hvxahv/hvx/internal/gateway/v1alpha1"
 )
 
 func APIServer() *gin.Engine {
@@ -31,6 +31,8 @@ func APIServer() *gin.Engine {
 	api.GET("/u/:actor", public.GetActorHandler)
 
 	v1 := api.Group("/api/v1")
-	v1.GET("/search/:actor", v1alpha.SearchActorsHandler)
+	v1.Use(middleware.Auth)
+	v1.GET("/search/:actor", v1alpha1.SearchActorsHandler)
+	v1.DELETE("/account", v1alpha1.DeleteAccountHandler)
 	return api
 }

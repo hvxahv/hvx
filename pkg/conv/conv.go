@@ -9,3 +9,7 @@ func StringToUint(v string) (uint, error) {
 	}
 	return uint(id), nil
 }
+
+func UintToString(v uint) string {
+	return strconv.Itoa(int(v))
+}

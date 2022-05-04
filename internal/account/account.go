@@ -3,16 +3,16 @@ package account
 import (
 	"context"
 	"fmt"
+	"github.com/go-playground/validator/v10"
 	pb "github.com/hvxahv/hvx/api/grpc/proto/account/v1alpha1"
 	"github.com/hvxahv/hvx/pkg/cockroach"
-	"google.golang.org/protobuf/types/known/emptypb"
-	"strconv"
-
-	"github.com/go-playground/validator/v10"
+	"github.com/hvxahv/hvx/pkg/v"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	"golang.org/x/crypto/bcrypt"
+	"google.golang.org/protobuf/types/known/emptypb"
 	"gorm.io/gorm"
+	"strconv"
 )
 
 // Accounts is a struct for account.
@@ -110,10 +110,14 @@ func (a *server) GetAccountByUsername(ctx context.Context, in *pb.GetAccountByUs
 }
 
 func (a *server) DeleteAccount(ctx context.Context, in *pb.DeleteAccountRequest) (*pb.DeleteAccountResponse, error) {
-	v := NewAuthorization(in.Username, in.Password)
+	username, err := v.GetUsernameByTokenWithContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+	v := NewAuthorization(username, in.Password)
 
 	db := cockroach.GetDB()
-	if err := db.Debug().Table("accounts").Where("username = ?", in.Username).First(&v).Error; err != nil {
+	if err := db.Debug().Table("accounts").Where("username = ?", username).First(&v).Error; err != nil {
 		return nil, err
 	}
 
@@ -130,6 +134,7 @@ func (a *server) DeleteAccount(ctx context.Context, in *pb.DeleteAccountRequest)
 	}
 
 	// TODO - Delete Account related data.
+
 	return &pb.DeleteAccountResponse{Code: "200", Reply: "ok"}, nil
 }
 
