@@ -264,7 +264,7 @@ func NewActorsAdd(preferredUsername, host, avatar, name, summary, inbox, address
 
 // NewActors creates a new instance of Actors.
 func NewActors(preferredUsername, publicKey, actorType string) *Actors {
-	domain := viper.GetString("localhost")
+	domain := viper.GetString("domain")
 	return &Actors{
 		PreferredUsername: preferredUsername,
 		Domain:            domain,

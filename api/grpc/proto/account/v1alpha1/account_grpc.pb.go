@@ -39,6 +39,7 @@ type AccountsClient interface {
 	// First you need the password as a parameter to verify that the account
 	// is correct, and then delete the account system and actor table when
 	// the password is verified to be correct.
+	// With http api.
 	DeleteAccount(ctx context.Context, in *DeleteAccountRequest, opts ...grpc.CallOption) (*DeleteAccountResponse, error)
 	// EditUsername Update the account username.
 	// will change both the username and preferred_username in the
@@ -163,6 +164,7 @@ type AccountsServer interface {
 	// First you need the password as a parameter to verify that the account
 	// is correct, and then delete the account system and actor table when
 	// the password is verified to be correct.
+	// With http api.
 	DeleteAccount(context.Context, *DeleteAccountRequest) (*DeleteAccountResponse, error)
 	// EditUsername Update the account username.
 	// will change both the username and preferred_username in the

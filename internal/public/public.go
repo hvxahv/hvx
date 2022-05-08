@@ -5,8 +5,8 @@ import (
 	acct "github.com/hvxahv/hvx/api/grpc/proto/account/v1alpha1"
 	pb "github.com/hvxahv/hvx/api/grpc/proto/public/v1alpha1"
 	"github.com/hvxahv/hvx/pkg/activitypub"
-	"github.com/hvxahv/hvx/pkg/v"
-	"github.com/hvxahv/hvx/pkg/v/cli"
+	v "github.com/hvxahv/hvx/pkg/microsvc"
+	"github.com/hvxahv/hvx/pkg/microsvc/client"
 	"github.com/spf13/viper"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
@@ -31,7 +31,7 @@ func (s *server) GetPublicAccountCount(ctx context.Context, g *emptypb.Empty) (*
 		return nil, err
 	}
 	defer conn.Close()
-	client := cli.NewHvxClient(conn)
+	client := client.NewHvxClient(conn)
 	reply, err := client.GetAccountCount(ctx, &emptypb.Empty{})
 	if err != nil {
 		return nil, err
@@ -53,7 +53,7 @@ func (s *server) GetWebfinger(ctx context.Context, in *pb.GetWebfingerRequest) (
 		return nil, err
 	}
 	defer conn.Close()
-	client := cli.NewHvxClient(conn)
+	client := client.NewHvxClient(conn)
 
 	exist, err := client.IsExist(ctx, &acct.IsExistRequest{
 		Username: name,
@@ -87,7 +87,7 @@ func (s *server) GetActor(ctx context.Context, in *pb.GetActorRequest) (*pb.GetA
 		return nil, err
 	}
 	defer conn.Close()
-	client := cli.NewHvxClient(conn)
+	client := client.NewHvxClient(conn)
 	a, err := client.GetActorByAccountUsername(ctx, &acct.GetActorByAccountUsernameRequest{
 		Username: in.Actor,
 	})
@@ -132,7 +132,7 @@ func (s *server) CreateAccounts(ctx context.Context, in *pb.CreateAccountsReques
 		return nil, err
 	}
 	defer conn.Close()
-	client := cli.NewHvxClient(conn)
+	client := client.NewHvxClient(conn)
 	reply, err := client.CreateAccount(ctx, &acct.CreateAccountRequest{
 		Username:  in.Username,
 		Mail:      in.Mail,
@@ -155,7 +155,7 @@ func (s *server) Authenticate(ctx context.Context, in *pb.AuthenticateRequest) (
 		return nil, err
 	}
 	defer conn.Close()
-	client := cli.NewHvxClient(conn)
+	client := client.NewHvxClient(conn)
 	reply, err := client.Verify(ctx, &acct.VerifyRequest{
 		Username: in.Username,
 		Password: in.Password,

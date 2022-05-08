@@ -1,4 +1,4 @@
-package v
+package microsvc
 
 import (
 	"fmt"
@@ -41,6 +41,16 @@ func New(opts ...Option) *Cfg {
 	}
 	return &Cfg{
 		opts: o,
+	}
+}
+
+type address struct {
+	name string
+}
+
+func NewAddress(svcName string) *address {
+	return &address{
+		name: svcName,
 	}
 }
 

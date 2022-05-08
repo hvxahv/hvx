@@ -3,7 +3,7 @@ package public
 import (
 	"github.com/google/uuid"
 	pb "github.com/hvxahv/hvx/api/grpc/proto/public/v1alpha1"
-	"github.com/hvxahv/hvx/pkg/v"
+	v "github.com/hvxahv/hvx/pkg/microsvc"
 	"github.com/pkg/errors"
 )
 

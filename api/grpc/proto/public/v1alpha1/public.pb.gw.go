@@ -285,7 +285,7 @@ func RegisterPublicHandlerServer(ctx context.Context, mux *runtime.ServeMux, ser
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/hvxahv.v1alpha1.proto.Public/CreateAccounts", runtime.WithHTTPPathPattern("/public/account/signup"))
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/hvxahv.v1alpha1.proto.Public/CreateAccounts", runtime.WithHTTPPathPattern("/public/account/create"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -462,7 +462,7 @@ func RegisterPublicHandlerClient(ctx context.Context, mux *runtime.ServeMux, cli
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/hvxahv.v1alpha1.proto.Public/CreateAccounts", runtime.WithHTTPPathPattern("/public/account/signup"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/hvxahv.v1alpha1.proto.Public/CreateAccounts", runtime.WithHTTPPathPattern("/public/account/create"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -549,7 +549,7 @@ var (
 
 	pattern_Public_GetPublicAccountCount_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"public", "account", "count"}, ""))
 
-	pattern_Public_CreateAccounts_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"public", "account", "signup"}, ""))
+	pattern_Public_CreateAccounts_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"public", "account", "create"}, ""))
 
 	pattern_Public_Authenticate_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"public", "account", "auth"}, ""))
 

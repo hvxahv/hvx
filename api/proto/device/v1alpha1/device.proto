@@ -2,6 +2,9 @@ syntax = "proto3";
 
 package hvxahv.v1alpha1.proto;
 option go_package = "github.com/hvxahv/api/proto/device/v1alpha";
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
 
 service Devices {
   // DeviceIsExistByHash Gets whether the device is authenticated by the device hash.
@@ -25,8 +28,13 @@ service Devices {
   // GetDeviceByHash Get detailed data about the device by its unique hash.
   rpc GetDeviceByHash (GetDeviceByHashRequest) returns (Device) {}
 
-  // DeleteDeviceAllByAccountID Delete all logged-in devices by account id.
-  rpc DeleteDeviceAllByAccountID (DeleteDeviceAllByAccountIDRequest) returns (DeleteDeviceAllByAccountIDResponse) {}
+  // DeleteDeviceByWithAccountID Delete all logged-in devices by account id.
+  rpc DeleteDeviceAllByAccountID (google.protobuf.Empty) returns (DeleteDeviceAllByAccountIDResponse) {
+    option (google.api.http) = {
+      delete: "/api/v1/device/all"
+      body: "*"
+    };
+  }
 
   // DeleteDeviceByID Deletes a device by its device id.
   rpc DeleteDeviceByID (DeleteDeviceByIDRequest) returns (DeleteDeviceByIDResponse) {}
@@ -86,10 +94,6 @@ message GetDeviceByIDRequest {
 
 message GetDeviceByHashRequest {
   string hash = 1;
-}
-
-message DeleteDeviceAllByAccountIDRequest {
-  string account_id = 1;
 }
 
 message DeleteDeviceAllByAccountIDResponse {

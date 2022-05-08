@@ -147,18 +147,6 @@ func (a *server) GetDeviceByHash(ctx context.Context, in *pb.GetDeviceByHashRequ
 	}, nil
 }
 
-func (a *server) DeleteDeviceAllByAccountID(ctx context.Context, in *pb.DeleteDeviceAllByAccountIDRequest) (*pb.DeleteDeviceAllByAccountIDResponse, error) {
-	id, err := strconv.Atoi(in.AccountId)
-	if err != nil {
-		return nil, err
-	}
-	db := cockroach.GetDB()
-	if err := db.Debug().Table("devices").Where("account_id = ?", id).Unscoped().Delete(&Devices{}).Error; err != nil {
-		return nil, err
-	}
-	return &pb.DeleteDeviceAllByAccountIDResponse{Code: "200", Reply: "ok"}, nil
-}
-
 func (a *server) DeleteDeviceByID(ctx context.Context, in *pb.DeleteDeviceByIDRequest) (*pb.DeleteDeviceByIDResponse, error) {
 	id, err := strconv.Atoi(in.DeviceId)
 	if err != nil {
@@ -191,4 +179,18 @@ func (a *server) DeleteDeviceByHash(ctx context.Context, in *pb.DeleteDeviceByHa
 
 func NewDevices(accountID uint, ua, hash, privateKey, publicKey string) *Devices {
 	return &Devices{AccountID: accountID, Device: ua, Hash: hash, PrivateKey: privateKey, PublicKey: publicKey}
+}
+
+func NewDevicesAccountID(id uint) *Devices {
+	return &Devices{
+		AccountID: id,
+	}
+}
+
+func (d *Devices) DeleteAllByAccountID() error {
+	db := cockroach.GetDB()
+	if err := db.Debug().Table("devices").Where("account_id = ?", d.AccountID).Unscoped().Delete(&Devices{}).Error; err != nil {
+		return err
+	}
+	return nil
 }

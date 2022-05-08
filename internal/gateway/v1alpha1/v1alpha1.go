@@ -2,8 +2,8 @@ package v1alpha1
 
 import (
 	"github.com/gin-gonic/gin"
+	v "github.com/hvxahv/hvx/pkg/microsvc"
 	"github.com/hvxahv/hvx/pkg/proxy"
-	"github.com/hvxahv/hvx/pkg/v"
 )
 
 func SearchActorsHandler(c *gin.Context) {

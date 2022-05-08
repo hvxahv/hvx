@@ -3,7 +3,7 @@ package account
 import (
 	"github.com/google/uuid"
 	pb "github.com/hvxahv/hvx/api/grpc/proto/account/v1alpha1"
-	"github.com/hvxahv/hvx/pkg/v"
+	v "github.com/hvxahv/hvx/pkg/microsvc"
 	"github.com/pkg/errors"
 )
 
@@ -19,9 +19,7 @@ const (
 	serviceName = "account"
 )
 
-// Run starts the server. It will block until the server is shutdown. If the server fails to start, it will return an error.
 func Run() error {
-
 	s := v.New(
 		v.WithServiceName(serviceName),
 		v.WithServiceVersion("v1alpha"),
@@ -33,11 +31,11 @@ func Run() error {
 	pb.RegisterAuthServer(s, &server{})
 
 	if err := pb.RegisterActorHandler(s.GetCtx(), s.GetMux(), s.GetConn()); err != nil {
-		return errors.Errorf("Failed to register actor services: %v", err)
+		return errors.Errorf("Failed to register %s services: %v", serviceName, err)
 	}
 
 	if err := pb.RegisterAccountsHandler(s.GetCtx(), s.GetMux(), s.GetConn()); err != nil {
-		return errors.Errorf("Failed to register actor services: %v", err)
+		return errors.Errorf("Failed to register %s services: %v", serviceName, err)
 	}
 
 	if err := s.Run(); err != nil {
