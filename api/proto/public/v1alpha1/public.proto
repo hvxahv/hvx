@@ -25,7 +25,7 @@ service Public {
 
   rpc CreateAccounts(CreateAccountsRequest) returns (CreateAccountsResponse) {
     option (google.api.http) = {
-      post: "/public/account/signup",
+      post: "/public/account/create",
       body: "*"
     };
   }

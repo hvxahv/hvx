@@ -8,11 +8,6 @@
 package article
 
 import (
-	"context"
-	"strconv"
-
-	pb "github.com/hvxahv/hvx/api/article/v1alpha"
-	"github.com/hvxahv/hvx/pkg/cockroach"
 	"github.com/lib/pq"
 	"gorm.io/gorm"
 )
@@ -108,194 +103,195 @@ func (a *Articles) EditArticleVisibility(visibility uint) *Articles {
 	return a
 }
 
-func (a *article) CreateArticle(ctx context.Context, in *pb.CreateArticleRequest) (*pb.CreateArticleResponse, error) {
-	db := cockroach.GetDB()
-
-	aid, err := strconv.Atoi(in.AccountId)
-	if err != nil {
-		return nil, err
-	}
-
-	v, err := strconv.Atoi(in.Visibility)
-	if err != nil {
-		return nil, err
-	}
-
-	var s = false
-	if in.State {
-		s = true
-	}
-
-	articles := &Articles{
-		AccountID:      uint(aid),
-		Title:          in.Title,
-		Summary:        in.Summary,
-		Article:        in.Article,
-		Tags:           in.Tags,
-		AttachmentType: in.AttachmentType,
-		Attachments:    in.Attachments,
-		TO:             in.To,
-		CC:             in.Cc,
-		Statuses:       s,
-		NSFW:           in.Nsfw,
-		Visibility:     uint(v),
-	}
-
-	if err := db.AutoMigrate(&Articles{}); err != nil {
-		return nil, err
-	}
-
-	if err := db.Debug().
-		Table("articles").
-		Create(&articles).Error; err != nil {
-		return nil, err
-	}
-
-	return &pb.CreateArticleResponse{Code: "200", Reply: "ok"}, nil
-}
-
-func (a *article) GetArticle(ctx context.Context, in *pb.GetArticleRequest) (*pb.GetArticleResponse, error) {
-	db := cockroach.GetDB()
-
-	id, err := strconv.Atoi(in.Id)
-	if err != nil {
-		return nil, err
-	}
-
-	if err := db.Debug().
-		Table("articles").
-		Where("id = ?", uint(id)).
-		First(&a.Articles).
-		Error; err != nil {
-		return nil, err
-	}
-
-	data := &pb.GetArticleResponse{
-		Code: "",
-		Id:   in.Id,
-		Article: &pb.CreateArticleRequest{
-			AccountId:      strconv.Itoa(int(a.Articles.AccountID)),
-			Title:          a.Articles.Title,
-			Summary:        a.Articles.Summary,
-			Article:        a.Articles.Article,
-			Tags:           a.Articles.Tags,
-			AttachmentType: a.Articles.AttachmentType,
-			Attachments:    a.Articles.Attachments,
-			To:             a.Articles.TO,
-			Cc:             a.Articles.CC,
-			State:          a.Articles.Statuses,
-			Nsfw:           a.Articles.NSFW,
-			Visibility:     strconv.Itoa(int(a.Articles.Visibility)),
-		},
-	}
-
-	return &pb.GetArticleResponse{Code: "200", Article: data.Article}, nil
-}
-
-func (a *article) GetArticlesByAccountID(ctx context.Context, in *pb.GetArticlesByAccountIDRequest) (*pb.GetArticlesByAccountIDResponse, error) {
-	db := cockroach.GetDB()
-
-	var articles []Articles
-
-	if err := db.Debug().
-		Table("articles").
-		Where("account_id = ?", in.AccountId).
-		Find(&articles).
-		Error; err != nil {
-		return nil, err
-	}
-
-	var r []*pb.CreateArticleRequest
-	for _, v := range articles {
-		r = append(r, &pb.CreateArticleRequest{
-			Id:             strconv.Itoa(int(v.ID)),
-			AccountId:      strconv.Itoa(int(v.AccountID)),
-			Title:          v.Title,
-			Summary:        v.Summary,
-			Article:        v.Article,
-			Tags:           v.Tags,
-			AttachmentType: v.AttachmentType,
-			Attachments:    v.Attachments,
-			To:             v.TO,
-			Cc:             v.CC,
-			State:          v.Statuses,
-			Nsfw:           v.NSFW,
-			Visibility:     strconv.Itoa(int(v.Visibility)),
-		})
-	}
-
-	return &pb.GetArticlesByAccountIDResponse{Code: "200", Articles: r}, nil
-}
-
-func (a *article) UpdateArticle(ctx context.Context, in *pb.UpdateArticleRequest) (*pb.UpdateArticleResponse, error) {
-	db := cockroach.GetDB()
-
-	id, err := strconv.Atoi(in.Id)
-	if err != nil {
-		return nil, err
-	}
-
-	aid, err := strconv.Atoi(in.AccountId)
-	if err != nil {
-		return nil, err
-	}
-
-	articles := new(Articles)
-	switch {
-	case in.Title != "":
-		articles.EditArticleTitle(in.Title)
-	case in.Summary != "":
-		articles.EditArticleSummary(in.Summary)
-	case in.Article != "":
-		articles.EditArticleArticle(in.Article)
-	case len(in.Tags) != 0:
-		articles.EditArticleTags(in.Tags)
-	case in.AttachmentType != "":
-		articles.EditArticleAttachmentType(in.AttachmentType)
-	case len(in.Attachments) != 0:
-		articles.EditArticleAttachments(in.Attachments)
-	case in.Nsfw:
-		articles.EditArticleNSFW(in.Nsfw)
-	case in.Visibility != "":
-		v, err := strconv.Atoi(in.Visibility)
-		if err != nil {
-			return nil, err
-		}
-		articles.EditArticleVisibility(uint(v))
-	}
-
-	if err := db.Debug().
-		Table("articles").
-		Where("id = ? AND account_id = ?", id, aid).
-		Updates(articles).
-		Error; err != nil {
-		return nil, err
-	}
-
-	return &pb.UpdateArticleResponse{Code: "200", Reply: "ok"}, nil
-}
-
-func (a *article) DeleteArticle(ctx context.Context, in *pb.DeleteArticleRequest) (*pb.DeleteArticleResponse, error) {
-	db := cockroach.GetDB()
-
-	id, err := strconv.Atoi(in.Id)
-	if err != nil {
-		return nil, err
-	}
-
-	aid, err := strconv.Atoi(in.AccountId)
-	if err != nil {
-		return nil, err
-	}
-
-	if err := db.Debug().
-		Table("articles").
-		Where("id = ? AND account_id = ?", id, aid).
-		Unscoped().
-		Delete(&Articles{}).
-		Error; err != nil {
-		return nil, err
-	}
-
-	return &pb.DeleteArticleResponse{Code: "200", Reply: "ok"}, nil
-}
+//
+//func (a *article) CreateArticle(ctx context.Context, in *pb.CreateArticleRequest) (*pb.CreateArticleResponse, error) {
+//	db := cockroach.GetDB()
+//
+//	aid, err := strconv.Atoi(in.AccountId)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	v, err := strconv.Atoi(in.Visibility)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	var s = false
+//	if in.State {
+//		s = true
+//	}
+//
+//	articles := &Articles{
+//		AccountID:      uint(aid),
+//		Title:          in.Title,
+//		Summary:        in.Summary,
+//		Article:        in.Article,
+//		Tags:           in.Tags,
+//		AttachmentType: in.AttachmentType,
+//		Attachments:    in.Attachments,
+//		TO:             in.To,
+//		CC:             in.Cc,
+//		Statuses:       s,
+//		NSFW:           in.Nsfw,
+//		Visibility:     uint(v),
+//	}
+//
+//	if err := db.AutoMigrate(&Articles{}); err != nil {
+//		return nil, err
+//	}
+//
+//	if err := db.Debug().
+//		Table("articles").
+//		Create(&articles).Error; err != nil {
+//		return nil, err
+//	}
+//
+//	return &pb.CreateArticleResponse{Code: "200", Reply: "ok"}, nil
+//}
+//
+//func (a *article) GetArticle(ctx context.Context, in *pb.GetArticleRequest) (*pb.GetArticleResponse, error) {
+//	db := cockroach.GetDB()
+//
+//	id, err := strconv.Atoi(in.Id)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	if err := db.Debug().
+//		Table("articles").
+//		Where("id = ?", uint(id)).
+//		First(&a.Articles).
+//		Error; err != nil {
+//		return nil, err
+//	}
+//
+//	data := &pb.GetArticleResponse{
+//		Code: "",
+//		Id:   in.Id,
+//		Article: &pb.CreateArticleRequest{
+//			AccountId:      strconv.Itoa(int(a.Articles.AccountID)),
+//			Title:          a.Articles.Title,
+//			Summary:        a.Articles.Summary,
+//			Article:        a.Articles.Article,
+//			Tags:           a.Articles.Tags,
+//			AttachmentType: a.Articles.AttachmentType,
+//			Attachments:    a.Articles.Attachments,
+//			To:             a.Articles.TO,
+//			Cc:             a.Articles.CC,
+//			State:          a.Articles.Statuses,
+//			Nsfw:           a.Articles.NSFW,
+//			Visibility:     strconv.Itoa(int(a.Articles.Visibility)),
+//		},
+//	}
+//
+//	return &pb.GetArticleResponse{Code: "200", Article: data.Article}, nil
+//}
+//
+//func (a *article) GetArticlesByAccountID(ctx context.Context, in *pb.GetArticlesByAccountIDRequest) (*pb.GetArticlesByAccountIDResponse, error) {
+//	db := cockroach.GetDB()
+//
+//	var articles []Articles
+//
+//	if err := db.Debug().
+//		Table("articles").
+//		Where("account_id = ?", in.AccountId).
+//		Find(&articles).
+//		Error; err != nil {
+//		return nil, err
+//	}
+//
+//	var r []*pb.CreateArticleRequest
+//	for _, v := range articles {
+//		r = append(r, &pb.CreateArticleRequest{
+//			Id:             strconv.Itoa(int(v.ID)),
+//			AccountId:      strconv.Itoa(int(v.AccountID)),
+//			Title:          v.Title,
+//			Summary:        v.Summary,
+//			Article:        v.Article,
+//			Tags:           v.Tags,
+//			AttachmentType: v.AttachmentType,
+//			Attachments:    v.Attachments,
+//			To:             v.TO,
+//			Cc:             v.CC,
+//			State:          v.Statuses,
+//			Nsfw:           v.NSFW,
+//			Visibility:     strconv.Itoa(int(v.Visibility)),
+//		})
+//	}
+//
+//	return &pb.GetArticlesByAccountIDResponse{Code: "200", Articles: r}, nil
+//}
+//
+//func (a *article) UpdateArticle(ctx context.Context, in *pb.UpdateArticleRequest) (*pb.UpdateArticleResponse, error) {
+//	db := cockroach.GetDB()
+//
+//	id, err := strconv.Atoi(in.Id)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	aid, err := strconv.Atoi(in.AccountId)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	articles := new(Articles)
+//	switch {
+//	case in.Title != "":
+//		articles.EditArticleTitle(in.Title)
+//	case in.Summary != "":
+//		articles.EditArticleSummary(in.Summary)
+//	case in.Article != "":
+//		articles.EditArticleArticle(in.Article)
+//	case len(in.Tags) != 0:
+//		articles.EditArticleTags(in.Tags)
+//	case in.AttachmentType != "":
+//		articles.EditArticleAttachmentType(in.AttachmentType)
+//	case len(in.Attachments) != 0:
+//		articles.EditArticleAttachments(in.Attachments)
+//	case in.Nsfw:
+//		articles.EditArticleNSFW(in.Nsfw)
+//	case in.Visibility != "":
+//		v, err := strconv.Atoi(in.Visibility)
+//		if err != nil {
+//			return nil, err
+//		}
+//		articles.EditArticleVisibility(uint(v))
+//	}
+//
+//	if err := db.Debug().
+//		Table("articles").
+//		Where("id = ? AND account_id = ?", id, aid).
+//		Updates(articles).
+//		Error; err != nil {
+//		return nil, err
+//	}
+//
+//	return &pb.UpdateArticleResponse{Code: "200", Reply: "ok"}, nil
+//}
+//
+//func (a *article) DeleteArticle(ctx context.Context, in *pb.DeleteArticleRequest) (*pb.DeleteArticleResponse, error) {
+//	db := cockroach.GetDB()
+//
+//	id, err := strconv.Atoi(in.Id)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	aid, err := strconv.Atoi(in.AccountId)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	if err := db.Debug().
+//		Table("articles").
+//		Where("id = ? AND account_id = ?", id, aid).
+//		Unscoped().
+//		Delete(&Articles{}).
+//		Error; err != nil {
+//		return nil, err
+//	}
+//
+//	return &pb.DeleteArticleResponse{Code: "200", Reply: "ok"}, nil
+//}

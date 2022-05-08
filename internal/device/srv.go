@@ -10,7 +10,8 @@ package device
 import (
 	"github.com/google/uuid"
 	pb "github.com/hvxahv/hvx/api/grpc/proto/device/v1alpha1"
-	"github.com/hvxahv/hvx/pkg/v"
+	v "github.com/hvxahv/hvx/pkg/microsvc"
+	"github.com/pkg/errors"
 )
 
 const (
@@ -33,6 +34,9 @@ func Run() error {
 	pb.RegisterDevicesServer(s, &server{})
 	if err := s.Run(); err != nil {
 		return err
+	}
+	if err := pb.RegisterDevicesHandler(s.GetCtx(), s.GetMux(), s.GetConn()); err != nil {
+		return errors.Errorf("Failed to register %s services: %v", serviceName, err)
 	}
 
 	return nil

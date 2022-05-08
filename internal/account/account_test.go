@@ -76,7 +76,7 @@ func TestAccount_Create(t *testing.T) {
 		PublicKey: "public_key",
 	}
 	s := &server{}
-	a, err := s.Create(context.Background(), d)
+	a, err := s.CreateAccount(context.Background(), d)
 	if err != nil {
 		t.Error(err)
 		return
@@ -99,10 +99,10 @@ func TestAccount_GetAccountByUsername(t *testing.T) {
 
 func TestAccount_Delete(t *testing.T) {
 	d := &pb.DeleteAccountRequest{
-		Username: "hvxahv2",
 		Password: "hvxahv123",
 	}
 	s := &server{}
+
 	a, err := s.DeleteAccount(context.Background(), d)
 	if err != nil {
 		t.Error(err)

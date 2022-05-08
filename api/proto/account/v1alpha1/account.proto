@@ -31,6 +31,7 @@ service Accounts {
   // First you need the password as a parameter to verify that the account
   // is correct, and then delete the account system and actor table when
   // the password is verified to be correct.
+  // With http api.
   rpc DeleteAccount (DeleteAccountRequest) returns (DeleteAccountResponse) {
     option (google.api.http) = {
       delete: "/api/v1/account"

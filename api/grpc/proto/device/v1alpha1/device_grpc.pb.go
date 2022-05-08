@@ -7,6 +7,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -33,8 +34,8 @@ type DevicesClient interface {
 	GetDeviceByID(ctx context.Context, in *GetDeviceByIDRequest, opts ...grpc.CallOption) (*Device, error)
 	// GetDeviceByHash Get detailed data about the device by its unique hash.
 	GetDeviceByHash(ctx context.Context, in *GetDeviceByHashRequest, opts ...grpc.CallOption) (*Device, error)
-	// DeleteDeviceAllByAccountID Delete all logged-in devices by account id.
-	DeleteDeviceAllByAccountID(ctx context.Context, in *DeleteDeviceAllByAccountIDRequest, opts ...grpc.CallOption) (*DeleteDeviceAllByAccountIDResponse, error)
+	// DeleteDeviceByWithAccountID Delete all logged-in devices by account id.
+	DeleteDeviceAllByAccountID(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*DeleteDeviceAllByAccountIDResponse, error)
 	// DeleteDeviceByID Deletes a device by its device id.
 	DeleteDeviceByID(ctx context.Context, in *DeleteDeviceByIDRequest, opts ...grpc.CallOption) (*DeleteDeviceByIDResponse, error)
 	// DeleteDeviceByHash Deletes a device by its device hash.
@@ -103,7 +104,7 @@ func (c *devicesClient) GetDeviceByHash(ctx context.Context, in *GetDeviceByHash
 	return out, nil
 }
 
-func (c *devicesClient) DeleteDeviceAllByAccountID(ctx context.Context, in *DeleteDeviceAllByAccountIDRequest, opts ...grpc.CallOption) (*DeleteDeviceAllByAccountIDResponse, error) {
+func (c *devicesClient) DeleteDeviceAllByAccountID(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*DeleteDeviceAllByAccountIDResponse, error) {
 	out := new(DeleteDeviceAllByAccountIDResponse)
 	err := c.cc.Invoke(ctx, "/hvxahv.v1alpha1.proto.Devices/DeleteDeviceAllByAccountID", in, out, opts...)
 	if err != nil {
@@ -149,8 +150,8 @@ type DevicesServer interface {
 	GetDeviceByID(context.Context, *GetDeviceByIDRequest) (*Device, error)
 	// GetDeviceByHash Get detailed data about the device by its unique hash.
 	GetDeviceByHash(context.Context, *GetDeviceByHashRequest) (*Device, error)
-	// DeleteDeviceAllByAccountID Delete all logged-in devices by account id.
-	DeleteDeviceAllByAccountID(context.Context, *DeleteDeviceAllByAccountIDRequest) (*DeleteDeviceAllByAccountIDResponse, error)
+	// DeleteDeviceByWithAccountID Delete all logged-in devices by account id.
+	DeleteDeviceAllByAccountID(context.Context, *emptypb.Empty) (*DeleteDeviceAllByAccountIDResponse, error)
 	// DeleteDeviceByID Deletes a device by its device id.
 	DeleteDeviceByID(context.Context, *DeleteDeviceByIDRequest) (*DeleteDeviceByIDResponse, error)
 	// DeleteDeviceByHash Deletes a device by its device hash.
@@ -179,7 +180,7 @@ func (UnimplementedDevicesServer) GetDeviceByID(context.Context, *GetDeviceByIDR
 func (UnimplementedDevicesServer) GetDeviceByHash(context.Context, *GetDeviceByHashRequest) (*Device, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetDeviceByHash not implemented")
 }
-func (UnimplementedDevicesServer) DeleteDeviceAllByAccountID(context.Context, *DeleteDeviceAllByAccountIDRequest) (*DeleteDeviceAllByAccountIDResponse, error) {
+func (UnimplementedDevicesServer) DeleteDeviceAllByAccountID(context.Context, *emptypb.Empty) (*DeleteDeviceAllByAccountIDResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteDeviceAllByAccountID not implemented")
 }
 func (UnimplementedDevicesServer) DeleteDeviceByID(context.Context, *DeleteDeviceByIDRequest) (*DeleteDeviceByIDResponse, error) {
@@ -309,7 +310,7 @@ func _Devices_GetDeviceByHash_Handler(srv interface{}, ctx context.Context, dec 
 }
 
 func _Devices_DeleteDeviceAllByAccountID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteDeviceAllByAccountIDRequest)
+	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -321,7 +322,7 @@ func _Devices_DeleteDeviceAllByAccountID_Handler(srv interface{}, ctx context.Co
 		FullMethod: "/hvxahv.v1alpha1.proto.Devices/DeleteDeviceAllByAccountID",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DevicesServer).DeleteDeviceAllByAccountID(ctx, req.(*DeleteDeviceAllByAccountIDRequest))
+		return srv.(DevicesServer).DeleteDeviceAllByAccountID(ctx, req.(*emptypb.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }

@@ -6,7 +6,6 @@ import (
 	"github.com/go-playground/validator/v10"
 	pb "github.com/hvxahv/hvx/api/grpc/proto/account/v1alpha1"
 	"github.com/hvxahv/hvx/pkg/cockroach"
-	"github.com/hvxahv/hvx/pkg/v"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	"golang.org/x/crypto/bcrypt"
@@ -54,44 +53,6 @@ func (a *server) IsExist(ctx context.Context, in *pb.IsExistRequest) (*pb.IsExis
 	return &pb.IsExistResponse{IsExist: false}, nil
 }
 
-func (a *server) CreateAccount(ctx context.Context, in *pb.CreateAccountRequest) (*pb.CreateAccountResponse, error) {
-	if err := validator.New().Struct(in); err != nil {
-		return nil, errors.New("FAILED_TO_VALIDATOR")
-	}
-
-	db := cockroach.GetDB()
-
-	if err := db.AutoMigrate(&Actors{}); err != nil {
-		return nil, errors.New("FAILED_TO_AUTOMATICALLY_CREATE_ACTOR_DATABASE")
-	}
-
-	if err := db.AutoMigrate(&Accounts{}); err != nil {
-		return nil, errors.New("FAILED_TO_AUTOMATICALLY_CREATE_ACCOUNT_DATABASE")
-	}
-
-	if err := db.Debug().
-		Table("accounts").
-		Where("username = ? ", in.Username).Or("mail = ?", in.Mail).
-		First(&Accounts{}); err != nil {
-		ok := cockroach.IsNotFound(err.Error)
-		if !ok {
-			return nil, errors.New("THE_USERNAME_OR_MAIL_ALREADY_EXISTS")
-		}
-	}
-
-	n := NewActors(in.Username, in.PublicKey, "Person")
-	if err := db.Debug().Table("actors").Create(&n).Error; err != nil {
-		return nil, errors.Errorf("FAILED_TO_CREATE_ACTOR")
-	}
-
-	v := NewAccounts(n.ID, in.Username, in.Mail, in.Password)
-	if err := db.Debug().Table("accounts").Create(&v).Error; err != nil {
-		return nil, errors.Errorf("FAILED_TO_CREATE_ACCOUNT")
-	}
-
-	return &pb.CreateAccountResponse{Code: "200", Reply: "ok"}, nil
-}
-
 func (a *server) GetAccountByUsername(ctx context.Context, in *pb.GetAccountByUsernameRequest) (*pb.GetAccountByUsernameResponse, error) {
 	db := cockroach.GetDB()
 
@@ -107,35 +68,6 @@ func (a *server) GetAccountByUsername(ctx context.Context, in *pb.GetAccountByUs
 		ActorId:   strconv.Itoa(int(a.Accounts.ActorID)),
 		IsPrivate: strconv.FormatBool(a.Accounts.IsPrivate),
 	}, nil
-}
-
-func (a *server) DeleteAccount(ctx context.Context, in *pb.DeleteAccountRequest) (*pb.DeleteAccountResponse, error) {
-	username, err := v.GetUsernameByTokenWithContext(ctx)
-	if err != nil {
-		return nil, err
-	}
-	v := NewAuthorization(username, in.Password)
-
-	db := cockroach.GetDB()
-	if err := db.Debug().Table("accounts").Where("username = ?", username).First(&v).Error; err != nil {
-		return nil, err
-	}
-
-	if err := bcrypt.CompareHashAndPassword([]byte(v.Password), []byte(in.Password)); err != nil {
-		return nil, errors.Errorf("PASSWORD_VERIFICATION_FAILED")
-	}
-
-	if err := db.Debug().Table("actors").Where("id = ?", v.ActorID).Unscoped().Delete(&Actors{}).Error; err != nil {
-		return nil, err
-	}
-
-	if err := db.Debug().Table("accounts").Where("id = ?", v.ID).Unscoped().Delete(&Accounts{}).Error; err != nil {
-		return nil, err
-	}
-
-	// TODO - Delete Account related data.
-
-	return &pb.DeleteAccountResponse{Code: "200", Reply: "ok"}, nil
 }
 
 func (a *server) EditUsername(ctx context.Context, in *pb.EditUsernameRequest) (*pb.EditUsernameResponse, error) {
@@ -232,4 +164,79 @@ func NewAccounts(actorID uint, username, mail, password string) *Accounts {
 		Password: string(hash),
 		ActorID:  actorID,
 	}
+}
+
+func NewCreateAccounts(username, mail, password string) *Accounts {
+	return &Accounts{
+		Username: username,
+		Mail:     mail,
+		Password: password,
+	}
+}
+
+func (a *Accounts) Create(publicKey string) error {
+	if err := validator.New().Struct(a); err != nil {
+		return errors.New("FAILED_TO_VALIDATOR")
+	}
+
+	db := cockroach.GetDB()
+
+	if err := db.AutoMigrate(&Actors{}); err != nil {
+		return errors.New("FAILED_TO_AUTOMATICALLY_CREATE_ACTOR_DATABASE")
+	}
+
+	if err := db.AutoMigrate(&Accounts{}); err != nil {
+		return errors.New("FAILED_TO_AUTOMATICALLY_CREATE_ACCOUNT_DATABASE")
+	}
+
+	if err := db.Debug().
+		Table("accounts").
+		Where("username = ? ", a.Username).Or("mail = ?", a.Mail).
+		First(&Accounts{}); err != nil {
+		ok := cockroach.IsNotFound(err.Error)
+		if !ok {
+			return errors.New("THE_USERNAME_OR_MAIL_ALREADY_EXISTS")
+		}
+	}
+
+	n := NewActors(a.Username, publicKey, "Person")
+	if err := db.Debug().Table("actors").Create(&n).Error; err != nil {
+		return errors.Errorf("FAILED_TO_CREATE_ACTOR")
+	}
+
+	v := NewAccounts(n.ID, a.Username, a.Mail, a.Password)
+	if err := db.Debug().Table("accounts").Create(&v).Error; err != nil {
+		return errors.Errorf("FAILED_TO_CREATE_ACCOUNT")
+	}
+	return nil
+}
+
+func NewDeleteAccount(username, password string) *Accounts {
+	return &Accounts{
+		Username: username,
+		Password: password,
+	}
+}
+
+func (a *Accounts) DeleteAccount(password string) error {
+	v := NewAuthorization(a.Username, a.Password)
+
+	db := cockroach.GetDB()
+	if err := db.Debug().Table("accounts").Where("username = ?", a.Username).First(&v).Error; err != nil {
+		return err
+	}
+
+	if err := bcrypt.CompareHashAndPassword([]byte(v.Password), []byte(password)); err != nil {
+		return errors.Errorf("PASSWORD_VERIFICATION_FAILED")
+	}
+
+	if err := db.Debug().Table("actors").Where("id = ?", v.ActorID).Unscoped().Delete(&Actors{}).Error; err != nil {
+		return err
+	}
+
+	if err := db.Debug().Table("accounts").Where("id = ?", v.ID).Unscoped().Delete(&Accounts{}).Error; err != nil {
+		return err
+	}
+
+	return nil
 }

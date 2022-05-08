@@ -10,7 +10,7 @@ package middleware
 import (
 	"github.com/gin-gonic/gin"
 	v1alpha "github.com/hvxahv/hvx/api/grpc/proto/device/v1alpha1"
-	"github.com/hvxahv/hvx/pkg/v"
+	v "github.com/hvxahv/hvx/pkg/microsvc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 

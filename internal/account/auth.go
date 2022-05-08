@@ -7,7 +7,7 @@ import (
 	"github.com/hvxahv/hvx/pkg/cockroach"
 	"github.com/hvxahv/hvx/pkg/conv"
 	"github.com/hvxahv/hvx/pkg/identity"
-	"github.com/hvxahv/hvx/pkg/v"
+	"github.com/hvxahv/hvx/pkg/microsvc"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
 	"golang.org/x/net/context"
@@ -28,7 +28,7 @@ func (a *server) Verify(ctx context.Context, in *pb.VerifyRequest) (*pb.VerifyRe
 		return nil, errors.Errorf("PASSWORD_VERIFICATION_FAILED")
 	}
 
-	conn, err := grpc.DialContext(ctx, v.GetGRPCServiceAddress("device"), grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.DialContext(ctx, microsvc.GetGRPCServiceAddress("device"), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return nil, err
 	}

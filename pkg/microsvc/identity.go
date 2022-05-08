@@ -6,16 +6,14 @@
  * /
  */
 
-// Microservice Authorization Certification Package.
-
-package v
+package microsvc
 
 import (
+	"github.com/hvxahv/hvx/pkg/conv"
 	"github.com/hvxahv/hvx/pkg/identity"
 	"github.com/pkg/errors"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc/metadata"
-	"strings"
 )
 
 // GetUsernameByTokenWithContext To get the username from TOKEN,
@@ -27,10 +25,26 @@ func GetUsernameByTokenWithContext(ctx context.Context) (string, error) {
 	if len(bearer) != 1 {
 		return "", errors.New("UNAUTHORIZED")
 	}
-	token := strings.TrimPrefix(bearer[0], "Bearer ")
-	pares, err := identity.ParseToken(token)
+	pares, err := identity.ParseToken(bearer[0])
 	if err != nil {
 		return "", errors.New("UNAUTHORIZED")
 	}
 	return pares.Username, nil
+}
+
+func GetAccountIDWithContext(ctx context.Context) (uint, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	bearer := md.Get("authorization")
+	if len(bearer) != 1 {
+		return 0, errors.New("UNAUTHORIZED")
+	}
+	pares, err := identity.ParseToken(bearer[0])
+	if err != nil {
+		return 0, errors.New("UNAUTHORIZED")
+	}
+	aid, err := conv.StringToUint(pares.ID)
+	if err != nil {
+		return 0, err
+	}
+	return aid, nil
 }
