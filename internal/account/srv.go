@@ -11,9 +11,15 @@ type server struct {
 	pb.AccountsServer
 	pb.ActorServer
 	pb.AuthServer
-	*Accounts
-	*Actors
 }
+
+const (
+	AccountsTable = "accounts"
+	ActorsTable    = "actors"
+)
+const (
+	UsernameAlreadyExists = "THE_USERNAME_ALREADY_EXISTS"
+)
 
 const (
 	serviceName = "account"
