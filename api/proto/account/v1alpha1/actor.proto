@@ -29,8 +29,6 @@ service Actor {
   // the allowed and changeable parameters.
   // By username.
   rpc EditActor (EditActorRequest) returns (EditActorResponse) {}
-
-  rpc DeleteActor (DeleteActorRequest) returns (DeleteActorResponse) {}
 }
 
 message CreateActorRequest {
@@ -87,11 +85,3 @@ message EditActorResponse {
   string reply = 2;
 }
 
-message DeleteActorRequest {
-  string account_id = 1;
-}
-
-message DeleteActorResponse {
-  string code = 1;
-  string reply = 2;
-}

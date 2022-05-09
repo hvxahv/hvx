@@ -2,14 +2,15 @@ package account
 
 import (
 	"fmt"
+	"os"
+	"testing"
+
 	pb "github.com/hvxahv/hvx/api/grpc/proto/account/v1alpha1"
 	"github.com/hvxahv/hvx/pkg/cockroach"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"golang.org/x/net/context"
-	"os"
-	"testing"
 )
 
 func init() {
@@ -43,29 +44,8 @@ func init() {
 }
 
 func TestAccount_IsExist(t *testing.T) {
-	// Output: false if Exist in database.
-	d := &pb.IsExistRequest{
-		Username: "hvturingga",
-	}
-	s := &server{}
-	a, err := s.IsExist(context.Background(), d)
-	if err != nil {
-		t.Error(err)
-		return
-	}
-	fmt.Println(a.IsExist)
-
-	// Output: true if not found in database.
-	d2 := &pb.IsExistRequest{
-		Username: "isNotExist",
-	}
-	s2 := &server{}
-	a2, err := s2.IsExist(context.Background(), d2)
-	if err != nil {
-		t.Error(err)
-		return
-	}
-	fmt.Println(a2.IsExist)
+	ok := NewUsername("hvturingga").IsExist()
+	fmt.Println(ok)
 }
 
 func TestAccount_Create(t *testing.T) {
