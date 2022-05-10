@@ -226,7 +226,7 @@ func NewEditPassword(username, password string) *Accounts {
 func (a *Accounts) EditPassword(password, newPassword string) error {
 	v, err := NewVerify(a.Username).Verify(password)
 	if err != nil {
-		return nil
+		return err
 	}
 
 	db := cockroach.GetDB()
