@@ -31,19 +31,19 @@ func (s *server) IsExist(ctx context.Context, in *pb.IsExistRequest) (*pb.IsExis
 
 // CreateAccount ...
 func (s *server) CreateAccount(ctx context.Context, in *pb.CreateAccountRequest) (*pb.CreateAccountResponse, error) {
-	if err := NewCreateAccounts(in.Username, in.Mail, in.Password).Create(in.PublicKey); err != nil {
+	if err := NewAccountsCreate(in.Username, in.Mail, in.Password).Create(in.PublicKey); err != nil {
 		return nil, err
 	}
 	return &pb.CreateAccountResponse{Code: "200", Reply: "ok"}, nil
 }
 
-// GetAccountByUsername ...
-func (s *server) GetAccountByUsername(ctx context.Context, in *pb.GetAccountByUsernameRequest) (*pb.GetAccountByUsernameResponse, error) {
+// GetByUsername ...
+func (s *server) GetByUsername(ctx context.Context, in *pb.GetByUsernameRequest) (*pb.GetByUsernameResponse, error) {
 	a, err := NewUsername(in.Username).GetAccountByUsername()
 	if err != nil {
 		return nil, err
 	}
-	return &pb.GetAccountByUsernameResponse{
+	return &pb.GetByUsernameResponse{
 		AccountId: strconv.Itoa(int(a.ID)),
 		Username:  a.Username,
 		Mail:      a.Mail,
@@ -59,7 +59,7 @@ func (s *server) DeleteAccount(ctx context.Context, in *pb.DeleteAccountRequest)
 	if err != nil {
 		return nil, err
 	}
-	if err := NewDeleteAccount(username, in.Password).DeleteAccount(in.Password); err != nil {
+	if err := NewAccountsDelete(username, in.Password).Delete(); err != nil {
 		return nil, err
 	}
 
@@ -88,7 +88,7 @@ func (s *server) EditUsername(ctx context.Context, in *pb.EditUsernameRequest) (
 	if err != nil {
 		return nil, err
 	}
-	if err := NewEditAccountID(id).EditUsername(in.Username); err != nil {
+	if err := NewAccountsID(id).EditUsername(in.Username); err != nil {
 		return nil, err
 	}
 	return &pb.EditUsernameResponse{Code: "200", Reply: "ok"}, nil
@@ -100,7 +100,7 @@ func (s *server) EditEmail(ctx context.Context, in *pb.EditEmailRequest) (*pb.Ed
 	if err != nil {
 		return nil, err
 	}
-	if err := NewEditAccountID(id).EditEmail(in.Mail); err != nil {
+	if err := NewAccountsID(id).EditEmail(in.Mail); err != nil {
 		return nil, err
 	}
 	return &pb.EditEmailResponse{Code: "200", Reply: "ok"}, nil
@@ -108,11 +108,32 @@ func (s *server) EditEmail(ctx context.Context, in *pb.EditEmailRequest) (*pb.Ed
 
 // EditPassword ...
 func (s *server) EditPassword(ctx context.Context, in *pb.EditPasswordRequest) (*pb.EditPasswordResponse, error) {
-	if err := NewEditPassword(in.Username, in.Password).EditPassword(in.Password, in.New); err != nil {
+	if err := NewEditPassword(in.Username, in.Password).EditPassword(in.New); err != nil {
 		return nil, err
 	}
 	// TODO - Edit Account related data.
 	return &pb.EditPasswordResponse{Code: "200", Reply: "ok"}, nil
+}
+
+// GetActorByAccountUsername ...
+func (s *server) GetActorByAccountUsername(ctx context.Context, in *pb.GetByUsernameRequest) (*pb.ActorDataResponse, error) {
+	actor, err := NewUsername(in.Username).GetActorByUsername()
+	if err != nil {
+		return nil, err
+	}
+	return &pb.ActorDataResponse{
+		Id:                strconv.Itoa(int(actor.ID)),
+		PreferredUsername: actor.PreferredUsername,
+		Domain:            actor.Domain,
+		Avatar:            actor.Avatar,
+		Name:              actor.Name,
+		Summary:           actor.Summary,
+		Inbox:             actor.Inbox,
+		Address:           actor.Address,
+		PublicKey:         actor.PublicKey,
+		ActorType:         actor.ActorType,
+		IsRemote:          strconv.FormatBool(actor.IsRemote),
+	}, nil
 }
 
 // Verify ...
@@ -157,15 +178,6 @@ func (s *server) Verify(ctx context.Context, in *pb.VerifyRequest) (*pb.VerifyRe
 	}, nil
 }
 
-// GetPublicKeyByAccountUsername ...
-func (a *server) GetPublicKeyByAccountUsername(ctx context.Context, in *pb.GetPublicKeyByAccountUsernameRequest) (*pb.GetPublicKeyByAccountUsernameResponse, error) {
-
-	return &pb.GetPublicKeyByAccountUsernameResponse{
-		Code:      "200",
-		PublicKey: "",
-	}, nil
-}
-
 // CreateActor ...
 func (s *server) CreateActor(ctx context.Context, in *pb.CreateActorRequest) (*pb.CreateActorResponse, error) {
 	actor, err := NewActors(in.PreferredUsername, in.PublicKey, in.ActorType).Create()
@@ -175,27 +187,6 @@ func (s *server) CreateActor(ctx context.Context, in *pb.CreateActorRequest) (*p
 	return &pb.CreateActorResponse{Code: "200", ActorId: strconv.Itoa(int(actor.ID))}, nil
 }
 
-// GetActorByAccountUsername ...
-func (s *server) GetActorByAccountUsername(ctx context.Context, in *pb.GetActorByAccountUsernameRequest) (*pb.AccountDataResponse, error) {
-	actor, err := NewActorDomain().GetActorByUsername(in.GetUsername())
-	if err != nil {
-		return nil, err
-	}
-	return &pb.AccountDataResponse{
-		Id:                strconv.Itoa(int(actor.ID)),
-		PreferredUsername: actor.PreferredUsername,
-		Domain:            actor.Domain,
-		Avatar:            actor.Avatar,
-		Name:              actor.Name,
-		Summary:           actor.Summary,
-		Inbox:             actor.Inbox,
-		Address:           actor.Address,
-		PublicKey:         actor.PublicKey,
-		ActorType:         actor.ActorType,
-		IsRemote:          strconv.FormatBool(actor.IsRemote),
-	}, nil
-}
-
 // GetActorsByPreferredUsername ...
 func (s *server) GetActorsByPreferredUsername(ctx context.Context, in *pb.GetActorsByPreferredUsernameRequest) (*pb.GetActorsByPreferredUsernameResponse, error) {
 	actors, err := NewPreferredUsername(in.GetPreferredUsername()).GetActorsByPreferredUsername()
@@ -203,35 +194,35 @@ func (s *server) GetActorsByPreferredUsername(ctx context.Context, in *pb.GetAct
 		return nil, err
 	}
 
-	var a []*pb.AccountDataResponse
+	var a []*pb.ActorDataResponse
 	for _, v := range actors {
-		for _, ad := range a {
-			ad.Id = conv.UintToString(v.ID)
-			ad.PreferredUsername = v.PreferredUsername
-			ad.Domain = v.Domain
-			ad.Avatar = v.Avatar
-			ad.Name = v.Name
-			ad.Summary = v.Summary
-			ad.Inbox = v.Inbox
-			ad.Address = v.Address
-			ad.PublicKey = v.PublicKey
-			ad.ActorType = v.ActorType
-			ad.IsRemote = strconv.FormatBool(v.IsRemote)
+		var ad *pb.ActorDataResponse
+		ad.Id = conv.UintToString(v.ID)
+		ad.PreferredUsername = v.PreferredUsername
+		ad.Domain = v.Domain
+		ad.Avatar = v.Avatar
+		ad.Name = v.Name
+		ad.Summary = v.Summary
+		ad.Inbox = v.Inbox
+		ad.Address = v.Address
+		ad.PublicKey = v.PublicKey
+		ad.ActorType = v.ActorType
+		ad.IsRemote = strconv.FormatBool(v.IsRemote)
 
-			a = append(a, ad)
-		}
+		a = append(a, ad)
+
 	}
 	return &pb.GetActorsByPreferredUsernameResponse{Code: "200", Actors: a}, nil
 }
 
 // GetActorByAddress ...
-func (s *server) GetActorByAddress(ctx context.Context, in *pb.GetActorByAddressRequest) (*pb.AccountDataResponse, error) {
+func (s *server) GetActorByAddress(ctx context.Context, in *pb.GetActorByAddressRequest) (*pb.ActorDataResponse, error) {
 	actor, err := NewActorAddress(in.GetAddress()).GetActorByAddress()
 	if err != nil {
 		return nil, err
 	}
 
-	return &pb.AccountDataResponse{
+	return &pb.ActorDataResponse{
 		Id:                strconv.Itoa(int(actor.ID)),
 		PreferredUsername: actor.PreferredUsername,
 		Domain:            actor.Domain,

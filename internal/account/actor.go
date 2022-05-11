@@ -116,22 +116,6 @@ func (a *Actors) Create() (*Actors, error) {
 	}, nil
 }
 
-func NewActorDomain() *Actors {
-	return &Actors{
-		Domain: viper.GetString("domain"),
-	}
-}
-
-// GetActorByUsername ...
-func (a *Actors) GetActorByUsername(username string) (*Actors, error) {
-	db := cockroach.GetDB()
-	if err := db.Debug().Table(ActorsTable).
-		Where("preferred_username = ? AND domain = ?", username, a.Domain).First(&a).Error; err != nil {
-		return nil, err
-	}
-	return a, nil
-}
-
 func NewPreferredUsername(preferredUsername string) *Actors {
 	return &Actors{
 		PreferredUsername: preferredUsername,

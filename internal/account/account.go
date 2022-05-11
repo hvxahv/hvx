@@ -43,10 +43,11 @@ type Accounts struct {
 type accounts interface {
 	IsExist() bool
 	Create(publicKey string) error
-	DeleteAccount(password string) error
+	Delete() error
 	EditUsername(username string) error
 	EditPassword(newPassword string) error
 	EditEmail(mail string) error
+	GetAcotrByUsername() (*Actors, error)
 }
 
 // NewUsername ...
@@ -89,7 +90,7 @@ func NewAccounts(actorID uint, username, mail, password string) *Accounts {
 }
 
 // NewCreateAccounts ...
-func NewCreateAccounts(username, mail, password string) *Accounts {
+func NewAccountsCreate(username, mail, password string) *Accounts {
 	return &Accounts{
 		Username: username,
 		Mail:     mail,
@@ -122,7 +123,6 @@ func (a *Accounts) Create(publicKey string) error {
 		}
 	}
 
-	// Create actor.
 	actor, err := NewActors(a.Username, publicKey, "Person").Create()
 	if err != nil {
 		return err
@@ -137,17 +137,17 @@ func (a *Accounts) Create(publicKey string) error {
 }
 
 // NewDeleteAccount ...
-func NewDeleteAccount(username, password string) *Accounts {
+func NewAccountsDelete(username, password string) *Accounts {
 	return &Accounts{
 		Username: username,
 		Password: password,
 	}
 }
 
-// DeleteAccount ...
-func (a *Accounts) DeleteAccount(password string) error {
+// Delete ...
+func (a *Accounts) Delete() error {
 	// Verify account.
-	v, err := NewVerify(a.Username).Verify(password)
+	v, err := NewVerify(a.Username).Verify(a.Password)
 	if err != nil {
 		return err
 	}
@@ -167,7 +167,7 @@ func (a *Accounts) DeleteAccount(password string) error {
 	return nil
 }
 
-func NewEditAccountID(id uint) *Accounts {
+func NewAccountsID(id uint) *Accounts {
 	return &Accounts{
 		Model: gorm.Model{
 			ID: id,
@@ -188,9 +188,7 @@ func (a *Accounts) EditUsername(username string) error {
 	}
 
 	address := fmt.Sprintf("https://%s/u/%s", viper.GetString("localhost"), username)
-
 	inbox := fmt.Sprintf("%s/inbox", address)
-
 	if err := db.Debug().Table(ActorsTable).
 		Where("id = ?", a.ActorID).
 		Update("preferred_username", username).
@@ -202,6 +200,7 @@ func (a *Accounts) EditUsername(username string) error {
 	return nil
 }
 
+// EditEmail ...
 func (a *Accounts) EditEmail(mail string) error {
 	db := cockroach.GetDB()
 
@@ -223,14 +222,14 @@ func NewEditPassword(username, password string) *Accounts {
 }
 
 // EditPassword ...
-func (a *Accounts) EditPassword(password, newPassword string) error {
-	v, err := NewVerify(a.Username).Verify(password)
+func (a *Accounts) EditPassword(new string) error {
+	v, err := NewVerify(a.Username).Verify(new)
 	if err != nil {
 		return err
 	}
 
 	db := cockroach.GetDB()
-	hash, _ := bcrypt.GenerateFromPassword([]byte(newPassword), bcrypt.DefaultCost)
+	hash, _ := bcrypt.GenerateFromPassword([]byte(new), bcrypt.DefaultCost)
 
 	if err := db.Debug().Table(AccountsTable).
 		Where("id = ?", v.ID).Update("password", hash).Error; err != nil {
@@ -238,4 +237,15 @@ func (a *Accounts) EditPassword(password, newPassword string) error {
 	}
 
 	return nil
+}
+
+func (a *Accounts) GetActorByUsername() (*Actors, error) {
+	domain := viper.GetString("domain")
+	db := cockroach.GetDB()
+	var actor Actors
+	if err := db.Debug().Table(ActorsTable).
+		Where("preferred_username = ? AND domain = ?", a.Username, domain).First(&actor).Error; err != nil {
+		return nil, err
+	}
+	return &actor, nil
 }
