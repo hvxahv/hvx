@@ -16,13 +16,6 @@ service Public {
     };
   }
 
-  // Get the total number of users of the current instance.
-  rpc GetPublicAccountCount(google.protobuf.Empty) returns (GetPublicAccountCountResponse) {
-    option (google.api.http) = {
-      get: "/public/account/count"
-    };
-  }
-
   rpc CreateAccounts(CreateAccountsRequest) returns (CreateAccountsResponse) {
     option (google.api.http) = {
       post: "/public/account/create",
@@ -64,11 +57,6 @@ message GetPublicInstanceResponse {
   string maintainer = 4;
   string repo = 5;
   string host = 6;
-}
-
-message GetPublicAccountCountResponse {
-  string code = 1;
-  string accountCount = 2;
 }
 
 message CreateAccountsRequest {

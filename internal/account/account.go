@@ -1,17 +1,14 @@
 package account
 
 import (
-	"context"
 	"fmt"
+
 	"github.com/go-playground/validator/v10"
-	pb "github.com/hvxahv/hvx/api/grpc/proto/account/v1alpha1"
 	"github.com/hvxahv/hvx/pkg/cockroach"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	"golang.org/x/crypto/bcrypt"
-	"google.golang.org/protobuf/types/known/emptypb"
 	"gorm.io/gorm"
-	"strconv"
 )
 
 // Accounts is a struct for account.
@@ -43,119 +40,45 @@ type Accounts struct {
 	IsPrivate bool `gorm:"type:boolean;is_private"`
 }
 
-func (a *server) IsExist(ctx context.Context, in *pb.IsExistRequest) (*pb.IsExistResponse, error) {
+type accounts interface {
+	IsExist() bool
+	Create(publicKey string) error
+	Delete() error
+	EditUsername(username string) error
+	EditPassword(newPassword string) error
+	EditEmail(mail string) error
+	GetAcotrByUsername() (*Actors, error)
+}
+
+// NewUsername ...
+func NewUsername(username string) *Accounts {
+	return &Accounts{
+		Username: username,
+	}
+}
+
+// IsExist ...
+func (a *Accounts) IsExist() bool {
 	db := cockroach.GetDB()
 
-	if err := db.Debug().Table("accounts").Where("username = ? ", in.Username).First(&Accounts{}); err != nil {
+	if err := db.Debug().Table(AccountsTable).Where("username = ? ", a.Username).First(&Accounts{}); err != nil {
 		ok := cockroach.IsNotFound(err.Error)
-		return &pb.IsExistResponse{IsExist: ok}, nil
+		return ok
 	}
-	return &pb.IsExistResponse{IsExist: false}, nil
+	return false
 }
 
-func (a *server) GetAccountByUsername(ctx context.Context, in *pb.GetAccountByUsernameRequest) (*pb.GetAccountByUsernameResponse, error) {
+// GetAccountByUsername ...
+func (a *Accounts) GetAccountByUsername() (*Accounts, error) {
 	db := cockroach.GetDB()
-
-	if err := db.Debug().Table("accounts").Where("username = ?", in.Username).First(&a.Accounts).Error; err != nil {
+	if err := db.Debug().Table(AccountsTable).
+		Where("username = ?", a.Username).First(&a).Error; err != nil {
 		return nil, err
 	}
-
-	return &pb.GetAccountByUsernameResponse{
-		AccountId: strconv.Itoa(int(a.Accounts.ID)),
-		Username:  a.Accounts.Username,
-		Mail:      a.Accounts.Mail,
-		Password:  a.Accounts.Password,
-		ActorId:   strconv.Itoa(int(a.Accounts.ActorID)),
-		IsPrivate: strconv.FormatBool(a.Accounts.IsPrivate),
-	}, nil
+	return a, nil
 }
 
-func (a *server) EditUsername(ctx context.Context, in *pb.EditUsernameRequest) (*pb.EditUsernameResponse, error) {
-	id, err := strconv.Atoi(in.Id)
-	if err != nil {
-		return nil, err
-	}
-
-	exist, err := a.IsExist(ctx, &pb.IsExistRequest{Username: in.Username})
-	if err != nil {
-		return nil, err
-	}
-
-	// If the username is Exist, return error.
-	if !exist.IsExist {
-		return &pb.EditUsernameResponse{Code: "401", Reply: "THE_USERNAME_ALREADY_EXISTS"}, nil
-	}
-
-	db := cockroach.GetDB()
-
-	if err := db.Debug().Table("accounts").Where("id = ?", uint(id)).First(&a.Accounts).Update("username", in.Username).Error; err != nil {
-		return &pb.EditUsernameResponse{Code: "500", Reply: err.Error()}, err
-	}
-
-	address := fmt.Sprintf("https://%s/u/%s", viper.GetString("localhost"), in.Username)
-	inbox := fmt.Sprintf("%s/inbox", address)
-	if err := db.Debug().Table("actors").Where("id = ?", a.Accounts.ActorID).
-		Update("preferred_username", in.Username).
-		Update("inbox", inbox).
-		Update("address", address).Error; err != nil {
-		return &pb.EditUsernameResponse{Code: "500", Reply: err.Error()}, err
-	}
-
-	return &pb.EditUsernameResponse{Code: "200", Reply: "ok"}, nil
-}
-
-func (a *server) EditPassword(ctx context.Context, in *pb.EditPasswordRequest) (*pb.EditPasswordResponse, error) {
-	v := NewAuthorization(in.Username, in.Password)
-
-	db := cockroach.GetDB()
-	if err := db.Debug().Table("accounts").Where("username = ?", in.Username).First(&v).Error; err != nil {
-		return nil, err
-	}
-
-	if err := bcrypt.CompareHashAndPassword([]byte(v.Password), []byte(in.Password)); err != nil {
-		return nil, errors.Errorf("PASSWORD_VERIFICATION_FAILED")
-	}
-
-	hash, _ := bcrypt.GenerateFromPassword([]byte(in.New), bcrypt.DefaultCost)
-	if err := db.Debug().Table("accounts").Where("id = ?", v.ID).Update("password", hash).Error; err != nil {
-		return nil, err
-	}
-
-	// TODO - Edit Account related data.
-	return &pb.EditPasswordResponse{Code: "200", Reply: "ok"}, nil
-}
-
-func (a *server) EditEmail(ctx context.Context, in *pb.EditEmailRequest) (*pb.EditEmailResponse, error) {
-	id, err := strconv.Atoi(in.Id)
-	if err != nil {
-		return nil, err
-	}
-
-	db := cockroach.GetDB()
-	if err := db.Debug().
-		Table("accounts").
-		Where("id = ?", id).
-		Update("mail", in.Mail).
-		Error; err != nil {
-		return nil, err
-	}
-
-	return &pb.EditEmailResponse{Code: "200", Reply: "ok"}, nil
-}
-
-func (a *server) GetAccountCount(ctx context.Context, g *emptypb.Empty) (*pb.GetAccountCountResponse, error) {
-	db := cockroach.GetDB()
-	var count int64
-	if err := db.Debug().Table("accounts").Count(&count).Error; err != nil {
-		return nil, err
-	}
-
-	return &pb.GetAccountCountResponse{
-		Code:         "200",
-		AccountCount: strconv.Itoa(int(count)),
-	}, nil
-}
-
+// NewAccounts ...
 func NewAccounts(actorID uint, username, mail, password string) *Accounts {
 	hash, _ := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	return &Accounts{
@@ -166,7 +89,8 @@ func NewAccounts(actorID uint, username, mail, password string) *Accounts {
 	}
 }
 
-func NewCreateAccounts(username, mail, password string) *Accounts {
+// NewCreateAccounts ...
+func NewAccountsCreate(username, mail, password string) *Accounts {
 	return &Accounts{
 		Username: username,
 		Mail:     mail,
@@ -174,6 +98,7 @@ func NewCreateAccounts(username, mail, password string) *Accounts {
 	}
 }
 
+// Create Accounts...
 func (a *Accounts) Create(publicKey string) error {
 	if err := validator.New().Struct(a); err != nil {
 		return errors.New("FAILED_TO_VALIDATOR")
@@ -189,8 +114,7 @@ func (a *Accounts) Create(publicKey string) error {
 		return errors.New("FAILED_TO_AUTOMATICALLY_CREATE_ACCOUNT_DATABASE")
 	}
 
-	if err := db.Debug().
-		Table("accounts").
+	if err := db.Debug().Table(AccountsTable).
 		Where("username = ? ", a.Username).Or("mail = ?", a.Mail).
 		First(&Accounts{}); err != nil {
 		ok := cockroach.IsNotFound(err.Error)
@@ -199,44 +123,129 @@ func (a *Accounts) Create(publicKey string) error {
 		}
 	}
 
-	n := NewActors(a.Username, publicKey, "Person")
-	if err := db.Debug().Table("actors").Create(&n).Error; err != nil {
-		return errors.Errorf("FAILED_TO_CREATE_ACTOR")
+	actor, err := NewActors(a.Username, publicKey, "Person").Create()
+	if err != nil {
+		return err
 	}
 
-	v := NewAccounts(n.ID, a.Username, a.Mail, a.Password)
-	if err := db.Debug().Table("accounts").Create(&v).Error; err != nil {
+	v := NewAccounts(actor.ID, a.Username, a.Mail, a.Password)
+	if err := db.Debug().Table(AccountsTable).
+		Create(&v).Error; err != nil {
 		return errors.Errorf("FAILED_TO_CREATE_ACCOUNT")
 	}
 	return nil
 }
 
-func NewDeleteAccount(username, password string) *Accounts {
+// NewDeleteAccount ...
+func NewAccountsDelete(username, password string) *Accounts {
 	return &Accounts{
 		Username: username,
 		Password: password,
 	}
 }
 
-func (a *Accounts) DeleteAccount(password string) error {
-	v := NewAuthorization(a.Username, a.Password)
+// Delete ...
+func (a *Accounts) Delete() error {
+	// Verify account.
+	v, err := NewVerify(a.Username).Verify(a.Password)
+	if err != nil {
+		return err
+	}
 
 	db := cockroach.GetDB()
-	if err := db.Debug().Table("accounts").Where("username = ?", a.Username).First(&v).Error; err != nil {
+
+	if err := db.Debug().Table(ActorsTable).
+		Where("id = ?", v.ActorID).Unscoped().Delete(&Actors{}).Error; err != nil {
 		return err
 	}
 
-	if err := bcrypt.CompareHashAndPassword([]byte(v.Password), []byte(password)); err != nil {
-		return errors.Errorf("PASSWORD_VERIFICATION_FAILED")
-	}
-
-	if err := db.Debug().Table("actors").Where("id = ?", v.ActorID).Unscoped().Delete(&Actors{}).Error; err != nil {
-		return err
-	}
-
-	if err := db.Debug().Table("accounts").Where("id = ?", v.ID).Unscoped().Delete(&Accounts{}).Error; err != nil {
+	if err := db.Debug().Table(AccountsTable).
+		Where("id = ?", v.ID).Unscoped().Delete(&Accounts{}).Error; err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func NewAccountsID(id uint) *Accounts {
+	return &Accounts{
+		Model: gorm.Model{
+			ID: id,
+		},
+	}
+}
+
+// EditUsername ...
+func (a *Accounts) EditUsername(username string) error {
+	if ok := NewUsername(username).IsExist(); ok {
+		return errors.New("FAILED_TO_VALIDATOR")
+	}
+	db := cockroach.GetDB()
+
+	if err := db.Debug().Table(AccountsTable).
+		Where("id = ?", a.ID).First(&a).Update("username", username).Error; err != nil {
+		return err
+	}
+
+	address := fmt.Sprintf("https://%s/u/%s", viper.GetString("localhost"), username)
+	inbox := fmt.Sprintf("%s/inbox", address)
+	if err := db.Debug().Table(ActorsTable).
+		Where("id = ?", a.ActorID).
+		Update("preferred_username", username).
+		Update("inbox", inbox).
+		Update("address", address).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// EditEmail ...
+func (a *Accounts) EditEmail(mail string) error {
+	db := cockroach.GetDB()
+
+	if err := db.Debug().Table(AccountsTable).
+		Where("id = ?", a.ID).
+		Update("mail", mail).
+		Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func NewEditPassword(username, password string) *Accounts {
+	return &Accounts{
+		Username: username,
+		Password: password,
+	}
+}
+
+// EditPassword ...
+func (a *Accounts) EditPassword(new string) error {
+	v, err := NewVerify(a.Username).Verify(new)
+	if err != nil {
+		return err
+	}
+
+	db := cockroach.GetDB()
+	hash, _ := bcrypt.GenerateFromPassword([]byte(new), bcrypt.DefaultCost)
+
+	if err := db.Debug().Table(AccountsTable).
+		Where("id = ?", v.ID).Update("password", hash).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (a *Accounts) GetActorByUsername() (*Actors, error) {
+	domain := viper.GetString("domain")
+	db := cockroach.GetDB()
+	var actor Actors
+	if err := db.Debug().Table(ActorsTable).
+		Where("preferred_username = ? AND domain = ?", a.Username, domain).First(&actor).Error; err != nil {
+		return nil, err
+	}
+	return &actor, nil
 }

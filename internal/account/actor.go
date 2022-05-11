@@ -4,14 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
-	"strconv"
 
 	"github.com/go-resty/resty/v2"
-	pb "github.com/hvxahv/hvx/api/grpc/proto/account/v1alpha1"
 	"github.com/hvxahv/hvx/pkg/activitypub"
 	"github.com/hvxahv/hvx/pkg/cockroach"
 	"github.com/spf13/viper"
-	"golang.org/x/net/context"
 	"gorm.io/gorm"
 )
 
@@ -80,186 +77,13 @@ func (a *Actors) SetActorSummary(summary string) *Actors {
 	return a
 }
 
-func (a *server) CreateActor(ctx context.Context, in *pb.CreateActorRequest) (*pb.CreateActorResponse, error) {
-	db := cockroach.GetDB()
-
-	if err := db.Debug().
-		Table("actors").
-		Where("preferred_username = ? AND is_remote = ?", in.PreferredUsername, false).
-		First(&a.Actors); err != nil {
-		ok := cockroach.IsNotFound(err.Error)
-		if !ok {
-			return nil, fmt.Errorf("ACTOR_ALREADY_EXISTS")
-		}
-	}
-	actors := NewActors(in.PreferredUsername, in.PublicKey, in.ActorType)
-	if err := db.Debug().
-		Table("actors").
-		Create(&actors).
-		Error; err != nil {
-		return nil, err
-	}
-	return &pb.CreateActorResponse{Code: "200", ActorId: strconv.Itoa(int(actors.ID))}, nil
-}
-
-func (a *server) GetActorByAccountUsername(ctx context.Context, in *pb.GetActorByAccountUsernameRequest) (*pb.AccountDataResponse, error) {
-	db := cockroach.GetDB()
-
-	domain := viper.GetString("domain")
-	actor := &Actors{}
-	if err := db.Debug().Table("actors").Where("preferred_username = ? AND domain = ?", in.Username, domain).First(&actor).Error; err != nil {
-		return nil, err
-	}
-	return &pb.AccountDataResponse{
-		Id:                strconv.Itoa(int(actor.ID)),
-		PreferredUsername: actor.PreferredUsername,
-		Domain:            actor.Domain,
-		Avatar:            actor.Avatar,
-		Name:              actor.Name,
-		Summary:           actor.Summary,
-		Inbox:             actor.Inbox,
-		Address:           actor.Address,
-		PublicKey:         actor.PublicKey,
-		ActorType:         actor.ActorType,
-		IsRemote:          strconv.FormatBool(actor.IsRemote),
-	}, nil
-}
-
-func (a *server) GetActorsByPreferredUsername(ctx context.Context, in *pb.GetActorsByPreferredUsernameRequest) (*pb.GetActorsByPreferredUsernameResponse, error) {
-	db := cockroach.GetDB()
-
-	var actors []*pb.AccountDataResponse
-	if err := db.Debug().Table("actors").Where("preferred_username = ?", in.PreferredUsername).Find(&actors).Error; err != nil {
-		return nil, err
-	}
-
-	return &pb.GetActorsByPreferredUsernameResponse{Code: "200", Actors: actors}, nil
-}
-
-func (a *server) GetActorByAddress(ctx context.Context, in *pb.GetActorByAddressRequest) (*pb.AccountDataResponse, error) {
-	db := cockroach.GetDB()
-	actor := &Actors{}
-	if err := db.Debug().Table("actors").Where("address = ?", in.Address).First(&actor).Error; err != nil {
-		if cockroach.IsNotFound(err) {
-			resp, err := resty.New().R().
-				SetHeader("Content-Type", "application/activitypub+json; charset=utf-8").
-				SetHeader("Accept", "application/ld+json").
-				EnableTrace().
-				Get(in.Address)
-			if err != nil {
-				return nil, err
-			}
-
-			fmt.Println(string(resp.Body()))
-			var f *activitypub.Actor
-
-			if err = json.Unmarshal(resp.Body(), &f); err != nil {
-				return nil, err
-			}
-
-			h, err := url.Parse(in.Address)
-			if err != nil {
-				return nil, err
-			}
-			x := NewActorsAdd(f.PreferredUsername, h.Host, f.Icon.Url, f.Name, f.Summary, f.Inbox, in.Address, f.PublicKey.PublicKeyPem, f.Type)
-			if err := db.Debug().Table("actors").Create(&x).Error; err != nil {
-				return nil, err
-			}
-			return &pb.AccountDataResponse{
-				Id:                strconv.Itoa(int(x.ID)),
-				PreferredUsername: x.PreferredUsername,
-				Domain:            x.Domain,
-				Avatar:            x.Avatar,
-				Name:              x.Name,
-				Summary:           x.Summary,
-				Inbox:             x.Inbox,
-				Address:           x.Address,
-				PublicKey:         x.PublicKey,
-				ActorType:         x.ActorType,
-				IsRemote:          strconv.FormatBool(x.IsRemote),
-			}, nil
-		}
-		return nil, err
-	}
-
-	return &pb.AccountDataResponse{
-		Id:                strconv.Itoa(int(actor.ID)),
-		PreferredUsername: actor.PreferredUsername,
-		Domain:            actor.Domain,
-		Avatar:            actor.Avatar,
-		Name:              actor.Name,
-		Summary:           actor.Summary,
-		Inbox:             actor.Inbox,
-		Address:           actor.Address,
-		PublicKey:         actor.PublicKey,
-		ActorType:         actor.ActorType,
-		IsRemote:          strconv.FormatBool(actor.IsRemote),
-	}, nil
-}
-
-func (a *server) EditActor(ctx context.Context, in *pb.EditActorRequest) (*pb.EditActorResponse, error) {
-	db := cockroach.GetDB()
-
-	if err := db.Debug().Table("accounts").Where("username = ? ", in.AccountUsername).First(&a.Accounts).Error; err != nil {
-		return nil, err
-	}
-
-	actor := new(Actors)
-	if in.Avatar != "" {
-		actor.SetActorAvatar(in.Avatar)
-	}
-	if in.Name != "" {
-		actor.SetActorName(in.Name)
-	}
-	if in.Summary != "" {
-		actor.SetActorSummary(in.Summary)
-	}
-
-	if err := db.Debug().Table("actors").Where("id = ?", a.Accounts.ActorID).Updates(&actor).Error; err != nil {
-		return nil, err
-	}
-	return &pb.EditActorResponse{Code: "200", Reply: "ok"}, nil
-}
-
-func (a *server) DeleteActor(ctx context.Context, in *pb.DeleteActorRequest) (*pb.DeleteActorResponse, error) {
-	db := cockroach.GetDB()
-	aid, err := strconv.Atoi(in.AccountId)
-	if err != nil {
-		return nil, err
-	}
-	acct := Accounts{}
-	if err := db.Debug().
-		Table("channels").
-		Where("account_id = ?", aid).
-		First(&acct).
-		Error; err != nil {
-		return nil, err
-	}
-
-	if err := db.Debug().
-		Table("actors").
-		Where("id = ?", acct.ActorID).
-		Unscoped().
-		Delete(&Actors{}).
-		Error; err != nil {
-		return nil, err
-	}
-	return &pb.DeleteActorResponse{Code: "200", Reply: "ok"}, nil
-}
-
-func NewActorsAdd(preferredUsername, host, avatar, name, summary, inbox, address, publicKey, actorType string) *Actors {
-	return &Actors{
-		PreferredUsername: preferredUsername,
-		Domain:            host,
-		Avatar:            avatar,
-		Name:              name,
-		Summary:           summary,
-		Inbox:             inbox,
-		Address:           address,
-		PublicKey:         publicKey,
-		ActorType:         actorType,
-		IsRemote:          true,
-	}
+type actor interface {
+	Create() (*Actors, error)
+	GetActorByUsername(username string) (*Actors, error)
+	GetActorsByPreferredUsername() ([]*Actors, error)
+	AddActor() error
+	GetActorByAddress() (*Actors, error)
+	EditActor(accountId uint) error
 }
 
 // NewActors creates a new instance of Actors.
@@ -274,4 +98,131 @@ func NewActors(preferredUsername, publicKey, actorType string) *Actors {
 		ActorType:         actorType,
 		IsRemote:          false,
 	}
+}
+
+// Create ...
+func (a *Actors) Create() (*Actors, error) {
+	db := cockroach.GetDB()
+
+	if err := db.Debug().Table(ActorsTable).
+		Create(&a).
+		Error; err != nil {
+		return nil, err
+	}
+	return &Actors{
+		Model: gorm.Model{
+			ID: a.ID,
+		},
+	}, nil
+}
+
+func NewPreferredUsername(preferredUsername string) *Actors {
+	return &Actors{
+		PreferredUsername: preferredUsername,
+	}
+}
+
+// GetActorsByPreferredUsername ...
+func (a *Actors) GetActorsByPreferredUsername() ([]*Actors, error) {
+	db := cockroach.GetDB()
+
+	var actors []*Actors
+	if err := db.Debug().Table(ActorsTable).
+		Where("preferred_username = ?", a.PreferredUsername).Find(&actors).Error; err != nil {
+		return nil, err
+	}
+	return actors, nil
+}
+
+func NewAddActors(preferredUsername, host, avatar, name, summary, inbox, address, publicKey, actorType string) *Actors {
+	return &Actors{
+		PreferredUsername: preferredUsername,
+		Domain:            host,
+		Avatar:            avatar,
+		Name:              name,
+		Summary:           summary,
+		Inbox:             inbox,
+		Address:           address,
+		PublicKey:         publicKey,
+		ActorType:         actorType,
+		IsRemote:          true,
+	}
+}
+
+// AddActors ...
+func (a *Actors) AddActor() error {
+	db := cockroach.GetDB()
+	if err := db.Debug().Table(ActorsTable).
+		Create(&a).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func NewActorAddress(address string) *Actors {
+	return &Actors{
+		Address: address,
+	}
+}
+
+// GetActorByAddress ...
+func (a *Actors) GetActorByAddress() (*Actors, error) {
+	db := cockroach.GetDB()
+	if err := db.Debug().Table("actors").Where("address = ?", a.Address).First(&a).Error; err != nil {
+		if cockroach.IsNotFound(err) {
+			res, err := resty.New().R().
+				SetHeader("Content-Type", "application/activitypub+json; charset=utf-8").
+				SetHeader("Accept", "application/ld+json").
+				EnableTrace().
+				Get(a.Address)
+			if err != nil {
+				return nil, err
+			}
+
+			var f *activitypub.Actor
+
+			if err = json.Unmarshal(res.Body(), &f); err != nil {
+				return nil, err
+			}
+
+			h, err := url.Parse(a.Address)
+			if err != nil {
+				return nil, err
+			}
+			actor := NewAddActors(
+				f.PreferredUsername,
+				h.Host,
+				f.Icon.Url,
+				f.Name,
+				f.Summary,
+				f.Inbox,
+				a.Address,
+				f.PublicKey.PublicKeyPem,
+				f.Type,
+			)
+			if err := actor.AddActor(); err != nil {
+				return nil, err
+			}
+			return actor, nil
+		}
+	}
+	return a, nil
+}
+
+// EditActor ...
+func (a *Actors) EditActor(accountId uint) error {
+	db := cockroach.GetDB()
+
+	var acct Accounts
+	if err := db.Debug().Table(AccountsTable).
+		Where("id = ? ", accountId).First(&acct).Error; err != nil {
+		return err
+	}
+
+	if err := db.Debug().Table(ActorsTable).
+		Where("id = ?", acct.ActorID).Updates(&a).Error; err != nil {
+		return err
+	}
+	return nil
 }

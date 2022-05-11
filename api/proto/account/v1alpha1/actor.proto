@@ -9,11 +9,6 @@ import "google/protobuf/empty.proto";
 
 service Actor {
   rpc CreateActor(CreateActorRequest) returns (CreateActorResponse) {}
-
-  // GetActorByAccountUsername Get by username returns the actor
-  // identified by the specified username.
-  rpc GetActorByAccountUsername (GetActorByAccountUsernameRequest) returns (AccountDataResponse) {}
-
   // GetActorsByPreferredUsername Returns the set of actors by the
   // specified GetActorsByPreferredUsername by PreferredUsername.
   rpc GetActorsByPreferredUsername (GetActorsByPreferredUsernameRequest) returns (GetActorsByPreferredUsernameResponse) {
@@ -23,14 +18,11 @@ service Actor {
   }
 
   // GetActorByAddress Returns the actor identified by the specified address.
-  rpc GetActorByAddress (GetActorByAddressRequest) returns (AccountDataResponse) {}
-
+  rpc GetActorByAddress (GetActorByAddressRequest) returns (ActorDataResponse) {}
   // EditActor Edit the actor's profile and view the structure to get
   // the allowed and changeable parameters.
   // By username.
   rpc EditActor (EditActorRequest) returns (EditActorResponse) {}
-
-  rpc DeleteActor (DeleteActorRequest) returns (DeleteActorResponse) {}
 }
 
 message CreateActorRequest {
@@ -44,11 +36,7 @@ message CreateActorResponse {
   string actor_id = 2;
 }
 
-message GetActorByAccountUsernameRequest {
-  string username = 1;
-}
-
-message AccountDataResponse {
+message ActorDataResponse {
   string id = 1;
   string preferred_username = 2;
   string domain = 3;
@@ -68,7 +56,7 @@ message GetActorsByPreferredUsernameRequest {
 
 message GetActorsByPreferredUsernameResponse {
   string code = 1;
-  repeated AccountDataResponse actors = 2;
+  repeated ActorDataResponse actors = 2;
 }
 
 message GetActorByAddressRequest {
@@ -87,11 +75,3 @@ message EditActorResponse {
   string reply = 2;
 }
 
-message DeleteActorRequest {
-  string account_id = 1;
-}
-
-message DeleteActorResponse {
-  string code = 1;
-  string reply = 2;
-}

@@ -2,15 +2,15 @@ package public
 
 import (
 	"fmt"
+	"time"
+
 	acct "github.com/hvxahv/hvx/api/grpc/proto/account/v1alpha1"
 	pb "github.com/hvxahv/hvx/api/grpc/proto/public/v1alpha1"
 	"github.com/hvxahv/hvx/pkg/activitypub"
-	v "github.com/hvxahv/hvx/pkg/microsvc"
-	"github.com/hvxahv/hvx/pkg/microsvc/client"
+	"github.com/hvxahv/hvx/pkg/microsvc"
+	clientv1 "github.com/hvxahv/hvx/pkg/microsvc/client/v1"
 	"github.com/spf13/viper"
 	"golang.org/x/net/context"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
@@ -25,37 +25,22 @@ func (s *server) GetPublicInstance(ctx context.Context, g *emptypb.Empty) (*pb.G
 	}, nil
 }
 
-func (s *server) GetPublicAccountCount(ctx context.Context, g *emptypb.Empty) (*pb.GetPublicAccountCountResponse, error) {
-	conn, err := grpc.DialContext(ctx, v.GetGRPCServiceAddress("account"), grpc.WithTransportCredentials(insecure.NewCredentials()))
-	if err != nil {
-		return nil, err
-	}
-	defer conn.Close()
-	client := client.NewHvxClient(conn)
-	reply, err := client.GetAccountCount(ctx, &emptypb.Empty{})
-	if err != nil {
-		return nil, err
-	}
-
-	return &pb.GetPublicAccountCountResponse{
-		Code:         "200",
-		AccountCount: reply.AccountCount,
-	}, nil
-}
-
 func (s *server) GetWebfinger(ctx context.Context, in *pb.GetWebfingerRequest) (*pb.GetWebfingerResponse, error) {
 	name := activitypub.GetActorName(in.Resource)
 	var (
 		address = fmt.Sprintf("https://%s/u/%s", viper.GetString("domain"), name)
 	)
-	conn, err := grpc.DialContext(ctx, v.GetGRPCServiceAddress("account"), grpc.WithTransportCredentials(insecure.NewCredentials()))
+
+	cli, err := clientv1.New(ctx,
+		clientv1.SetEndpoints(microsvc.GetGRPCServiceAddress("account")),
+		clientv1.SetDialOptionsWithToken(),
+		clientv1.SetDialTimeout(10*time.Second),
+	)
 	if err != nil {
 		return nil, err
 	}
-	defer conn.Close()
-	client := client.NewHvxClient(conn)
-
-	exist, err := client.IsExist(ctx, &acct.IsExistRequest{
+	defer cli.Close()
+	exist, err := cli.IsExist(ctx, &acct.IsExistRequest{
 		Username: name,
 	})
 	if err != nil {
@@ -82,13 +67,17 @@ func (s *server) GetWebfinger(ctx context.Context, in *pb.GetWebfingerRequest) (
 }
 
 func (s *server) GetActor(ctx context.Context, in *pb.GetActorRequest) (*pb.GetActorResponse, error) {
-	conn, err := grpc.DialContext(ctx, v.GetGRPCServiceAddress("account"), grpc.WithTransportCredentials(insecure.NewCredentials()))
+	cli, err := clientv1.New(ctx,
+		clientv1.SetEndpoints(microsvc.GetGRPCServiceAddress("account")),
+		clientv1.SetDialOptionsWithToken(),
+		clientv1.SetDialTimeout(10*time.Second),
+	)
 	if err != nil {
 		return nil, err
 	}
-	defer conn.Close()
-	client := client.NewHvxClient(conn)
-	a, err := client.GetActorByAccountUsername(ctx, &acct.GetActorByAccountUsernameRequest{
+	defer cli.Close()
+
+	a, err := cli.GetActorByUsername(ctx, &acct.GetActorByUsernameRequest{
 		Username: in.Actor,
 	})
 	if err != nil {
@@ -127,13 +116,17 @@ func (s *server) GetActor(ctx context.Context, in *pb.GetActorRequest) (*pb.GetA
 }
 
 func (s *server) CreateAccounts(ctx context.Context, in *pb.CreateAccountsRequest) (*pb.CreateAccountsResponse, error) {
-	conn, err := grpc.DialContext(ctx, v.GetGRPCServiceAddress("account"), grpc.WithTransportCredentials(insecure.NewCredentials()))
+	cli, err := clientv1.New(ctx,
+		clientv1.SetEndpoints(microsvc.GetGRPCServiceAddress("account")),
+		clientv1.SetDialOptionsWithToken(),
+		clientv1.SetDialTimeout(10*time.Second),
+	)
 	if err != nil {
 		return nil, err
 	}
-	defer conn.Close()
-	client := client.NewHvxClient(conn)
-	reply, err := client.CreateAccount(ctx, &acct.CreateAccountRequest{
+	defer cli.Close()
+
+	reply, err := cli.CreateAccount(ctx, &acct.CreateAccountRequest{
 		Username:  in.Username,
 		Mail:      in.Mail,
 		Password:  in.Password,
@@ -150,13 +143,17 @@ func (s *server) CreateAccounts(ctx context.Context, in *pb.CreateAccountsReques
 }
 
 func (s *server) Authenticate(ctx context.Context, in *pb.AuthenticateRequest) (*pb.AuthenticateResponse, error) {
-	conn, err := grpc.DialContext(ctx, v.GetGRPCServiceAddress("account"), grpc.WithTransportCredentials(insecure.NewCredentials()))
+	cli, err := clientv1.New(ctx,
+		clientv1.SetEndpoints(microsvc.GetGRPCServiceAddress("account")),
+		clientv1.SetDialOptionsWithToken(),
+		clientv1.SetDialTimeout(10*time.Second),
+	)
 	if err != nil {
 		return nil, err
 	}
-	defer conn.Close()
-	client := client.NewHvxClient(conn)
-	reply, err := client.Verify(ctx, &acct.VerifyRequest{
+	defer cli.Close()
+
+	reply, err := cli.Verify(ctx, &acct.VerifyRequest{
 		Username: in.Username,
 		Password: in.Password,
 	})
