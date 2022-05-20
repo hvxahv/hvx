@@ -1,0 +1,10 @@
+version: clientv1
+plugins:
+  - name: go
+    out: grpc-go
+  - name: go-grpc
+    out: grpc-go
+    opt: require_unimplemented_servers=false
+  - name: grpc-gateway
+    out: grpc-go
+    opt: allow_delete_body=true

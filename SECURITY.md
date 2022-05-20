@@ -1,5 +1,7 @@
 # Security Policy Report for HVXAHV
 
+HVX is built for privacy and we take security very seriously. If you have any security questions, please contact: [hvxahv.security@disism.com](hvxahv.security@disism.com)
+
 ## HVXAHV Security Policy Report
 
 When the user uses the saved function, the server should not participate in the encryption process of the file, and should only save the hash of the file and the type of the file.

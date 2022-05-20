@@ -40,30 +40,12 @@ Preview version: [dev.halfmemories.com](https://dev.halfmemories.com) is current
 
 [SECURITY.md](./SECURITY.md)
 
-## For developers
-
-APP:
-
-- ACCOUNT: [ACCOUNT](docs/ACCOUNT.md)
-- ACTIVITY: [ACTIVITY](docs/ACTIVITY.md)
-- ARTICLE: [ARTICLE](docs/ARTICLE.md)
-- CHANNEL: [CHANNEL](docs/CHANNEL.md)
-- MESSAGE: [MESSAGE](docs/MESSAGE.md)
-- NOTIFY: [NOTIFY](docs/NOTIFY.md)
-- SAVED: [SAVED](docs/SAVED.md)
-
-CONFIG EXAMPLE: [CONFIG_FILE](build/CONFIG_FILE.md)
-
-DEPLOY:
-
-- DEVLOPMENT: [DEVLOPMENT_ENV](build/PRODUCTION_ENV.md)
-- PRODUCTION: [PRODUCTION_ENV](build/PRODUCTION_ENV.md)
-
 FOR CLIENT DEVELOPERS: 
 
-- WEB CLIENT REPO: [HVXAHV-WEB](https://github.com/hvxahv/hvxahv-web)
-
-- RESTful API DOCS: [RESTful.md](./app/gateway/RESTful.md)
+- WEB CLIENT REPO REACT: [HVXAHV-REACT-WEB](https://github.com/hvxahv/hvxahv-web)
+- WEB CLIENT REPO ANGULAR: [HVXAHV-ANGULAR-WEB](https://github.com/hvxahv/sarkv)
+- ANDROID CLIENT: [HVX-ANDROID](https://github.com/hvxahv/hvx-android)
+- API DOCS: [APIs](./APIs)
 
 ## Finally
 

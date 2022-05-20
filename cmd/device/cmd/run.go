@@ -2,11 +2,12 @@
 Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 
 */
+
 package cmd
 
 import (
 	"fmt"
-	"github.com/hvxahv/hvx/internal/device"
+	"github.com/hvxahv/hvx/cmd/device/internal"
 	"github.com/spf13/cobra"
 )
 
@@ -18,7 +19,7 @@ var runCmd = &cobra.Command{
 	Short: "",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		if err := device.Run(); err != nil {
+		if err := internal.Run(); err != nil {
 			fmt.Println(err)
 			return
 		}

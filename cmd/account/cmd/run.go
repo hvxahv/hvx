@@ -16,7 +16,7 @@ limitations under the License.
 package cmd
 
 import (
-	"github.com/hvxahv/hvx/internal/account"
+	"github.com/hvxahv/hvx/cmd/account/internal"
 	"github.com/spf13/cobra"
 )
 
@@ -26,7 +26,7 @@ var runCmd = &cobra.Command{
 	Short: "Run the account microservice",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		if err := account.Run(); err != nil {
+		if err := internal.Run(); err != nil {
 			return
 		}
 	},

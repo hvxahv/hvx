@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package hvx.activity.v1alpha1.proto;
+option go_package = "activity/v1alpha1";
+
+service Follow {
+  rpc CreateFollow (CreateFollowRequest) returns (CreateFollowResponse) {}
+  rpc GetFollowers (GetFollowersRequest) returns (GetFollowersResponse) {}
+  rpc GetFollowing (GetFollowingRequest) returns (GetFollowingResponse) {}
+}
+
+
+message CreateFollowRequest {}
+
+message CreateFollowResponse {}
+
+message GetFollowersRequest {}
+
+message GetFollowersResponse {}
+
+message GetFollowingRequest {}
+
+message GetFollowingResponse {}
