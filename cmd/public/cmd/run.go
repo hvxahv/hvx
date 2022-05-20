@@ -7,7 +7,7 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/hvxahv/hvx/internal/public"
+	"github.com/hvxahv/hvx/cmd/public/internal"
 	"github.com/spf13/cobra"
 )
 
@@ -17,7 +17,7 @@ var runCmd = &cobra.Command{
 	Short: "",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		if err := public.Run(); err != nil {
+		if err := internal.Run(); err != nil {
 			fmt.Println(err)
 		}
 	},

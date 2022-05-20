@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+package hvx.channel.v1alpha1.proto;
+option go_package = "channel/v1alpha1";
+
+service Broadcast {
+  rpc CreateBroadcast (CreateBroadcastRequest) returns (CreateBroadcastResponse) {}
+  rpc GetAllBroadcasts (GetAllBroadcastsRequest) returns (GetAllBroadcastsResponse) {}
+  rpc DeleteBroadcast (DeleteBroadcastRequest) returns (DeleteBroadcastResponse) {}
+}
+
+message BroadcastData {
+  string id = 1;
+  string channel_id = 2;
+  string admin_id = 3;
+  string article_id = 4;
+  string cid = 5;
+}
+
+message CreateBroadcastRequest {
+  string channel_id = 1;
+  string admin_id = 2;
+  string article_id = 3;
+}
+
+message CreateBroadcastResponse {
+  string code = 1;
+  string reply = 2;
+}
+
+message GetAllBroadcastsRequest {
+  string channel_id = 1;
+}
+
+message GetAllBroadcastsResponse {
+  string code = 1;
+  repeated BroadcastData broadcasts = 2;
+}
+
+message DeleteBroadcastRequest {
+  string channel_id = 1;
+  string admin_id = 2;
+  string broadcast_id = 3;
+}
+
+message DeleteBroadcastResponse {
+  string code = 1;
+  string reply = 2;
+}
+

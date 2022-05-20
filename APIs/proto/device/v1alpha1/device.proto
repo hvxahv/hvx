@@ -1,0 +1,122 @@
+syntax = "proto3";
+
+package hvx.device.v1alpha1.proto;
+option go_package = "device/v1alpha1";
+
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
+
+service Devices {
+  // DeviceIsExistByHash Gets whether the device is authenticated by the device hash.
+  // This method returns a boolean value. Returns true if it does not exist
+  // Otherwise returns false.
+  rpc DeviceIsExistByHash (DeviceIsExistByHashRequest) returns (DeviceIsExistByHashResponse) {}
+
+  rpc DeviceIsExistByID (DeviceIsExistByIDRequest) returns (DeviceIsExistByIDResponse) {}
+
+  // CreateDevice To create the logged-in device data, pass the account id
+  // and user agent and generate a hash as a unique identifier
+  // for the device.
+  rpc CreateDevice (CreateDeviceRequest) returns (CreateDeviceResponse) {}
+
+  // GetDevicesByAccountID Get a list of all logged-in devices by account ID.
+  rpc GetDevicesByAccountID (GetDevicesByAccountIDRequest) returns (GetDevicesByAccountIDResponse) {}
+
+  // GetDeviceByID Get detailed data about the device by its unique device ID.
+  rpc GetDeviceByID (GetDeviceByIDRequest) returns (Device) {}
+
+  // GetDeviceByHash Get detailed data about the device by its unique hash.
+  rpc GetDeviceByHash (GetDeviceByHashRequest) returns (Device) {}
+
+  // DeleteDeviceByWithAccountID Delete all logged-in devices by account id.
+  rpc DeleteDeviceAllByAccountID (google.protobuf.Empty) returns (DeleteDeviceAllByAccountIDResponse) {
+    option (google.api.http) = {
+      delete: "/api/clientv1/device/all"
+      body: "*"
+    };
+  }
+
+  // DeleteDeviceByID Deletes a device by its device id.
+  rpc DeleteDeviceByID (DeleteDeviceByIDRequest) returns (DeleteDeviceByIDResponse) {}
+
+  // DeleteDeviceByHash Deletes a device by its device hash.
+  rpc DeleteDeviceByHash (DeleteDeviceByHashRequest) returns (DeleteDeviceByHashResponse) {}
+}
+
+message Device {
+  string id = 1;
+  string account_id = 2;
+  string device = 3;
+  string hash = 4;
+  string private_key = 5;
+  string public_key = 6;
+}
+
+message DeviceIsExistByHashRequest {
+  string hash = 1;
+}
+
+message DeviceIsExistByHashResponse {
+  bool is_exist = 1;
+}
+
+message DeviceIsExistByIDRequest {
+  string id = 1;
+}
+
+message DeviceIsExistByIDResponse {
+  bool is_exist = 1;
+}
+
+message CreateDeviceRequest {
+  string account_id = 1;
+  string ua = 2;
+  string hash = 3;
+}
+
+message CreateDeviceResponse {
+  string device_id = 1;
+  string public_key = 2;
+}
+
+message GetDevicesByAccountIDRequest {
+  string account_id = 1;
+}
+
+message GetDevicesByAccountIDResponse {
+  string code = 1;
+  repeated Device devices = 2;
+}
+
+message GetDeviceByIDRequest {
+  string device_id = 1;
+}
+
+message GetDeviceByHashRequest {
+  string hash = 1;
+}
+
+message DeleteDeviceAllByAccountIDResponse {
+  string code = 1;
+  string reply = 2;
+}
+
+message DeleteDeviceByIDRequest {
+  string account_id = 1;
+  string device_id = 2;
+}
+
+message DeleteDeviceByIDResponse {
+  string code = 1;
+  string reply = 2;
+}
+
+message DeleteDeviceByHashRequest {
+  string hash = 1;
+}
+
+message DeleteDeviceByHashResponse {
+  string code = 1;
+  string reply = 2;
+}

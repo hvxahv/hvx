@@ -1,0 +1,4 @@
+syntax = "proto3";
+
+package hvx.notify.v1alpha1.proto;
+option go_package = "notify/v1alpha1";
