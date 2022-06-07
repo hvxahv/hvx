@@ -70,9 +70,9 @@ message GetPublicInstanceResponse {
 }
 
 message CreateAccountsRequest {
-  string username = 1;
-  string password = 2;
-  string mail = 3;
+  string username = 1 [json_name = "username"];
+  string password = 2 [json_name = "password"];
+  string mail = 3 [json_name = "mail"];
   string publicKey = 4 [json_name = "public_key"];
 }
 
