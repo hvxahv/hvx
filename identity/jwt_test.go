@@ -2,12 +2,13 @@ package identity
 
 import (
 	"fmt"
+	"os"
+	"testing"
+
 	"github.com/hvxahv/hvx/cockroach"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"os"
-	"testing"
 )
 
 func init() {
@@ -26,7 +27,7 @@ func init() {
 	}
 
 	// Initialize the database.
-	if err := cockroach.NewDBAddr().InitDB(); err != nil {
+	if err := cockroach.NewRoach().Dial(); err != nil {
 		fmt.Println(err)
 		return
 	}
