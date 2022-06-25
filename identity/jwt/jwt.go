@@ -9,6 +9,11 @@ import (
 )
 
 // https://datatracker.ietf.org/doc/html/rfc7519
+
+type Jwt interface {
+	JWTTokenGenerator(signer string) (token string, err error)
+}
+
 var now = time.Now
 
 type Userdata struct {
@@ -22,9 +27,6 @@ type Userdata struct {
 type Claims struct {
 	Userdata             `json:"userdata"`
 	jwt.RegisteredClaims `json:"jwt_._standard_claims"`
-}
-type claims interface {
-	JWTTokenGenerator(signer string) (token string, err error)
 }
 
 // NewClaims ...

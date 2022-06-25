@@ -9,6 +9,8 @@
 package internal
 
 import (
+	"github.com/hvxahv/hvx/identity/jwt"
+	"github.com/spf13/viper"
 	"strconv"
 	"time"
 
@@ -17,7 +19,6 @@ import (
 	v1alpha "github.com/hvxahv/hvx/APIs/grpc-go/device/v1alpha1"
 	"github.com/hvxahv/hvx/client/clientv1"
 	"github.com/hvxahv/hvx/conv"
-	"github.com/hvxahv/hvx/identity"
 	"github.com/hvxahv/hvx/microsvc"
 	"golang.org/x/net/context"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -160,8 +161,9 @@ func (s *server) Verify(ctx context.Context, in *pb.VerifyRequest) (*pb.VerifyRe
 		return nil, err
 	}
 
-	// Creating an authorization token.
-	k, err := identity.GenToken(strconv.Itoa(int(a.ID)), a.Mail, in.Username, device.DeviceId)
+	expired := time.Duration(viper.GetInt("authentication.token.expired"))
+	g := jwt.NewClaims(a.Mail, conv.UintToString(a.ID), a.Username, device.DeviceId, expired)
+	k, err := g.JWTTokenGenerator(viper.GetString("authentication.token.signed"))
 	if err != nil {
 		return nil, err
 	}

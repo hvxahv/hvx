@@ -8,6 +8,9 @@ import (
 	"fmt"
 )
 
+type R interface {
+	Generate() (*Rsa, error)
+}
 type Rsa struct {
 	bits      int
 	Private   string
