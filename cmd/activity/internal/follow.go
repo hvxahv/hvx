@@ -18,6 +18,17 @@ type Follows struct {
 	IsFriend    bool `gorm:"type:boolean;is_friend"`
 }
 
+type Followee interface {
+	Create() error
+	UNFollow() error
+	GetFollows() ([]uint, error)
+}
+
+const (
+	// FollowsTableName is the table name for the Follows table.
+	FollowsTableName = "follows"
+)
+
 func NewGetFollows(actorID uint, followType string) *Follows {
 	switch followType {
 	case "follower":
@@ -29,27 +40,6 @@ func NewGetFollows(actorID uint, followType string) *Follows {
 	}
 	return nil
 }
-
-func NewFollower(actorID uint, targetID uint) *Follows {
-	return &Follows{
-		ActorID:    actorID,
-		TargetID:   targetID,
-		IsFollower: true,
-	}
-}
-
-func NewFollowing(actorID uint, targetID uint) *Follows {
-	return &Follows{
-		ActorID:     actorID,
-		TargetID:    targetID,
-		IsFollowing: true,
-	}
-}
-
-const (
-	// FollowsTableName is the table name for the Follows table.
-	FollowsTableName = "follows"
-)
 
 func (f *Follows) Create() error {
 	db := cockroach.GetDB()
@@ -128,6 +118,22 @@ func (f *Follows) UNFollow() error {
 	return nil
 }
 
+func NewFollower(actorID uint, targetID uint) *Follows {
+	return &Follows{
+		ActorID:    actorID,
+		TargetID:   targetID,
+		IsFollower: true,
+	}
+}
+
+func NewFollowing(actorID uint, targetID uint) *Follows {
+	return &Follows{
+		ActorID:     actorID,
+		TargetID:    targetID,
+		IsFollowing: true,
+	}
+}
+
 func (f *Follows) GetFollows() ([]uint, error) {
 	var field string
 	switch {
@@ -148,10 +154,4 @@ func (f *Follows) GetFollows() ([]uint, error) {
 		return nil, err
 	}
 	return followers, nil
-}
-
-type Followee interface {
-	Create() error
-	UNFollow() error
-	GetFollows() ([]uint, error)
 }

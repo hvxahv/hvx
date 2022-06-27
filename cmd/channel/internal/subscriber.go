@@ -1,9 +1,6 @@
 package internal
 
 import (
-	"context"
-	"strconv"
-
 	"github.com/hvxahv/hvx/cockroach"
 	"github.com/hvxahv/hvx/errors"
 
@@ -24,6 +21,9 @@ type Subscribes struct {
 type Subscribe interface {
 	IsSubscriber() bool
 	AddSubscriber() error
+	GetSubscribers(adminId uint) (*[]Subscribes, error)
+	RemoveSubscriber(adminId uint) error
+	Unsubscribe() error
 }
 
 func NewSubscribe(channelId, actorId uint) *Subscribes {
@@ -72,6 +72,25 @@ func (sub *Subscribes) AddSubscriber(adminId uint) error {
 	return nil
 }
 
+func (sub *Subscribes) GetSubscribers(adminId uint) (*[]Subscribes, error) {
+	isAdmin := NewAdministratesPermission(sub.ChannelId, adminId).IsAdministrator()
+	if !isAdmin {
+		return nil, errors.New(errors.ErrNotAchannelAdministrator)
+	}
+
+	db := cockroach.GetDB()
+
+	var subs []Subscribes
+	if err := db.Debug().
+		Table("subscribes").
+		Where("channel_id = ?", sub.ChannelId).
+		Find(&subs).
+		Error; err != nil {
+		return nil, err
+	}
+	return &subs, nil
+}
+
 func (sub *Subscribes) RemoveSubscriber(adminId uint) error {
 	isAdmin := NewAdministratesPermission(sub.ChannelId, adminId).IsAdministrator()
 	if !isAdmin {
@@ -96,82 +115,19 @@ func (sub *Subscribes) RemoveSubscriber(adminId uint) error {
 }
 
 func (sub *Subscribes) Unsubscribe() error {
+	db := cockroach.GetDB()
+	isSub := NewSubscribe(sub.ChannelId, sub.ActorId).IsSubscriber()
+	if !isSub {
+		return errors.New(errors.ErrNotSubscribed)
+	}
 
 	if err := db.Debug().
 		Table("subscribes").
-		Where("channel_id = ? AND account_id = ?", cid, aid).
+		Where("channel_id = ? AND actor_id = ?", sub.ChannelId, sub.ActorId).
 		Unscoped().
 		Delete(&Subscribes{}).
 		Error; err != nil {
-		return nil, err
+		return err
 	}
-	return &pb.UnsubscribeResponse{Code: "200", Reply: "ok"}, nil
-}
-
-func (c *channel) RemoveSubscriber(ctx context.Context, in *pb.RemoveSubscriberRequest) (*pb.RemoveSubscriberResponse, error) {
-	db := cockroach.GetDB()
-
-	administrator, err := c.IsChannelAdministrator(ctx, &pb.IsChannelAdministratorRequest{
-		ChannelId: in.ChannelId,
-		AdminId:   in.AdminId,
-	})
-	if err != nil {
-		return nil, err
-	}
-	if !administrator.IsAdministrator {
-		return nil, errors.New("NOT_CHANNEL_ADMINISTRATOR")
-	}
-
-	cid, err := strconv.Atoi(in.ChannelId)
-	if err != nil {
-		return nil, err
-	}
-
-	sid, err := strconv.Atoi(in.SubscriberId)
-	if err != nil {
-		return nil, err
-	}
-
-	if err := db.Debug().
-		Table("subscribes").
-		Where("channel_id = ? AND account_id = ?", cid, sid).
-		Unscoped().
-		Delete(&Subscribes{}).
-		Error; err != nil {
-		return nil, err
-	}
-	return &pb.RemoveSubscriberResponse{Code: "200", Reply: "ok"}, nil
-}
-
-func (c *channel) GetAllSubscribers(ctx context.Context, in *pb.GetAllSubscribersRequest) (*pb.GetAllSubscribersResponse, error) {
-	administrator, err := c.IsChannelAdministrator(ctx, &pb.IsChannelAdministratorRequest{
-		ChannelId: in.ChannelId,
-		AdminId:   in.AdminId,
-	})
-	if err != nil {
-		return nil, err
-	}
-	if !administrator.IsAdministrator {
-		return nil, errors.New(NotAdmin)
-	}
-	db := cockroach.GetDB()
-
-	cid, err := strconv.Atoi(in.ChannelId)
-	if err != nil {
-		return nil, err
-	}
-
-	var subscribers []Subscribes
-	if err := db.Debug().
-		Table("subscribes").
-		Where("channel_id = ?", cid).
-		Find(&subscribers).
-		Error; err != nil {
-		return nil, err
-	}
-	var subscriberIds []string
-	for _, i := range subscribers {
-		subscriberIds = append(subscriberIds, strconv.Itoa(int(i.AccountID)))
-	}
-	return &pb.GetAllSubscribersResponse{Code: "200", Subscriber: subscriberIds}, nil
+	return nil
 }

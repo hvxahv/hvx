@@ -26,7 +26,12 @@ package internal
 
 import (
 	"github.com/hvxahv/hvx/cockroach"
+	"github.com/hvxahv/hvx/errors"
 	"gorm.io/gorm"
+)
+
+const (
+	SavesTable = "saves"
 )
 
 // Change the upload logic. The upload should be encrypted
@@ -46,7 +51,7 @@ type Saves struct {
 	Name string `gorm:"type:text;name"`
 
 	// Comments on the file.
-	Description string `gorm:"type:text;description"`
+	Comment string `gorm:"type:text;comment"`
 	// Cid IPFS CID.
 	Cid string `gorm:"type:text;cid"`
 
@@ -56,153 +61,139 @@ type Saves struct {
 
 type Saved interface {
 	Create() error
+	GetSaved() (*Saves, error)
+	GetSaves() (*[]Saves, error)
+	EditSaved(id, accountId uint) error
+	DeleteSave() error
+	DeleteSaves() error
 }
 
-func NewSaves(accountID uint, name string, description string, cid string, types string) Saves {
+type Editor interface {
+	EditSavedName(name string) *Saves
+	EditSavedComment(comment string) *Saves
+}
+
+func NewSaves(accountID uint, name string, comment string, cid string, types string) Saves {
 	return Saves{
-		AccountId:   accountID,
-		Name:        name,
-		Description: description,
-		Cid:         cid,
-		Types:       types,
+		AccountId: accountID,
+		Name:      name,
+		Comment:   comment,
+		Cid:       cid,
+		Types:     types,
 	}
 }
 func (s *Saves) Create() error {
 	db := cockroach.GetDB()
 	if err := db.AutoMigrate(&Saves{}); err != nil {
-		return err
+		return errors.NewDatabaseCreate(serviceName)
 	}
-	c := NewSaves(s.AccountId, s.Name, s.Description, s.Cid, s.Types)
-	if err := db.Debug().Table("saves").Create(&c).Error; err != nil {
+
+	if err := db.Debug().
+		Table(SavesTable).
+		Create(&s).
+		Error; err != nil {
 		return err
 	}
 	return nil
 }
 
-//
-//func (s *Saves) GetSaves(ctx context.Context, in *pb.GetSavesRequest) (*pb.GetSavesResponse, error) {
-//	db := cockroach.GetDB()
-//	id, err := strconv.Atoi(in.AccountId)
-//	if err != nil {
-//		return nil, err
-//	}
-//
-//	var saves []*pb.Save
-//	if err := db.Debug().Table("saves").Where("account_id = ?", uint(id)).Find(&saves).Error; err != nil {
-//		return nil, err
-//	}
-//	return &pb.GetSavesResponse{Code: "200", Saves: saves}, nil
-//}
-//
-//func (s *Saves) SetSavedName(name string) *Saves {
-//	s.Name = name
-//	return s
-//}
-//
-//func (s *Saves) SetSavedDescription(description string) *Saves {
-//	s.Description = description
-//	return s
-//}
-//
-//func (s *Saves) GetSaved(ctx context.Context, in *pb.GetSavedRequest) (*pb.Save, error) {
-//	db := cockroach.GetDB()
-//	id, err := strconv.Atoi(in.Id)
-//	if err != nil {
-//		return nil, err
-//	}
-//	aid, err := strconv.Atoi(in.AccountId)
-//	if err != nil {
-//		return nil, err
-//	}
-//
-//	var saves Saves
-//	if err := db.Debug().
-//		Table("saves").
-//		Where("id = ? AND account_id = ?", uint(id), uint(aid)).
-//		First(&saves).
-//		Error; err != nil {
-//		return nil, err
-//	}
-//
-//	return &pb.Save{
-//		Id:          strconv.Itoa(int(saves.ID)),
-//		Name:        saves.Name,
-//		Description: saves.Description,
-//		Cid:         saves.Cid,
-//		Types:       saves.Types,
-//	}, nil
-//}
-//
-//func (s *Saves) EditSaved(ctx context.Context, in *pb.EditSavedRequest) (*pb.EditSavedResponse, error) {
-//	save := new(Saves)
-//	if in.Name != "" {
-//		save.SetSavedName(in.Name)
-//	}
-//	if in.Description != "" {
-//		save.SetSavedDescription(in.Description)
-//	}
-//
-//	db := cockroach.GetDB()
-//	id, err := strconv.Atoi(in.Id)
-//	if err != nil {
-//		return nil, err
-//	}
-//	aid, err := strconv.Atoi(in.AccountId)
-//	if err != nil {
-//		return nil, err
-//	}
-//
-//	if err := db.Debug().
-//		Table("saves").
-//		Where("id = ? AND account_id = ?", uint(id), uint(aid)).
-//		Updates(&save).
-//		Error; err != nil {
-//		return nil, err
-//	}
-//	return &pb.EditSavedResponse{Code: "200", Reply: "ok"}, nil
-//}
-//
-//func (s *Saves) DeleteSaved(ctx context.Context, in *pb.DeleteSavedRequest) (*pb.DeleteSavedResponse, error) {
-//	db := cockroach.GetDB()
-//	id, err := strconv.Atoi(in.Id)
-//	if err != nil {
-//		return nil, err
-//	}
-//
-//	aid, err := strconv.Atoi(in.AccountId)
-//	if err != nil {
-//		return nil, err
-//	}
-//
-//	if err := db.Debug().
-//		Table("saves").
-//		Where("id = ? AND account_id = ?", uint(id), uint(aid)).
-//		Unscoped().
-//		Delete(&Saves{}).
-//		Error; err != nil {
-//		return nil, err
-//	}
-//	return &pb.DeleteSavedResponse{Code: "200", Reply: "ok"}, nil
-//}
-//
-//func (s *Saves) DeleteAllSaves(ctx context.Context, in *pb.DeleteAllSavesRequest) (*pb.DeleteAllSavesResponse, error) {
-//	db := cockroach.GetDB()
-//	id, err := strconv.Atoi(in.AccountId)
-//	if err != nil {
-//		return nil, err
-//	}
-//
-//	if err := db.Debug().
-//		Table("saves").
-//		Where("account_id = ?", uint(id)).
-//		Unscoped().
-//		Delete(&Saves{}).
-//		Error; err != nil {
-//		return nil, err
-//	}
-//	return &pb.DeleteAllSavesResponse{Code: "200", Reply: "ok"}, nil
-//}
-//
-//func NewSaves(accountID uint, name string, description string, cid string, types string) *Saves {
-//	return &Saves{AccountID: accountID, Name: name, Description: description, Cid: cid, Types: types}
-//}
+func NewSavesId(savesId uint) *Saves {
+	return &Saves{
+		Model: gorm.Model{
+			ID: savesId,
+		},
+	}
+}
+
+func (s *Saves) GetSaved() (*Saves, error) {
+	db := cockroach.GetDB()
+	if err := db.Debug().
+		Table(SavesTable).
+		Where("id = ?", s.ID).
+		First(&s).
+		Error; err != nil {
+		return nil, err
+	}
+	return s, nil
+}
+
+func NewSavesAccountId(accountID uint) *Saves {
+	return &Saves{
+		AccountId: accountID,
+	}
+}
+
+func (s *Saves) GetSaves() (*[]Saves, error) {
+	db := cockroach.GetDB()
+	var saves []Saves
+	if err := db.Debug().
+		Table(SavesTable).
+		Where("account_id = ?", s.AccountId).
+		Find(&s).
+		Error; err != nil {
+		return nil, err
+	}
+	return &saves, nil
+}
+
+func (s *Saves) EditSavedName(name string) *Saves {
+	return &Saves{
+		Name: name,
+	}
+}
+
+func (s *Saves) EditSavedComment(comment string) *Saves {
+	return &Saves{
+		Comment: comment,
+	}
+}
+
+func (s *Saves) EditSaved(id, accountId uint) error {
+	db := cockroach.GetDB()
+
+	if err := db.Debug().
+		Table(SavesTable).
+		Where("id = ? AND account_id = ?", id, accountId).
+		Updates(&s).
+		Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func NewSavesDelete(savedId, accountId uint) *Saves {
+	return &Saves{
+		Model: gorm.Model{
+			ID: savedId,
+		},
+		AccountId: accountId,
+	}
+}
+
+func (s *Saves) Delete() error {
+	db := cockroach.GetDB()
+
+	if err := db.Debug().
+		Table(SavesTable).
+		Where("id = ? AND account_id = ?", s.ID, s.AccountId).
+		Unscoped().
+		Delete(&Saves{}).
+		Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (s *Saves) DeleteSaves() error {
+	db := cockroach.GetDB()
+
+	if err := db.Debug().
+		Table(SavesTable).
+		Where("account_id = ?", s.AccountId).
+		Unscoped().
+		Delete(&Saves{}).
+		Error; err != nil {
+		return err
+	}
+	return nil
+}
