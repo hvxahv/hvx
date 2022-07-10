@@ -10,7 +10,7 @@ package internal
 import (
 	"github.com/gin-gonic/gin"
 	apis "github.com/hvxahv/apis/grpc-go/device/v1alpha1"
-	clientv1 "github.com/hvxahv/client-go/v1"
+	clientv1 "github.com/hvxahv/cfg-go/v1"
 	"github.com/hvxahv/gateway/identity"
 	"strings"
 	"time"

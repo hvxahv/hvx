@@ -1,0 +1,64 @@
+syntax = "proto3";
+
+package hvx.api.v1alpha1.message.proto;
+option go_package = "v1alpha1/message";
+
+import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
+import "google/protobuf/empty.proto";
+
+service Messages {
+  // AccessRegister Register a matrix account with a username and password.
+  rpc AccessRegister (AccessRegisterRequest) returns (AccessRegisterResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/message/access/register"
+      body: "*"
+    };
+  }
+
+  // AccessLogin Sometimes you need to log in again when the token
+  // is wrong or when you reauthorize.
+  rpc AccessLogin (AccessLoginRequest) returns (AccessLoginResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/message/access/login"
+      body: "*"
+    };
+  }
+
+  // AccessDelete Delete a matrix account by its account id.
+  rpc AccessDelete (AccessDeleteRequest) returns (AccessDeleteResponse) {
+    option (google.api.http) = {
+      delete: "/api/v1/message/access",
+      body: "*"
+    };
+  }
+}
+
+message AccessRegisterRequest {
+  string username = 2;
+  string password = 3;
+}
+
+message AccessRegisterResponse {
+  string code = 1;
+  string reply = 2;
+}
+
+message AccessLoginRequest {
+  string username = 2;
+  string password = 3;
+}
+
+message AccessLoginResponse {
+  string code = 1;
+  string reply = 2;
+}
+
+message AccessDeleteRequest {
+  string password = 1;
+}
+
+message AccessDeleteResponse {
+  string code = 1;
+  string reply = 2;
+}

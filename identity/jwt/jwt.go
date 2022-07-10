@@ -18,9 +18,10 @@ var now = time.Now
 
 type Userdata struct {
 	Mail     string `json:"mail,omitempty"`
-	ID       string `json:"id,omitempty"`
-	Username string `json:"username,omitempty"`
+	Id       string `json:"id,omitempty"`
+	ActorId  string `json:"actor_id,omitempty"`
 	DeviceID string `json:"device_id,omitempty"`
+	Username string `json:"username,omitempty"`
 }
 
 // Claims Generate the data needed for TOKEN.
@@ -31,11 +32,12 @@ type Claims struct {
 
 // NewClaims ...
 // Expires Example: time.Duration(viper.GetInt("authentication.token.expired")) * 24 * time.Hour
-func NewClaims(mail, id, username, deviceId string, expires time.Duration) *Claims {
+func NewClaims(mail, id, actorId, username, deviceId string, expires time.Duration) *Claims {
 	return &Claims{
 		Userdata: Userdata{
 			Mail:     mail,
-			ID:       id,
+			Id:       id,
+			ActorId:  actorId,
 			Username: username,
 			DeviceID: deviceId,
 		},

@@ -1,10 +1,10 @@
 version: v1
 plugins:
   - name: go
-    out: grpc-go
+    out: grpc
   - name: go-grpc
-    out: grpc-go
+    out: grpc
     opt: require_unimplemented_servers=false
   - name: grpc-gateway
-    out: grpc-go
+    out: grpc-gateway
     opt: allow_delete_body=true

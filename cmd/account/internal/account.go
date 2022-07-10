@@ -1,12 +1,17 @@
 package internal
 
 import (
+	"context"
 	"fmt"
+	"github.com/hvxahv/hvx/APIs/grpc/v1alpha1/actor"
+	"github.com/hvxahv/hvx/clientv1"
 	"github.com/hvxahv/hvx/cockroach"
-	"github.com/pkg/errors"
+	"github.com/hvxahv/hvx/errors"
+	"github.com/hvxahv/hvx/microsvc"
 	"github.com/spf13/viper"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
+	"strconv"
 )
 
 // Accounts is a struct for account.
@@ -38,14 +43,14 @@ type Accounts struct {
 	IsPrivate bool `gorm:"type:boolean;is_private"`
 }
 
-type accounts interface {
+type Account interface {
 	IsExist() bool
 	Create(publicKey string) error
 	Delete() error
 	EditUsername(username string) error
 	EditPassword(newPassword string) error
 	EditEmail(mail string) error
-	GetActorByUsername() (*Actors, error)
+	Verify(password string) (*Accounts, error)
 }
 
 // NewUsername ...
@@ -104,12 +109,8 @@ func (a *Accounts) Create(publicKey string) error {
 	//}
 	db := cockroach.GetDB()
 
-	if err := db.AutoMigrate(&Actors{}); err != nil {
-		return errors.New("FAILED_TO_AUTOMATICALLY_CREATE_ACTOR_DATABASE")
-	}
-
 	if err := db.AutoMigrate(&Accounts{}); err != nil {
-		return errors.New("FAILED_TO_AUTOMATICALLY_CREATE_ACCOUNT_DATABASE")
+		return errors.New(errors.ErrAccountDatabaseCreate)
 	}
 
 	if err := db.Debug().Table(AccountsTable).
@@ -117,19 +118,33 @@ func (a *Accounts) Create(publicKey string) error {
 		First(&Accounts{}); err != nil {
 		ok := cockroach.IsNotFound(err.Error)
 		if !ok {
-			return errors.New("THE_USERNAME_OR_MAIL_ALREADY_EXISTS")
+			return errors.New(errors.ErrAccountAlready)
 		}
 	}
 
-	actor, err := NewActors(a.Username, publicKey, "Person").Create()
+	// Create an actor for the account.
+	ctx := context.Background()
+	cli, err := clientv1.New(ctx, []string{microsvc.NewGRPCAddress("actor")})
+	if err != nil {
+		return err
+	}
+	create, err := cli.Create(ctx, &actor.CreateRequest{
+		PreferredUsername: a.Username,
+		PublicKey:         publicKey,
+		ActorType:         "Person",
+	})
 	if err != nil {
 		return err
 	}
 
-	v := NewAccounts(actor.ID, a.Username, a.Mail, a.Password)
+	actorId, err := strconv.Atoi(create.ActorId)
+	if err != nil {
+		return err
+	}
+	v := NewAccounts(uint(actorId), a.Username, a.Mail, a.Password)
 	if err := db.Debug().Table(AccountsTable).
 		Create(&v).Error; err != nil {
-		return errors.Errorf("FAILED_TO_CREATE_ACCOUNT")
+		return fmt.Errorf(errors.ErrAccountCreate)
 	}
 	return nil
 }
@@ -144,21 +159,14 @@ func NewAccountsDelete(username, password string) *Accounts {
 
 // Delete ...
 func (a *Accounts) Delete() error {
-	// Verify account.
-	v, err := NewVerify(a.Username).Verify(a.Password)
+	db := cockroach.GetDB()
+	verify, err := NewVerify(a.Username).Verify(a.Password)
 	if err != nil {
 		return err
 	}
 
-	db := cockroach.GetDB()
-
-	if err := db.Debug().Table(ActorsTable).
-		Where("id = ?", v.ActorID).Unscoped().Delete(&Actors{}).Error; err != nil {
-		return err
-	}
-
 	if err := db.Debug().Table(AccountsTable).
-		Where("id = ?", v.ID).Unscoped().Delete(&Accounts{}).Error; err != nil {
+		Where("id = ?", verify.ID).Unscoped().Delete(&Accounts{}).Error; err != nil {
 		return err
 	}
 
@@ -237,13 +245,29 @@ func (a *Accounts) EditPassword(new string) error {
 	return nil
 }
 
-func (a *Accounts) GetActorByUsername() (*Actors, error) {
-	domain := viper.GetString("domain")
+func NewVerify(username string) *Accounts {
+	return &Accounts{
+		Username: username,
+	}
+}
+
+func (a *Accounts) Verify(password string) (*Accounts, error) {
 	db := cockroach.GetDB()
-	var actor Actors
-	if err := db.Debug().Table(ActorsTable).
-		Where("preferred_username = ? AND domain = ?", a.Username, domain).First(&actor).Error; err != nil {
+
+	if err := db.Debug().Table(AccountsTable).Where("username = ?", a.Username).First(&a).Error; err != nil {
 		return nil, err
 	}
-	return &actor, nil
+
+	if err := bcrypt.CompareHashAndPassword([]byte(a.Password), []byte(password)); err != nil {
+		return nil, err
+	}
+
+	return &Accounts{
+		Model: gorm.Model{
+			ID: a.ID,
+		},
+		Username: a.Username,
+		Mail:     a.Mail,
+		ActorID:  a.ActorID,
+	}, nil
 }

@@ -1,10 +1,11 @@
 package internal
 
 import (
+	"github.com/hvxahv/hvx/clientv1"
+	"github.com/hvxahv/hvx/clientv1/cfg"
 	"time"
 
 	pb "github.com/hvxahv/hvx/APIs/grpc-go/account/v1alpha1"
-	"github.com/hvxahv/hvx/client/clientv1"
 	"github.com/hvxahv/hvx/microsvc"
 	"golang.org/x/net/context"
 )
@@ -26,8 +27,8 @@ func NewPublic(ctx context.Context) *Public {
 
 func (p *Public) AccountIsExist(name string) (bool, error) {
 	c, err := clientv1.New(p.ctx,
-		clientv1.SetEndpoints(microsvc.GetGRPCServiceAddress("account")),
-		clientv1.SetDialTimeout(10*time.Second),
+		cfg.SetEndpoints(microsvc.GetGRPCServiceAddress("account")),
+		cfg.SetDialTimeout(10*time.Second),
 	)
 	if err != nil {
 		return false, err
@@ -44,8 +45,8 @@ func (p *Public) AccountIsExist(name string) (bool, error) {
 
 func (p *Public) GetActorByUsername(username string) (*pb.ActorDataResponse, error) {
 	c, err := clientv1.New(p.ctx,
-		clientv1.SetEndpoints(microsvc.GetGRPCServiceAddress("account")),
-		clientv1.SetDialTimeout(10*time.Second),
+		cfg.SetEndpoints(microsvc.GetGRPCServiceAddress("account")),
+		cfg.SetDialTimeout(10*time.Second),
 	)
 	if err != nil {
 		return nil, err
@@ -63,8 +64,8 @@ func (p *Public) GetActorByUsername(username string) (*pb.ActorDataResponse, err
 
 func (p *Public) CreateAccounts(username, mail, password, publicKey string) (*pb.CreateAccountResponse, error) {
 	c, err := clientv1.New(p.ctx,
-		clientv1.SetEndpoints(microsvc.GetGRPCServiceAddress("account")),
-		clientv1.SetDialTimeout(10*time.Second),
+		cfg.SetEndpoints(microsvc.GetGRPCServiceAddress("account")),
+		cfg.SetDialTimeout(10*time.Second),
 	)
 	if err != nil {
 		return nil, err
@@ -85,8 +86,8 @@ func (p *Public) CreateAccounts(username, mail, password, publicKey string) (*pb
 
 func (p *Public) Auth(username, password string) (*pb.VerifyResponse, error) {
 	c, err := clientv1.New(p.ctx,
-		clientv1.SetEndpoints(microsvc.GetGRPCServiceAddress("account")),
-		clientv1.SetDialTimeout(10*time.Second),
+		cfg.SetEndpoints(microsvc.GetGRPCServiceAddress("account")),
+		cfg.SetDialTimeout(10*time.Second),
 	)
 	if err != nil {
 		return nil, err

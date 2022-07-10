@@ -2,7 +2,8 @@ package internal
 
 import (
 	"github.com/google/uuid"
-	pb "github.com/hvxahv/hvx/APIs/grpc-go/public/v1alpha1"
+	gw "github.com/hvxahv/hvx/APIs/grpc-gateway/v1alpha1/public"
+	pb "github.com/hvxahv/hvx/APIs/grpc/v1alpha1/public"
 	v "github.com/hvxahv/hvx/microsvc"
 	"github.com/pkg/errors"
 )
@@ -21,7 +22,7 @@ func Run() error {
 	).ListenerWithEndpoints()
 
 	pb.RegisterPublicServer(s, &server{})
-	if err := pb.RegisterPublicHandler(s.Ctx, s.Mux, s.Conn); err != nil {
+	if err := gw.RegisterPublicHandler(s.Ctx, s.Mux, s.Conn); err != nil {
 		return errors.Errorf("Failed to register public services: %v", err)
 	}
 	if err := s.Run(); err != nil {

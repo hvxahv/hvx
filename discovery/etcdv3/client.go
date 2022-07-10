@@ -15,7 +15,7 @@ type Client interface {
 
 type client struct {
 	ctx context.Context
-	// cli *v3.Client
+	// cfg *v3.Client
 	// kv v3.KV
 	// watcher v3.Watcher
 	// leaseID v3.LeaseID

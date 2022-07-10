@@ -1,0 +1,96 @@
+syntax = "proto3";
+
+package hvx.api.v1alpha1.channel.proto;
+option go_package = "v1alpha1/channel";
+
+import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
+import "google/protobuf/empty.proto";
+
+service Subscriber {
+  rpc AddSubscriber(AddSubscriberRequest) returns (AddSubscriberResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/channel/subscriber",
+      body: "*"
+    };
+  }
+
+  // RemoveSubscriber Only the administrator of the channel
+  // can call to remove the subscribers of the channel.
+  rpc RemoveSubscriber(RemoveSubscriberRequest) returns (RemoveSubscriberResponse) {
+    option (google.api.http) = {
+      delete: "/api/v1/channel/subscriber",
+      body: "*"
+    };
+  }
+
+  rpc GetSubscribers(GetSubscribersRequest) returns (GetSubscribersResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/channel/{channel_id}/subscribers",
+    };
+  }
+
+  rpc Subscription(SubscriptionRequest) returns (SubscriptionResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/channel/subscription",
+      body: "*"
+    };
+  }
+
+  rpc Unsubscribe(UnsubscribeRequest) returns (UnsubscribeResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/channel/unsubscribe",
+      body: "*"
+    };
+  }
+
+}
+
+message AddSubscriberRequest {
+  string channel_id = 1;
+  string account_id = 2;
+}
+
+message AddSubscriberResponse {
+  string code = 1;
+  string reply = 2;
+}
+
+message RemoveSubscriberRequest {
+  string channel_id = 2;
+  string subscriber_id = 3;
+}
+
+message RemoveSubscriberResponse {
+  string code = 1;
+  string reply = 2;
+}
+
+message GetSubscribersRequest {
+  string channel_id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message GetSubscribersResponse {
+  string code = 1;
+  repeated string subscriber = 2;
+}
+
+message SubscriptionRequest {
+  string channel_id = 1;
+  string account_id = 2;
+}
+
+message SubscriptionResponse {
+  string code = 1;
+  string reply = 2;
+}
+
+message UnsubscribeRequest {
+  string channel_id = 1;
+  string account_id = 2;
+}
+
+message UnsubscribeResponse {
+  string code = 1;
+  string reply = 2;
+}

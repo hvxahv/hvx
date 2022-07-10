@@ -1,0 +1,160 @@
+syntax = "proto3";
+
+package hvx.api.v1alpha1.article.proto;
+option go_package = "v1alpha1/article";
+
+import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
+import "google/protobuf/empty.proto";
+
+service Article {
+  // Create article or status.
+  rpc Create(CreateRequest) returns (CreateResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/article",
+      body: "*"
+    };
+  }
+
+  // Get the content of an article or status by its article ID.
+  rpc Get(GetRequest) returns (GetResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/article/{id}",
+    };
+  }
+
+  // GetArticles Get all posts or statuses published under this account by account ID.
+  rpc GetArticles(google.protobuf.Empty) returns (GetArticlesResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/article/articles",
+    };
+  }
+
+  // Update Edit article or status content.
+  rpc Update(UpdateRequest) returns (UpdateResponse) {
+    option (google.api.http) = {
+      put: "/api/v1/article",
+      body: "*"
+    };
+  }
+
+  // Delete a post or status by post or status ID.
+  rpc Delete(DeleteRequest) returns (DeleteResponse) {
+    option (google.api.http) = {
+      delete: "/api/v1/article",
+      body: "*"
+    };
+  }
+
+  // DeleteArticles Delete all articles
+  rpc DeleteArticles(DeleteArticlesRequest) returns (DeleteArticlesResponse) {
+    option (google.api.http) = {
+      delete: "/api/v1/article/articles",
+      body: "*"
+    };
+  }
+}
+
+// ActorInfo Actor information.
+message ActorInfo {
+  string preferred_username = 2;
+  string address = 3;
+  string username = 4;
+  string avatar = 5;
+}
+
+message ArticleInfo {
+  string id = 1;
+  string title = 2;
+  string summary = 3;
+  string article = 4;
+  repeated string tags = 5;
+  string attachmentType = 6;
+  repeated string attachments = 7;
+  repeated string to = 8;
+  repeated string cc = 9;
+  bool state = 10;
+  bool nsfw = 11;
+  string visibility = 12;
+}
+
+message ArticleData {
+  ActorInfo actor = 1;
+  ArticleInfo article = 2;
+}
+
+message CreateRequest {
+  string id = 1;
+  string account_id = 2;
+  string title = 3;
+  string summary = 4;
+  string article = 5;
+  repeated string tags = 6;
+  string attachmentType = 7;
+  repeated string attachments = 8;
+  repeated string to = 9;
+  repeated string cc = 10;
+  bool state = 11;
+  bool nsfw = 12;
+  string visibility = 13;
+}
+
+message CreateResponse {
+  string code = 1;
+  string reply = 2;
+}
+
+message GetRequest {
+  string id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message GetResponse {
+  string code = 1;
+  string id = 2;
+  ArticleData data = 3;
+}
+
+message GetArticlesRequest {
+  string account_id = 1;
+}
+
+message GetArticlesResponse {
+  string code = 1;
+  repeated ArticleData data = 2;
+}
+
+message UpdateRequest {
+  string id = 1;
+  string account_id = 2;
+  string title = 3;
+  string summary = 4;
+  string article = 5;
+  repeated string tags = 6;
+  string attachmentType = 7;
+  repeated string attachments = 8;
+  bool nsfw = 9;
+  string visibility = 10;
+}
+
+message UpdateResponse {
+  string code = 1;
+  string reply = 2;
+}
+
+message DeleteRequest {
+  string id = 1;
+}
+
+message DeleteResponse {
+  string code = 1;
+  string reply = 2;
+}
+
+message DeleteArticlesRequest {
+  string account_id = 1;
+}
+
+message DeleteArticlesResponse {
+  string code = 1;
+  string reply = 2;
+}

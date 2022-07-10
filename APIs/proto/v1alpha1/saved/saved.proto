@@ -1,0 +1,131 @@
+syntax = "proto3";
+
+package hvx.api.v1alpha1.saved.proto;
+option go_package = "v1alpha1/saved";
+
+import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
+import "google/protobuf/empty.proto";
+
+service Saved {
+  // Create Save the hash of the uploaded file to the database,
+  // Because the file needs to be encrypted for the user to
+  // choose, the upload to the IPFS file server should be
+  // done in the client and the returned ipfs cid should be
+  // submitted to the server, which will save it.
+  rpc Create (CreateRequest) returns (CreateResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/saved",
+      body: "*"
+    };
+  }
+
+  // GetSaved Get by saved ID.
+  rpc GetSaved (GetSavedRequest) returns (Save) {
+    option (google.api.http) = {
+      get: "/api/v1/saved",
+    };
+  }
+
+  // GetSaves Get a collection of saved files by account ID.
+  rpc GetSaves (GetSavesRequest) returns (GetSavesResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/saved/saves",
+    };
+  }
+
+  // EditSaved Edit by saved ID.
+  // View the EditSavedRequest relevant parameters that are allowed
+  // to be changed.
+  rpc EditSaved (EditSavedRequest) returns (EditSavedResponse) {
+    option (google.api.http) = {
+      put: "/api/v1/saved",
+      body: "*"
+    };
+  }
+
+  // Delete by saved ID.
+  // Users must be informed that data that exists in IPFS files
+  // is not actually deleted, and user-friendly prompts need
+  // to be returned.
+  rpc Delete (DeleteRequest) returns (DeleteResponse) {
+    option (google.api.http) = {
+      delete: "/api/v1/saved",
+      body: "*"
+    };
+  }
+
+  // DeleteSaves This API is typically used when deleting an account.
+  // When a user's account is completely deleted, no data should remain.
+  rpc DeleteSaves (DeleteSavesRequest) returns (DeleteSavesResponse) {
+    option (google.api.http) = {
+      delete: "/api/v1/saved/saves",
+      body: "*"
+    };
+  }
+}
+
+message Save {
+  string id = 1;
+  string name = 3;
+  string description = 4;
+  string cid = 5;
+  string types = 6;
+  string created_at = 7;
+}
+
+message CreateRequest {
+  string account_id = 1;
+  string name = 2;
+  string comment = 3;
+  string cid = 4;
+  string fileType = 5 [json_name = "file_type"];
+  bool isPrivate = 6  [json_name = "is_private"];
+}
+
+message CreateResponse {
+  string code = 1;
+  string reply = 2;
+}
+
+message GetSavesResponse {
+  string code = 1;
+  repeated Save saves = 3;
+}
+
+message GetSavedRequest {
+  string id = 2;
+}
+
+message GetSavesRequest {
+  string limit = 2;
+}
+
+message EditSavedRequest {
+  string id = 1;
+  string name = 3;
+  string comment = 4;
+}
+
+message EditSavedResponse {
+  string code = 1;
+  string reply = 2;
+}
+
+message DeleteRequest {
+  string id = 1;
+}
+
+message DeleteResponse {
+  string code = 1;
+  string reply = 2;
+}
+
+message DeleteSavesRequest {
+  string password = 1;
+}
+
+message DeleteSavesResponse {
+  string code = 1;
+  string reply = 2;
+}

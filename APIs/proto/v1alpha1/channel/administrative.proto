@@ -1,0 +1,98 @@
+syntax = "proto3";
+
+package hvx.api.v1alpha1.channel.proto;
+option go_package = "v1alpha1/channel";
+
+import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
+import "google/protobuf/empty.proto";
+
+service Administrative {
+  // IsAdministrator It is the admin that returns true not false.
+  rpc IsAdministrator(IsAdministratorRequest) returns (IsAdministratorResponse) {}
+  // IsOwner Is the channel owner.
+  rpc IsOwner(IsOwnerRequest) returns (IsOwnerResponse) {}
+
+  rpc AddAdministrator(AddAdministratorRequest) returns (AddAdministratorResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/channel/admin",
+      body: "*"
+    };
+  }
+
+  rpc RemoveAdministrator(RemoveAdministratorRequest) returns (RemoveAdministratorResponse) {
+    option (google.api.http) = {
+      delete: "/api/v1/channel/admin",
+      body: "*"
+    };
+  }
+
+  rpc GetAdministrators(GetAdministratorsRequest) returns (GetAdministratorsResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/channel/admin/{channel_id}/admins",
+    };
+  }
+
+  rpc ExitAdministrator(ExitAdministratorRequest) returns (ExitAdministratorResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/channel/admin/exit",
+    };
+  }
+}
+
+message IsAdministratorRequest {
+  string channel_id = 1;
+  string admin_id = 2;
+}
+
+message IsAdministratorResponse {
+  bool is_administrator = 1;
+}
+
+message IsOwnerRequest {
+  string channel_id = 1;
+  string owner_id = 2;
+}
+
+message IsOwnerResponse {
+  bool is_owner = 1;
+}
+
+message AddAdministratorRequest {
+  string channel_id = 1;
+  string added_id = 3;
+}
+
+message AddAdministratorResponse {
+  string code = 1;
+  string reply = 2;
+}
+
+message RemoveAdministratorRequest {
+  string channel_id = 1;
+  string remove_admin_id = 2;
+}
+
+message RemoveAdministratorResponse {
+  string code = 1;
+  string reply = 2;
+}
+
+message GetAdministratorsRequest {
+  string channel_id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message GetAdministratorsResponse {
+  string code = 1;
+  repeated string administrators = 2;
+}
+
+message ExitAdministratorRequest {
+  string channel_id = 1;
+  string admin_id = 2;
+}
+
+message ExitAdministratorResponse {
+  string code = 1;
+  string status = 2;
+}

@@ -67,17 +67,17 @@ func (i *Inboxes) DeleteByActivityID() error {
 
 // func (a *activity) Inbox(ctx context.Context, in *pb.InboxRequest) (*pb.InboxResponse, error) {
 //ibx := NewActivityInbox(in.GetName(), in.GetData())
-//client, err := account.GetActorClient()
+//cfg, err := account.GetActorClient()
 //if err != nil {
 //	return nil, err
 //}
-//act, err := client.GetActorByAccountUsername(ctx, &actor.GetActorByAccountUsernameRequest{
+//act, err := cfg.GetActorByAccountUsername(ctx, &actor.GetActorByAccountUsernameRequest{
 //	Username: ibx.CurrentUsername,
 //})
 //if err != nil {
 //	return nil, err
 //}
-//address, err := client.GetActorByAddress(ctx, &actor.GetActorByAddressRequest{
+//address, err := cfg.GetActorByAddress(ctx, &actor.GetActorByAddressRequest{
 //	Address: ibx.ActivityActor,
 //})
 //if err != nil {

@@ -9,7 +9,8 @@ package internal
 
 import (
 	"github.com/google/uuid"
-	pb "github.com/hvxahv/hvx/APIs/grpc-go/device/v1alpha1"
+	gw "github.com/hvxahv/hvx/APIs/grpc-gateway/v1alpha1/device"
+	pb "github.com/hvxahv/hvx/APIs/grpc/v1alpha1/device"
 	v "github.com/hvxahv/hvx/microsvc"
 	"github.com/pkg/errors"
 )
@@ -20,10 +21,8 @@ const (
 
 type server struct {
 	pb.DevicesServer
-	*Devices
 }
 
-// Run starts the server. It will block until the server is shutdown. If the server fails to start, it will return an error.
 func Run() error {
 	s := v.New(
 		v.WithServiceName(serviceName),
@@ -35,7 +34,7 @@ func Run() error {
 	if err := s.Run(); err != nil {
 		return err
 	}
-	if err := pb.RegisterDevicesHandler(s.Ctx, s.Mux, s.Conn); err != nil {
+	if err := gw.RegisterDevicesHandler(s.Ctx, s.Mux, s.Conn); err != nil {
 		return errors.Errorf("Failed to register %s services: %v", serviceName, err)
 	}
 

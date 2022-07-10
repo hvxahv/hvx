@@ -1,39 +1,32 @@
 package internal
 
 import (
-	"fmt"
-	"log"
-	"net"
-	"time"
-
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
+	"github.com/google/uuid"
+	gw "github.com/hvxahv/hvx/APIs/grpc-gateway/v1alpha1/saved"
+	pb "github.com/hvxahv/hvx/APIs/grpc/v1alpha1/saved"
+	v "github.com/hvxahv/hvx/microsvc"
+	"github.com/pkg/errors"
 )
 
-type saved struct {
+type server struct {
 	pb.SavedServer
-	*Saves
 }
 
+const serviceName = "saved"
+
 func Run() error {
-	name := "saved"
-	log.Printf("App %s Started at %s\n", name, time.Now())
+	s := v.New(
+		v.WithServiceName(serviceName),
+		v.WithServiceVersion("v1alpha"),
+		v.WithServiceID(uuid.New().String()),
+	).ListenerWithEndpoints()
 
-	s := grpc.NewServer()
-
-	pb.RegisterSavedServer(s, &saved{})
-	reflection.Register(s)
-
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", x.NewService("saved").GetPort()))
-	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
+	pb.RegisterSavedServer(s, &server{})
+	if err := gw.RegisterSavedHandler(s.Ctx, s.Mux, s.Conn); err != nil {
+		return errors.Errorf("Failed to register %s services: %v", serviceName, err)
 	}
-
-	go func() {
-		if err := s.Serve(lis); err != nil {
-			fmt.Println(err)
-			return
-		}
-	}()
+	if err := s.Run(); err != nil {
+		return err
+	}
 	return nil
 }

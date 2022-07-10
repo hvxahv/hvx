@@ -1,21 +1,21 @@
 package internal
 
 import (
-	pb "github.com/hvxahv/hvx/APIs/grpc-go/account/v1alpha1"
+	gw "github.com/hvxahv/hvx/APIs/grpc-gateway/v1alpha1/account"
+	"github.com/hvxahv/hvx/APIs/grpc/v1alpha1/account"
 	svc "github.com/hvxahv/hvx/microsvc"
 	"github.com/pkg/errors"
 )
 
 type server struct {
-	pb.AccountsServer
-	pb.ActorServer
-	pb.AuthServer
+	account.AccountsServer
 }
 
 const (
 	AccountsTable = "accounts"
 	ActorsTable   = "actors"
 )
+
 const (
 	UsernameAlreadyExists = "THE_USERNAME_ALREADY_EXISTS"
 )
@@ -31,15 +31,9 @@ func Run() error {
 		svc.WithServiceID("serviceName"),
 	).ListenerWithEndpoints()
 
-	pb.RegisterAccountsServer(s, &server{})
-	pb.RegisterActorServer(s, &server{})
-	pb.RegisterAuthServer(s, &server{})
+	account.RegisterAccountsServer(s, &server{})
 
-	if err := pb.RegisterActorHandler(s.Ctx, s.Mux, s.Conn); err != nil {
-		return errors.Errorf("Failed to register %s services: %v", serviceName, err)
-	}
-
-	if err := pb.RegisterAccountsHandler(s.Ctx, s.Mux, s.Conn); err != nil {
+	if err := gw.RegisterAccountsHandler(s.Ctx, s.Mux, s.Conn); err != nil {
 		return errors.Errorf("Failed to register %s services: %v", serviceName, err)
 	}
 
