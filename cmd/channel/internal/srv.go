@@ -1,54 +1,59 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2022 The hvxahv Authors.
+ *
+ */
+
 package internal
 
 import (
-	"fmt"
-	"log"
-	"net"
-	"time"
-
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
+	"github.com/google/uuid"
+	gw "github.com/hvxahv/hvx/APIs/grpc-gateway/v1alpha1/channel"
+	pb "github.com/hvxahv/hvx/APIs/grpc/v1alpha1/channel"
+	v "github.com/hvxahv/hvx/microsvc"
+	"github.com/pkg/errors"
 )
 
-const serviceName = "channel"
+const (
+	serviceName = "channel"
+)
 
-type channel struct {
-	pb.ChannelServiceServer
-	pb.AdministrativeServiceServer
-	pb.SubscriberServiceServer
-	pb.BroadcastServiceServer
-	*Channels
-	*Administrates
-	*Subscribes
-	*Broadcasts
+type server struct {
+	pb.AdministrativeServer
+	pb.BroadcastServer
+	pb.ChannelServer
+	pb.SubscriberServer
 }
 
-// Run starts the server. It will block until the server is shutdown.
-// If the server fails to start, it will return an error.
 func Run() error {
-	log.Printf("App %s Started at %s\n", serviceName, time.Now())
+	s := v.New(
+		v.WithServiceName(serviceName),
+		v.WithServiceVersion("v1alpha1"),
+		v.WithServiceID(uuid.New().String()),
+	).ListenerWithEndpoints()
 
-	// Create a new server instance.
-	s := grpc.NewServer()
+	pb.RegisterAdministrativeServer(s, &server{})
+	pb.RegisterBroadcastServer(s, &server{})
+	pb.RegisterChannelServer(s, &server{})
+	pb.RegisterSubscriberServer(s, &server{})
 
-	pb.RegisterChannelServiceServer(s, &channel{})
-	pb.RegisterAdministrativeServiceServer(s, &channel{})
-	pb.RegisterSubscriberServiceServer(s, &channel{})
-	pb.RegisterBroadcastServiceServer(s, &channel{})
-
-	reflection.Register(s)
-
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", x.NewService(serviceName).GetPort()))
-	if err != nil {
+	if err := s.Run(); err != nil {
 		return err
 	}
 
-	go func() {
-		if err := s.Serve(lis); err != nil {
-			fmt.Println(err)
-			return
-		}
-	}()
+	if err := gw.RegisterAdministrativeHandler(s.Ctx, s.Mux, s.Conn); err != nil {
+		return errors.Errorf("Failed to register %s services: %v", serviceName, err)
+	}
+	if err := gw.RegisterBroadcastHandler(s.Ctx, s.Mux, s.Conn); err != nil {
+		return errors.Errorf("Failed to register %s services: %v", serviceName, err)
+	}
+	if err := gw.RegisterChannelHandler(s.Ctx, s.Mux, s.Conn); err != nil {
+		return errors.Errorf("Failed to register %s services: %v", serviceName, err)
+	}
+	if err := gw.RegisterSubscriberHandler(s.Ctx, s.Mux, s.Conn); err != nil {
+		return errors.Errorf("Failed to register %s services: %v", serviceName, err)
+	}
 
 	return nil
 }

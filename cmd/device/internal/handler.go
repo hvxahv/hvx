@@ -9,96 +9,89 @@
 package internal
 
 import (
-	pb "github.com/hvxahv/hvx/APIs/grpc-go/device/v1alpha1"
-	"github.com/hvxahv/hvx/conv"
+	"github.com/golang/protobuf/ptypes/empty"
+	pb "github.com/hvxahv/hvx/APIs/grpc/v1alpha1/device"
+	"github.com/hvxahv/hvx/microsvc"
 	"golang.org/x/net/context"
 	"strconv"
 )
 
-func (a *server) DeviceIsExistByHash(ctx context.Context, in *pb.DeviceIsExistByHashRequest) (*pb.DeviceIsExistByHashResponse, error) {
-	ok, err := NewDevicesHash(in.Hash).IsExistByHash()
-	if err != nil {
-		return nil, err
-	}
-	return &pb.DeviceIsExistByHashResponse{IsExist: ok}, nil
+func (s *server) IsExist(ctx context.Context, in *pb.IsExistRequest) (*pb.IsExistResponse, error) {
+	return &pb.IsExistResponse{IsExist: true}, nil
 }
 
-func (a *server) DeviceIsExistByID(ctx context.Context, in *pb.DeviceIsExistByIDRequest) (*pb.DeviceIsExistByIDResponse, error) {
-	id, err := conv.StringToUint(in.Id)
+func (s *server) Create(ctx context.Context, in *pb.CreateRequest) (*pb.CreateResponse, error) {
+	aid, err := strconv.Atoi(in.AccountId)
 	if err != nil {
 		return nil, err
 	}
-	ok, err := NewDevicesId(id).IsExistById()
+	create, err := NewDevices(uint(aid), in.Ua).Create()
 	if err != nil {
 		return nil, err
 	}
-
-	return &pb.DeviceIsExistByIDResponse{IsExist: ok}, nil
-}
-
-func (a *server) CreateDevice(ctx context.Context, in *pb.CreateDeviceRequest) (*pb.CreateDeviceResponse, error) {
-	aid, err := conv.StringToUint(in.AccountId)
-	if err != nil {
-		return nil, err
-	}
-	create, err := NewDevices(aid, in.Ua).Create()
-	if err != nil {
-		return nil, err
-	}
-	return &pb.CreateDeviceResponse{
+	return &pb.CreateResponse{
 		DeviceId:  strconv.Itoa(int(create.ID)),
 		PublicKey: "",
 	}, nil
 }
 
-func (a *server) GetDevicesByAccountID(ctx context.Context, in *pb.GetDevicesByAccountIDRequest) (*pb.GetDevicesByAccountIDResponse, error) {
-	aid, err := conv.StringToUint(in.AccountId)
+func (s *server) Get(ctx context.Context, in *pb.GetRequest) (*pb.Device, error) {
+	id, err := strconv.Atoi(in.DeviceId)
 	if err != nil {
 		return nil, err
 	}
-	ds, err := NewDevicesAccountID(aid).GetListByAccountId()
+	d, err := NewDevicesId(uint(id)).Get()
+	if err != nil {
+		return nil, err
+	}
+	return &pb.Device{
+		Id:        strconv.Itoa(int(d.ID)),
+		AccountId: strconv.Itoa(int(d.AccountID)),
+		Device:    d.Device,
+	}, nil
+}
+
+func (s *server) Delete(ctx context.Context, in *pb.DeleteRequest) (*pb.DeleteResponse, error) {
+	id, err := strconv.Atoi(in.DeviceId)
+	if err != nil {
+		return nil, err
+	}
+	err = NewDevicesId(uint(id)).Delete()
+	if err != nil {
+		return nil, err
+	}
+	return &pb.DeleteResponse{Code: "200"}, nil
+}
+
+func (s *server) GetDevices(ctx context.Context, in *empty.Empty) (*pb.GetDevicesResponse, error) {
+	accountId, err := microsvc.GetAccountIDWithContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+	devices, err := NewDevicesAccountId(accountId).GetDevices()
 	if err != nil {
 		return nil, err
 	}
 	var res []*pb.Device
-	for _, device := range ds {
+	for _, d := range devices {
 		var pd pb.Device
-		pd.Id = conv.UintToString(device.ID)
-		pd.AccountId = conv.UintToString(device.AccountID)
-		pd.Device = device.Device
-		pd.Hash = device.Hash
+		pd.Id = strconv.Itoa(int(d.ID))
+		pd.AccountId = strconv.Itoa(int(d.AccountID))
+		pd.Device = d.Device
 		res = append(res, &pd)
 	}
 
-	return &pb.GetDevicesByAccountIDResponse{Code: "200", Devices: res}, nil
+	return &pb.GetDevicesResponse{Code: "200", Devices: res}, nil
 }
 
-func (a *server) GetDeviceByID(ctx context.Context, in *pb.GetDeviceByIDRequest) (*pb.Device, error) {
-	did, err := conv.StringToUint(in.DeviceId)
+func (s *server) DeleteDevices(ctx context.Context, in *empty.Empty) (*pb.DeleteDevicesResponse, error) {
+	accountId, err := microsvc.GetAccountIDWithContext(ctx)
 	if err != nil {
 		return nil, err
 	}
-	d, err := NewDevicesId(did).GetById()
+	err = NewDevicesAccountId(accountId).DeleteDevices()
 	if err != nil {
 		return nil, err
 	}
-	return &pb.Device{
-		Id:        strconv.Itoa(int(d.ID)),
-		AccountId: strconv.Itoa(int(d.AccountID)),
-		Device:    d.Device,
-		Hash:      d.Hash,
-	}, nil
-}
-
-func (a *server) GetDeviceByHash(ctx context.Context, in *pb.GetDeviceByHashRequest) (*pb.Device, error) {
-	d, err := NewDevicesHash(in.Hash).GetByHash()
-	if err != nil {
-		return nil, err
-	}
-	return &pb.Device{
-		Id:        strconv.Itoa(int(d.ID)),
-		AccountId: strconv.Itoa(int(d.AccountID)),
-		Device:    d.Device,
-		Hash:      d.Hash,
-	}, nil
+	return &pb.DeleteDevicesResponse{Code: "200"}, nil
 }

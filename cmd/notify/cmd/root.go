@@ -17,8 +17,9 @@ package cmd
 
 import (
 	"fmt"
-	"os"
+	"github.com/hvxahv/hvx/cockroach"
 	"github.com/spf13/cobra"
+	"os"
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
@@ -82,4 +83,10 @@ func initConfig() {
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
 	}
+
+	if err := cockroach.NewRoach().Dial(); err != nil {
+		fmt.Println(err)
+		return
+	}
+
 }

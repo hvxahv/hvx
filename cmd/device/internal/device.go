@@ -8,7 +8,6 @@
 package internal
 
 import (
-	"github.com/google/uuid"
 	"github.com/hvxahv/hvx/cockroach"
 	"gorm.io/gorm"
 )
@@ -25,41 +24,22 @@ type Devices struct {
 
 	// Device The device name.
 	Device string `gorm:"type:text;device"`
-
-	// Hash Unique hash identifier of the device.
-	Hash string `gorm:"primaryKey;type:text;hash"`
 }
 
-type device interface {
-	// IsExistByHash Get the result of whether the device exists by hash,
+type Device interface {
+	// IsExist Get the result of whether the device exists by hash,
 	// return true if it exists, otherwise it will return false.
-	IsExistByHash() (bool, error)
+	IsExist() (bool, error)
 
-	// GetByHash Get the device by hash.
-	GetByHash() (*Devices, error)
-
-	// IsExistById Get the result of whether the device exists by id,
-	// return true if it exists, otherwise it will return false.
-	IsExistById() (bool, error)
-
-	// GetById Get the device by id.
-	GetById() (*Devices, error)
+	Get() (*Devices, error)
 
 	// Create Device entity with account ID and user device identifier (ua).
 	Create() (*Devices, error)
 
-	// GetListByAccountId Get the list of devices by account ID.
-	GetListByAccountId() ([]*Devices, error)
-
 	// Delete the device by id and account id.
 	Delete() error
 
-	// DeleteAccountDevices Delete all devices by account id.
-	DeleteAccountDevices() error
-}
-
-func NewDevicesHash(hash string) *Devices {
-	return &Devices{Hash: hash}
+	DeleteDevices() error
 }
 
 func NewDevicesId(id uint) *Devices {
@@ -70,47 +50,7 @@ func NewDevicesId(id uint) *Devices {
 	}
 }
 
-func NewDevicesAccountID(accountId uint) *Devices {
-	return &Devices{
-		AccountID: accountId,
-	}
-}
-
-func NewDevices(accountID uint, ua string) *Devices {
-	hash := uuid.New().String()
-	return &Devices{AccountID: accountID, Device: ua, Hash: hash}
-}
-
-func NewDevicesDelete(id, accountID uint) *Devices {
-	return &Devices{
-		Model: gorm.Model{
-			ID: id,
-		},
-		AccountID: accountID,
-	}
-}
-
-func (d *Devices) IsExistByHash() (bool, error) {
-	db := cockroach.GetDB()
-
-	if err := db.Debug().Table(DeviceTable).Where("hash = ?", d.Hash).First(&Devices{}); err != nil {
-		ok := cockroach.IsNotFound(err.Error)
-		return !ok, nil
-	}
-	return true, nil
-}
-
-func (d *Devices) GetByHash() (*Devices, error) {
-	db := cockroach.GetDB()
-
-	if err := db.Debug().Table(DeviceTable).
-		Where("hash = ?", d.Hash).First(&d).Error; err != nil {
-		return nil, err
-	}
-	return d, nil
-}
-
-func (d *Devices) IsExistById() (bool, error) {
+func (d *Devices) IsExist() (bool, error) {
 	db := cockroach.GetDB()
 	if err := db.Debug().Table(DeviceTable).Where("id = ?", d.ID).First(&Devices{}); err != nil {
 		ok := cockroach.IsNotFound(err.Error)
@@ -119,12 +59,16 @@ func (d *Devices) IsExistById() (bool, error) {
 	return true, nil
 }
 
-func (d *Devices) GetById() (*Devices, error) {
+func (d *Devices) Get() (*Devices, error) {
 	db := cockroach.GetDB()
 	if err := db.Debug().Table(DeviceTable).Where("id = ?", d.ID).First(&d).Error; err != nil {
 		return nil, err
 	}
 	return d, nil
+}
+
+func NewDevices(accountID uint, ua string) *Devices {
+	return &Devices{AccountID: accountID, Device: ua}
 }
 
 func (d *Devices) Create() (*Devices, error) {
@@ -141,7 +85,13 @@ func (d *Devices) Create() (*Devices, error) {
 
 }
 
-func (d *Devices) GetListByAccountId() ([]*Devices, error) {
+func NewDevicesAccountId(accountId uint) *Devices {
+	return &Devices{
+		AccountID: accountId,
+	}
+}
+
+func (d *Devices) GetDevices() ([]*Devices, error) {
 	db := cockroach.GetDB()
 	var ds []*Devices
 	if err := db.Debug().Table(DeviceTable).
@@ -162,7 +112,16 @@ func (d *Devices) Delete() error {
 	return nil
 }
 
-func (d *Devices) DeleteAccountDevices() error {
+func NewDevicesDelete(id, accountID uint) *Devices {
+	return &Devices{
+		Model: gorm.Model{
+			ID: id,
+		},
+		AccountID: accountID,
+	}
+}
+
+func (d *Devices) DeleteDevices() error {
 	db := cockroach.GetDB()
 	if err := db.Debug().Table(DeviceTable).
 		Where("account_id = ?", d.AccountID).Unscoped().Delete(&Devices{}).Error; err != nil {

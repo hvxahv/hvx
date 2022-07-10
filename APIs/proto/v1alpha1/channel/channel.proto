@@ -1,0 +1,74 @@
+syntax = "proto3";
+
+package hvx.api.v1alpha1.channel.proto;
+option go_package = "v1alpha1/channel";
+
+import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
+import "google/protobuf/empty.proto";
+
+service Channel {
+  rpc CreateChannel(CreateChannelRequest) returns (CreateChannelResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/channel",
+      body: "*"
+    };
+  }
+
+  rpc GetChannels(google.protobuf.Empty) returns (GetChannelsResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/channel/channels",
+    };
+  }
+
+  rpc DeleteChannel(DeleteChannelRequest) returns (DeleteChannelResponse) {
+    option (google.api.http) = {
+      delete: "/api/v1/channel",
+      body: "*"
+    };
+  }
+
+  rpc DeleteChannels(DeleteChannelsRequest) returns (DeleteChannelsResponse) {}
+}
+
+message ChannelData {
+  string id = 1;
+  string channel_id = 2;
+}
+
+message CreateChannelRequest {
+  string preferredUsername = 1;
+}
+
+message CreateChannelResponse {
+  string code = 1;
+  string reply = 2;
+}
+
+message GetChannelsRequest {
+  string account_id = 1;
+}
+
+message GetChannelsResponse {
+  string code = 1;
+  repeated ChannelData channels = 2;
+}
+
+
+message DeleteChannelRequest {
+  string channel_id = 2;
+}
+
+message DeleteChannelResponse {
+  string code = 1;
+  string reply = 2;
+}
+
+message DeleteChannelsRequest {
+  string account_id = 1;
+}
+
+message DeleteChannelsResponse {
+  string code = 1;
+  string reply = 2;
+}

@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package hvx.api.v1alpha1.notify.proto;
+option go_package = "v1alpha1/notify";
+
+import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
+import "google/protobuf/empty.proto";
+
+service Notify {
+  rpc Subscribe(SubscribeRequest) returns (SubscribeResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/notify/subscribe",
+      body: "*"
+    };
+  }
+}
+
+message SubscribeRequest {
+
+}
+
+message SubscribeResponse {
+
+}
