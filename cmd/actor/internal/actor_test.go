@@ -5,8 +5,7 @@ import (
 	"strconv"
 	"testing"
 
-	pb "github.com/hvxahv/hvx/APIs/grpc-go/account/v1alpha1"
-	"github.com/hvxahv/hvx/conv"
+	pb "github.com/hvxahv/hvx/APIs/grpc/v1alpha1/account"
 )
 
 func TestAccount_GetActorsByPreferredUsername(t *testing.T) {
@@ -19,7 +18,7 @@ func TestAccount_GetActorsByPreferredUsername(t *testing.T) {
 	var a []*pb.ActorDataResponse
 	for _, v := range actors {
 		var ad *pb.ActorDataResponse
-		ad.Id = conv.UintToString(v.ID)
+		ad.Id = strconv.Itoa(int(v.Id))
 		ad.PreferredUsername = v.PreferredUsername
 		ad.Domain = v.Domain
 		ad.Avatar = v.Avatar

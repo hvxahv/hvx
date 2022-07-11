@@ -9,7 +9,7 @@ package internal
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hvxahv/gateway/v1alpha1"
+	"github.com/hvxahv/hvx/gateway/v1alpha1"
 )
 
 func APIServer() *gin.Engine {

@@ -1,7 +1,7 @@
 package activity
 
 import (
-	pb "github.com/hvxahv/hvx/APIs/grpc-go/activity/v1alpha1"
+	pb "github.com/hvxahv/hvx/APIs/grpc/v1alpha1/activity"
 	"github.com/hvxahv/hvx/clientv1"
 )
 

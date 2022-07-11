@@ -9,7 +9,7 @@ package internal
 
 import (
 	"fmt"
-	"github.com/hvxahv/hvx/pkg/cockroach"
+
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"os"

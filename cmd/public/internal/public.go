@@ -1,11 +1,12 @@
 package internal
 
 import (
-	"github.com/hvxahv/hvx/clientv1"
-	"github.com/hvxahv/hvx/clientv1/cfg"
 	"time"
 
-	pb "github.com/hvxahv/hvx/APIs/grpc-go/account/v1alpha1"
+	"github.com/hvxahv/hvx/clientv1"
+	"github.com/hvxahv/hvx/clientv1/cfg"
+
+	pb "github.com/hvxahv/hvx/APIs/grpc/v1alpha1/account"
 	"github.com/hvxahv/hvx/microsvc"
 	"golang.org/x/net/context"
 )

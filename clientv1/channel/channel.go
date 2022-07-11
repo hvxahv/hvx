@@ -1,7 +1,7 @@
 package channel
 
 import (
-	pb "github.com/hvxahv/hvx/APIs/grpc-go/channel/v1alpha1"
+	pb "github.com/hvxahv/hvx/APIs/grpc/v1alpha1/channel"
 	"github.com/hvxahv/hvx/clientv1"
 )
 

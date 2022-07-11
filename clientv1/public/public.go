@@ -1,7 +1,7 @@
 package public
 
 import (
-	pb "github.com/hvxahv/hvx/APIs/grpc-go/public/v1alpha1"
+	pb "github.com/hvxahv/hvx/APIs/grpc/v1alpha1/public"
 	"github.com/hvxahv/hvx/clientv1"
 )
 

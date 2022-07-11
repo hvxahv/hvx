@@ -3,7 +3,7 @@ package internal
 import (
 	"fmt"
 
-	"github.com/hvxahv/hvx/pkg/cockroach"
+	"github.com/hvxahv/hvx/cockroach"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
 )

@@ -1,7 +1,7 @@
 package saved
 
 import (
-	pb "github.com/hvxahv/hvx/APIs/grpc-go/saved/v1alpha1"
+	pb "github.com/hvxahv/hvx/APIs/grpc/v1alpha1/saved"
 	"github.com/hvxahv/hvx/clientv1"
 )
 

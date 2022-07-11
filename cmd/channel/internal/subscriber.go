@@ -4,60 +4,98 @@ import (
 	"context"
 	"strconv"
 
-	"github.com/pkg/errors"
+	"github.com/hvxahv/hvx/cockroach"
+	"github.com/hvxahv/hvx/errors"
 
 	"gorm.io/gorm"
+)
+
+const (
+	SubscribesTable = "subscribes"
 )
 
 type Subscribes struct {
 	gorm.Model
 
-	ChannelID uint `gorm:"primaryKey;channel_id"`
-	AccountID uint `gorm:"primaryKey;account_id"`
+	ChannelId uint `gorm:"primaryKey;channel_id"`
+	ActorId   uint `gorm:"primaryKey;actor_id"`
 }
 
-func isSubExist(db *gorm.DB, channelID, accountID uint) bool {
-	var count int64
-	db.Model(&Subscribes{}).Where("channel_id = ? AND account_id = ?", channelID, accountID).Count(&count)
-	return count > 0
+type Subscribe interface {
+	IsSubscriber() bool
+	AddSubscriber() error
 }
 
-func (c *channel) AddSubscriber(ctx context.Context, in *pb.AddSubscriberRequest) (*pb.AddSubscriberResponse, error) {
+func NewSubscribe(channelId, actorId uint) *Subscribes {
+	return &Subscribes{
+		ChannelId: channelId,
+		ActorId:   actorId,
+	}
+}
+
+func (sub *Subscribes) IsSubscriber() bool {
+	db := cockroach.GetDB()
+	if err := db.Debug().
+		Table(SubscribesTable).
+		Where("channel_id = ? AND actor_id = ?", sub.ChannelId, sub.ActorId).
+		First(&Subscribes{}); err != nil {
+		ok := cockroach.IsNotFound(err.Error)
+		if !ok {
+			return true
+		}
+	}
+
+	return false
+}
+
+func (sub *Subscribes) AddSubscriber(adminId uint) error {
+	isAdmin := NewAdministratesPermission(sub.ChannelId, adminId).IsAdministrator()
+	if !isAdmin {
+		return errors.New(errors.ErrNotAchannelAdministrator)
+	}
+	is := sub.IsSubscriber()
+	if is {
+		return errors.New(errors.ErrAlreadySubscribed)
+	}
+
 	db := cockroach.GetDB()
 	if err := db.AutoMigrate(&Subscribes{}); err != nil {
-		return nil, err
+		return errors.NewDatabaseCreate("subscribes")
 	}
-	cid, err := strconv.Atoi(in.ChannelId)
-	if err != nil {
-		return nil, err
+
+	if err := db.Debug().
+		Table(SubscribesTable).
+		Create(&sub).
+		Error; err != nil {
+		return err
 	}
-	aid, err := strconv.Atoi(in.AccountId)
-	if err != nil {
-		return nil, err
-	}
-	if isSubExist(db, uint(cid), uint(aid)) {
-		return nil, errors.New("SUBSCRIBER_ALREADY_EXIST")
-	}
-	if err := db.Debug().Table("subscribes").Create(&Subscribes{
-		ChannelID: uint(cid),
-		AccountID: uint(aid),
-	}).Error; err != nil {
-		return nil, err
-	}
-	return &pb.AddSubscriberResponse{Code: "200", Reply: "ok"}, nil
+	return nil
 }
 
-func (c *channel) Unsubscribe(ctx context.Context, in *pb.UnsubscribeRequest) (*pb.UnsubscribeResponse, error) {
+func (sub *Subscribes) RemoveSubscriber(adminId uint) error {
+	isAdmin := NewAdministratesPermission(sub.ChannelId, adminId).IsAdministrator()
+	if !isAdmin {
+		return errors.New(errors.ErrNotAchannelAdministrator)
+	}
+	is := sub.IsSubscriber()
+	if is {
+		return errors.New(errors.ErrAlreadySubscribed)
+	}
+
 	db := cockroach.GetDB()
 
-	cid, err := strconv.Atoi(in.ChannelId)
-	if err != nil {
-		return nil, err
+	if err := db.Debug().
+		Table(SubscribesTable).
+		Where("channel_id = ? AND actor_id = ?", sub.ChannelId, sub.ActorId).
+		Unscoped().
+		Delete(&Subscribes{}).
+		Error; err != nil {
+		return err
 	}
-	aid, err := strconv.Atoi(in.AccountId)
-	if err != nil {
-		return nil, err
-	}
+	return nil
+}
+
+func (sub *Subscribes) Unsubscribe() error {
 
 	if err := db.Debug().
 		Table("subscribes").

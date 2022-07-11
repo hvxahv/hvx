@@ -48,7 +48,7 @@ service Subscriber {
 
 message AddSubscriberRequest {
   string channel_id = 1;
-  string account_id = 2;
+  string actor_id = 2;
 }
 
 message AddSubscriberResponse {

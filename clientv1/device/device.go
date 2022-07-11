@@ -1,7 +1,7 @@
 package device
 
 import (
-	pb "github.com/hvxahv/hvx/APIs/grpc-go/device/v1alpha1"
+	pb "github.com/hvxahv/hvx/APIs/grpc/v1alpha1/device"
 	"github.com/hvxahv/hvx/clientv1"
 )
 

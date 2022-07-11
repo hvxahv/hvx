@@ -6,6 +6,7 @@ option go_package = "v1alpha1/channel";
 import "google/api/annotations.proto";
 import "google/api/field_behavior.proto";
 import "google/protobuf/empty.proto";
+import "proto/v1alpha1/actor/actor.proto";
 
 service Channel {
   rpc CreateChannel(CreateChannelRequest) returns (CreateChannelResponse) {
@@ -31,37 +32,28 @@ service Channel {
   rpc DeleteChannels(DeleteChannelsRequest) returns (DeleteChannelsResponse) {}
 }
 
-message ChannelData {
-  string id = 1;
-  string channel_id = 2;
-}
-
 message CreateChannelRequest {
   string preferredUsername = 1;
 }
 
 message CreateChannelResponse {
   string code = 1;
-  string reply = 2;
-}
-
-message GetChannelsRequest {
-  string account_id = 1;
+  string status = 2;
 }
 
 message GetChannelsResponse {
   string code = 1;
-  repeated ChannelData channels = 2;
+  repeated actor.proto.ActorData channels = 2;
 }
 
 
 message DeleteChannelRequest {
-  string channel_id = 2;
+  string channel_id = 1;
 }
 
 message DeleteChannelResponse {
   string code = 1;
-  string reply = 2;
+  string status = 2;
 }
 
 message DeleteChannelsRequest {
@@ -70,5 +62,5 @@ message DeleteChannelsRequest {
 
 message DeleteChannelsResponse {
   string code = 1;
-  string reply = 2;
+  string status = 2;
 }
