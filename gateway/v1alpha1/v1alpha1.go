@@ -2,7 +2,7 @@ package v1alpha1
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hvxahv/hvx/pkg/proxy"
+	"github.com/jackc/pgmock/pgmockproxy/proxy"
 )
 
 func SearchActorsHandler(c *gin.Context) {

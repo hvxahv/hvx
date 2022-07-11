@@ -9,7 +9,8 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/hvxahv/gateway/internal"
+
+	"github.com/hvxahv/hvx/gateway/internal"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

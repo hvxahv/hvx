@@ -9,7 +9,8 @@
 package microsvc
 
 import (
-	"github.com/hvxahv/hvx/conv"
+	"strconv"
+
 	"github.com/hvxahv/hvx/gateway/identity"
 	"github.com/hvxahv/hvx/identity/jwt"
 	"github.com/pkg/errors"
@@ -44,11 +45,11 @@ func GetAccountIDWithContext(ctx context.Context) (uint, error) {
 	if err != nil {
 		return 0, errors.New("UNAUTHORIZED")
 	}
-	aid, err := conv.StringToUint(pares.ID)
+	aid, err := strconv.Atoi(pares.ID)
 	if err != nil {
 		return 0, err
 	}
-	return aid, nil
+	return uint(aid), nil
 }
 
 func GetActorIdByTokenWithContext(ctx context.Context) (uint, error) {
@@ -62,7 +63,7 @@ func GetActorIdByTokenWithContext(ctx context.Context) (uint, error) {
 	if err != nil {
 		return 0, errors.New("UNAUTHORIZED")
 	}
-	id, err := conv.StringToUint(pares.ActorId)
+	id, err := strconv.Atoi(pares.ActorId)
 	if err != nil {
 		return 0, err
 	}

@@ -1,7 +1,7 @@
 package article
 
 import (
-	pb "github.com/hvxahv/hvx/APIs/grpc-go/article/v1alpha1"
+	pb "github.com/hvxahv/hvx/APIs/grpc/v1alpha1/article"
 	"github.com/hvxahv/hvx/clientv1"
 )
 

@@ -2,7 +2,7 @@ package clientv1
 
 import (
 	"fmt"
-	pb "github.com/hvxahv/hvx/APIs/grpc-go/account/v1alpha1"
+	pb "github.com/hvxahv/hvx/APIs/grpc/v1alpha1/account"
 	"github.com/hvxahv/hvx/clientv1/cfg"
 	"golang.org/x/net/context"
 	"testing"

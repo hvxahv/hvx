@@ -1,7 +1,7 @@
 package message
 
 import (
-	pb "github.com/hvxahv/hvx/APIs/grpc-go/message/v1alpha1"
+	pb "github.com/hvxahv/hvx/APIs/grpc/v1alpha1/message"
 	"github.com/hvxahv/hvx/clientv1"
 )
 

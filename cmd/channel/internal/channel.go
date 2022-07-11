@@ -1,10 +1,8 @@
 package internal
 
 import (
-	"context"
-	"fmt"
-	"strconv"
-
+	"github.com/hvxahv/hvx/cockroach"
+	"github.com/hvxahv/hvx/errors"
 	"gorm.io/gorm"
 )
 
@@ -17,173 +15,98 @@ const (
 type Channels struct {
 	gorm.Model
 
-	// ActorID This ID is associated with the Actor table, as an
+	// ActorId This ID is associated with the Actor table, as an
 	// ActivityPub Actor service. This ID can be used
 	// to retrieve data from the Actor table. as the channel information.
-	ActorID    uint   `gorm:"primaryKey;type:bigint;actor_id"`
-	AccountID  uint   `gorm:"primaryKey;type:bigint;account_id"`
+	ActorId uint `gorm:"primaryKey;type:bigint;actor_id"`
+
+	// AccountId This ID is associated with the Account table, as an owner of the channel.
+	AccountId  uint   `gorm:"primaryKey;type:bigint;account_id"`
 	PrivateKey string `gorm:"private_key;type:text;private_key"`
 }
 
-func NewChannels(actorID uint, accountID uint, privateKey string) *Channels {
-	return &Channels{ActorID: actorID, AccountID: accountID, PrivateKey: privateKey}
+type Channel interface {
+	CreateChannel() error
+	GetChannels() (*[]Channels, error)
+	DeleteChannel() error
+	DeleteChannels() error
 }
 
-func (c *channel) CreateChannel(ctx context.Context, in *pb.CreateChannelRequest) (*pb.CreateChannelResponse, error) {
-	client, err := account.GetActorClient()
-	if err != nil {
-		return nil, err
-	}
+func NewChannels(ActorId, AccountId uint, privateKey string) *Channels {
+	return &Channels{ActorId: ActorId, AccountId: AccountId, PrivateKey: privateKey}
+}
 
-	privateKey, publicKey := identity.GenRsaKey()
-	actor, err := client.CreateActor(context.Background(), &v1alpha1.CreateActorRequest{
-		PreferredUsername: in.PreferredUsername,
-		PublicKey:         string(publicKey),
-		ActorType:         "Service",
-	})
-	fmt.Println(err)
-	if err != nil {
-		return nil, err
-	}
+func (c *Channels) CreateChannel() error {
 
 	db := cockroach.GetDB()
 	if err := db.AutoMigrate(&Channels{}); err != nil {
-		return nil, err
+		return errors.NewDatabaseCreate(serviceName)
 	}
 
-	aid, err := strconv.Atoi(in.AccountId)
-	if err != nil {
-		return nil, err
-	}
-
-	id, err := strconv.Atoi(actor.ActorId)
-	if err != nil {
-		return nil, err
-	}
-
-	ch := NewChannels(uint(id), uint(aid), string(privateKey))
 	if err := db.Debug().
 		Table(ChannelsTable).
-		Create(ch).
+		Create(&c).
 		Error; err != nil {
-		return nil, err
+		return err
 
 	}
-	administrator, err := c.AddAdministrator(ctx, &pb.AddAdministratorRequest{
-		ChannelId:      strconv.Itoa(int(ch.ID)),
-		AdminAccountId: in.AccountId,
-		AddAdminId:     in.AccountId,
-		IsOwner:        true,
-	})
-	if err != nil {
-		return nil, err
-	}
-	return &pb.CreateChannelResponse{Code: "200", Reply: administrator.Reply}, nil
+
+	return nil
 }
 
-func (c *channel) GetChannelsByAccountID(ctx context.Context, in *pb.GetChannelsByAccountIDRequest) (*pb.GetChannelsByAccountIDResponse, error) {
-	db := cockroach.GetDB()
-	if err := db.AutoMigrate(&Channels{}); err != nil {
-		return nil, err
-	}
+// NewChannelsAccountId returns a new Channels with the given AccountId.
+func NewChannelsAccountId(accountId uint) *Channels {
+	return &Channels{AccountId: accountId}
+}
 
-	aid, err := strconv.Atoi(in.AccountId)
-	if err != nil {
-		return nil, err
-	}
+func (c *Channels) GetChannels() (*[]Channels, error) {
+	db := cockroach.GetDB()
+
 	var channels []Channels
+
 	if err := db.Debug().
 		Table(ChannelsTable).
-		Where("account_id = ?", uint(aid)).
+		Where("account_id = ?", c.AccountId).
 		Find(&channels).
 		Error; err != nil {
 		return nil, err
 	}
 
-	var chs []*pb.Channel
-	for _, ch := range channels {
-		chs = append(chs, &pb.Channel{
-			Id:        strconv.Itoa(int(ch.ID)),
-			ChannelId: strconv.Itoa(int(ch.ActorID)),
-		})
-	}
-
-	return &pb.GetChannelsByAccountIDResponse{Code: "200", Channels: chs}, nil
+	return &channels, nil
 }
 
-func (c *channel) DeleteChannel(ctx context.Context, in *pb.DeleteChannelRequest) (*pb.DeleteChannelResponse, error) {
-	administrator, err := c.IsChannelAdministrator(ctx, &pb.IsChannelAdministratorRequest{
-		ChannelId: in.ChannelId,
-		AdminId:   in.AccountId,
-	})
-	if err != nil {
-		return nil, err
+func NewChannelsDelete(cid, accountId uint) *Channels {
+	return &Channels{
+		Model:     gorm.Model{ID: cid},
+		AccountId: accountId,
 	}
-	if !administrator.IsAdministrator {
-		return nil, fmt.Errorf("%s", NotAdmin)
-	}
-	client, err := account.GetActorClient()
-	if err != nil {
-		return nil, err
-	}
-	d, err := client.DeleteActor(ctx, &v1alpha1.DeleteActorRequest{
-		AccountId: in.AccountId,
-	})
-	if err != nil && d.Code != "200" {
-		return nil, err
-	}
+}
 
+func (c *Channels) DeleteChannel() error {
 	db := cockroach.GetDB()
-	if err := db.AutoMigrate(&Channels{}); err != nil {
-		return nil, err
-	}
-
-	aid, err := strconv.Atoi(in.AccountId)
-	if err != nil {
-		return nil, err
-	}
-
-	id, err := strconv.Atoi(in.ChannelId)
-	if err != nil {
-		return nil, err
-	}
 
 	if err := db.Debug().
 		Table(ChannelsTable).
-		Where("account_id = ? AND id = ?", uint(aid), uint(id)).
+		Where("account_id = ? AND id = ?", c.AccountId, c.ID).
 		Unscoped().
 		Delete(&Channels{}).
 		Error; err != nil {
-		return nil, err
+		return err
 	}
 
-	if err := db.Debug().
-		Table(AdministrateTable).
-		Where("admin_id = ? AND c_id = ? AND is_owner = ?", uint(aid), uint(id), true).
-		Unscoped().
-		Delete(&Administrates{}).
-		Error; err != nil {
-		return nil, err
-
-	}
-	return &pb.DeleteChannelResponse{Code: "200", Reply: "ok"}, nil
+	return nil
 }
 
-func (c *channel) DeleteAllChannelsByAccountID(ctx context.Context, in *pb.DeleteAllChannelsByAccountIDRequest) (*pb.DeleteAllChannelsByAccountIDResponse, error) {
+func (c *Channels) DeleteChannels() error {
 	db := cockroach.GetDB()
-
-	aid, err := strconv.Atoi(in.AccountId)
-	if err != nil {
-		return nil, err
-	}
 
 	if err := db.Debug().
 		Table(ChannelsTable).
-		Where("account_id = ?", uint(aid)).
+		Where("account_id = ?", c.AccountId).
 		Unscoped().
 		Delete(&Channels{}).
 		Error; err != nil {
-		return nil, err
+		return err
 	}
-	return &pb.DeleteAllChannelsByAccountIDResponse{Code: "200", Reply: "ok"}, nil
+	return nil
 }

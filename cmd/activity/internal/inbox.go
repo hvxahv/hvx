@@ -1,7 +1,7 @@
 package internal
 
 import (
-	"github.com/hvxahv/hvx/pkg/cockroach"
+	"github.com/hvxahv/hvx/cockroach"
 	"gorm.io/gorm"
 )
 

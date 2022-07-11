@@ -2,8 +2,9 @@ package jwt
 
 import (
 	"fmt"
-	"github.com/google/uuid"
 	"time"
+
+	"github.com/google/uuid"
 
 	"github.com/golang-jwt/jwt/v4"
 )
@@ -17,11 +18,11 @@ type Jwt interface {
 var now = time.Now
 
 type Userdata struct {
-	Mail     string `json:"mail,omitempty"`
-	Id       string `json:"id,omitempty"`
-	ActorId  string `json:"actor_id,omitempty"`
-	DeviceID string `json:"device_id,omitempty"`
-	Username string `json:"username,omitempty"`
+	Mail      string `json:"mail,omitempty"`
+	AccountId string `json:"account_id,omitempty"`
+	ActorId   string `json:"actor_id,omitempty"`
+	DeviceID  string `json:"device_id,omitempty"`
+	Username  string `json:"username,omitempty"`
 }
 
 // Claims Generate the data needed for TOKEN.
@@ -32,14 +33,14 @@ type Claims struct {
 
 // NewClaims ...
 // Expires Example: time.Duration(viper.GetInt("authentication.token.expired")) * 24 * time.Hour
-func NewClaims(mail, id, actorId, username, deviceId string, expires time.Duration) *Claims {
+func NewClaims(mail, accountId, actorId, username, deviceId string, expires time.Duration) *Claims {
 	return &Claims{
 		Userdata: Userdata{
-			Mail:     mail,
-			Id:       id,
-			ActorId:  actorId,
-			Username: username,
-			DeviceID: deviceId,
+			Mail:      mail,
+			AccountId: accountId,
+			ActorId:   actorId,
+			Username:  username,
+			DeviceID:  deviceId,
 		},
 		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer:    fmt.Sprintf("%s-hvx-issues", deviceId),

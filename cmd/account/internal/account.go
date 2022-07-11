@@ -3,6 +3,8 @@ package internal
 import (
 	"context"
 	"fmt"
+	"strconv"
+
 	"github.com/hvxahv/hvx/APIs/grpc/v1alpha1/actor"
 	"github.com/hvxahv/hvx/clientv1"
 	"github.com/hvxahv/hvx/cockroach"
@@ -11,7 +13,6 @@ import (
 	"github.com/spf13/viper"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
-	"strconv"
 )
 
 // Accounts is a struct for account.
@@ -110,7 +111,7 @@ func (a *Accounts) Create(publicKey string) error {
 	db := cockroach.GetDB()
 
 	if err := db.AutoMigrate(&Accounts{}); err != nil {
-		return errors.New(errors.ErrAccountDatabaseCreate)
+		return errors.NewDatabaseCreate(serviceName)
 	}
 
 	if err := db.Debug().Table(AccountsTable).
