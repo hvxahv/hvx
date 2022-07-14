@@ -35,7 +35,7 @@ service Follow {
     };
   }
 
-  rpc GetFriend (google.protobuf.Empty) returns (GetFriendResponse) {
+  rpc GetFriends (google.protobuf.Empty) returns (GetFriendsResponse) {
     option (google.api.http) = {
       get: "/api/v1/activity/friends",
     };
@@ -79,7 +79,7 @@ message UnFollowResponse {
   string reply = 2;
 }
 
-message GetFriendResponse {
+message GetFriendsResponse {
   string code = 1;
   repeated actor.proto.ActorData friends = 2;
 }
