@@ -109,7 +109,7 @@ message EditSavedRequest {
 
 message EditSavedResponse {
   string code = 1;
-  string reply = 2;
+  string status = 2;
 }
 
 message DeleteRequest {

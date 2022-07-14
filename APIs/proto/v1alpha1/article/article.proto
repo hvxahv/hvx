@@ -125,20 +125,19 @@ message GetArticlesResponse {
 
 message UpdateRequest {
   string id = 1;
-  string account_id = 2;
-  string title = 3;
-  string summary = 4;
-  string article = 5;
-  repeated string tags = 6;
-  string attachmentType = 7;
-  repeated string attachments = 8;
-  bool nsfw = 9;
-  string visibility = 10;
+  string title = 2;
+  string summary = 3;
+  string article = 4;
+  repeated string tags = 5;
+  string attachmentType = 6;
+  repeated string attachments = 7;
+  string nsfw = 8;
+  string visibility = 9;
 }
 
 message UpdateResponse {
   string code = 1;
-  string reply = 2;
+  string status = 2;
 }
 
 message DeleteRequest {
@@ -147,7 +146,7 @@ message DeleteRequest {
 
 message DeleteResponse {
   string code = 1;
-  string reply = 2;
+  string status = 2;
 }
 
 message DeleteArticlesRequest {
@@ -156,5 +155,5 @@ message DeleteArticlesRequest {
 
 message DeleteArticlesResponse {
   string code = 1;
-  string reply = 2;
+  string status = 2;
 }

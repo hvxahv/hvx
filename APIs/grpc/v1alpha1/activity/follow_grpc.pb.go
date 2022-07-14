@@ -27,7 +27,7 @@ type FollowClient interface {
 	GetFollowings(ctx context.Context, in *GetFollowingsRequest, opts ...grpc.CallOption) (*GetFollowingsResponse, error)
 	Follow(ctx context.Context, in *FollowRequest, opts ...grpc.CallOption) (*FollowResponse, error)
 	UnFollow(ctx context.Context, in *UnFollowRequest, opts ...grpc.CallOption) (*UnFollowResponse, error)
-	GetFriend(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetFriendResponse, error)
+	GetFriends(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetFriendsResponse, error)
 }
 
 type followClient struct {
@@ -74,9 +74,9 @@ func (c *followClient) UnFollow(ctx context.Context, in *UnFollowRequest, opts .
 	return out, nil
 }
 
-func (c *followClient) GetFriend(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetFriendResponse, error) {
-	out := new(GetFriendResponse)
-	err := c.cc.Invoke(ctx, "/hvx.api.v1alpha1.activity.proto.Follow/GetFriend", in, out, opts...)
+func (c *followClient) GetFriends(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetFriendsResponse, error) {
+	out := new(GetFriendsResponse)
+	err := c.cc.Invoke(ctx, "/hvx.api.v1alpha1.activity.proto.Follow/GetFriends", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -91,7 +91,7 @@ type FollowServer interface {
 	GetFollowings(context.Context, *GetFollowingsRequest) (*GetFollowingsResponse, error)
 	Follow(context.Context, *FollowRequest) (*FollowResponse, error)
 	UnFollow(context.Context, *UnFollowRequest) (*UnFollowResponse, error)
-	GetFriend(context.Context, *emptypb.Empty) (*GetFriendResponse, error)
+	GetFriends(context.Context, *emptypb.Empty) (*GetFriendsResponse, error)
 }
 
 // UnimplementedFollowServer should be embedded to have forward compatible implementations.
@@ -110,8 +110,8 @@ func (UnimplementedFollowServer) Follow(context.Context, *FollowRequest) (*Follo
 func (UnimplementedFollowServer) UnFollow(context.Context, *UnFollowRequest) (*UnFollowResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UnFollow not implemented")
 }
-func (UnimplementedFollowServer) GetFriend(context.Context, *emptypb.Empty) (*GetFriendResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetFriend not implemented")
+func (UnimplementedFollowServer) GetFriends(context.Context, *emptypb.Empty) (*GetFriendsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetFriends not implemented")
 }
 
 // UnsafeFollowServer may be embedded to opt out of forward compatibility for this service.
@@ -197,20 +197,20 @@ func _Follow_UnFollow_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Follow_GetFriend_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Follow_GetFriends_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(FollowServer).GetFriend(ctx, in)
+		return srv.(FollowServer).GetFriends(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/hvx.api.v1alpha1.activity.proto.Follow/GetFriend",
+		FullMethod: "/hvx.api.v1alpha1.activity.proto.Follow/GetFriends",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FollowServer).GetFriend(ctx, req.(*emptypb.Empty))
+		return srv.(FollowServer).GetFriends(ctx, req.(*emptypb.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -239,8 +239,8 @@ var Follow_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Follow_UnFollow_Handler,
 		},
 		{
-			MethodName: "GetFriend",
-			Handler:    _Follow_GetFriend_Handler,
+			MethodName: "GetFriends",
+			Handler:    _Follow_GetFriends_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

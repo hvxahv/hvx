@@ -12,26 +12,41 @@ service Activity {
 
   rpc GetInbox (GetInboxRequest) returns (GetInboxResponse) {
     option (google.api.http) = {
-      get: "/api/v1/article/{activity_id}"
+      get: "/api/v1/activity/{activity_id}"
     };
   }
 
   rpc GetInboxes (GetInboxesRequest) returns (GetInboxesResponse) {
     option (google.api.http) = {
-      get: "/api/v1/article/articles"
+      get: "/api/v1/activity/inbox"
     };
   }
 
   rpc DeleteInbox (DeleteInboxRequest) returns (DeleteInboxResponse) {
     option (google.api.http) = {
-      delete: "/api/v1/article"
+      delete: "/api/v1/activity/{activity_id}"
       body: "*"
     };
   }
 
-  rpc CreateOutbox (CreateOutboxRequest) returns (CreateOutboxResponse) {}
+  rpc CreateOutbox (CreateOutboxRequest) returns (CreateOutboxResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/activity/outbox"
+      body: "*"
+    };
+  }
 
-  rpc GetOutbox (GetOutboxRequest) returns (GetOutboxResponse) {}
+  rpc GetOutbox (GetOutboxRequest) returns (GetOutboxResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/activity/outbox/{activity_id}"
+    };
+  }
+
+  rpc GetOutboxes (GetOutboxesRequest) returns (GetOutboxesResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/activity/outbox"
+    };
+  }
 }
 
 message Inboxes {
@@ -83,6 +98,12 @@ message CreateOutboxRequest {}
 
 message CreateOutboxResponse {}
 
-message GetOutboxRequest {}
+message GetOutboxRequest {
+  string activity_id = 1 [(google.api.field_behavior) = REQUIRED];
+}
 
 message GetOutboxResponse {}
+
+
+message GetOutboxesRequest {}
+message GetOutboxesResponse {}
