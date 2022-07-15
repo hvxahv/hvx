@@ -2,7 +2,10 @@ package internal
 
 import (
 	"context"
+	"strconv"
+
 	pb "github.com/hvxahv/hvx/APIs/grpc/v1alpha1/saved"
+	"github.com/hvxahv/hvx/microsvc"
 )
 
 func (s *server) Create(ctx context.Context, in *pb.CreateRequest) (*pb.CreateResponse, error) {
@@ -18,6 +21,25 @@ func (s *server) GetSaves(ctx context.Context, in *pb.GetSavesRequest) (*pb.GetS
 }
 
 func (s *server) EditSaved(ctx context.Context, in *pb.EditSavedRequest) (*pb.EditSavedResponse, error) {
+	saved := new(Saves)
+	switch {
+	case in.Name != "":
+		saved.EditSavedName(in.Name)
+	case in.Comment != "":
+		saved.EditSavedComment(in.Comment)
+	}
+	id, err := strconv.Atoi(in.Id)
+	if err != nil {
+		return nil, err
+	}
+	accountId, err := microsvc.GetAccountIDWithContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if err := saved.EditSaved(uint(id), accountId); err != nil {
+		return nil, err
+	}
+
 	return &pb.EditSavedResponse{}, nil
 }
 

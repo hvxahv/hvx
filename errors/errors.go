@@ -18,6 +18,11 @@ const (
 	ErrAlreadyAchannelAdministrator = "ADMINISTRATOR_ALREADY_EXISTS"
 	ErrNotTheOwner                  = "NOT_THE_OWNER"
 	ErrAlreadySubscribed            = "ALREADY_SUBSCRIBED"
+	ErrNotSubscribed                = "NOT_SUBSCRIBED"
+)
+
+const (
+	ErrNoPermission = "NO_PERMISSION"
 )
 
 func New(err string) error {
