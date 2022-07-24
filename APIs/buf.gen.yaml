@@ -6,5 +6,5 @@ plugins:
     out: grpc
     opt: require_unimplemented_servers=false
   - name: grpc-gateway
-    out: grpc-gateway
+    out: grpc
     opt: allow_delete_body=true
