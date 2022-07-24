@@ -12,7 +12,6 @@ import (
 	"strconv"
 
 	"github.com/hvxahv/hvx/gateway/identity"
-	"github.com/hvxahv/hvx/identity/jwt"
 	"github.com/pkg/errors"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc/metadata"
@@ -28,7 +27,7 @@ func GetUsernameByTokenWithContext(ctx context.Context) (string, error) {
 		return "", errors.New("UNAUTHORIZED")
 	}
 
-	pares, err := jwt.ParseToken(bearer[0])
+	pares, err := identity.ParseToken(bearer[0])
 	if err != nil {
 		return "", errors.New("UNAUTHORIZED")
 	}
@@ -59,7 +58,7 @@ func GetActorIdByTokenWithContext(ctx context.Context) (uint, error) {
 		return 0, errors.New("UNAUTHORIZED")
 	}
 
-	pares, err := jwt.ParseToken(bearer[0])
+	pares, err := identity.ParseToken(bearer[0])
 	if err != nil {
 		return 0, errors.New("UNAUTHORIZED")
 	}
@@ -67,5 +66,5 @@ func GetActorIdByTokenWithContext(ctx context.Context) (uint, error) {
 	if err != nil {
 		return 0, err
 	}
-	return id, nil
+	return uint(id), nil
 }

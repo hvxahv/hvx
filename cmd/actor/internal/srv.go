@@ -1,14 +1,13 @@
 package internal
 
 import (
-	gw "github.com/hvxahv/hvx/APIs/grpc-gateway/v1alpha1/actor"
-	a "github.com/hvxahv/hvx/APIs/grpc/v1alpha1/actor"
+	pb "github.com/hvxahv/hvx/APIs/grpc/v1alpha1/actor"
 	svc "github.com/hvxahv/hvx/microsvc"
 	"github.com/pkg/errors"
 )
 
 type server struct {
-	a.ActorServer
+	pb.ActorServer
 }
 
 const (
@@ -27,9 +26,9 @@ func Run() error {
 		svc.WithServiceID("serviceName"),
 	).ListenerWithEndpoints()
 
-	a.RegisterActorServer(s, &server{})
+	pb.RegisterActorServer(s, &server{})
 
-	if err := gw.RegisterActorHandler(s.Ctx, s.Mux, s.Conn); err != nil {
+	if err := pb.RegisterActorHandler(s.Ctx, s.Mux, s.Conn); err != nil {
 		return errors.Errorf("Failed to register %s services: %v", serviceName, err)
 	}
 

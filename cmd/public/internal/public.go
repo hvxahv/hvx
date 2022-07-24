@@ -1,12 +1,9 @@
 package internal
 
 import (
-	"time"
-
+	"github.com/hvxahv/hvx/APIs/grpc/v1alpha1/account"
+	"github.com/hvxahv/hvx/APIs/grpc/v1alpha1/actor"
 	"github.com/hvxahv/hvx/clientv1"
-	"github.com/hvxahv/hvx/clientv1/cfg"
-
-	pb "github.com/hvxahv/hvx/APIs/grpc/v1alpha1/account"
 	"github.com/hvxahv/hvx/microsvc"
 	"golang.org/x/net/context"
 )
@@ -15,27 +12,32 @@ type Public struct {
 	ctx context.Context
 }
 
-type public interface {
-	AccountIsExist(name string) (bool, error)
-	GetActorByUsername(username string) (*pb.ActorDataResponse, error)
-	CreateAccounts(username, mail, password, publicKey string) (*pb.CreateAccountResponse, error)
-	Auth(username, password string) (*pb.VerifyResponse, error)
+type AccountHandler interface {
+	IsExist(name string) (bool, error)
+	CreateAccount(username, mail, password, publicKey string) (*account.CreateResponse, error)
+}
+
+type ActorHandler interface {
+	//GetActorByUsername(username string) (*actor.ActorData, error)
+}
+
+type AuthHandler interface {
+	//Auth(username, password string) (*auth.VerifyResponse, error)
 }
 
 func NewPublic(ctx context.Context) *Public {
 	return &Public{ctx: ctx}
 }
 
-func (p *Public) AccountIsExist(name string) (bool, error) {
+func (p *Public) IsExist(name string) (bool, error) {
 	c, err := clientv1.New(p.ctx,
-		cfg.SetEndpoints(microsvc.GetGRPCServiceAddress("account")),
-		cfg.SetDialTimeout(10*time.Second),
+		[]string{microsvc.GetGRPCServiceAddress("account")},
 	)
 	if err != nil {
 		return false, err
 	}
 	defer c.Close()
-	exist, err := c.IsExist(p.ctx, &pb.IsExistRequest{
+	exist, err := account.NewAccountsClient(c.Conn).IsExist(p.ctx, &account.IsExistRequest{
 		Username: name,
 	})
 	if err != nil {
@@ -44,36 +46,36 @@ func (p *Public) AccountIsExist(name string) (bool, error) {
 	return exist.IsExist, nil
 }
 
-func (p *Public) GetActorByUsername(username string) (*pb.ActorDataResponse, error) {
+// GetActorByUsername ...
+func (p *Public) GetActorByUsername(username string) (*actor.ActorData, error) {
 	c, err := clientv1.New(p.ctx,
-		cfg.SetEndpoints(microsvc.GetGRPCServiceAddress("account")),
-		cfg.SetDialTimeout(10*time.Second),
+		[]string{microsvc.GetGRPCServiceAddress("actor")},
 	)
 	if err != nil {
 		return nil, err
 	}
 	defer c.Close()
 
-	a, err := c.GetActorByUsername(p.ctx, &pb.GetActorByUsernameRequest{
+	a, err := actor.NewActorClient(c.Conn).GetActorByUsername(p.ctx, &actor.GetActorByUsernameRequest{
 		Username: username,
 	})
 	if err != nil {
 		return nil, err
 	}
+
 	return a, err
 }
 
-func (p *Public) CreateAccounts(username, mail, password, publicKey string) (*pb.CreateAccountResponse, error) {
+func (p *Public) CreateAccount(username, mail, password, publicKey string) (*account.CreateResponse, error) {
 	c, err := clientv1.New(p.ctx,
-		cfg.SetEndpoints(microsvc.GetGRPCServiceAddress("account")),
-		cfg.SetDialTimeout(10*time.Second),
+		[]string{microsvc.GetGRPCServiceAddress("account")},
 	)
 	if err != nil {
 		return nil, err
 	}
 	defer c.Close()
 
-	res, err := c.CreateAccount(p.ctx, &pb.CreateAccountRequest{
+	create, err := account.NewAccountsClient(c.Conn).Create(p.ctx, &account.CreateRequest{
 		Username:  username,
 		Mail:      mail,
 		Password:  password,
@@ -82,25 +84,26 @@ func (p *Public) CreateAccounts(username, mail, password, publicKey string) (*pb
 	if err != nil {
 		return nil, err
 	}
-	return res, err
+	return create, err
 }
 
-func (p *Public) Auth(username, password string) (*pb.VerifyResponse, error) {
-	c, err := clientv1.New(p.ctx,
-		cfg.SetEndpoints(microsvc.GetGRPCServiceAddress("account")),
-		cfg.SetDialTimeout(10*time.Second),
-	)
-	if err != nil {
-		return nil, err
-	}
-	defer c.Close()
-
-	res, err := c.Verify(p.ctx, &pb.VerifyRequest{
-		Username: username,
-		Password: password,
-	})
-	if err != nil {
-		return nil, err
-	}
-	return res, err
-}
+//
+//func (p *Public) Auth(username, password string) (*pb.VerifyResponse, error) {
+//	c, err := clientv1.New(p.ctx,
+//		cfg.SetEndpoints(microsvc.GetGRPCServiceAddress("account")),
+//		cfg.SetDialTimeout(10*time.Second),
+//	)
+//	if err != nil {
+//		return nil, err
+//	}
+//	defer c.Close()
+//
+//	res, err := c.Verify(p.ctx, &pb.VerifyRequest{
+//		Username: username,
+//		Password: password,
+//	})
+//	if err != nil {
+//		return nil, err
+//	}
+//	return res, err
+//}

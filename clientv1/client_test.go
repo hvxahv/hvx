@@ -13,7 +13,7 @@ func TestGRPC(t *testing.T) {
 	ctx := context.Background()
 	c, err := New(ctx,
 		cfg.SetEndpoints("hvxahv.disism.internal:50010"),
-		cfg.SetDialTimeout(10*time.Second),
+		SetDialTimeout(10*time.Second),
 	)
 	if err != nil {
 		t.Error(err)

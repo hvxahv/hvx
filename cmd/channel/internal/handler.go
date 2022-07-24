@@ -10,7 +10,6 @@ import (
 	actor "github.com/hvxahv/hvx/APIs/grpc/v1alpha1/actor"
 	pb "github.com/hvxahv/hvx/APIs/grpc/v1alpha1/channel"
 	"github.com/hvxahv/hvx/clientv1"
-	"github.com/hvxahv/hvx/clientv1/cfg"
 	"github.com/hvxahv/hvx/gateway/identity"
 	"github.com/hvxahv/hvx/microsvc"
 )
@@ -67,8 +66,8 @@ func (s *server) CreateChannel(ctx context.Context, in *pb.CreateChannelRequest)
 
 	// TODO - Create a new Actor...
 	cli, err := clientv1.New(ctx, []string{microsvc.NewGRPCAddress("actor")},
-		cfg.SetDialOptionsWithToken(),
-		cfg.SetDialTimeout(10*time.Second),
+		clientv1.SetDialOptionsWithToken(),
+		clientv1.SetDialTimeout(10*time.Second),
 	)
 	if err != nil {
 		return nil, err

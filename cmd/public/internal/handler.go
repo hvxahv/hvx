@@ -2,23 +2,16 @@ package internal
 
 import (
 	"fmt"
+	"google.golang.org/protobuf/types/known/emptypb"
 
 	pb "github.com/hvxahv/hvx/APIs/grpc/v1alpha1/public"
 	"github.com/hvxahv/hvx/activitypub"
 	"github.com/spf13/viper"
 	"golang.org/x/net/context"
-	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-func (s *server) Health(ctx context.Context, g *emptypb.Empty) (*pb.HealthResponese, error) {
-	return &pb.HealthResponese{
-		Code:   "200",
-		Status: "ok",
-	}, nil
-}
-
-func (s *server) GetPublicInstance(ctx context.Context, g *emptypb.Empty) (*pb.GetPublicInstanceResponse, error) {
-	return &pb.GetPublicInstanceResponse{
+func (s *server) GetInstance(ctx context.Context, g *emptypb.Empty) (*pb.GetInstanceResponse, error) {
+	return &pb.GetInstanceResponse{
 		Code:       "200",
 		Version:    viper.GetString("version"),
 		Build:      "2022-01-01",
@@ -33,7 +26,7 @@ func (s *server) GetWebfinger(ctx context.Context, in *pb.GetWebfingerRequest) (
 	var (
 		address = fmt.Sprintf("https://%s/u/%s", viper.GetString("domain"), name)
 	)
-	exist, err := NewPublic(ctx).AccountIsExist(name)
+	exist, err := NewPublic(ctx).IsExist(name)
 	if err != nil {
 		return nil, err
 	}
@@ -82,8 +75,8 @@ func (s *server) GetActor(ctx context.Context, in *pb.GetActorRequest) (*pb.GetA
 		Type:              a.ActorType,
 		Following:         "",
 		Followers:         "",
-		Inbox:             fmt.Sprintf("%s/inbox", box),
-		Outbox:            fmt.Sprintf("%s/outbox", box),
+		Inbox:             a.Inbox,
+		Outbox:            fmt.Sprintf("%soutbox", box),
 		PreferredUsername: a.PreferredUsername,
 		Name:              a.Name,
 		Summary:           a.Summary,
@@ -96,11 +89,9 @@ func (s *server) GetActor(ctx context.Context, in *pb.GetActorRequest) (*pb.GetA
 	}, nil
 }
 
+// CreateAccounts ..
 func (s *server) CreateAccounts(ctx context.Context, in *pb.CreateAccountsRequest) (*pb.CreateAccountsResponse, error) {
-	res, err := NewPublic(ctx).CreateAccounts(in.Username, in.Password, in.Mail, in.Password)
-	if err != nil {
-		return nil, err
-	}
+	res, err := NewPublic(ctx).CreateAccount(in.Username, in.Mail, in.Password, in.PublicKey)
 	if err != nil {
 		return nil, err
 	}
@@ -111,14 +102,15 @@ func (s *server) CreateAccounts(ctx context.Context, in *pb.CreateAccountsReques
 	}, nil
 }
 
-func (s *server) Authenticate(ctx context.Context, in *pb.AuthenticateRequest) (*pb.AuthenticateResponse, error) {
-	auth, err := NewPublic(ctx).Auth(in.Username, in.Password)
-	if err != nil {
-		return nil, err
-	}
-	return &pb.AuthenticateResponse{
-		Code:     auth.Code,
-		Token:    auth.Token,
-		DeviceId: auth.Id,
-	}, nil
-}
+//
+//func (s *server) Authenticate(ctx context.Context, in *pb.AuthenticateRequest) (*pb.AuthenticateResponse, error) {
+//	auth, err := NewPublic(ctx).Auth(in.Username, in.Password)
+//	if err != nil {
+//		return nil, err
+//	}
+//	return &pb.AuthenticateResponse{
+//		Code:     auth.Code,
+//		Token:    auth.Token,
+//		DeviceId: auth.Id,
+//	}, nil
+//}

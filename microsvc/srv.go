@@ -3,7 +3,6 @@ package microsvc
 import (
 	"fmt"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
-	"github.com/hvxahv/hvx/discovery/consul"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	"golang.org/x/net/context"
@@ -82,6 +81,16 @@ func (c *Cfg) ListenerWithEndpoints() *server {
 }
 
 func (s *server) Run() error {
+	// Service registration...
+	//r, err := consul.New(s.Name, s.host, s.http, []string{"http", "grpc", "microservices"})
+	//if err != nil {
+	//	return err
+	//}
+	//
+	//if err := r.Register(); err != nil {
+	//	return err
+	//}
+
 	s.wg.Add(1)
 	go func() {
 		if err := s.Serve(s.Listener); err != nil {
@@ -98,14 +107,6 @@ func (s *server) Run() error {
 	}
 
 	log.Println("server gRPC-Gateway is running on: ", s.http)
-
-	r, err := consul.New(s.Name, s.host, s.http, []string{"http", "grpc", "microservices"})
-	if err != nil {
-		return err
-	}
-	if err := r.Register(); err != nil {
-		return err
-	}
 
 	if err := gw.ListenAndServe(); err != nil {
 		return err

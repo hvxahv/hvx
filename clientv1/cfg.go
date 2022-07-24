@@ -1,8 +1,7 @@
-package cfg
+package clientv1
 
 import (
 	"crypto/tls"
-	"github.com/hvxahv/hvx/clientv1"
 	"google.golang.org/grpc"
 	"time"
 )
@@ -36,7 +35,7 @@ func SetTLS(tls *tls.Config) Option {
 
 func SetDialOptionsWithToken() Option {
 	o := &[]grpc.DialOption{
-		grpc.WithPerRPCCredentials(clientv1.CustomerTokenAuth{}),
+		grpc.WithPerRPCCredentials(CustomerTokenAuth{}),
 	}
 	return func(c *Config) {
 		c.DialOptions = *o

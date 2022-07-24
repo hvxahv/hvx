@@ -2,9 +2,6 @@ package clientv1
 
 import (
 	"context"
-	"github.com/hvxahv/hvx/clientv1/actor"
-	"github.com/hvxahv/hvx/clientv1/auth"
-	config "github.com/hvxahv/hvx/clientv1/cfg"
 	"github.com/pkg/errors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -24,13 +21,10 @@ import (
 type Client struct {
 	Context context.Context
 	Conn    *grpc.ClientConn
-
-	actor.Actor
-	auth.Auth
 }
 
-func New(ctx context.Context, endpoints []string, cfg ...config.Option) (*Client, error) {
-	c := &config.Config{
+func New(ctx context.Context, endpoints []string, cfg ...Option) (*Client, error) {
+	c := &Config{
 		Endpoints: endpoints,
 	}
 
@@ -52,9 +46,6 @@ func New(ctx context.Context, endpoints []string, cfg ...config.Option) (*Client
 		Conn:    conn,
 		Context: ctx,
 	}
-
-	client.Actor = actor.NewActor(client)
-	client.Auth = auth.NewAuth(client)
 
 	return client, nil
 }
