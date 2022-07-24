@@ -38,8 +38,8 @@ func (s *server) GetActorByUsername(ctx context.Context, in *pb.GetActorByUserna
 	}, nil
 }
 
-// CreateActor ...
-func (s *server) CreateActor(ctx context.Context, in *pb.CreateRequest) (*pb.CreateResponse, error) {
+// Create actor.
+func (s *server) Create(ctx context.Context, in *pb.CreateRequest) (*pb.CreateResponse, error) {
 	actor, err := NewActors(in.PreferredUsername, in.PublicKey, in.ActorType).Create()
 	if err != nil {
 		return nil, err

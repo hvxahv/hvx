@@ -27,6 +27,7 @@ func APIServer() *gin.Engine {
 	api.POST("/public/*x", PublicHandler)
 	api.GET("/.well-known/webfinger", WellKnownHandler)
 	api.GET("/u/:actor", GetActorHandler)
+	api.POST("/u/:actor/inbox", InboxHandler)
 
 	v1 := api.Group("/api/v1")
 	v1.Use(Auth)

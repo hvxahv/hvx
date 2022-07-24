@@ -1,4 +1,4 @@
-package internal
+package proxy
 
 import (
 	"github.com/gin-gonic/gin"

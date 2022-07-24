@@ -9,11 +9,7 @@
 package internal
 
 import (
-	"fmt"
-	"github.com/golang/protobuf/ptypes/empty"
 	pb "github.com/hvxahv/hvx/APIs/grpc/v1alpha1/account"
-	"github.com/hvxahv/hvx/clientv1"
-	"github.com/hvxahv/hvx/errors"
 	"github.com/hvxahv/hvx/microsvc"
 	"golang.org/x/net/context"
 	"strconv"
@@ -25,8 +21,8 @@ func (s *server) IsExist(ctx context.Context, in *pb.IsExistRequest) (*pb.IsExis
 	return &pb.IsExistResponse{IsExist: a.IsExist()}, nil
 }
 
-// CreateAccount ...
-func (s *server) CreateAccount(ctx context.Context, in *pb.CreateRequest) (*pb.CreateResponse, error) {
+// Create ...
+func (s *server) Create(ctx context.Context, in *pb.CreateRequest) (*pb.CreateResponse, error) {
 	if err := NewAccountsCreate(in.Username, in.Mail, in.Password).Create(in.PublicKey); err != nil {
 		return nil, err
 	}
@@ -77,22 +73,24 @@ func (s *server) DeleteAccount(ctx context.Context, in *pb.DeleteRequest) (*pb.D
 	//}
 
 	// Delete actor ...
-	client, err := clientv1.New(ctx, []string{microsvc.NewGRPCAddress("actor")})
-	if err != nil {
-		return nil, err
-	}
-	d, err := client.Delete(ctx, &empty.Empty{})
-	if err != nil {
-		return nil, err
-	}
-	if d.Status != "ok" {
-		return nil, fmt.Errorf(errors.ErrActorDelete)
-	}
+	//client, err := clientv1.New(ctx, []string{microsvc.NewGRPCAddress("actor")})
+	//if err != nil {
+	//	return nil, err
+	//}
+	//d, err := client.Delete(ctx, &empty.Empty{})
+	//if err != nil {
+	//	return nil, err
+	//}
+	//if d.Status != "ok" {
+	//	return nil, fmt.Errorf(errors.ErrActorDelete)
+	//}
+	//
+	//return &pb.DeleteResponse{
+	//	Code:  "200",
+	//	Reply: d.Status,
+	//}, nil
 
-	return &pb.DeleteResponse{
-		Code:  "200",
-		Reply: d.Status,
-	}, nil
+	return nil, nil
 }
 
 // EditUsername ...

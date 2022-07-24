@@ -1,10 +1,7 @@
 package internal
 
 import (
-	"context"
 	"fmt"
-	"strconv"
-
 	"github.com/hvxahv/hvx/APIs/grpc/v1alpha1/actor"
 	"github.com/hvxahv/hvx/clientv1"
 	"github.com/hvxahv/hvx/cockroach"
@@ -12,7 +9,9 @@ import (
 	"github.com/hvxahv/hvx/microsvc"
 	"github.com/spf13/viper"
 	"golang.org/x/crypto/bcrypt"
+	"golang.org/x/net/context"
 	"gorm.io/gorm"
+	"strconv"
 )
 
 // Accounts is a struct for account.
@@ -108,9 +107,11 @@ func (a *Accounts) Create(publicKey string) error {
 	//	fmt.Println(err)
 	//	return errors.New("FAILED_TO_VALIDATOR")
 	//}
+
 	db := cockroach.GetDB()
 
 	if err := db.AutoMigrate(&Accounts{}); err != nil {
+		fmt.Println(err)
 		return errors.NewDatabaseCreate(serviceName)
 	}
 
@@ -125,11 +126,11 @@ func (a *Accounts) Create(publicKey string) error {
 
 	// Create an actor for the account.
 	ctx := context.Background()
-	cli, err := clientv1.New(ctx, []string{microsvc.NewGRPCAddress("actor")})
+	client, err := clientv1.New(ctx, []string{microsvc.NewGRPCAddress("actor")})
 	if err != nil {
 		return err
 	}
-	create, err := cli.Create(ctx, &actor.CreateRequest{
+	create, err := actor.NewActorClient(client.Conn).Create(ctx, &actor.CreateRequest{
 		PreferredUsername: a.Username,
 		PublicKey:         publicKey,
 		ActorType:         "Person",
@@ -166,11 +167,13 @@ func (a *Accounts) Delete() error {
 		return err
 	}
 
-	if err := db.Debug().Table(AccountsTable).
-		Where("id = ?", verify.ID).Unscoped().Delete(&Accounts{}).Error; err != nil {
+	if err := db.Debug().
+		Table(AccountsTable).
+		Where("id = ?", verify.ID).
+		Unscoped().
+		Delete(&Accounts{}).Error; err != nil {
 		return err
 	}
-
 	return nil
 }
 
@@ -259,6 +262,7 @@ func (a *Accounts) Verify(password string) (*Accounts, error) {
 		return nil, err
 	}
 
+	fmt.Println(password, a.Password)
 	if err := bcrypt.CompareHashAndPassword([]byte(a.Password), []byte(password)); err != nil {
 		return nil, err
 	}
