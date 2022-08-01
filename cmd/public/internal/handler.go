@@ -101,16 +101,3 @@ func (s *server) CreateAccounts(ctx context.Context, in *pb.CreateAccountsReques
 		Response: res.Reply,
 	}, nil
 }
-
-//
-//func (s *server) Authenticate(ctx context.Context, in *pb.AuthenticateRequest) (*pb.AuthenticateResponse, error) {
-//	auth, err := NewPublic(ctx).Auth(in.Username, in.Password)
-//	if err != nil {
-//		return nil, err
-//	}
-//	return &pb.AuthenticateResponse{
-//		Code:     auth.Code,
-//		Token:    auth.Token,
-//		DeviceId: auth.Id,
-//	}, nil
-//}

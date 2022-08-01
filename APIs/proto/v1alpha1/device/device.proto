@@ -66,7 +66,6 @@ message CreateRequest {
 
 message CreateResponse {
   string device_id = 1;
-  string public_key = 2;
 }
 
 message GetRequest {

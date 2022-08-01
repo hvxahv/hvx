@@ -25,10 +25,7 @@ const _ = grpc.SupportPackageIsVersion7
 type PublicClient interface {
 	// Get the instance details of the current instance.
 	GetInstance(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetInstanceResponse, error)
-	GetInstances(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetInstancesResponse, error)
 	CreateAccounts(ctx context.Context, in *CreateAccountsRequest, opts ...grpc.CallOption) (*CreateAccountsResponse, error)
-	// Authenticate The public API is called when the user login, returns login information.
-	Authenticate(ctx context.Context, in *AuthenticateRequest, opts ...grpc.CallOption) (*AuthenticateResponse, error)
 	// Open API routing for the ActivityPub protocol.
 	// ActivityPub https://www.w3.org/TR/activitypub/
 	// HTTP API for public query of ActivityPub.
@@ -37,6 +34,7 @@ type PublicClient interface {
 	// Get the actors in the activityPub protocol.
 	// https://www.w3.org/TR/activitypub/#actor-objects
 	GetActor(ctx context.Context, in *GetActorRequest, opts ...grpc.CallOption) (*GetActorResponse, error)
+	Inbox(ctx context.Context, in *GetInboxRequest, opts ...grpc.CallOption) (*GetInboxResponse, error)
 }
 
 type publicClient struct {
@@ -56,27 +54,9 @@ func (c *publicClient) GetInstance(ctx context.Context, in *emptypb.Empty, opts 
 	return out, nil
 }
 
-func (c *publicClient) GetInstances(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetInstancesResponse, error) {
-	out := new(GetInstancesResponse)
-	err := c.cc.Invoke(ctx, "/hvx.api.v1alpha1.public.proto.Public/GetInstances", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *publicClient) CreateAccounts(ctx context.Context, in *CreateAccountsRequest, opts ...grpc.CallOption) (*CreateAccountsResponse, error) {
 	out := new(CreateAccountsResponse)
 	err := c.cc.Invoke(ctx, "/hvx.api.v1alpha1.public.proto.Public/CreateAccounts", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *publicClient) Authenticate(ctx context.Context, in *AuthenticateRequest, opts ...grpc.CallOption) (*AuthenticateResponse, error) {
-	out := new(AuthenticateResponse)
-	err := c.cc.Invoke(ctx, "/hvx.api.v1alpha1.public.proto.Public/Authenticate", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -101,16 +81,22 @@ func (c *publicClient) GetActor(ctx context.Context, in *GetActorRequest, opts .
 	return out, nil
 }
 
+func (c *publicClient) Inbox(ctx context.Context, in *GetInboxRequest, opts ...grpc.CallOption) (*GetInboxResponse, error) {
+	out := new(GetInboxResponse)
+	err := c.cc.Invoke(ctx, "/hvx.api.v1alpha1.public.proto.Public/Inbox", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PublicServer is the server API for Public service.
 // All implementations should embed UnimplementedPublicServer
 // for forward compatibility
 type PublicServer interface {
 	// Get the instance details of the current instance.
 	GetInstance(context.Context, *emptypb.Empty) (*GetInstanceResponse, error)
-	GetInstances(context.Context, *emptypb.Empty) (*GetInstancesResponse, error)
 	CreateAccounts(context.Context, *CreateAccountsRequest) (*CreateAccountsResponse, error)
-	// Authenticate The public API is called when the user login, returns login information.
-	Authenticate(context.Context, *AuthenticateRequest) (*AuthenticateResponse, error)
 	// Open API routing for the ActivityPub protocol.
 	// ActivityPub https://www.w3.org/TR/activitypub/
 	// HTTP API for public query of ActivityPub.
@@ -119,6 +105,7 @@ type PublicServer interface {
 	// Get the actors in the activityPub protocol.
 	// https://www.w3.org/TR/activitypub/#actor-objects
 	GetActor(context.Context, *GetActorRequest) (*GetActorResponse, error)
+	Inbox(context.Context, *GetInboxRequest) (*GetInboxResponse, error)
 }
 
 // UnimplementedPublicServer should be embedded to have forward compatible implementations.
@@ -128,20 +115,17 @@ type UnimplementedPublicServer struct {
 func (UnimplementedPublicServer) GetInstance(context.Context, *emptypb.Empty) (*GetInstanceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetInstance not implemented")
 }
-func (UnimplementedPublicServer) GetInstances(context.Context, *emptypb.Empty) (*GetInstancesResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetInstances not implemented")
-}
 func (UnimplementedPublicServer) CreateAccounts(context.Context, *CreateAccountsRequest) (*CreateAccountsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateAccounts not implemented")
-}
-func (UnimplementedPublicServer) Authenticate(context.Context, *AuthenticateRequest) (*AuthenticateResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Authenticate not implemented")
 }
 func (UnimplementedPublicServer) GetWebfinger(context.Context, *GetWebfingerRequest) (*GetWebfingerResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetWebfinger not implemented")
 }
 func (UnimplementedPublicServer) GetActor(context.Context, *GetActorRequest) (*GetActorResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetActor not implemented")
+}
+func (UnimplementedPublicServer) Inbox(context.Context, *GetInboxRequest) (*GetInboxResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Inbox not implemented")
 }
 
 // UnsafePublicServer may be embedded to opt out of forward compatibility for this service.
@@ -173,24 +157,6 @@ func _Public_GetInstance_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Public_GetInstances_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(emptypb.Empty)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PublicServer).GetInstances(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/hvx.api.v1alpha1.public.proto.Public/GetInstances",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PublicServer).GetInstances(ctx, req.(*emptypb.Empty))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _Public_CreateAccounts_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CreateAccountsRequest)
 	if err := dec(in); err != nil {
@@ -205,24 +171,6 @@ func _Public_CreateAccounts_Handler(srv interface{}, ctx context.Context, dec fu
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(PublicServer).CreateAccounts(ctx, req.(*CreateAccountsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Public_Authenticate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AuthenticateRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PublicServer).Authenticate(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/hvx.api.v1alpha1.public.proto.Public/Authenticate",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PublicServer).Authenticate(ctx, req.(*AuthenticateRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -263,6 +211,24 @@ func _Public_GetActor_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Public_Inbox_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetInboxRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PublicServer).Inbox(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/hvx.api.v1alpha1.public.proto.Public/Inbox",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PublicServer).Inbox(ctx, req.(*GetInboxRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Public_ServiceDesc is the grpc.ServiceDesc for Public service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -275,16 +241,8 @@ var Public_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Public_GetInstance_Handler,
 		},
 		{
-			MethodName: "GetInstances",
-			Handler:    _Public_GetInstances_Handler,
-		},
-		{
 			MethodName: "CreateAccounts",
 			Handler:    _Public_CreateAccounts_Handler,
-		},
-		{
-			MethodName: "Authenticate",
-			Handler:    _Public_Authenticate_Handler,
 		},
 		{
 			MethodName: "GetWebfinger",
@@ -293,6 +251,10 @@ var Public_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetActor",
 			Handler:    _Public_GetActor_Handler,
+		},
+		{
+			MethodName: "Inbox",
+			Handler:    _Public_Inbox_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

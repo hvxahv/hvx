@@ -86,24 +86,3 @@ func (p *Public) CreateAccount(username, mail, password, publicKey string) (*acc
 	}
 	return create, err
 }
-
-//
-//func (p *Public) Auth(username, password string) (*pb.VerifyResponse, error) {
-//	c, err := clientv1.New(p.ctx,
-//		cfg.SetEndpoints(microsvc.GetGRPCServiceAddress("account")),
-//		cfg.SetDialTimeout(10*time.Second),
-//	)
-//	if err != nil {
-//		return nil, err
-//	}
-//	defer c.Close()
-//
-//	res, err := c.Verify(p.ctx, &pb.VerifyRequest{
-//		Username: username,
-//		Password: password,
-//	})
-//	if err != nil {
-//		return nil, err
-//	}
-//	return res, err
-//}

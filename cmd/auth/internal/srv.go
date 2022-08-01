@@ -1,26 +1,17 @@
 package internal
 
 import (
-	gw "github.com/hvxahv/hvx/APIs/grpc-gateway/v1alpha1/auth"
-	auths "github.com/hvxahv/hvx/APIs/grpc/v1alpha1/auth"
+	"github.com/hvxahv/hvx/APIs/grpc/v1alpha1/auth"
 	svc "github.com/hvxahv/hvx/microsvc"
 	"github.com/pkg/errors"
 )
 
 type server struct {
-	auths.AuthServer
+	auth.AuthServer
 }
 
 const (
-	AccountsTable = "accounts"
-	ActorsTable   = "actors"
-)
-const (
-	UsernameAlreadyExists = "THE_USERNAME_ALREADY_EXISTS"
-)
-
-const (
-	serviceName = "account"
+	serviceName = "auth"
 )
 
 func Run() error {
@@ -30,9 +21,9 @@ func Run() error {
 		svc.WithServiceID("serviceName"),
 	).ListenerWithEndpoints()
 
-	auths.RegisterAuthServer(s, &server{})
+	auth.RegisterAuthServer(s, &server{})
 
-	if err := gw.RegisterAuthHandler(s.Ctx, s.Mux, s.Conn); err != nil {
+	if err := auth.RegisterAuthHandler(s.Ctx, s.Mux, s.Conn); err != nil {
 		return errors.Errorf("Failed to register %s services: %v", serviceName, err)
 	}
 

@@ -31,3 +31,12 @@ func GetActorHandler(c *gin.Context) {
 		return
 	}
 }
+
+func AuthHandler(c *gin.Context) {
+	if err := proxy.NewProxy(c, "/auth", auth).Proxy(); err != nil {
+		c.JSON(502, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+}
