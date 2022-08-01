@@ -30,8 +30,7 @@ func (s *server) Create(ctx context.Context, in *pb.CreateRequest) (*pb.CreateRe
 		return nil, err
 	}
 	return &pb.CreateResponse{
-		DeviceId:  strconv.Itoa(int(create.ID)),
-		PublicKey: "",
+		DeviceId: strconv.Itoa(int(create.ID)),
 	}, nil
 }
 

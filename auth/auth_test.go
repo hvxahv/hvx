@@ -1,12 +1,15 @@
-package jwt
+package auth
 
 import (
 	"fmt"
+	"github.com/google/uuid"
 	"github.com/hvxahv/hvx/cockroach"
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"os"
+	"testing"
+	"time"
 )
 
 func init() {
@@ -38,6 +41,18 @@ func init() {
 	}
 }
 
-const (
-	token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyZGF0YSI6eyJtYWlsIjoieEBkaXNpc20uY29tIiwiaWQiOiIxMjMxMjMiLCJ1c2VybmFtZSI6Imh2dHVyaW5nZ2EiLCJkZXZpY2VfaWQiOiIxLTItMy00LTUifSwiand0Xy5fc3RhbmRhcmRfY2xhaW1zIjp7ImlzcyI6IjEtMi0zLTQtNS1odngtaXNzdWVzIiwic3ViIjoiaHZ0dXJpbmdnYTp0b2tlbiIsImV4cCI6MTY2MDIxNzU4MSwibmJmIjoxNjU1MDMzNTgxLCJpYXQiOjE2NTUwMzM1ODEsImp0aSI6IjRhOTViYTFmLTJiMGEtNDVkZC1iN2FmLWFmNGFhMTkzNjE2NiJ9fQ.KC3FVGoA2MTm0C2ZNSpswij3GB_JAcsoHCkY_DxvxWE"
-)
+func TestClaims_JWTTokenGenerator(t *testing.T) {
+	var (
+		issuer = viper.GetString("domain")
+		expir  = time.Duration(viper.GetInt("authentication.token.expired")) * 24 * time.Hour
+		signer = viper.GetString("authentication.token.signed")
+	)
+	u := NewUserdata(uuid.New().String(), uuid.New().String(), uuid.New().String(), uuid.New().String(), uuid.New().String())
+	c := NewRegisteredClaims(issuer, "", "", expir)
+	generator, err := NewClaims(u, c).JWTTokenGenerator(signer)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	t.Log(generator)
+}

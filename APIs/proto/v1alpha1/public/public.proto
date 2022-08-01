@@ -15,23 +15,9 @@ service Public {
     };
   }
 
-  rpc GetInstances(google.protobuf.Empty) returns (GetInstancesResponse) {
-    option (google.api.http) = {
-      get: "/public/instances"
-    };
-  }
-
   rpc CreateAccounts(CreateAccountsRequest) returns (CreateAccountsResponse) {
     option (google.api.http) = {
       post: "/public/account/create",
-      body: "*"
-    };
-  }
-
-  // Authenticate The public API is called when the user login, returns login information.
-  rpc Authenticate(AuthenticateRequest) returns (AuthenticateResponse) {
-    option (google.api.http) = {
-      post: "/public/account/auth",
       body: "*"
     };
   }
@@ -86,18 +72,6 @@ message CreateAccountsRequest {
 message CreateAccountsResponse {
   string code = 1;
   string response = 2;
-}
-
-message AuthenticateRequest {
-  string username = 1;
-  string password = 2;
-  string userAgent = 3 [json_name = "ua"];
-}
-
-message AuthenticateResponse {
-  string code = 1;
-  string token = 2;
-  string deviceId = 3 [json_name = "device_id"];
 }
 
 message GetWebfingerRequest {

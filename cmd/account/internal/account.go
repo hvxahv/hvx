@@ -262,7 +262,6 @@ func (a *Accounts) Verify(password string) (*Accounts, error) {
 		return nil, err
 	}
 
-	fmt.Println(password, a.Password)
 	if err := bcrypt.CompareHashAndPassword([]byte(a.Password), []byte(password)); err != nil {
 		return nil, err
 	}

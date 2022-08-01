@@ -90,6 +90,7 @@ func TestAccount_Delete(t *testing.T) {
 		t.Error(err)
 		return
 	}
+	t.Log("OK")
 }
 
 //
@@ -113,3 +114,12 @@ func TestAccount_Delete(t *testing.T) {
 //		return
 //	}
 //}
+
+func TestAccounts_Verify(t *testing.T) {
+	verify, err := NewVerify("hvturingga").Verify("hvxahv123")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	t.Log(verify)
+}

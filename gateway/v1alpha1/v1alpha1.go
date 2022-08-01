@@ -22,3 +22,12 @@ func DeleteAccountHandler(c *gin.Context) {
 		return
 	}
 }
+
+func ActorHandler(c *gin.Context) {
+	if err := proxy.NewProxy(c, "/api/v1/actor", "http://hvxahv.disism.internal:7020").Proxy(); err != nil {
+		c.JSON(502, gin.H{
+			"error": "502_BAD_GATEWAY",
+		})
+		return
+	}
+}

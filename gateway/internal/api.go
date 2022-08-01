@@ -16,15 +16,10 @@ func APIServer() *gin.Engine {
 	api := gin.Default()
 	api.Use(CORS())
 
-	api.GET("health", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "pong!",
-		})
-	})
-
 	// Public API.
 	api.GET("/public/*x", PublicHandler)
 	api.POST("/public/*x", PublicHandler)
+	api.POST("auth", AuthHandler)
 	api.GET("/.well-known/webfinger", WellKnownHandler)
 	api.GET("/u/:actor", GetActorHandler)
 	api.POST("/u/:actor/inbox", InboxHandler)
@@ -33,5 +28,7 @@ func APIServer() *gin.Engine {
 	v1.Use(Auth)
 	v1.GET("/search/:actor", v1alpha1.SearchActorsHandler)
 	v1.DELETE("/account", v1alpha1.DeleteAccountHandler)
+
+	v1.PUT("/actor", v1alpha1.ActorHandler)
 	return api
 }
