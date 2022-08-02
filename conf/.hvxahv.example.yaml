@@ -1,0 +1,142 @@
+---
+author: ""
+name: "github.com/hvxahv/hvxahv"
+version: ""
+
+# Set instance domain.
+domain: ""
+
+authentication:
+  admin:
+    user: ""
+    key: ""
+  token: 
+    signed: ""
+    expired: "60"
+  
+ipfs:
+  address: ""
+  gateway: ""
+
+matrix:
+  address: ""
+
+cockroach:
+  host: ""
+  port: ""
+  user: ""
+  password: ""
+  database: ""
+  ssl: ""
+  timezone: ""
+
+redis:
+  host: ""
+  port: ""
+  password: ""
+
+minio:
+  addr: ""
+  accessKeyID: ""
+  secretAccessKey: ""
+  useSSL: false
+  location: ""
+
+nats:
+  address: ""
+
+discovery:
+  consul:
+    address: ""
+  etcd:
+    address: ""
+
+bot:
+  telegram:
+    id: ""
+    token: ""
+
+microsvcs:
+  gateway:
+    version: ""
+    hostname: "hvxahv.disism.internal"
+    ports:
+      http: ""
+      grpc: ""
+
+  account:
+    version: ""
+    hostname: "hvxahv.disism.internal"
+    ports:
+      http: ""
+      grpc: ""
+
+  activity:
+    version: ""
+    hostname: "hvxahv.disism.internal"
+    ports:
+      http: ""
+      grpc: ""
+
+  actor:
+    version: ""
+    hostname: "hvxahv.disism.internal"
+    ports:
+      http: ""
+      grpc: ""
+
+  article:
+    version: ""
+    hostname: "hvxahv.disism.internal"
+    ports:
+      http: ""
+      grpc: ""
+
+  auth:
+    version: ""
+    hostname: "hvxahv.disism.internal"
+    ports:
+      http: ""
+      grpc: ""
+
+  channel:
+    version: ""
+    hostname: "hvxahv.disism.internal"
+    ports:
+      http: ""
+      grpc: ""
+
+  device:
+    version: ""
+    hostname: "hvxahv.disism.internal"
+    ports:
+      http: ""
+      grpc: ""
+
+  message:
+    version: ""
+    hostname: "hvxahv.disism.internal"
+    ports:
+      http: ""
+      grpc: ""
+
+  notify:
+    version: ""
+    hostname: "hvxahv.disism.internal"
+    ports:
+      http: ""
+      grpc: ""
+
+  public:
+    version: ""
+    hostname: "hvxahv.disism.internal"
+    ports:
+      http: ""
+      grpc: ""
+      
+  saved:
+    version: ""
+    hostname: "hvxahv.disism.internal"
+    ports:
+      http: ""
+      grpc: ""
