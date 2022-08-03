@@ -9,7 +9,6 @@ package internal
 
 import (
 	"github.com/google/uuid"
-	gw "github.com/hvxahv/hvx/APIs/grpc-gateway/v1alpha1/channel"
 	pb "github.com/hvxahv/hvx/APIs/grpc/v1alpha1/channel"
 	v "github.com/hvxahv/hvx/microsvc"
 	"github.com/pkg/errors"

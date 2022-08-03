@@ -2,11 +2,11 @@ package clientv1
 
 import (
 	"fmt"
-	pb "github.com/hvxahv/hvx/APIs/grpc/v1alpha1/account"
-	"github.com/hvxahv/hvx/clientv1/cfg"
-	"golang.org/x/net/context"
 	"testing"
 	"time"
+
+	pb "github.com/hvxahv/hvx/APIs/grpc/v1alpha1/account"
+	"golang.org/x/net/context"
 )
 
 func TestGRPC(t *testing.T) {

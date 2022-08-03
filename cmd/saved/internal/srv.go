@@ -2,7 +2,6 @@ package internal
 
 import (
 	"github.com/google/uuid"
-	gw "github.com/hvxahv/hvx/APIs/grpc-gateway/v1alpha1/saved"
 	pb "github.com/hvxahv/hvx/APIs/grpc/v1alpha1/saved"
 	v "github.com/hvxahv/hvx/microsvc"
 	"github.com/pkg/errors"
@@ -22,7 +21,7 @@ func Run() error {
 	).ListenerWithEndpoints()
 
 	pb.RegisterSavedServer(s, &server{})
-	if err := gw.RegisterSavedHandler(s.Ctx, s.Mux, s.Conn); err != nil {
+	if err := pb.RegisterSavedHandler(s.Ctx, s.Mux, s.Conn); err != nil {
 		return errors.Errorf("Failed to register %s services: %v", serviceName, err)
 	}
 	if err := s.Run(); err != nil {
