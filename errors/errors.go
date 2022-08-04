@@ -6,6 +6,10 @@ import (
 )
 
 const (
+	ErrTokenInvalid      = "INVALID_TOKEN"
+	ErrTokenUnauthorized = "TOKEN_UNAUTHORIZED"
+)
+const (
 	// ErrNotFound is returned account errors.
 	ErrAccountVerification = "ACCOUNT_VERIFICATION_FAILED"
 	ErrAccountAlready      = "THE_USERNAME_OR_MAIL_ALREADY_EXISTS"

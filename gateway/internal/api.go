@@ -25,7 +25,7 @@ func APIServer() *gin.Engine {
 	api.POST("/u/:actor/inbox", InboxHandler)
 
 	v1 := api.Group("/api/v1")
-	v1.Use(Auth)
+	v1.Use()
 	v1.GET("/search/:actor", v1alpha1.SearchActorsHandler)
 	v1.DELETE("/account", v1alpha1.DeleteAccountHandler)
 
