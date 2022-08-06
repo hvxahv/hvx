@@ -38,7 +38,7 @@ type DevicesClient interface {
 	// Delete a device by its device id.
 	Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error)
 	// DeleteDeviceByWithAccountID Delete all login devices by account id.
-	DeleteDevices(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*DeleteDevicesResponse, error)
+	DeleteDevices(ctx context.Context, in *DeleteDevicesRequest, opts ...grpc.CallOption) (*DeleteDevicesResponse, error)
 }
 
 type devicesClient struct {
@@ -94,7 +94,7 @@ func (c *devicesClient) Delete(ctx context.Context, in *DeleteRequest, opts ...g
 	return out, nil
 }
 
-func (c *devicesClient) DeleteDevices(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*DeleteDevicesResponse, error) {
+func (c *devicesClient) DeleteDevices(ctx context.Context, in *DeleteDevicesRequest, opts ...grpc.CallOption) (*DeleteDevicesResponse, error) {
 	out := new(DeleteDevicesResponse)
 	err := c.cc.Invoke(ctx, "/hvx.api.v1alpha1.device.proto.Devices/DeleteDevices", in, out, opts...)
 	if err != nil {
@@ -122,7 +122,7 @@ type DevicesServer interface {
 	// Delete a device by its device id.
 	Delete(context.Context, *DeleteRequest) (*DeleteResponse, error)
 	// DeleteDeviceByWithAccountID Delete all login devices by account id.
-	DeleteDevices(context.Context, *emptypb.Empty) (*DeleteDevicesResponse, error)
+	DeleteDevices(context.Context, *DeleteDevicesRequest) (*DeleteDevicesResponse, error)
 }
 
 // UnimplementedDevicesServer should be embedded to have forward compatible implementations.
@@ -144,7 +144,7 @@ func (UnimplementedDevicesServer) GetDevices(context.Context, *emptypb.Empty) (*
 func (UnimplementedDevicesServer) Delete(context.Context, *DeleteRequest) (*DeleteResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
 }
-func (UnimplementedDevicesServer) DeleteDevices(context.Context, *emptypb.Empty) (*DeleteDevicesResponse, error) {
+func (UnimplementedDevicesServer) DeleteDevices(context.Context, *DeleteDevicesRequest) (*DeleteDevicesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteDevices not implemented")
 }
 
@@ -250,7 +250,7 @@ func _Devices_Delete_Handler(srv interface{}, ctx context.Context, dec func(inte
 }
 
 func _Devices_DeleteDevices_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(emptypb.Empty)
+	in := new(DeleteDevicesRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -262,7 +262,7 @@ func _Devices_DeleteDevices_Handler(srv interface{}, ctx context.Context, dec fu
 		FullMethod: "/hvx.api.v1alpha1.device.proto.Devices/DeleteDevices",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DevicesServer).DeleteDevices(ctx, req.(*emptypb.Empty))
+		return srv.(DevicesServer).DeleteDevices(ctx, req.(*DeleteDevicesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

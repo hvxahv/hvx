@@ -36,17 +36,19 @@ func Auth(c *gin.Context) {
 	}
 	var (
 		token  = strings.Split(a, "Bearer ")[1]
-		secret = viper.GetString("authentication.token.signed")
+		secret = viper.GetString("authentication.token.secret")
 	)
+
 	parse, err := auth2.NewParseJWTToken(token, secret).JWTTokenParse()
 	if err != nil {
 		c.JSON(401, gin.H{
 			"code":  "401",
-			"error": err.Error(),
+			"error": errors.New("TOKEN_PARSING_FAILURE").Error(),
 		})
 		c.Abort()
 		return
 	}
+
 	cli, err := clientv1.New(c,
 		[]string{microsvc.NewGRPCAddress("device")},
 	)
@@ -62,8 +64,9 @@ func Auth(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	if !devices.IsExist {
-		c.JSON(501, gin.H{
+
+	if devices.IsExist {
+		c.JSON(401, gin.H{
 			"code":  "401",
 			"error": errors.New(errors.ErrTokenUnauthorized).Error(),
 		})

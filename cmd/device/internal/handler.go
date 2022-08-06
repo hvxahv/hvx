@@ -9,15 +9,23 @@
 package internal
 
 import (
-	"github.com/golang/protobuf/ptypes/empty"
 	pb "github.com/hvxahv/hvx/APIs/grpc/v1alpha1/device"
 	"github.com/hvxahv/hvx/microsvc"
 	"golang.org/x/net/context"
+	"google.golang.org/protobuf/types/known/emptypb"
 	"strconv"
 )
 
 func (s *server) IsExist(ctx context.Context, in *pb.IsExistRequest) (*pb.IsExistResponse, error) {
-	return &pb.IsExistResponse{IsExist: true}, nil
+	id, err := strconv.Atoi(in.Id)
+	if err != nil {
+
+	}
+	exist, err := NewDevicesId(uint(id)).IsExist()
+	if err != nil {
+		return nil, err
+	}
+	return &pb.IsExistResponse{IsExist: exist}, nil
 }
 
 func (s *server) Create(ctx context.Context, in *pb.CreateRequest) (*pb.CreateResponse, error) {
@@ -50,24 +58,16 @@ func (s *server) Get(ctx context.Context, in *pb.GetRequest) (*pb.Device, error)
 	}, nil
 }
 
-func (s *server) Delete(ctx context.Context, in *pb.DeleteRequest) (*pb.DeleteResponse, error) {
-	id, err := strconv.Atoi(in.DeviceId)
+func (s *server) GetDevices(ctx context.Context, g *emptypb.Empty) (*pb.GetDevicesResponse, error) {
+	parse, err := microsvc.GetUserdataByAuthorizationToken(ctx)
 	if err != nil {
 		return nil, err
 	}
-	err = NewDevicesId(uint(id)).Delete()
+	aid, err := strconv.Atoi(parse.AccountId)
 	if err != nil {
 		return nil, err
 	}
-	return &pb.DeleteResponse{Code: "200"}, nil
-}
-
-func (s *server) GetDevices(ctx context.Context, in *empty.Empty) (*pb.GetDevicesResponse, error) {
-	accountId, err := microsvc.GetAccountIDWithContext(ctx)
-	if err != nil {
-		return nil, err
-	}
-	devices, err := NewDevicesAccountId(accountId).GetDevices()
+	devices, err := NewDevicesAccountId(uint(aid)).GetDevices()
 	if err != nil {
 		return nil, err
 	}
@@ -77,20 +77,41 @@ func (s *server) GetDevices(ctx context.Context, in *empty.Empty) (*pb.GetDevice
 		pd.Id = strconv.Itoa(int(d.ID))
 		pd.AccountId = strconv.Itoa(int(d.AccountID))
 		pd.Device = d.Device
+		pd.CreatedAt = d.CreatedAt.Format("2006-01-02 15:04:05")
 		res = append(res, &pd)
 	}
 
 	return &pb.GetDevicesResponse{Code: "200", Devices: res}, nil
 }
 
-func (s *server) DeleteDevices(ctx context.Context, in *empty.Empty) (*pb.DeleteDevicesResponse, error) {
-	accountId, err := microsvc.GetAccountIDWithContext(ctx)
+func (s *server) Delete(ctx context.Context, in *pb.DeleteRequest) (*pb.DeleteResponse, error) {
+	parse, err := microsvc.GetUserdataByAuthorizationToken(ctx)
 	if err != nil {
 		return nil, err
 	}
-	err = NewDevicesAccountId(accountId).DeleteDevices()
+	aid, err := strconv.Atoi(parse.AccountId)
 	if err != nil {
 		return nil, err
 	}
-	return &pb.DeleteDevicesResponse{Code: "200"}, nil
+
+	id, err := strconv.Atoi(in.DeviceId)
+	if err != nil {
+		return nil, err
+	}
+	if err = NewDevicesDelete(uint(id), uint(aid)).Delete(); err != nil {
+		return nil, err
+	}
+	return &pb.DeleteResponse{Code: "200", Reply: "ok"}, nil
+}
+
+func (s *server) DeleteDevices(ctx context.Context, in *pb.DeleteDevicesRequest) (*pb.DeleteDevicesResponse, error) {
+	aid, err := strconv.Atoi(in.AccountId)
+	if err != nil {
+		return nil, err
+	}
+	err = NewDevicesAccountId(uint(aid)).DeleteDevices()
+	if err != nil {
+		return nil, err
+	}
+	return &pb.DeleteDevicesResponse{Code: "200", Reply: "ok"}, nil
 }

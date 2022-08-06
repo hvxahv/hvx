@@ -10,6 +10,8 @@ package internal
 
 import (
 	pb "github.com/hvxahv/hvx/APIs/grpc/v1alpha1/account"
+	"github.com/hvxahv/hvx/APIs/grpc/v1alpha1/device"
+	"github.com/hvxahv/hvx/clientv1"
 	"github.com/hvxahv/hvx/microsvc"
 	"golang.org/x/net/context"
 	"strconv"
@@ -47,15 +49,21 @@ func (s *server) GetByUsername(ctx context.Context, in *pb.GetByUsernameRequest)
 
 // DeleteAccount ...
 func (s *server) DeleteAccount(ctx context.Context, in *pb.DeleteRequest) (*pb.DeleteResponse, error) {
-	username, err := microsvc.GetUsernameByTokenWithContext(ctx)
-	if err != nil {
-		return nil, err
-	}
-	if err := NewAccountsDelete(username, in.Password).Delete(); err != nil {
-		return nil, err
-	}
+	// TODO - Delete Account related data.
+	// TODO - Delete Actor related data.
+	// TODO - Delete Device related data.
+	// TODO - Delete Saved related data.
+	// TODO - Delete Article related data.
+	// TODO - Exit all channels.
+	// TODO - Delete Message accounts.
+	//username, err := microsvc.GetUsernameByTokenWithContext(ctx)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//if err := NewAccountsDelete(username, in.Password).Delete(); err != nil {
+	//	return nil, err
+	//}
 
-	// TODO - delete devices...
 	// Connect to the device service to delete all login information for the account.
 	//cli, err := clientv1.New(ctx,
 	//	cfg.SetEndpoints(microsvc.GetGRPCServiceAddress("device")),
@@ -95,35 +103,63 @@ func (s *server) DeleteAccount(ctx context.Context, in *pb.DeleteRequest) (*pb.D
 
 // EditUsername ...
 func (s *server) EditUsername(ctx context.Context, in *pb.EditUsernameRequest) (*pb.EditUsernameResponse, error) {
-	id, err := microsvc.GetAccountIDWithContext(ctx)
+	parse, err := microsvc.GetUserdataByAuthorizationToken(ctx)
 	if err != nil {
 		return nil, err
 	}
-	if err := NewAccountsID(id).EditUsername(in.Username); err != nil {
+	id, err := strconv.Atoi(parse.AccountId)
+	if err != nil {
 		return nil, err
 	}
-	return &pb.EditUsernameResponse{Code: "200", Reply: "ok"}, nil
+
+	if err := NewAccountsID(uint(id)).EditUsername(in.Username); err != nil {
+		return nil, err
+	}
+	return &pb.EditUsernameResponse{Code: "200", Status: "ok"}, nil
 }
 
 // EditEmail ...
 func (s *server) EditEmail(ctx context.Context, in *pb.EditEmailRequest) (*pb.EditEmailResponse, error) {
-	id, err := microsvc.GetAccountIDWithContext(ctx)
+	parse, err := microsvc.GetUserdataByAuthorizationToken(ctx)
 	if err != nil {
 		return nil, err
 	}
-	if err := NewAccountsID(id).EditEmail(in.Mail); err != nil {
+
+	aid, err := strconv.Atoi(parse.AccountId)
+	if err != nil {
 		return nil, err
 	}
-	return &pb.EditEmailResponse{Code: "200", Reply: "ok"}, nil
+
+	if err := NewAccountsID(uint(aid)).EditEmail(in.Mail); err != nil {
+		return nil, err
+	}
+	return &pb.EditEmailResponse{Code: "200", Status: "ok"}, nil
 }
 
 // EditPassword ...
 func (s *server) EditPassword(ctx context.Context, in *pb.EditPasswordRequest) (*pb.EditPasswordResponse, error) {
+	parse, err := microsvc.GetUserdataByAuthorizationToken(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	client, err := clientv1.New(ctx, []string{microsvc.NewGRPCAddress("device")})
+	if err != nil {
+		return nil, err
+	}
+
+	d, err := device.NewDevicesClient(client.Conn).DeleteDevices(ctx, &device.DeleteDevicesRequest{
+		AccountId: parse.AccountId,
+	})
+	if err != nil {
+		return nil, err
+	}
+
 	if err := NewEditPassword(in.Username, in.Password).EditPassword(in.NewPassword); err != nil {
 		return nil, err
 	}
-	// TODO - Edit Account related data.
-	return &pb.EditPasswordResponse{Code: "200", Reply: "ok"}, nil
+
+	return &pb.EditPasswordResponse{Code: "200", Reply: d.Reply}, nil
 }
 
 // Verify ...

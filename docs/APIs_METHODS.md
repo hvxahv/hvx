@@ -71,13 +71,13 @@ Users created with just a username and password are not allowed to use the servi
 ### Hvx Device APIs
 
 | Methods | Comment | gRPC | RESTful |
-| --- | --- | --- | --- |
+| --- | --- | -- | --- |
 | IsExist | Determine if a device exists by ID | √ | × |
 | Create | Create Device | √ | × |
 | Get | Get device details by ID | √ | × |
 | Delete | Deleting a device by ID | √ | DELETE /api/v1/device/{device_id} |
 | GetDevices | Get a list of devices by account ID | √ | GET /api/v1/deice/{LIMIT} |
-| DeleteDevices | Delete all devices by account ID | √ | DELETE /api/v1/device/devices |
+| DeleteDevices | Delete all devices by account ID | √ | × |
 
 ### Hvx Saved APIs
 

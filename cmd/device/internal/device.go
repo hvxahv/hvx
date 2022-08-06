@@ -54,9 +54,9 @@ func (d *Devices) IsExist() (bool, error) {
 	db := cockroach.GetDB()
 	if err := db.Debug().Table(DeviceTable).Where("id = ?", d.ID).First(&Devices{}); err != nil {
 		ok := cockroach.IsNotFound(err.Error)
-		return !ok, nil
+		return ok, nil
 	}
-	return true, nil
+	return false, nil
 }
 
 func (d *Devices) Get() (*Devices, error) {
@@ -101,17 +101,6 @@ func (d *Devices) GetDevices() ([]*Devices, error) {
 	return ds, nil
 }
 
-func (d *Devices) Delete() error {
-	db := cockroach.GetDB()
-
-	if err := db.Debug().Table(DeviceTable).
-		Where("id = ? AND account_id = ?", d.ID, d.AccountID).Unscoped().Delete(&Devices{}).
-		Error; err != nil {
-		return err
-	}
-	return nil
-}
-
 func NewDevicesDelete(id, accountID uint) *Devices {
 	return &Devices{
 		Model: gorm.Model{
@@ -119,6 +108,16 @@ func NewDevicesDelete(id, accountID uint) *Devices {
 		},
 		AccountID: accountID,
 	}
+}
+
+func (d *Devices) Delete() error {
+	db := cockroach.GetDB()
+	if err := db.Debug().Table(DeviceTable).
+		Where("id = ? AND account_id = ?", d.ID, d.AccountID).Unscoped().Delete(&Devices{}).
+		Error; err != nil {
+		return err
+	}
+	return nil
 }
 
 func (d *Devices) DeleteDevices() error {

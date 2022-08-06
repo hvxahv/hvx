@@ -25,17 +25,16 @@ type server struct {
 func Run() error {
 	s := v.New(
 		v.WithServiceName(serviceName),
-		v.WithServiceVersion("v1alpha1"),
+		v.WithServiceVersion("v1alpha"),
 		v.WithServiceID(uuid.New().String()),
 	).ListenerWithEndpoints()
 
 	pb.RegisterDevicesServer(s, &server{})
+	if err := pb.RegisterDevicesHandler(s.Ctx, s.Mux, s.Conn); err != nil {
+		return errors.Errorf("Failed to register public services: %v", err)
+	}
 	if err := s.Run(); err != nil {
 		return err
 	}
-	if err := pb.RegisterDevicesHandler(s.Ctx, s.Mux, s.Conn); err != nil {
-		return errors.Errorf("Failed to register %s services: %v", serviceName, err)
-	}
-
 	return nil
 }

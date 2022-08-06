@@ -56,6 +56,15 @@ func TestDevices_Create(t *testing.T) {
 	t.Log(device)
 }
 
+func TestDevices_IsExist(t *testing.T) {
+	exist, err := NewDevicesId(785552976905502721).IsExist()
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	fmt.Println(exist)
+}
+
 //
 //func TestDevices_IsExistByHash(t *testing.T) {
 //	d := NewDevicesHash("21ad23a6-1f20-48c1-abcb-9f2e03f6617f")

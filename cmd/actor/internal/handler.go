@@ -98,20 +98,28 @@ func (s *server) GetActorByAddress(ctx context.Context, in *pb.GetActorByAddress
 
 // Edit ...
 func (s *server) Edit(ctx context.Context, in *pb.EditRequest) (*pb.EditResponse, error) {
-	actorId, err := microsvc.GetActorIdByTokenWithContext(ctx)
+	userdata, err := microsvc.GetUserdataByAuthorizationToken(ctx)
 	if err != nil {
 		return nil, err
 	}
-	actor := new(Actors)
-	switch {
-	case in.Avatar != "":
-		actor.SetActorAvatar(in.Avatar)
-	case in.Name != "":
-		actor.SetActorName(in.Name)
-	case actor.Summary != "":
-		actor.SetActorSummary(in.Summary)
+
+	actorId, err := strconv.Atoi(userdata.ActorId)
+	if err != nil {
+		return nil, err
 	}
-	if err := NewActorId(actorId).Edit(); err != nil {
+
+	a := new(Actors)
+	a.ID = uint(actorId)
+	if in.Avatar != "" {
+		a.Avatar = in.Avatar
+	}
+	if in.Name != "" {
+		a.Name = in.Name
+	}
+	if in.Summary != "" {
+		a.Summary = in.Summary
+	}
+	if err := a.Edit(); err != nil {
 		return nil, err
 	}
 	return &pb.EditResponse{Code: "200", Reply: "ok"}, nil
@@ -119,12 +127,12 @@ func (s *server) Edit(ctx context.Context, in *pb.EditRequest) (*pb.EditResponse
 
 // Delete ...
 func (s *server) Delete(ctx context.Context, in *empty.Empty) (*pb.DeleteResponse, error) {
-	actorId, err := microsvc.GetActorIdByTokenWithContext(ctx)
-	if err != nil {
-		return nil, err
-	}
-	if err := NewActorId(actorId).Delete(); err != nil {
-		return nil, err
-	}
+	//actorId, err := microsvc.GetActorIdByTokenWithContext(ctx)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//if err := NewActorId(actorId).Delete(); err != nil {
+	//	return nil, err
+	//}
 	return nil, nil
 }
