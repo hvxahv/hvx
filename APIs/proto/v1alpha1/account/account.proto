@@ -38,7 +38,7 @@ service Accounts {
   // With http api.
   rpc Delete (DeleteRequest) returns (DeleteResponse) {
     option (google.api.http) = {
-      delete: "/api/v1/account"
+      delete: "/api/v1/account",
       body: "*"
     };
   }
@@ -50,7 +50,7 @@ service Accounts {
   // and log back in to issue the token.
   rpc EditUsername (EditUsernameRequest) returns (EditUsernameResponse) {
     option (google.api.http) = {
-      patch: "/api/v1/account/username"
+      patch: "/api/v1/account/username",
       body: "*"
     };
   }
@@ -62,7 +62,7 @@ service Accounts {
   // verified in the REST API TOKEN.
   rpc EditPassword (EditPasswordRequest) returns (EditPasswordResponse) {
     option (google.api.http) = {
-      patch: "/api/v1/account/password"
+      patch: "/api/v1/account/password",
       body: "*"
     };
   }
@@ -71,7 +71,7 @@ service Accounts {
   // All devices should be taken offline.
   rpc EditEmail (EditEmailRequest) returns (EditEmailResponse) {
     option (google.api.http) = {
-      patch: "/api/v1/account/mail"
+      patch: "/api/v1/account/mail",
       body: "*"
     };
   }
@@ -122,13 +122,12 @@ message DeleteResponse {
 }
 
 message EditUsernameRequest {
-  string id = 1;
-  string username = 2;
+  string username = 1;
 }
 
 message EditUsernameResponse {
   string code = 1;
-  string reply = 2;
+  string status = 2;
 }
 
 message EditPasswordRequest {
@@ -143,13 +142,12 @@ message EditPasswordResponse {
 }
 
 message EditEmailRequest {
-  string id = 1;
-  string mail = 2;
+  string mail = 1;
 }
 
 message EditEmailResponse {
   string code = 1;
-  string reply = 2;
+  string status = 2;
 }
 
 message VerifyRequest {

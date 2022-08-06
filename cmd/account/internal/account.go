@@ -187,8 +187,8 @@ func NewAccountsID(id uint) *Accounts {
 
 // EditUsername ...
 func (a *Accounts) EditUsername(username string) error {
-	if ok := NewUsername(username).IsExist(); ok {
-		return errors.New("FAILED_TO_VALIDATOR")
+	if ok := NewUsername(username).IsExist(); !ok {
+		return errors.New(errors.ErrAccountUsernameAlreadyExists)
 	}
 	db := cockroach.GetDB()
 
@@ -197,7 +197,7 @@ func (a *Accounts) EditUsername(username string) error {
 		return err
 	}
 
-	address := fmt.Sprintf("https://%s/u/%s", viper.GetString("localhost"), username)
+	address := fmt.Sprintf("https://%s/u/%s", viper.GetString("domain"), username)
 	inbox := fmt.Sprintf("%s/inbox", address)
 	if err := db.Debug().Table(ActorsTable).
 		Where("id = ?", a.ActorID).
@@ -233,7 +233,7 @@ func NewEditPassword(username, password string) *Accounts {
 
 // EditPassword ...
 func (a *Accounts) EditPassword(new string) error {
-	v, err := NewVerify(a.Username).Verify(new)
+	v, err := NewVerify(a.Username).Verify(a.Password)
 	if err != nil {
 		return err
 	}

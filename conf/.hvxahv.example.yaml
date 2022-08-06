@@ -1,142 +1,101 @@
 ---
-author: ""
+author: "hvturingga"
 name: "github.com/hvxahv/hvxahv"
-version: ""
+version: "0.1.0	"
+github: "https://github.com/hvxahv"
 
 # Set instance domain.
-domain: ""
+domain: "halfmemories.com"
 
 authentication:
   admin:
     user: ""
     key: ""
-  token: 
-    signed: ""
+  token:
+    secret: "jwt_key_hvxahv.half_memories.com"
+    # expiration time, days.
     expired: "60"
-  
+
 ipfs:
-  address: ""
-  gateway: ""
+  address: "127.0.0.1:5001"
+  gateway: "http://127.0.0.1:8080/ipfs/"
 
 matrix:
-  address: ""
+  address: "http://localhost:8008"
 
 cockroach:
-  host: ""
-  port: ""
-  user: ""
-  password: ""
-  database: ""
-  ssl: ""
-  timezone: ""
+  host: "hvxahv.disism.internal"
+  port: "26257"
+  user: "root"
+  password: "root"
+  database: "hvxahv"
+  ssl: "disable"
+  timezone: "Asia/Shanghai"
 
 redis:
-  host: ""
-  port: ""
-  password: ""
+  addr: "hvxahv.disism.internal:6379"
+  password: "hvxahv123"
 
 minio:
-  addr: ""
-  accessKeyID: ""
-  secretAccessKey: ""
+  addr: "hvxahv.disism.internal:9000"
+  accessKeyID: "hvxahv"
+  secretAccessKey: "hvxahv123"
   useSSL: false
-  location: ""
+  location: "ap-northeast-3"
 
 nats:
   address: ""
 
 discovery:
   consul:
-    address: ""
+    address: "hvxahv.disism.internal:8500"
   etcd:
     address: ""
 
 bot:
   telegram:
-    id: ""
+    id: "441776537"
     token: ""
 
 microsvcs:
   gateway:
-    version: ""
+    version: "0.1.0"
     hostname: "hvxahv.disism.internal"
     ports:
-      http: ""
-      grpc: ""
+      http: "8080"
+      grpc: "50000"
 
   account:
-    version: ""
+    version: "0.1.0"
     hostname: "hvxahv.disism.internal"
     ports:
-      http: ""
-      grpc: ""
-
-  activity:
-    version: ""
-    hostname: "hvxahv.disism.internal"
-    ports:
-      http: ""
-      grpc: ""
+      http: "7010"
+      grpc: "50010"
 
   actor:
-    version: ""
+    version: "0.1.0"
     hostname: "hvxahv.disism.internal"
     ports:
-      http: ""
-      grpc: ""
-
-  article:
-    version: ""
-    hostname: "hvxahv.disism.internal"
-    ports:
-      http: ""
-      grpc: ""
-
+      http: "7020"
+      grpc: "50020"
   auth:
-    version: ""
+    version: "0.1.0"
     hostname: "hvxahv.disism.internal"
     ports:
-      http: ""
-      grpc: ""
+      http: "7030"
+      grpc: "50030"
 
-  channel:
-    version: ""
-    hostname: "hvxahv.disism.internal"
-    ports:
-      http: ""
-      grpc: ""
-
-  device:
-    version: ""
-    hostname: "hvxahv.disism.internal"
-    ports:
-      http: ""
-      grpc: ""
-
-  message:
-    version: ""
-    hostname: "hvxahv.disism.internal"
-    ports:
-      http: ""
-      grpc: ""
-
-  notify:
-    version: ""
-    hostname: "hvxahv.disism.internal"
-    ports:
-      http: ""
-      grpc: ""
 
   public:
-    version: ""
+    version: "0.1.0"
     hostname: "hvxahv.disism.internal"
     ports:
-      http: ""
-      grpc: ""
-      
-  saved:
-    version: ""
+      http: "7040"
+      grpc: "50040"
+
+  device:
+    version: "0.1.0"
     hostname: "hvxahv.disism.internal"
     ports:
-      http: ""
-      grpc: ""
+      http: "7050"
+      grpc: "50050"

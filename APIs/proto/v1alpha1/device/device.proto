@@ -31,17 +31,13 @@ service Devices {
   // Delete a device by its device id.
   rpc Delete (DeleteRequest) returns (DeleteResponse) {
     option (google.api.http) = {
-      delete: "/api/v1/device/{device_id}"
+      delete: "/api/v1/device",
+      body: "*"
     };
   }
 
   // DeleteDeviceByWithAccountID Delete all login devices by account id.
-  rpc DeleteDevices (google.protobuf.Empty) returns (DeleteDevicesResponse) {
-    option (google.api.http) = {
-      delete: "/api/v1/device/devices"
-      body: "*"
-    };
-  }
+  rpc DeleteDevices (DeleteDevicesRequest) returns (DeleteDevicesResponse) {}
 
 }
 
@@ -49,6 +45,7 @@ message Device {
   string id = 1;
   string account_id = 2;
   string device = 3;
+  string created_at = 4;
 }
 
 message IsExistRequest {
@@ -77,14 +74,17 @@ message GetDevicesResponse {
   repeated Device devices = 2;
 }
 
+message DeleteDevicesRequest {
+  string account_id = 1;
+}
+
 message DeleteDevicesResponse {
   string code = 1;
   string reply = 2;
 }
 
 message DeleteRequest {
-  string account_id = 1;
-  string device_id = 2;
+  string device_id = 1;
 }
 
 message DeleteResponse {

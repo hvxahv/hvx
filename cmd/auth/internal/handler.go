@@ -36,12 +36,12 @@ func (s *server) Authorization(ctx context.Context, in *pb.AuthorizationRequest)
 	var (
 		issuer = viper.GetString("domain")
 		expir  = time.Duration(viper.GetInt("authentication.token.expired")) * 24 * time.Hour
-		signer = viper.GetString("authentication.token.signed")
+		secret = viper.GetString("authentication.token.secret")
 	)
 	g, err := auth.NewClaims(
 		auth.NewUserdata(v.Id, v.ActorId, device.DeviceId, v.Username, v.Mail),
 		auth.NewRegisteredClaims(issuer, device.DeviceId, v.Id, expir),
-	).JWTTokenGenerator(signer)
+	).JWTTokenGenerator(secret)
 	if err != nil {
 		return nil, err
 	}

@@ -11,10 +11,11 @@ const (
 )
 const (
 	// ErrNotFound is returned account errors.
-	ErrAccountVerification = "ACCOUNT_VERIFICATION_FAILED"
-	ErrAccountAlready      = "THE_USERNAME_OR_MAIL_ALREADY_EXISTS"
-	ErrAccountCreate       = "FAILED_TO_CREATE_ACCOUNT"
-	ErrActorDelete         = "FAILED_TO_DELETE_ACTOR"
+	ErrAccountVerification          = "ACCOUNT_VERIFICATION_FAILED"
+	ErrAccountAlready               = "THE_USERNAME_OR_MAIL_ALREADY_EXISTS"
+	ErrAccountUsernameAlreadyExists = "THE_USERNAME_ALREADY_EXISTS"
+	ErrAccountCreate                = "FAILED_TO_CREATE_ACCOUNT"
+	ErrActorDelete                  = "FAILED_TO_DELETE_ACTOR"
 )
 
 const (

@@ -19,16 +19,25 @@ func APIServer() *gin.Engine {
 	// Public API.
 	api.GET("/public/*x", PublicHandler)
 	api.POST("/public/*x", PublicHandler)
+	// AUTH
 	api.POST("auth", AuthHandler)
+	// ACTIVITYPUB
 	api.GET("/.well-known/webfinger", WellKnownHandler)
 	api.GET("/u/:actor", GetActorHandler)
 	api.POST("/u/:actor/inbox", InboxHandler)
 
 	v1 := api.Group("/api/v1")
-	v1.Use()
-	v1.GET("/search/:actor", v1alpha1.SearchActorsHandler)
-	v1.DELETE("/account", v1alpha1.DeleteAccountHandler)
+	v1.Use(Auth)
+	// ACCOUNT SERVICES
+	v1.PATCH("/account/*x", v1alpha1.AccountHandler)
 
+	// ACTOR SERVICES
+	v1.GET("/search/:actor", v1alpha1.SearchActorsHandler)
 	v1.PUT("/actor", v1alpha1.ActorHandler)
+
+	// DEVICES SERVICES
+	v1.DELETE("/device", v1alpha1.DeviceHandler)
+	v1.GET("/device/*x", v1alpha1.DeviceHandler)
+
 	return api
 }

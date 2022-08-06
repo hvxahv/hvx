@@ -212,29 +212,6 @@ func (a *Actors) GetActorByUsername() (*Actors, error) {
 	return &actor, nil
 }
 
-func (a *Actors) SetActorName(name string) *Actors {
-	a.Name = name
-	return a
-}
-
-func (a *Actors) SetActorAvatar(avatar string) *Actors {
-	a.Avatar = avatar
-	return a
-}
-
-func (a *Actors) SetActorSummary(summary string) *Actors {
-	a.Summary = summary
-	return a
-}
-
-func NewActorId(actorId uint) *Actors {
-	return &Actors{
-		Model: gorm.Model{
-			ID: actorId,
-		},
-	}
-}
-
 func (a *Actors) Edit() error {
 	db := cockroach.GetDB()
 	if err := db.Debug().Table(ActorsTable).
