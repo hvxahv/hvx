@@ -2,6 +2,7 @@ package internal
 
 import (
 	"fmt"
+	"github.com/hvxahv/hvx/cockroach"
 	"os"
 	"testing"
 
@@ -25,10 +26,9 @@ func init() {
 		fmt.Fprintln(os.Stderr, "Using configs file:", viper.ConfigFileUsed())
 	}
 
-	// If a configs file is found, read it in.
-	if err := viper.ReadInConfig(); err == nil {
+	// Initialize the database.
+	if err := cockroach.NewRoach().Dial(); err != nil {
 		fmt.Println(err)
-		fmt.Fprintln(os.Stderr, "Using configs file:", viper.ConfigFileUsed())
 		return
 	}
 }

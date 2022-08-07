@@ -1,9 +1,14 @@
 package internal
 
 import (
+	"context"
+	"github.com/hvxahv/hvx/APIs/v1alpha1/actor"
+	"github.com/hvxahv/hvx/clientv1"
 	"github.com/hvxahv/hvx/cockroach"
 	"github.com/hvxahv/hvx/errors"
+	"github.com/hvxahv/hvx/microsvc"
 	"gorm.io/gorm"
+	"strconv"
 )
 
 const (
@@ -20,8 +25,8 @@ type Channels struct {
 	// to retrieve data from the Actor table. as the channel information.
 	ActorId uint `gorm:"primaryKey;type:bigint;actor_id"`
 
-	// AccountId This ID is associated with the Account table, as an owner of the channel.
-	AccountId  uint   `gorm:"primaryKey;type:bigint;account_id"`
+	// CreatorId is the ActorId of the creator.
+	CreatorId  uint   `gorm:"primaryKey;type:bigint;creator_id"`
 	PrivateKey string `gorm:"private_key;type:text;private_key"`
 }
 
@@ -32,8 +37,8 @@ type Channel interface {
 	DeleteChannels() error
 }
 
-func NewChannels(ActorId, AccountId uint, privateKey string) *Channels {
-	return &Channels{ActorId: ActorId, AccountId: AccountId, PrivateKey: privateKey}
+func NewChannels(ActorId, creatorId uint, privateKey string) *Channels {
+	return &Channels{ActorId: ActorId, CreatorId: creatorId, PrivateKey: privateKey}
 }
 
 func (c *Channels) CreateChannel() error {
@@ -47,15 +52,16 @@ func (c *Channels) CreateChannel() error {
 		Create(&c).
 		Error; err != nil {
 		return err
-
 	}
 
+	if err := NewAdministratesAddOwner(c.ID, c.CreatorId).AddAdministrator(); err != nil {
+		return err
+	}
 	return nil
 }
 
-// NewChannelsAccountId returns a new Channels with the given AccountId.
-func NewChannelsAccountId(accountId uint) *Channels {
-	return &Channels{AccountId: accountId}
+func NewChannelsCreatorId(creatorId uint) *Channels {
+	return &Channels{CreatorId: creatorId}
 }
 
 func (c *Channels) GetChannels() ([]*Channels, error) {
@@ -65,7 +71,7 @@ func (c *Channels) GetChannels() ([]*Channels, error) {
 
 	if err := db.Debug().
 		Table(ChannelsTable).
-		Where("account_id = ?", c.AccountId).
+		Where("creator_id = ?", c.CreatorId).
 		Find(&channels).
 		Error; err != nil {
 		return nil, err
@@ -74,10 +80,12 @@ func (c *Channels) GetChannels() ([]*Channels, error) {
 	return channels, nil
 }
 
-func NewChannelsDelete(actorId, accountId uint) *Channels {
+func NewChannelsDelete(channelId, creatorId uint) *Channels {
 	return &Channels{
-		ActorId:   actorId,
-		AccountId: accountId,
+		Model: gorm.Model{
+			ID: channelId,
+		},
+		CreatorId: creatorId,
 	}
 }
 
@@ -86,13 +94,31 @@ func (c *Channels) DeleteChannel() error {
 
 	if err := db.Debug().
 		Table(ChannelsTable).
-		Where("account_id = ? AND actor_id = ?", c.AccountId, c.ActorId).
+		Where("id = ? AND creator_id = ?", c.ID, c.CreatorId).
+		First(&c).
 		Unscoped().
 		Delete(&Channels{}).
 		Error; err != nil {
 		return err
 	}
 
+	ctx := context.Background()
+	client, err := clientv1.New(ctx, []string{microsvc.NewGRPCAddress("actor")})
+	if err != nil {
+		return err
+	}
+	defer client.Close()
+
+	d, err := actor.NewActorClient(client.Conn).Delete(ctx, &actor.DeleteRequest{
+		Id: strconv.Itoa(int(c.ActorId)),
+	})
+	if err != nil {
+		return err
+	}
+
+	if d.Code != "200" {
+		return errors.New(errors.ErrDeleteChannelActor)
+	}
 	return nil
 }
 
@@ -101,7 +127,7 @@ func (c *Channels) DeleteChannels() error {
 
 	if err := db.Debug().
 		Table(ChannelsTable).
-		Where("account_id = ?", c.AccountId).
+		Where("creator_id = ?", c.CreatorId).
 		Unscoped().
 		Delete(&Channels{}).
 		Error; err != nil {

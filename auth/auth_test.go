@@ -33,13 +33,6 @@ func init() {
 		fmt.Println(err)
 		return
 	}
-
-	// If a configs file is found, read it in.
-	if err := viper.ReadInConfig(); err == nil {
-		fmt.Println(err)
-		fmt.Fprintln(os.Stderr, "Using configs file:", viper.ConfigFileUsed())
-		return
-	}
 }
 
 func TestClaims_JWTTokenGenerator(t *testing.T) {

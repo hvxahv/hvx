@@ -14,6 +14,10 @@ import (
 )
 
 // CreateChannel ...
+// Generate rsa Key,
+// Create an Actor account of Service type,
+// Save the Actor ID, Owner Actor ID to the channels table.
+// Create administrator table, set is_owner to true.
 func (s *server) CreateChannel(ctx context.Context, in *pb.CreateChannelRequest) (*pb.CreateChannelResponse, error) {
 	client, err := clientv1.New(ctx, []string{microsvc.NewGRPCAddress("actor")})
 	if err != nil {
@@ -50,7 +54,7 @@ func (s *server) CreateChannel(ctx context.Context, in *pb.CreateChannelRequest)
 	create, err := actor.NewActorClient(cli.Conn).Create(ctx, &actor.CreateRequest{
 		PreferredUsername: in.PreferredUsername,
 		PublicKey:         rsa.PublicKey,
-		ActorType:         "service",
+		ActorType:         "Service",
 	})
 	if err != nil {
 		return nil, err
@@ -60,12 +64,12 @@ func (s *server) CreateChannel(ctx context.Context, in *pb.CreateChannelRequest)
 		return nil, err
 	}
 
-	accountId, err := strconv.Atoi(parse.AccountId)
+	createdActorId, err := strconv.Atoi(parse.ActorId)
 	if err != nil {
 		return nil, err
 	}
 
-	if err := NewChannels(uint(actorId), uint(accountId), rsa.Private).CreateChannel(); err != nil {
+	if err := NewChannels(uint(actorId), uint(createdActorId), rsa.Private).CreateChannel(); err != nil {
 		return nil, err
 	}
 	return &pb.CreateChannelResponse{
@@ -79,18 +83,19 @@ func (s *server) GetChannels(ctx context.Context, in *empty.Empty) (*pb.GetChann
 	if err != nil {
 		return nil, err
 	}
-	accountId, err := strconv.Atoi(parse.AccountId)
+	actorId, err := strconv.Atoi(parse.ActorId)
 	if err != nil {
 		return nil, err
 	}
 
-	channels, err := NewChannelsAccountId(uint(accountId)).GetChannels()
+	channels, err := NewChannelsCreatorId(uint(actorId)).GetChannels()
 	if err != nil {
 		return nil, err
 	}
 
-	var res []*actor.ActorData
+	var data []*pb.ChannelData
 	for _, d := range channels {
+		var cd pb.ChannelData
 		client, err := clientv1.New(ctx, []string{microsvc.NewGRPCAddress("actor")})
 		if err != nil {
 			return nil, err
@@ -103,12 +108,14 @@ func (s *server) GetChannels(ctx context.Context, in *empty.Empty) (*pb.GetChann
 		if err != nil {
 			return nil, err
 		}
+		cd.Channels = as.Actor
+		cd.ChannelId = strconv.Itoa(int(d.ID))
 
-		res = append(res, as.Actor)
+		data = append(data, &cd)
 	}
 	return &pb.GetChannelsResponse{
 		Code:     "200",
-		Channels: res,
+		Channels: data,
 	}, nil
 }
 
@@ -118,34 +125,21 @@ func (s *server) DeleteChannel(ctx context.Context, in *pb.DeleteChannelRequest)
 		return nil, err
 	}
 
-	client, err := clientv1.New(ctx, []string{microsvc.NewGRPCAddress("actor")})
-	if err != nil {
-		return nil, err
-	}
-	defer client.Close()
-
-	d, err := actor.NewActorClient(client.Conn).Delete(ctx, &actor.DeleteRequest{
-		Id: in.ActorId,
-	})
+	cid, err := strconv.Atoi(in.ChannelId)
 	if err != nil {
 		return nil, err
 	}
 
-	actorId, err := strconv.Atoi(in.ActorId)
+	creatorId, err := strconv.Atoi(parse.ActorId)
 	if err != nil {
 		return nil, err
 	}
-
-	accountId, err := strconv.Atoi(parse.AccountId)
-	if err != nil {
-		return nil, err
-	}
-	if err := NewChannelsDelete(uint(actorId), uint(accountId)).DeleteChannel(); err != nil {
+	if err := NewChannelsDelete(uint(cid), uint(creatorId)).DeleteChannel(); err != nil {
 		return nil, err
 	}
 	return &pb.DeleteChannelResponse{
 		Code:   "200",
-		Status: d.Status,
+		Status: "ok",
 	}, nil
 }
 

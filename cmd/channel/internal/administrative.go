@@ -28,12 +28,12 @@ type Administrator interface {
 	IsChannelOwner() bool
 	AddAdministrator() error
 	RemoveAdministrator() error
-	GetAdministrators() (*[]Administrates, error)
+	GetAdministrators() ([]*Administrates, error)
 	ExitAdministrator() error
 }
 
-func NewAdministratesPermission(channelID, adminID uint) *Administrates {
-	return &Administrates{ChannelId: channelID, AdminId: adminID}
+func NewAdministratesPermission(channelId, adminId uint) *Administrates {
+	return &Administrates{ChannelId: channelId, AdminId: adminId}
 }
 
 func (adm *Administrates) IsAdministrator() bool {
@@ -66,15 +66,19 @@ func (adm *Administrates) IsChannelOwner() bool {
 	return false
 }
 
-func NewAdministratesAdd(channelID, adminID uint) *Administrates {
-	return &Administrates{ChannelId: channelID, AdminId: adminID, IsOwner: false}
+func NewAdministratesAdd(channelId, adminId uint) *Administrates {
+	return &Administrates{ChannelId: channelId, AdminId: adminId, IsOwner: false}
+}
+
+func NewAdministratesAddOwner(channelId, adminId uint) *Administrates {
+	return &Administrates{ChannelId: channelId, AdminId: adminId, IsOwner: true}
 }
 
 // AddAdministrator adds an administrator to a channel.
 func (adm *Administrates) AddAdministrator() error {
-	permisson := NewAdministratesPermission(adm.ChannelId, adm.AdminId).IsAdministrator()
+	permission := NewAdministratesPermission(adm.ChannelId, adm.AdminId).IsAdministrator()
 
-	if !permisson {
+	if !permission {
 		return errors.New(errors.ErrNotAchannelAdministrator)
 	}
 
@@ -110,7 +114,7 @@ func (adm *Administrates) RemoveAdministrator() error {
 	return nil
 }
 
-func (adm *Administrates) GetAdministrators() (*[]Administrates, error) {
+func (adm *Administrates) GetAdministrators() ([]*Administrates, error) {
 	isAdmin := NewAdministratesAdd(adm.ChannelId, adm.AdminId).IsAdministrator()
 	if !isAdmin {
 		return nil, errors.New(errors.ErrNotAchannelAdministrator)
@@ -118,7 +122,7 @@ func (adm *Administrates) GetAdministrators() (*[]Administrates, error) {
 
 	db := cockroach.GetDB()
 
-	var admins []Administrates
+	var admins []*Administrates
 	if err := db.Debug().
 		Table(AdministrateTable).
 		Where("channel_id = ?", adm.ChannelId).
@@ -126,7 +130,7 @@ func (adm *Administrates) GetAdministrators() (*[]Administrates, error) {
 		return nil, err
 	}
 
-	return &admins, nil
+	return admins, nil
 }
 
 func (adm *Administrates) ExitAdministrator() error {
