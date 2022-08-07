@@ -41,3 +41,12 @@ func DeviceHandler(c *gin.Context) {
 		return
 	}
 }
+
+func ChannelHandler(c *gin.Context) {
+	if err := proxy.NewProxy(c, "/api/v1/channel"+c.Param("x"), address.Channel).Proxy(); err != nil {
+		c.JSON(502, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+}

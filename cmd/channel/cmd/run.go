@@ -5,6 +5,8 @@ Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"fmt"
+	"github.com/hvxahv/hvx/cmd/channel/internal"
 	"github.com/spf13/cobra"
 )
 
@@ -16,7 +18,10 @@ var runCmd = &cobra.Command{
 	Short: "A brief description of your command",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-
+		if err := internal.Run(); err != nil {
+			fmt.Println(err)
+			return
+		}
 	},
 }
 

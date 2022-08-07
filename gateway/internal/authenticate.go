@@ -11,7 +11,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/hvxahv/hvx/APIs/grpc/v1alpha1/device"
+	"github.com/hvxahv/hvx/APIs/v1alpha1/device"
 	auth2 "github.com/hvxahv/hvx/auth"
 	"github.com/hvxahv/hvx/clientv1"
 	"github.com/hvxahv/hvx/errors"

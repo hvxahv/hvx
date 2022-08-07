@@ -2,7 +2,7 @@ package internal
 
 import (
 	"github.com/google/uuid"
-	pb "github.com/hvxahv/hvx/APIs/grpc/v1alpha1/message"
+	pb "github.com/hvxahv/hvx/APIs/v1alpha1/message"
 	v "github.com/hvxahv/hvx/microsvc"
 	"github.com/pkg/errors"
 )

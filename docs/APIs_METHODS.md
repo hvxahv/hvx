@@ -50,14 +50,16 @@ Users created with just a username and password are not allowed to use the servi
 
 ### Hvx Actor APIs
 
-| Methods | Comment | gRPC | RESTful |
-| --- | --- | --- | --- |
-| Create | Creating Actor Data | √ | × |
-| GetActorsByPreferredUsername | Search for users by PreferredUsername | √ | GET /api/v1/actor/search/{preferred_username} |
-| GetActorByAddress | Get Actor data by Actor address | √ | × |
-| Edit | Edit Actor profile | √ | PUT /api/v1/actor |
-| Delete | Delete Actor by ID | √ | × |
-| GetActorByUsername | Get Actor by username | √ | × |
+| Methods | Comment                                           | gRPC | RESTful |
+| --- |---------------------------------------------------| --- | --- |
+ | IsExist | Determine if an actor exists by preferredUsername | √ | × |
+| Create | Creating Actor Data                               | √ | × |
+ | Get | Get Actor data by id                              | √ | × |
+| GetActorsByPreferredUsername | Search for users by PreferredUsername             | √ | GET /api/v1/actor/search/{preferred_username} |
+| GetActorByAddress | Get Actor data by Actor address                   | √ | × |
+| Edit | Edit Actor profile                                | √ | PUT /api/v1/actor |
+| Delete | Delete Actor by ID                                | √ | × |
+| GetActorByUsername | Get Actor by username                             | √ | × |
 
 ### Hvx Authorization APIs
 

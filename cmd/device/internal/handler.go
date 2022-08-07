@@ -9,7 +9,7 @@
 package internal
 
 import (
-	pb "github.com/hvxahv/hvx/APIs/grpc/v1alpha1/device"
+	pb "github.com/hvxahv/hvx/APIs/v1alpha1/device"
 	"github.com/hvxahv/hvx/microsvc"
 	"golang.org/x/net/context"
 	"google.golang.org/protobuf/types/known/emptypb"

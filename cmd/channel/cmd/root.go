@@ -17,10 +17,9 @@ package cmd
 
 import (
 	"fmt"
-
-	"os"
-
+	"github.com/hvxahv/hvx/cockroach"
 	"github.com/spf13/cobra"
+	"os"
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
@@ -31,7 +30,7 @@ var cfgFile string
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "channel",
-	Short: "A brief description of your application",
+	Short: "",
 	Long:  ``,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
@@ -68,7 +67,7 @@ func initConfig() {
 		home, err := homedir.Dir()
 		cobra.CheckErr(err)
 
-		// Search config in home directory with name ".channel" (without extension).
+		// Search config in home directory with name ".account" (without extension).
 		viper.AddConfigPath(home)
 		viper.SetConfigName(".hvxahv")
 	}
@@ -80,8 +79,9 @@ func initConfig() {
 		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
 	}
 
-	if err := cockroach.NewDBAddr().InitDB(); err != nil {
+	if err := cockroach.NewRoach().Dial(); err != nil {
 		fmt.Println(err)
 		return
 	}
+
 }

@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package hvx.api.v1alpha1.activity.proto;
-option go_package = "v1alpha1/activity";
+option go_package = "github.com/hvxahv/hvx/APIs/v1alpha1/activity";
 
 import "google/api/annotations.proto";
 import "google/api/field_behavior.proto";

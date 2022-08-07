@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package hvx.api.v1alpha1.article.proto;
-option go_package = "v1alpha1/article";
+option go_package = "github.com/hvxahv/hvx/APIs/v1alpha1/article";
 
 import "google/api/annotations.proto";
 import "google/api/field_behavior.proto";

@@ -9,12 +9,18 @@
 package internal
 
 import (
-	"github.com/golang/protobuf/ptypes/empty"
-	pb "github.com/hvxahv/hvx/APIs/grpc/v1alpha1/actor"
+	pb "github.com/hvxahv/hvx/APIs/v1alpha1/actor"
 	"github.com/hvxahv/hvx/microsvc"
+	"github.com/spf13/viper"
 	"golang.org/x/net/context"
 	"strconv"
 )
+
+func (s *server) IsExist(ctx context.Context, in *pb.IsExistRequest) (*pb.IsExistResponse, error) {
+	domain := viper.GetString("domain")
+	b := NewActorsIsExist(domain, in.PreferredUsername).IsExist()
+	return &pb.IsExistResponse{IsExist: b}, nil
+}
 
 // GetActorByUsername ...
 func (s *server) GetActorByUsername(ctx context.Context, in *pb.GetActorByUsernameRequest) (*pb.ActorData, error) {
@@ -45,6 +51,33 @@ func (s *server) Create(ctx context.Context, in *pb.CreateRequest) (*pb.CreateRe
 		return nil, err
 	}
 	return &pb.CreateResponse{Code: "200", ActorId: strconv.Itoa(int(actor.ID))}, nil
+}
+
+func (s *server) Get(ctx context.Context, in *pb.GetRequest) (*pb.GetResponse, error) {
+	id, err := strconv.Atoi(in.GetActorId())
+	if err != nil {
+		return nil, err
+	}
+	actor, err := NewActorsId(uint(id)).Get()
+	if err != nil {
+		return nil, err
+	}
+	data := &pb.ActorData{
+		Id:                strconv.Itoa(int(actor.ID)),
+		PreferredUsername: actor.PreferredUsername,
+		Domain:            actor.Domain,
+		Avatar:            actor.Avatar,
+		Name:              actor.Name,
+		Summary:           actor.Summary,
+		Inbox:             actor.Inbox,
+		Address:           actor.Address,
+		PublicKey:         actor.PublicKey,
+		ActorType:         actor.ActorType,
+		IsRemote:          strconv.FormatBool(actor.IsRemote),
+	}
+	return &pb.GetResponse{
+		Actor: data,
+	}, nil
 }
 
 // GetActorsByPreferredUsername ...
@@ -126,13 +159,17 @@ func (s *server) Edit(ctx context.Context, in *pb.EditRequest) (*pb.EditResponse
 }
 
 // Delete ...
-func (s *server) Delete(ctx context.Context, in *empty.Empty) (*pb.DeleteResponse, error) {
-	//actorId, err := microsvc.GetActorIdByTokenWithContext(ctx)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//if err := NewActorId(actorId).Delete(); err != nil {
-	//	return nil, err
-	//}
-	return nil, nil
+func (s *server) Delete(ctx context.Context, in *pb.DeleteRequest) (*pb.DeleteResponse, error) {
+	id, err := strconv.Atoi(in.GetId())
+	if err != nil {
+		return nil, err
+	}
+	if err := NewActorsId(uint(id)).Delete(); err != nil {
+		return nil, err
+	}
+
+	return &pb.DeleteResponse{
+		Code:   "200",
+		Status: "ok",
+	}, nil
 }

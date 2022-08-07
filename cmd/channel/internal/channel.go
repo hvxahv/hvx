@@ -27,7 +27,7 @@ type Channels struct {
 
 type Channel interface {
 	CreateChannel() error
-	GetChannels() (*[]Channels, error)
+	GetChannels() ([]*Channels, error)
 	DeleteChannel() error
 	DeleteChannels() error
 }
@@ -37,7 +37,6 @@ func NewChannels(ActorId, AccountId uint, privateKey string) *Channels {
 }
 
 func (c *Channels) CreateChannel() error {
-
 	db := cockroach.GetDB()
 	if err := db.AutoMigrate(&Channels{}); err != nil {
 		return errors.NewDatabaseCreate(serviceName)
@@ -59,10 +58,10 @@ func NewChannelsAccountId(accountId uint) *Channels {
 	return &Channels{AccountId: accountId}
 }
 
-func (c *Channels) GetChannels() (*[]Channels, error) {
+func (c *Channels) GetChannels() ([]*Channels, error) {
 	db := cockroach.GetDB()
 
-	var channels []Channels
+	var channels []*Channels
 
 	if err := db.Debug().
 		Table(ChannelsTable).
@@ -72,12 +71,12 @@ func (c *Channels) GetChannels() (*[]Channels, error) {
 		return nil, err
 	}
 
-	return &channels, nil
+	return channels, nil
 }
 
-func NewChannelsDelete(cid, accountId uint) *Channels {
+func NewChannelsDelete(actorId, accountId uint) *Channels {
 	return &Channels{
-		Model:     gorm.Model{ID: cid},
+		ActorId:   actorId,
 		AccountId: accountId,
 	}
 }
@@ -87,7 +86,7 @@ func (c *Channels) DeleteChannel() error {
 
 	if err := db.Debug().
 		Table(ChannelsTable).
-		Where("account_id = ? AND id = ?", c.AccountId, c.ID).
+		Where("account_id = ? AND actor_id = ?", c.AccountId, c.ActorId).
 		Unscoped().
 		Delete(&Channels{}).
 		Error; err != nil {

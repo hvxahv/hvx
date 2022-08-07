@@ -2,7 +2,7 @@ package internal
 
 import (
 	"fmt"
-	"github.com/hvxahv/hvx/APIs/grpc/v1alpha1/actor"
+	"github.com/hvxahv/hvx/APIs/v1alpha1/actor"
 	"github.com/hvxahv/hvx/clientv1"
 	"github.com/hvxahv/hvx/cockroach"
 	"github.com/hvxahv/hvx/errors"
