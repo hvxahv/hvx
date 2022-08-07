@@ -248,7 +248,7 @@ func RegisterAdministrativeHandlerServer(ctx context.Context, mux *runtime.Serve
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/hvx.api.v1alpha1.channel.proto.Administrative/GetAdministrators", runtime.WithHTTPPathPattern("/api/v1/channel/admin/{channel_id}/admins"))
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/hvx.api.v1alpha1.channel.proto.Administrative/GetAdministrators", runtime.WithHTTPPathPattern("/api/v1/channel/admin/{channel_id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -377,7 +377,7 @@ func RegisterAdministrativeHandlerClient(ctx context.Context, mux *runtime.Serve
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/hvx.api.v1alpha1.channel.proto.Administrative/GetAdministrators", runtime.WithHTTPPathPattern("/api/v1/channel/admin/{channel_id}/admins"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/hvx.api.v1alpha1.channel.proto.Administrative/GetAdministrators", runtime.WithHTTPPathPattern("/api/v1/channel/admin/{channel_id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -422,7 +422,7 @@ var (
 
 	pattern_Administrative_RemoveAdministrator_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "channel", "admin"}, ""))
 
-	pattern_Administrative_GetAdministrators_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5}, []string{"api", "v1", "channel", "admin", "channel_id", "admins"}, ""))
+	pattern_Administrative_GetAdministrators_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"api", "v1", "channel", "admin", "channel_id"}, ""))
 
 	pattern_Administrative_ExitAdministrator_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 2, 4}, []string{"api", "v1", "channel", "admin", "exit"}, ""))
 )

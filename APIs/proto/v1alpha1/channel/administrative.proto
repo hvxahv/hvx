@@ -6,6 +6,7 @@ option go_package = "github.com/hvxahv/hvx/APIs/v1alpha1/channel";
 import "google/api/annotations.proto";
 import "google/api/field_behavior.proto";
 import "google/protobuf/empty.proto";
+import "proto/v1alpha1/actor/actor.proto";
 
 service Administrative {
   // IsAdministrator It is the admin that returns true not false.
@@ -29,7 +30,7 @@ service Administrative {
 
   rpc GetAdministrators(GetAdministratorsRequest) returns (GetAdministratorsResponse) {
     option (google.api.http) = {
-      get: "/api/v1/channel/admin/{channel_id}/admins",
+      get: "/api/v1/channel/admin/{channel_id}",
     };
   }
 
@@ -82,9 +83,13 @@ message GetAdministratorsRequest {
   string channel_id = 1 [(google.api.field_behavior) = REQUIRED];
 }
 
+message AdminData {
+  repeated actor.proto.ActorData channels = 1;
+}
+
 message GetAdministratorsResponse {
   string code = 1;
-  repeated string administrators = 2;
+  AdminData administrators = 2;
 }
 
 message ExitAdministratorRequest {
