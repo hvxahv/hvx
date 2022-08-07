@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	pb "github.com/hvxahv/hvx/APIs/grpc/v1alpha1/public"
+	pb "github.com/hvxahv/hvx/APIs/v1alpha1/public"
 	"github.com/hvxahv/hvx/activitypub"
 	"github.com/spf13/viper"
 	"golang.org/x/net/context"

@@ -9,7 +9,7 @@
 package internal
 
 import (
-	pb "github.com/hvxahv/hvx/APIs/grpc/v1alpha1/auth"
+	pb "github.com/hvxahv/hvx/APIs/v1alpha1/auth"
 	"github.com/hvxahv/hvx/auth"
 	"github.com/spf13/viper"
 	"golang.org/x/net/context"

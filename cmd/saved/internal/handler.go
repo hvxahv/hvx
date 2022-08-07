@@ -4,7 +4,7 @@ import (
 	"context"
 	"strconv"
 
-	pb "github.com/hvxahv/hvx/APIs/grpc/v1alpha1/saved"
+	pb "github.com/hvxahv/hvx/APIs/v1alpha1/saved"
 	"github.com/hvxahv/hvx/microsvc"
 )
 

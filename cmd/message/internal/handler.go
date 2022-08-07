@@ -2,7 +2,7 @@ package internal
 
 import (
 	"context"
-	pb "github.com/hvxahv/hvx/APIs/grpc/v1alpha1/message"
+	pb "github.com/hvxahv/hvx/APIs/v1alpha1/message"
 )
 
 func (s *server) AccessRegister(ctx context.Context, in *pb.AccessRegisterRequest) (*pb.AccessRegisterResponse, error) {

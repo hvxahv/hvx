@@ -1,14 +1,18 @@
 syntax = "proto3";
 
 package hvx.api.v1alpha1.actor.proto;
-option go_package = "v1alpha1/actor";
+option go_package = "github.com/hvxahv/hvx/APIs/v1alpha1/actor";
 
 import "google/api/annotations.proto";
 import "google/api/field_behavior.proto";
 import "google/protobuf/empty.proto";
 
 service Actor {
+  rpc IsExist (IsExistRequest) returns (IsExistResponse) {}
+
   rpc Create(CreateRequest) returns (CreateResponse) {}
+
+  rpc Get(GetRequest) returns (GetResponse) {}
 
   // GetActorsByPreferredUsername Returns the set of actors by the
   // specified GetActorsByPreferredUsername by PreferredUsername.
@@ -31,11 +35,19 @@ service Actor {
     };
   }
 
-  rpc Delete (google.protobuf.Empty) returns (DeleteResponse) {}
+  rpc Delete (DeleteRequest) returns (DeleteResponse) {}
 
   // GetActorByUsername Get by username returns the actor
   // identified by the specified username.
   rpc GetActorByUsername (GetActorByUsernameRequest) returns (ActorData) {}
+}
+
+message IsExistRequest {
+  string PreferredUsername = 1;
+}
+
+message IsExistResponse {
+  bool is_exist = 1;
 }
 
 message CreateRequest {
@@ -47,6 +59,14 @@ message CreateRequest {
 message CreateResponse {
   string code = 1;
   string actor_id = 2;
+}
+
+message GetRequest {
+  string actor_id = 1;
+}
+
+message GetResponse {
+  ActorData actor = 1;
 }
 
 message ActorData {
@@ -85,6 +105,10 @@ message EditRequest {
 message EditResponse {
   string code = 1;
   string reply = 2;
+}
+
+message DeleteRequest {
+  string id = 1;
 }
 
 message DeleteResponse {

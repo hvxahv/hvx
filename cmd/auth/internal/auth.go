@@ -1,8 +1,8 @@
 package internal
 
 import (
-	"github.com/hvxahv/hvx/APIs/grpc/v1alpha1/account"
-	"github.com/hvxahv/hvx/APIs/grpc/v1alpha1/device"
+	"github.com/hvxahv/hvx/APIs/v1alpha1/account"
+	"github.com/hvxahv/hvx/APIs/v1alpha1/device"
 	"github.com/hvxahv/hvx/clientv1"
 	"github.com/hvxahv/hvx/microsvc"
 	"golang.org/x/net/context"

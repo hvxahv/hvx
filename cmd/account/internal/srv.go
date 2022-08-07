@@ -1,7 +1,7 @@
 package internal
 
 import (
-	"github.com/hvxahv/hvx/APIs/grpc/v1alpha1/account"
+	"github.com/hvxahv/hvx/APIs/v1alpha1/account"
 	svc "github.com/hvxahv/hvx/microsvc"
 	"github.com/pkg/errors"
 )

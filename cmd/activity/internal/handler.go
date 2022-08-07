@@ -10,7 +10,7 @@ package internal
 
 import (
 	"github.com/golang/protobuf/ptypes/empty"
-	pb "github.com/hvxahv/hvx/APIs/grpc/v1alpha1/activity"
+	pb "github.com/hvxahv/hvx/APIs/v1alpha1/activity"
 	"golang.org/x/net/context"
 )
 

@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	pb "github.com/hvxahv/hvx/APIs/grpc/v1alpha1/account"
+	pb "github.com/hvxahv/hvx/APIs/v1alpha1/account"
 	"golang.org/x/net/context"
 )
 

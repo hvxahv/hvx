@@ -1,7 +1,7 @@
 package internal
 
 import (
-	pb "github.com/hvxahv/hvx/APIs/grpc/v1alpha1/notify"
+	pb "github.com/hvxahv/hvx/APIs/v1alpha1/notify"
 	"golang.org/x/net/context"
 )
 

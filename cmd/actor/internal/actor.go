@@ -63,12 +63,35 @@ type Actors struct {
 }
 
 type Actor interface {
+	IsExist() bool
 	Create() (*Actors, error)
+	Get() (*Actors, error)
 	GetActorsByPreferredUsername() ([]*Actors, error)
 	AddActor() error
 	GetActorByUsername() (*Actors, error)
 	Edit() error
 	Delete() error
+}
+
+func NewActorsIsExist(domain, preferredUsername string) *Actors {
+	return &Actors{
+		PreferredUsername: preferredUsername,
+		Domain:            domain,
+	}
+}
+
+// IsExist ...
+func (a *Actors) IsExist() bool {
+	db := cockroach.GetDB()
+
+	if err := db.Debug().
+		Table(ActorsTable).
+		Where("preferred_username = ? AND domain = ? ", a.PreferredUsername, a.Domain).
+		First(&Actors{}); err != nil {
+		ok := cockroach.IsNotFound(err.Error)
+		return ok
+	}
+	return false
 }
 
 // NewActors creates a new instance of Actors.
@@ -102,6 +125,24 @@ func (a *Actors) Create() (*Actors, error) {
 			ID: a.ID,
 		},
 	}, nil
+}
+
+func NewActorsId(id uint) *Actors {
+	return &Actors{
+		Model: gorm.Model{
+			ID: id,
+		},
+	}
+}
+
+func (a *Actors) Get() (*Actors, error) {
+	db := cockroach.GetDB()
+
+	if err := db.Debug().Table(ActorsTable).
+		Where("id = ?", a.ID).First(&a).Error; err != nil {
+		return nil, err
+	}
+	return a, nil
 }
 
 func NewPreferredUsername(preferredUsername string) *Actors {
@@ -223,8 +264,11 @@ func (a *Actors) Edit() error {
 
 func (a *Actors) Delete() error {
 	db := cockroach.GetDB()
-	if err := db.Debug().Table(ActorsTable).
-		Where("id = ?", a.ID).Delete(&a).Error; err != nil {
+	if err := db.Debug().
+		Table(ActorsTable).
+		Where("id = ?", a.ID).
+		Unscoped().
+		Delete(&Actors{}).Error; err != nil {
 		return err
 	}
 	return nil
