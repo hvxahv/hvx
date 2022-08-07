@@ -41,14 +41,19 @@ message CreateChannelResponse {
   string status = 2;
 }
 
+message ChannelData {
+  string channel_id = 1 [json_name = "channel_id"];
+  actor.proto.ActorData channels = 2;
+}
+
 message GetChannelsResponse {
   string code = 1;
-  repeated actor.proto.ActorData channels = 2;
+  repeated ChannelData channels = 2;
 }
 
 
 message DeleteChannelRequest {
-  string actor_id = 1 [json_name = "channel_id"];
+  string channel_id = 1;
 }
 
 message DeleteChannelResponse {
