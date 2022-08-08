@@ -71,7 +71,7 @@ message AddAdministratorResponse {
 
 message RemoveAdministratorRequest {
   string channel_id = 1;
-  string remove_admin_id = 2;
+  string removed_id = 2;
 }
 
 message RemoveAdministratorResponse {
@@ -83,13 +83,14 @@ message GetAdministratorsRequest {
   string channel_id = 1 [(google.api.field_behavior) = REQUIRED];
 }
 
-message AdminData {
-  repeated actor.proto.ActorData channels = 1;
+message AdminsData {
+  bool is_owner = 1;
+  actor.proto.ActorData admin = 2;
 }
 
 message GetAdministratorsResponse {
   string code = 1;
-  AdminData administrators = 2;
+  repeated AdminsData admins = 2;
 }
 
 message ExitAdministratorRequest {

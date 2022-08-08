@@ -22,6 +22,7 @@ const (
 const (
 	ErrChannelAlready               = "THE_CHANNEL_EXISTS"
 	ErrNotAchannelAdministrator     = "NOT_A_CHANNEL_ADMINISTRATOR"
+	ErrNotAchannelOwner             = "NOT_A_CHANNEL_OWNER"
 	ErrAlreadyAchannelAdministrator = "ADMINISTRATOR_ALREADY_EXISTS"
 	ErrNotTheOwner                  = "NOT_THE_OWNER"
 	ErrAlreadySubscribed            = "ALREADY_SUBSCRIBED"

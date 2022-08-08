@@ -64,12 +64,12 @@ func (s *server) CreateChannel(ctx context.Context, in *pb.CreateChannelRequest)
 		return nil, err
 	}
 
-	createdActorId, err := strconv.Atoi(parse.ActorId)
+	createdId, err := strconv.Atoi(parse.ActorId)
 	if err != nil {
 		return nil, err
 	}
 
-	if err := NewChannels(uint(actorId), uint(createdActorId), rsa.Private).CreateChannel(); err != nil {
+	if err := NewChannels(uint(actorId), uint(createdId), rsa.Private).CreateChannel(); err != nil {
 		return nil, err
 	}
 	return &pb.CreateChannelResponse{
@@ -108,7 +108,7 @@ func (s *server) GetChannels(ctx context.Context, in *empty.Empty) (*pb.GetChann
 		if err != nil {
 			return nil, err
 		}
-		cd.Channels = as.Actor
+		cd.Channel = as.Actor
 		cd.ChannelId = strconv.Itoa(int(d.ID))
 
 		data = append(data, &cd)
