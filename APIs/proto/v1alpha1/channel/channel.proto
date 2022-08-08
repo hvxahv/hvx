@@ -43,7 +43,7 @@ message CreateChannelResponse {
 
 message ChannelData {
   string channel_id = 1 [json_name = "channel_id"];
-  actor.proto.ActorData channels = 2;
+  actor.proto.ActorData channel = 2;
 }
 
 message GetChannelsResponse {

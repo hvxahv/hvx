@@ -54,7 +54,7 @@ func (c *Channels) CreateChannel() error {
 		return err
 	}
 
-	if err := NewAdministratesAddOwner(c.ID, c.CreatorId).AddAdministrator(); err != nil {
+	if err := NewAdministratesAddOwner(c.ID, c.CreatorId).AddAdministratorOwner(); err != nil {
 		return err
 	}
 	return nil
@@ -102,6 +102,7 @@ func (c *Channels) DeleteChannel() error {
 		return err
 	}
 
+	// DELETE CHANNEL DADA (IS ACTIVITY PUB ACTOR SERVICE)
 	ctx := context.Background()
 	client, err := clientv1.New(ctx, []string{microsvc.NewGRPCAddress("actor")})
 	if err != nil {
@@ -118,6 +119,11 @@ func (c *Channels) DeleteChannel() error {
 
 	if d.Code != "200" {
 		return errors.New(errors.ErrDeleteChannelActor)
+	}
+
+	// DELETE ALL ADMIN...
+	if err := NewAdministratesPermission(c.ID, c.CreatorId).DeleteAdministrators(); err != nil {
+		return err
 	}
 	return nil
 }

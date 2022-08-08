@@ -26,10 +26,12 @@ const (
 type Administrator interface {
 	IsAdministrator() bool
 	IsChannelOwner() bool
-	AddAdministrator() error
-	RemoveAdministrator() error
+	AddAdministratorOwner() error
+	AddAdministrator(addedID uint) error
+	RemoveAdministrator(removedId uint) error
 	GetAdministrators() ([]*Administrates, error)
 	ExitAdministrator() error
+	DeleteAdministrators() error
 }
 
 func NewAdministratesPermission(channelId, adminId uint) *Administrates {
@@ -56,7 +58,7 @@ func (adm *Administrates) IsChannelOwner() bool {
 
 	if err := db.Debug().
 		Table(AdministrateTable).
-		Where("channel_id = ? AND admin_id = ?", adm.ChannelId, adm.AdminId).
+		Where("channel_id = ? AND admin_id = ? AND is_owner = true", adm.ChannelId, adm.AdminId).
 		First(&adm); err != nil {
 		ok := cockroach.IsNotFound(err.Error)
 		if !ok {
@@ -74,29 +76,39 @@ func NewAdministratesAddOwner(channelId, adminId uint) *Administrates {
 	return &Administrates{ChannelId: channelId, AdminId: adminId, IsOwner: true}
 }
 
-// AddAdministrator adds an administrator to a channel.
-func (adm *Administrates) AddAdministrator() error {
-	permission := NewAdministratesPermission(adm.ChannelId, adm.AdminId).IsAdministrator()
-
-	if !permission {
-		return errors.New(errors.ErrNotAchannelAdministrator)
-	}
-
+// AddAdministratorOwner Add the channel owner to the Admin table.
+func (adm *Administrates) AddAdministratorOwner() error {
 	db := cockroach.GetDB()
-
 	if err := db.AutoMigrate(&Administrates{}); err != nil {
 		return errors.NewDatabaseCreate("administrates")
 	}
-
 	if err := db.Debug().
 		Table(AdministrateTable).
-		Create(adm).Error; err != nil {
+		Create(&adm).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
-func (adm *Administrates) RemoveAdministrator() error {
+// AddAdministrator adds an administrator to a channel.
+// Only administrators can add administrators.
+func (adm *Administrates) AddAdministrator(addedID uint) error {
+	permission := NewAdministratesPermission(adm.ChannelId, adm.AdminId).IsAdministrator()
+	if !permission {
+		return errors.New(errors.ErrNotAchannelAdministrator)
+	}
+	db := cockroach.GetDB()
+
+	nad := NewAdministratesAdd(adm.ChannelId, addedID)
+	if err := db.Debug().
+		Table(AdministrateTable).
+		Create(&nad).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (adm *Administrates) RemoveAdministrator(removedId uint) error {
 	isOwner := NewAdministratesPermission(adm.ChannelId, adm.AdminId).IsChannelOwner()
 	if !isOwner {
 		return errors.New(errors.ErrNotTheOwner)
@@ -106,14 +118,18 @@ func (adm *Administrates) RemoveAdministrator() error {
 
 	if err := db.Debug().
 		Table(AdministrateTable).
-		Where("channel_id = ? AND admin_id = ?", adm.ChannelId, adm.AdminId).
+		Where("channel_id = ? AND admin_id = ?", adm.ChannelId, removedId).
 		Unscoped().
-		Delete(&adm).Error; err != nil {
+		Delete(&Administrates{}).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
+// GetAdministrators ...
+// Returns all administrators of a channel.
+// Check permissions.
+// Only administrator can view the list of administrators who manage the channel.
 func (adm *Administrates) GetAdministrators() ([]*Administrates, error) {
 	isAdmin := NewAdministratesAdd(adm.ChannelId, adm.AdminId).IsAdministrator()
 	if !isAdmin {
@@ -121,7 +137,6 @@ func (adm *Administrates) GetAdministrators() ([]*Administrates, error) {
 	}
 
 	db := cockroach.GetDB()
-
 	var admins []*Administrates
 	if err := db.Debug().
 		Table(AdministrateTable).
@@ -148,5 +163,24 @@ func (adm *Administrates) ExitAdministrator() error {
 		Delete(&adm).Error; err != nil {
 		return err
 	}
+	return nil
+}
+
+// DeleteAdministrators ...
+func (adm *Administrates) DeleteAdministrators() error {
+	isOwner := NewAdministratesPermission(adm.ChannelId, adm.AdminId).IsChannelOwner()
+	if !isOwner {
+		return errors.New(errors.ErrNotAchannelOwner)
+	}
+	db := cockroach.GetDB()
+
+	if err := db.Debug().
+		Table(AdministrateTable).
+		Where("channel_id = ?", adm.ChannelId).
+		Unscoped().
+		Delete(&Administrates{}).Error; err != nil {
+		return err
+	}
+
 	return nil
 }

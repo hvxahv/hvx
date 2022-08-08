@@ -35,7 +35,7 @@ RES
   "channels": [
     {
       "channel_id": "785746792214626305",
-      "channels": {
+      "channel": {
         "id": "785746790721323009",
         "preferredUsername": "hvx",
         "domain": "halfmemories.com",
@@ -63,6 +63,61 @@ curl --location --request DELETE 'hvxahv.disism.internal:8080/api/v1/channel' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "channel_id": "785743169680474113"
+}'
+```
+RES
+```json
+{
+    "code": "200",
+    "status": "ok"
+}
+```
+
+## GET ADMINISTRATORS
+hvxahv.disism.internal:8080/api/v1/channel/admin/<CHANNEL_ID>
+
+REQ
+```bash
+curl --location --request GET 'hvxahv.disism.internal:8080/api/v1/channel/admin/<CHANNEL_ID>' \
+--header 'Authorization: Bearer <TOKEN>'
+```
+
+RES
+```json
+{
+  "code": "200",
+  "admins": [
+    {
+      "isOwner": true,
+      "admin": {
+        "id": "785518573776797697",
+        "preferredUsername": "hvturingga",
+        "domain": "halfmemories.com",
+        "avatar": "https://avatars.githubusercontent.com/u/35920389?v=4",
+        "name": "HVTURINGGA",
+        "summary": "HVXAHV",
+        "inbox": "https://halfmemories.com/u/hvturingga/inbox",
+        "address": "https://halfmemories.com/u/hvturingga",
+        "publicKey": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAw9mcKDv+SHmSgdWMEic6\nRfRwHNOj16chn9vgka+Y32TFACl5Xoutlih6Je+LYoLmOFMlg+51lo4vnO+imCsk\nIqc+U+4Ql7N6s0fn8+x5/fYRaldnv3xV6Vb75sdq07zDF27BfXmTQ+dhmgVDqBcj\nM81MDSjHEu9KkISgTvwsuf2Pu5KQ3vot9jdZK3BMt+GeV3MJpOwpKn7OpPerXp82\nMYM39c825uc9ZnxqkhRgxL1Kw\n+JmKizaeHk8EdsmwGI09pTyFuwzexjx8QJAFsNO\nwYY0qDQrbRPOw0YQFBRCZKsci7vXxcwuFuMK+2G3SIxSEXjUq0bUq93hWjv4H2sC\nMQIDAQAB\n-----END PUBLIC KEY-----",
+        "actorType": "Person",
+        "isRemote": "false"
+      }
+    }
+  ]
+}
+```
+
+## REMOVE ADMINISTRATOR
+hvxahv.disism.internal:8080/api/v1/channel/admin
+
+REQ
+```bash
+curl --location --request DELETE 'hvxahv.disism.internal:8080/api/v1/channel/admin' \
+--header 'Authorization: Bearer <TOKEN>' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "channel_id": "786088233592553473",
+    "removed_id": "785747557033967617"
 }'
 ```
 RES

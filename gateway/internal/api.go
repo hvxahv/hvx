@@ -42,9 +42,10 @@ func APIServer() *gin.Engine {
 	// CHANNEL SERVICES
 	v1.POST("/channel", v1alpha1.ChannelHandler)
 	v1.DELETE("/channel", v1alpha1.ChannelHandler)
-	
+
 	v1.GET("/channel/*x", v1alpha1.ChannelHandler)
 	v1.POST("/channel/*x", v1alpha1.ChannelHandler)
+	v1.DELETE("/channel/*x", v1alpha1.ChannelHandler)
 
 	return api
 }
