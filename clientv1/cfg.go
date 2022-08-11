@@ -2,14 +2,15 @@ package clientv1
 
 import (
 	"crypto/tls"
-	"google.golang.org/grpc"
 	"time"
+
+	"google.golang.org/grpc"
 )
 
 type Option func(o *Config)
 
 type Config struct {
-	Endpoints   []string
+	Endpoint    string
 	DialTimeout time.Duration
 	TLS         *tls.Config
 	DialOptions []grpc.DialOption

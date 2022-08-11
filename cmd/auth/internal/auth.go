@@ -23,7 +23,7 @@ type AuthorizationHandler interface {
 
 func (a *authorization) Authorization(username, password string) (*account.VerifyResponse, error) {
 	c, err := clientv1.New(a.ctx,
-		[]string{microsvc.GetGRPCServiceAddress("account")},
+		microsvc.NewGRPCAddress("account").Get(),
 	)
 	if err != nil {
 		return nil, err
@@ -42,7 +42,7 @@ func (a *authorization) Authorization(username, password string) (*account.Verif
 
 func (a *authorization) AddDevice(accountId, ua string) (*device.CreateResponse, error) {
 	c, err := clientv1.New(a.ctx,
-		[]string{microsvc.GetGRPCServiceAddress("device")},
+		microsvc.NewGRPCAddress("account").Get(),
 	)
 	if err != nil {
 		return nil, err

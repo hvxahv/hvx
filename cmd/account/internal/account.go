@@ -2,6 +2,8 @@ package internal
 
 import (
 	"fmt"
+	"strconv"
+
 	"github.com/hvxahv/hvx/APIs/v1alpha1/actor"
 	"github.com/hvxahv/hvx/clientv1"
 	"github.com/hvxahv/hvx/cockroach"
@@ -11,45 +13,53 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"golang.org/x/net/context"
 	"gorm.io/gorm"
-	"strconv"
 )
 
-// Accounts is a struct for account.
 type Accounts struct {
-
-	// AccountID is a unique identifier for the account.
 	gorm.Model
 
-	// Username is the primaryKey of the database which is unique,
-	// in the account system of this instance is must be added during
-	// the creation process to ensure the correctness of the data.
+	// Username As the primary key of the database, it cannot be duplicated.
 	Username string `gorm:"primaryKey;type:text;username;unique" validate:"required,min=4,max=16"`
 
-	// Mail When registering, the user is required to provide an email,
-	// and an error needs to be returned when the email is not in the
-	// correct format. It is also unique in the account system.
+	// Mail must ensure that the email is unique and properly formatted and cannot be empty.
+	// When the user forgets the password, the user is required to provide an email which is unique.
+	// Therefore, when registering, the user must provide an email.
 	Mail string `gorm:"index;type:text;mail;unique" validate:"required,email"`
 
-	// Password must be encrypted and saved. The length of the password needs to be verified
-	Password string `gorm:"type:text;password" validate:"required,min=8,max=100"`
+	// Password
+	// The length of the password must be greater than 8 characters and less than 24 characters, and must not contain spaces.
+	Password string `gorm:"type:text;password" validate:"required,min=8,max=24"`
 
-	// ActorID is used for compatibility with the ActivityPub protocol
-	// to connect to the actor table by ID.
+	// When creating a user, an actor needs to be created to record the basic information
+	// of the user for compatibility with the ActivityPub protocol.
+	// The ActorID field is the id of the actor and is used to associate the actor.
 	ActorID uint `gorm:"type:bigint;actor_id"`
 
-	// IsPrivate sets whether the account is private or not,
-	// it is a social extension that is set by the user to make the
-	// account public or not.
+	// IsPrivate Set whether the account is private or not, private accounts are not displayed publicly.
 	IsPrivate bool `gorm:"type:boolean;is_private"`
 }
 
 type Account interface {
+	// IsExist Determine if the account exists.
 	IsExist() bool
+
+	// Create need to verify whether the user name and email address have been registered or not,
+	// and return an error if they have been registered.
 	Create(publicKey string) error
+
+	// Delete Verify that the account is correct first, then delete the account by ID.
 	Delete() error
+
+	// EditUsername Edit username.
 	EditUsername(username string) error
+
+	// EditPassword Edit the password.
 	EditPassword(newPassword string) error
+
+	// EditEmail Editorial email.
 	EditEmail(mail string) error
+
+	// Verify password is correct.
 	Verify(password string) (*Accounts, error)
 }
 
@@ -64,7 +74,10 @@ func NewUsername(username string) *Accounts {
 func (a *Accounts) IsExist() bool {
 	db := cockroach.GetDB()
 
-	if err := db.Debug().Table(AccountsTable).Where("username = ? ", a.Username).First(&Accounts{}); err != nil {
+	if err := db.Debug().
+		Table(AccountsTable).
+		Where("username = ? ", a.Username).
+		First(&Accounts{}); err != nil {
 		ok := cockroach.IsNotFound(err.Error)
 		return ok
 	}
@@ -74,14 +87,16 @@ func (a *Accounts) IsExist() bool {
 // GetAccountByUsername ...
 func (a *Accounts) GetAccountByUsername() (*Accounts, error) {
 	db := cockroach.GetDB()
-	if err := db.Debug().Table(AccountsTable).
-		Where("username = ?", a.Username).First(&a).Error; err != nil {
+	if err := db.Debug().
+		Table(AccountsTable).
+		Where("username = ?", a.Username).
+		First(&a).Error; err != nil {
 		return nil, err
 	}
 	return a, nil
 }
 
-// NewAccounts ...
+// NewAccounts This constructor is needed to formally create a complete account in the Create Account method.
 func NewAccounts(actorID uint, username, mail, password string) *Accounts {
 	hash, _ := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	return &Accounts{
@@ -92,7 +107,7 @@ func NewAccounts(actorID uint, username, mail, password string) *Accounts {
 	}
 }
 
-// NewAccountsCreate ...
+// NewAccountsCreate Constructor for creating an account.
 func NewAccountsCreate(username, mail, password string) *Accounts {
 	return &Accounts{
 		Username: username,
@@ -101,7 +116,6 @@ func NewAccountsCreate(username, mail, password string) *Accounts {
 	}
 }
 
-// Create Accounts...
 func (a *Accounts) Create(publicKey string) error {
 	//if err := validator.New().Struct(a); err != nil {
 	//	fmt.Println(err)
@@ -115,8 +129,10 @@ func (a *Accounts) Create(publicKey string) error {
 		return errors.NewDatabaseCreate(serviceName)
 	}
 
-	if err := db.Debug().Table(AccountsTable).
-		Where("username = ? ", a.Username).Or("mail = ?", a.Mail).
+	if err := db.Debug().
+		Table(AccountsTable).
+		Where("username = ? ", a.Username).
+		Or("mail = ?", a.Mail).
 		First(&Accounts{}); err != nil {
 		ok := cockroach.IsNotFound(err.Error)
 		if !ok {
@@ -124,9 +140,10 @@ func (a *Accounts) Create(publicKey string) error {
 		}
 	}
 
-	// Create an actor for the account.
+	// Create an actor for the account, and return the actor id.
+	// Set the type of ActivityPub to Person.
 	ctx := context.Background()
-	client, err := clientv1.New(ctx, []string{microsvc.NewGRPCAddress("actor")})
+	client, err := clientv1.New(ctx, microsvc.NewGRPCAddress("actor").Get())
 	if err != nil {
 		return err
 	}
@@ -143,6 +160,7 @@ func (a *Accounts) Create(publicKey string) error {
 	if err != nil {
 		return err
 	}
+
 	v := NewAccounts(uint(actorId), a.Username, a.Mail, a.Password)
 	if err := db.Debug().Table(AccountsTable).
 		Create(&v).Error; err != nil {
@@ -151,7 +169,7 @@ func (a *Accounts) Create(publicKey string) error {
 	return nil
 }
 
-// NewAccountsDelete ...
+// NewAccountsDelete Constructor for deleting an account.
 func NewAccountsDelete(username, password string) *Accounts {
 	return &Accounts{
 		Username: username,
@@ -159,7 +177,6 @@ func NewAccountsDelete(username, password string) *Accounts {
 	}
 }
 
-// Delete ...
 func (a *Accounts) Delete() error {
 	db := cockroach.GetDB()
 	verify, err := NewVerify(a.Username).Verify(a.Password)
@@ -174,9 +191,11 @@ func (a *Accounts) Delete() error {
 		Delete(&Accounts{}).Error; err != nil {
 		return err
 	}
+
 	return nil
 }
 
+// NewAccountsID Constructing an account ID.
 func NewAccountsID(id uint) *Accounts {
 	return &Accounts{
 		Model: gorm.Model{
@@ -185,21 +204,28 @@ func NewAccountsID(id uint) *Accounts {
 	}
 }
 
-// EditUsername ...
 func (a *Accounts) EditUsername(username string) error {
 	if ok := NewUsername(username).IsExist(); !ok {
 		return errors.New(errors.ErrAccountUsernameAlreadyExists)
 	}
 	db := cockroach.GetDB()
 
-	if err := db.Debug().Table(AccountsTable).
-		Where("id = ?", a.ID).First(&a).Update("username", username).Error; err != nil {
+	if err := db.Debug().
+		Table(AccountsTable).
+		Where("id = ?", a.ID).
+		First(&a).
+		Update("username", username).Error; err != nil {
 		return err
 	}
 
-	address := fmt.Sprintf("https://%s/u/%s", viper.GetString("domain"), username)
-	inbox := fmt.Sprintf("%s/inbox", address)
-	if err := db.Debug().Table(ActorsTable).
+	// Update the actor's preferred username.
+	var (
+		address = fmt.Sprintf("https://%s/u/%s", viper.GetString("domain"), username)
+		inbox   = fmt.Sprintf("%s/inbox", address)
+	)
+
+	if err := db.Debug().
+		Table(ActorsTable).
 		Where("id = ?", a.ActorID).
 		Update("preferred_username", username).
 		Update("inbox", inbox).
@@ -210,11 +236,11 @@ func (a *Accounts) EditUsername(username string) error {
 	return nil
 }
 
-// EditEmail ...
 func (a *Accounts) EditEmail(mail string) error {
 	db := cockroach.GetDB()
 
-	if err := db.Debug().Table(AccountsTable).
+	if err := db.Debug().
+		Table(AccountsTable).
 		Where("id = ?", a.ID).
 		Update("mail", mail).
 		Error; err != nil {
@@ -224,6 +250,7 @@ func (a *Accounts) EditEmail(mail string) error {
 	return nil
 }
 
+// NewEditPassword Constructor for editing an account's password.
 func NewEditPassword(username, password string) *Accounts {
 	return &Accounts{
 		Username: username,
@@ -231,7 +258,6 @@ func NewEditPassword(username, password string) *Accounts {
 	}
 }
 
-// EditPassword ...
 func (a *Accounts) EditPassword(new string) error {
 	v, err := NewVerify(a.Username).Verify(a.Password)
 	if err != nil {
@@ -241,14 +267,17 @@ func (a *Accounts) EditPassword(new string) error {
 	db := cockroach.GetDB()
 	hash, _ := bcrypt.GenerateFromPassword([]byte(new), bcrypt.DefaultCost)
 
-	if err := db.Debug().Table(AccountsTable).
-		Where("id = ?", v.ID).Update("password", hash).Error; err != nil {
+	if err := db.Debug().
+		Table(AccountsTable).
+		Where("id = ?", v.ID).
+		Update("password", hash).Error; err != nil {
 		return err
 	}
 
 	return nil
 }
 
+// NewVerify Constructor for verifying an account.
 func NewVerify(username string) *Accounts {
 	return &Accounts{
 		Username: username,
@@ -258,10 +287,14 @@ func NewVerify(username string) *Accounts {
 func (a *Accounts) Verify(password string) (*Accounts, error) {
 	db := cockroach.GetDB()
 
-	if err := db.Debug().Table(AccountsTable).Where("username = ?", a.Username).First(&a).Error; err != nil {
+	if err := db.Debug().
+		Table(AccountsTable).
+		Where("username = ?", a.Username).
+		First(&a).Error; err != nil {
 		return nil, err
 	}
 
+	// CompareHashAndPassword to compare whether the password is correct or not.
 	if err := bcrypt.CompareHashAndPassword([]byte(a.Password), []byte(password)); err != nil {
 		return nil, err
 	}

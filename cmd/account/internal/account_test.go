@@ -2,9 +2,10 @@ package internal
 
 import (
 	"fmt"
-	"github.com/hvxahv/hvx/rsa"
 	"os"
 	"testing"
+
+	"github.com/hvxahv/hvx/rsa"
 
 	"github.com/hvxahv/hvx/cockroach"
 	"github.com/mitchellh/go-homedir"
@@ -59,54 +60,33 @@ func TestAccount_Create(t *testing.T) {
 	}
 }
 
-//
-//func TestAccount_GetAccountByUsername(t *testing.T) {
-//	a, err := NewUsername("hvx1").GetAccountByUsername()
-//	if err != nil {
-//		t.Error(err)
-//		return
-//	}
-//	fmt.Println(a)
-//}
-//
-//func TestAccounts_GetActorByUsername(t *testing.T) {
-//	actor, err := NewUsername("hvturingga").GetActorByUsername()
-//	if err != nil {
-//		t.Error(err)
-//		return
-//	}
-//	fmt.Println(actor)
-//}
-//
-func TestAccount_Delete(t *testing.T) {
+func TestAccounts_Delete(t *testing.T) {
 	if err := NewAccountsDelete("hvxahv", "hvxahv123").Delete(); err != nil {
 		t.Error(err)
 		return
 	}
-	t.Log("OK")
 }
 
-//
-//func TestAccount_EditUsername(t *testing.T) {
-//	if err := NewAccountsID(12345).EditUsername("hvx2"); err != nil {
-//		t.Error(err)
-//		return
-//	}
-//}
-//
-//func TestAccount_EditEmail(t *testing.T) {
-//	if err := NewAccountsID(12345).EditEmail("hvx2@disism.com"); err != nil {
-//		t.Error(err)
-//		return
-//	}
-//}
-//
-//func TestAccount_EditPassword(t *testing.T) {
-//	if err := NewEditPassword("hvx2", "hvxahv123").EditPassword("hvx123456"); err != nil {
-//		t.Error(err)
-//		return
-//	}
-//}
+func TestAccounts_EditUsername(t *testing.T) {
+	if err := NewAccountsID(1234567890).EditUsername("hvx"); err != nil {
+		t.Error(err)
+		return
+	}
+}
+
+func TestAccounts_EditPassword(t *testing.T) {
+	if err := NewAccountsID(1234567890).EditPassword("hvx"); err != nil {
+		t.Error(err)
+		return
+	}
+}
+
+func TestAccounts_EditMail(t *testing.T) {
+	if err := NewAccountsID(1234567890).EditEmail("hvx@disism.com"); err != nil {
+		t.Error(err)
+		return
+	}
+}
 
 func TestAccounts_Verify(t *testing.T) {
 	verify, err := NewVerify("hvturingga").Verify("hvxahv123")

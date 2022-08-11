@@ -1,12 +1,13 @@
 package internal
 
 import (
+	"strconv"
+
 	"github.com/hvxahv/hvx/APIs/v1alpha1/actor"
 	pb "github.com/hvxahv/hvx/APIs/v1alpha1/channel"
 	"github.com/hvxahv/hvx/clientv1"
 	"github.com/hvxahv/hvx/microsvc"
 	"golang.org/x/net/context"
-	"strconv"
 )
 
 // Administrative ...
@@ -102,7 +103,7 @@ func (s *server) GetAdministrators(ctx context.Context, in *pb.GetAdministrators
 	var admins []*pb.AdminsData
 	for _, a := range administrators {
 		var admin pb.AdminsData
-		client, err := clientv1.New(ctx, []string{microsvc.NewGRPCAddress("actor")})
+		client, err := clientv1.New(ctx, microsvc.NewGRPCAddress("actor").Get())
 		if err != nil {
 			return nil, err
 		}

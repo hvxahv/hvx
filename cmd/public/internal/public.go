@@ -31,7 +31,7 @@ func NewPublic(ctx context.Context) *Public {
 
 func (p *Public) IsExist(name string) (bool, error) {
 	c, err := clientv1.New(p.ctx,
-		[]string{microsvc.GetGRPCServiceAddress("account")},
+		microsvc.NewGRPCAddress("account").Get(),
 	)
 	if err != nil {
 		return false, err
@@ -48,9 +48,7 @@ func (p *Public) IsExist(name string) (bool, error) {
 
 // GetActorByUsername ...
 func (p *Public) GetActorByUsername(username string) (*actor.ActorData, error) {
-	c, err := clientv1.New(p.ctx,
-		[]string{microsvc.GetGRPCServiceAddress("actor")},
-	)
+	c, err := clientv1.New(p.ctx, microsvc.NewGRPCAddress("actor").Get())
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +66,7 @@ func (p *Public) GetActorByUsername(username string) (*actor.ActorData, error) {
 
 func (p *Public) CreateAccount(username, mail, password, publicKey string) (*account.CreateResponse, error) {
 	c, err := clientv1.New(p.ctx,
-		[]string{microsvc.GetGRPCServiceAddress("account")},
+		microsvc.NewGRPCAddress("account").Get(),
 	)
 	if err != nil {
 		return nil, err

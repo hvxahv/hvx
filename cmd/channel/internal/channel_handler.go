@@ -2,6 +2,8 @@ package internal
 
 import (
 	"context"
+	"strconv"
+
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/hvxahv/hvx/APIs/v1alpha1/actor"
 	pb "github.com/hvxahv/hvx/APIs/v1alpha1/channel"
@@ -9,23 +11,20 @@ import (
 	"github.com/hvxahv/hvx/errors"
 	"github.com/hvxahv/hvx/microsvc"
 	"github.com/hvxahv/hvx/rsa"
-	"strconv"
-	"time"
 )
 
-// CreateChannel ...
-// Generate rsa Key,
-// Create an Actor account of Service type,
-// Save the Actor ID, Owner Actor ID to the channels table.
-// Create administrator table, set is_owner to true.
 func (s *server) CreateChannel(ctx context.Context, in *pb.CreateChannelRequest) (*pb.CreateChannelResponse, error) {
-	client, err := clientv1.New(ctx, []string{microsvc.NewGRPCAddress("actor")})
+	// TODO - IMPROVED: When calling the Create method (Create()),
+	// the method should check if the Actor PreferredUsername exists instead
+	// of calling Create() after calling the IsExist() method when creating the Actor.
+	// This problem is revealed in the current scenario.
+	cli, err := clientv1.New(ctx, microsvc.NewGRPCAddress("actor").Get())
 	if err != nil {
 		return nil, err
 	}
-	defer client.Close()
+	defer cli.Close()
 
-	exist, err := actor.NewActorClient(client.Conn).IsExist(ctx, &actor.IsExistRequest{
+	exist, err := actor.NewActorClient(cli.Conn).IsExist(ctx, &actor.IsExistRequest{
 		PreferredUsername: in.GetPreferredUsername(),
 	})
 	if err != nil {
@@ -39,18 +38,20 @@ func (s *server) CreateChannel(ctx context.Context, in *pb.CreateChannelRequest)
 	if err != nil {
 		return nil, err
 	}
+	createdId, err := strconv.Atoi(parse.ActorId)
+	if err != nil {
+		return nil, err
+	}
+
+	// Generate rsa Key.
 	rsa, err := rsa.NewRsa(2048).Generate()
 	if err != nil {
 		return nil, err
 	}
 
-	cli, err := clientv1.New(ctx, []string{microsvc.NewGRPCAddress("actor")},
-		clientv1.SetDialTimeout(10*time.Second),
-	)
-	if err != nil {
-		return nil, err
-	}
-	defer cli.Close()
+	// Use the Actor (actorId) of ActivityPub as the data source of the channel.
+	// and set the type to Service.
+	// https://www.w3.org/TR/activitystreams-vocabulary/#actor-types
 	create, err := actor.NewActorClient(cli.Conn).Create(ctx, &actor.CreateRequest{
 		PreferredUsername: in.PreferredUsername,
 		PublicKey:         rsa.PublicKey,
@@ -59,12 +60,8 @@ func (s *server) CreateChannel(ctx context.Context, in *pb.CreateChannelRequest)
 	if err != nil {
 		return nil, err
 	}
-	actorId, err := strconv.Atoi(create.ActorId)
-	if err != nil {
-		return nil, err
-	}
 
-	createdId, err := strconv.Atoi(parse.ActorId)
+	actorId, err := strconv.Atoi(create.ActorId)
 	if err != nil {
 		return nil, err
 	}
@@ -93,10 +90,14 @@ func (s *server) GetChannels(ctx context.Context, in *empty.Empty) (*pb.GetChann
 		return nil, err
 	}
 
+	// TODO - When the Actor data is fetched, the Actor data needs to be added to the Channel data.
+	// In large scale data, such an operation can cause performance problems.
+	// So you need to add concurrent design for optimization.
 	var data []*pb.ChannelData
 	for _, d := range channels {
 		var cd pb.ChannelData
-		client, err := clientv1.New(ctx, []string{microsvc.NewGRPCAddress("actor")})
+		client, err := clientv1.New(ctx,
+			microsvc.NewGRPCAddress("actor").Get())
 		if err != nil {
 			return nil, err
 		}
@@ -144,5 +145,6 @@ func (s *server) DeleteChannel(ctx context.Context, in *pb.DeleteChannelRequest)
 }
 
 func (s *server) DeleteChannels(ctx context.Context, in *pb.DeleteChannelsRequest) (*pb.DeleteChannelsResponse, error) {
+	// TODO - Implement deleting all created channels.
 	return &pb.DeleteChannelsResponse{}, nil
 }
