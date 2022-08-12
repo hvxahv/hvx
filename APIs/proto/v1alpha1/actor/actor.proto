@@ -8,26 +8,26 @@ import "google/api/field_behavior.proto";
 import "google/protobuf/empty.proto";
 
 service Actor {
+  // IsExist returns true if the actor with the given name(PreferredUsername) exists.
   rpc IsExist (IsExistRequest) returns (IsExistResponse) {}
 
+  // Create creates a new actor.
   rpc Create(CreateRequest) returns (CreateResponse) {}
 
+  // Get returns the actor with the given name(PreferredUsername).
   rpc Get(GetRequest) returns (GetResponse) {}
 
-  // GetActorsByPreferredUsername Returns the set of actors by the
-  // specified GetActorsByPreferredUsername by PreferredUsername.
+  // GetActorsByPreferredUsername Returns the set of actors by the PreferredUsername.
   rpc GetActorsByPreferredUsername (GetActorsByPreferredUsernameRequest) returns (GetActorsByPreferredUsernameResponse) {
     option (google.api.http) = {
       get: "/api/v1/search/{preferred_username}"
     };
   }
 
-  // GetActorByAddress Returns the actor identified by the specified address.
+  // GetActorByAddress Returns the actor by the address.
   rpc GetByAddress (GetActorByAddressRequest) returns (ActorData) {}
 
-  // EditActor Edit the actor's profile and view the structure to get
-  // the allowed and changeable parameters.
-  // By username.
+  // EditActor Edits the actor profile.
   rpc Edit (EditRequest) returns (EditResponse) {
     option (google.api.http) = {
       put: "/api/v1/actor",
@@ -35,10 +35,10 @@ service Actor {
     };
   }
 
+  // Delete Delete the actor.
   rpc Delete (DeleteRequest) returns (DeleteResponse) {}
 
-  // GetActorByUsername Get by username returns the actor
-  // identified by the specified username.
+  // GetActorByUsername Returns the actor by account username.
   rpc GetActorByUsername (GetActorByUsernameRequest) returns (ActorData) {}
 }
 
@@ -61,6 +61,7 @@ message CreateResponse {
   string actor_id = 2;
 }
 
+// GetRequest is the request for Get. It contains the actor id. 
 message GetRequest {
   string actor_id = 1;
 }
@@ -69,6 +70,7 @@ message GetResponse {
   ActorData actor = 1;
 }
 
+// ActorData is the actor data. It contains the actor's public key, preferred username, and actor type.
 message ActorData {
   string id = 1;
   string preferred_username = 2;
@@ -96,6 +98,7 @@ message GetActorByAddressRequest {
   string address = 1;
 }
 
+// The actor data to be updated.
 message EditRequest {
   string name = 1;
   string avatar = 2;
@@ -108,6 +111,7 @@ message EditResponse {
 }
 
 message DeleteRequest {
+  // The id of the actor to delete.
   string id = 1;
 }
 
@@ -117,5 +121,6 @@ message DeleteResponse {
 }
 
 message GetActorByUsernameRequest {
+  // The account username.
   string username = 1;
 }

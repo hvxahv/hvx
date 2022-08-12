@@ -27,6 +27,8 @@ func (s *server) Create(ctx context.Context, in *pb.CreateRequest) (*pb.CreateRe
 	if err := NewAccountsCreate(in.Username, in.Mail, in.Password).Create(in.PublicKey); err != nil {
 		return nil, err
 	}
+
+	
 	return &pb.CreateResponse{Code: "200", Reply: "ok"}, nil
 }
 
@@ -90,9 +92,14 @@ func (s *server) EditEmail(ctx context.Context, in *pb.EditEmailRequest) (*pb.Ed
 	return &pb.EditEmailResponse{Code: "200", Status: "ok"}, nil
 }
 
+// EditPassword When the password is changed, all online devices need to be logged out.
 func (s *server) EditPassword(ctx context.Context, in *pb.EditPasswordRequest) (*pb.EditPasswordResponse, error) {
 	parse, err := microsvc.GetUserdataByAuthorizationToken(ctx)
 	if err != nil {
+		return nil, err
+	}
+
+	if err := NewEditPassword(in.Username, in.Password).EditPassword(in.NewPassword); err != nil {
 		return nil, err
 	}
 
@@ -105,10 +112,6 @@ func (s *server) EditPassword(ctx context.Context, in *pb.EditPasswordRequest) (
 		AccountId: parse.AccountId,
 	})
 	if err != nil {
-		return nil, err
-	}
-
-	if err := NewEditPassword(in.Username, in.Password).EditPassword(in.NewPassword); err != nil {
 		return nil, err
 	}
 

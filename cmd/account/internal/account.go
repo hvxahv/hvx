@@ -117,6 +117,7 @@ func NewAccountsCreate(username, mail, password string) *Accounts {
 }
 
 func (a *Accounts) Create(publicKey string) error {
+	// TODO - Verify that the structure data, username email and password match the criteria.
 	//if err := validator.New().Struct(a); err != nil {
 	//	fmt.Println(err)
 	//	return errors.New("FAILED_TO_VALIDATOR")

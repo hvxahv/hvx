@@ -8,34 +8,21 @@ import "google/api/field_behavior.proto";
 import "google/protobuf/empty.proto";
 
 service Accounts {
-  // IsExist Check the account creation status by username,
-  // return true if not created, otherwise return false, used
-  // when checking if the user exists.
+  // IsExist checks if the account exists. The account name(username) is specified in the request.
+  // If the account exists, it returns true. Otherwise, it returns false.
   rpc IsExist (IsExistRequest) returns (IsExistResponse) {}
 
   // Create a new account.
-  // Actor is created first and then the returned ActorID is used to
-  //  create a unique account for the current instance account system.
-  // The Actor's PreferredUsername is used to identify the actor in the
-  // current instance account system. The username in the account system
-  // is unique, but the Actor's PreferredUsername is not unique,
-  // as it may have the same username in different instances.
   rpc Create (CreateRequest) returns (CreateResponse) {}
 
-  // Get the account by username.
-  // Internal methods in the program should not be exposed to API
-  // structures for users to call. There is no other solution for
-  // the time being, so we will use the code for now and modify it later.
+  // Get the account by username. 
   rpc GetByUsername (GetByUsernameRequest) returns (GetByUsernameResponse) {
     option (google.api.http) = {
       get: "/api/v1/account/{username}"
     };
   }
 
-  // First you need the password as a parameter to verify that the account
-  // is correct, and then delete the account system and actor table when
-  // the password is verified to be correct.
-  // With http api.
+  // Delete the account.
   rpc Delete (DeleteRequest) returns (DeleteResponse) {
     option (google.api.http) = {
       delete: "/api/v1/account",
@@ -44,10 +31,7 @@ service Accounts {
   }
 
   // EditUsername Update the account username.
-  // will change both the username and preferred_username in the
-  // accounts and actors tables.
-  // As with password changes, you need to take down all clients
-  // and log back in to issue the token.
+  // will change the account username and the preferred_username in Actor.
   rpc EditUsername (EditUsernameRequest) returns (EditUsernameResponse) {
     option (google.api.http) = {
       patch: "/api/v1/account/username",
@@ -56,10 +40,6 @@ service Accounts {
   }
 
   // EditPassword Update the account password.
-  // When changing the password for an account, all client authorizations
-  // need to be removed and all devices that have logged in must log in
-  // again to perform all account operations; this verification is
-  // verified in the REST API TOKEN.
   rpc EditPassword (EditPasswordRequest) returns (EditPasswordResponse) {
     option (google.api.http) = {
       patch: "/api/v1/account/password",
@@ -68,7 +48,6 @@ service Accounts {
   }
 
   // EditEmail Edit the unique email for the account.
-  // All devices should be taken offline.
   rpc EditEmail (EditEmailRequest) returns (EditEmailResponse) {
     option (google.api.http) = {
       patch: "/api/v1/account/mail",
