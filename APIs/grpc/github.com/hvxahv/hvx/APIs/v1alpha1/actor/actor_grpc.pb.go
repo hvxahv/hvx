@@ -22,21 +22,21 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ActorClient interface {
+	// IsExist returns true if the actor with the given name(PreferredUsername) exists.
 	IsExist(ctx context.Context, in *IsExistRequest, opts ...grpc.CallOption) (*IsExistResponse, error)
+	// Create creates a new actor.
 	Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error)
+	// Get returns the actor with the given name(PreferredUsername).
 	Get(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error)
-	// GetActorsByPreferredUsername Returns the set of actors by the
-	// specified GetActorsByPreferredUsername by PreferredUsername.
+	// GetActorsByPreferredUsername Returns the set of actors by the PreferredUsername.
 	GetActorsByPreferredUsername(ctx context.Context, in *GetActorsByPreferredUsernameRequest, opts ...grpc.CallOption) (*GetActorsByPreferredUsernameResponse, error)
-	// GetActorByAddress Returns the actor identified by the specified address.
+	// GetActorByAddress Returns the actor by the address.
 	GetByAddress(ctx context.Context, in *GetActorByAddressRequest, opts ...grpc.CallOption) (*ActorData, error)
-	// EditActor Edit the actor's profile and view the structure to get
-	// the allowed and changeable parameters.
-	// By username.
+	// EditActor Edits the actor profile.
 	Edit(ctx context.Context, in *EditRequest, opts ...grpc.CallOption) (*EditResponse, error)
+	// Delete Delete the actor.
 	Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error)
-	// GetActorByUsername Get by username returns the actor
-	// identified by the specified username.
+	// GetActorByUsername Returns the actor by account username.
 	GetActorByUsername(ctx context.Context, in *GetActorByUsernameRequest, opts ...grpc.CallOption) (*ActorData, error)
 }
 
@@ -124,21 +124,21 @@ func (c *actorClient) GetActorByUsername(ctx context.Context, in *GetActorByUser
 // All implementations should embed UnimplementedActorServer
 // for forward compatibility
 type ActorServer interface {
+	// IsExist returns true if the actor with the given name(PreferredUsername) exists.
 	IsExist(context.Context, *IsExistRequest) (*IsExistResponse, error)
+	// Create creates a new actor.
 	Create(context.Context, *CreateRequest) (*CreateResponse, error)
+	// Get returns the actor with the given name(PreferredUsername).
 	Get(context.Context, *GetRequest) (*GetResponse, error)
-	// GetActorsByPreferredUsername Returns the set of actors by the
-	// specified GetActorsByPreferredUsername by PreferredUsername.
+	// GetActorsByPreferredUsername Returns the set of actors by the PreferredUsername.
 	GetActorsByPreferredUsername(context.Context, *GetActorsByPreferredUsernameRequest) (*GetActorsByPreferredUsernameResponse, error)
-	// GetActorByAddress Returns the actor identified by the specified address.
+	// GetActorByAddress Returns the actor by the address.
 	GetByAddress(context.Context, *GetActorByAddressRequest) (*ActorData, error)
-	// EditActor Edit the actor's profile and view the structure to get
-	// the allowed and changeable parameters.
-	// By username.
+	// EditActor Edits the actor profile.
 	Edit(context.Context, *EditRequest) (*EditResponse, error)
+	// Delete Delete the actor.
 	Delete(context.Context, *DeleteRequest) (*DeleteResponse, error)
-	// GetActorByUsername Get by username returns the actor
-	// identified by the specified username.
+	// GetActorByUsername Returns the actor by account username.
 	GetActorByUsername(context.Context, *GetActorByUsernameRequest) (*ActorData, error)
 }
 

@@ -63,11 +63,7 @@ func (s *server) GetDevices(ctx context.Context, g *emptypb.Empty) (*pb.GetDevic
 	if err != nil {
 		return nil, err
 	}
-	aid, err := strconv.Atoi(parse.AccountId)
-	if err != nil {
-		return nil, err
-	}
-	devices, err := NewDevicesAccountId(uint(aid)).GetDevices()
+	devices, err := NewDevicesAccountId(parse.AccountId).GetDevices()
 	if err != nil {
 		return nil, err
 	}
@@ -89,16 +85,12 @@ func (s *server) Delete(ctx context.Context, in *pb.DeleteRequest) (*pb.DeleteRe
 	if err != nil {
 		return nil, err
 	}
-	aid, err := strconv.Atoi(parse.AccountId)
-	if err != nil {
-		return nil, err
-	}
 
 	id, err := strconv.Atoi(in.DeviceId)
 	if err != nil {
 		return nil, err
 	}
-	if err = NewDevicesDelete(uint(id), uint(aid)).Delete(); err != nil {
+	if err = NewDevicesDelete(uint(id), parse.AccountId).Delete(); err != nil {
 		return nil, err
 	}
 	return &pb.DeleteResponse{Code: "200", Reply: "ok"}, nil

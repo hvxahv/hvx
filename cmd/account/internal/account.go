@@ -148,6 +148,7 @@ func (a *Accounts) Create(publicKey string) error {
 	if err != nil {
 		return err
 	}
+	defer client.Close()
 	create, err := actor.NewActorClient(client.Conn).Create(ctx, &actor.CreateRequest{
 		PreferredUsername: a.Username,
 		PublicKey:         publicKey,

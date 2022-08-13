@@ -16,10 +16,19 @@ import (
 	"github.com/hvxahv/hvx/errors"
 	"github.com/spf13/viper"
 	"google.golang.org/grpc/metadata"
+	"strconv"
 	"strings"
 )
 
-func GetUserdataByAuthorizationToken(ctx context.Context) (*auth.Claims, error) {
+type Userdata struct {
+	AccountId uint
+	ActorId   uint
+	DeviceID  uint
+	Username  string
+	Mail      string
+}
+
+func GetUserdataByAuthorizationToken(ctx context.Context) (*Userdata, error) {
 	md, _ := metadata.FromIncomingContext(ctx)
 	bearer := md.Get("authorization")
 	if len(bearer) != 1 {
@@ -36,5 +45,24 @@ func GetUserdataByAuthorizationToken(ctx context.Context) (*auth.Claims, error) 
 		return nil, err
 	}
 
-	return parse, nil
+	accountId, err := strconv.Atoi(parse.AccountId)
+	if err != nil {
+		return nil, err
+	}
+	actor, err := strconv.Atoi(parse.ActorId)
+	if err != nil {
+		return nil, err
+	}
+	deviceId, err := strconv.Atoi(parse.DeviceID)
+	if err != nil {
+		return nil, err
+	}
+	d := &Userdata{
+		AccountId: uint(accountId),
+		ActorId:   uint(actor),
+		DeviceID:  uint(deviceId),
+		Username:  parse.Username,
+		Mail:      parse.Mail,
+	}
+	return d, nil
 }

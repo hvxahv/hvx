@@ -7,4 +7,5 @@ const (
 	Auth    string = "http://hvxahv.disism.internal:7030"
 	Device  string = "http://hvxahv.disism.internal:7050"
 	Channel string = "http://hvxahv.disism.internal:7060"
+	Article string = "http://hvxahv.disism.internal:7070"
 )

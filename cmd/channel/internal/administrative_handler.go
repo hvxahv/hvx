@@ -32,16 +32,11 @@ func (s *server) AddAdministrator(ctx context.Context, in *pb.AddAdministratorRe
 		return nil, err
 	}
 
-	adminId, err := strconv.Atoi(parse.ActorId)
-	if err != nil {
-		return nil, err
-	}
-
 	addedID, err := strconv.Atoi(in.AddedId)
 	if err != nil {
 		return nil, err
 	}
-	if err := NewAdministratesAdd(uint(channelId), uint(adminId)).AddAdministrator(uint(addedID)); err != nil {
+	if err := NewAdministratesAdd(uint(channelId), parse.ActorId).AddAdministrator(uint(addedID)); err != nil {
 		return nil, err
 	}
 
@@ -62,16 +57,11 @@ func (s *server) RemoveAdministrator(ctx context.Context, in *pb.RemoveAdministr
 		return nil, err
 	}
 
-	adminId, err := strconv.Atoi(parse.ActorId)
-	if err != nil {
-		return nil, err
-	}
-
 	removedID, err := strconv.Atoi(in.RemovedId)
 	if err != nil {
 		return nil, err
 	}
-	if err := NewAdministratesPermission(uint(channelId), uint(adminId)).RemoveAdministrator(uint(removedID)); err != nil {
+	if err := NewAdministratesPermission(uint(channelId), parse.ActorId).RemoveAdministrator(uint(removedID)); err != nil {
 		return nil, err
 	}
 	return &pb.RemoveAdministratorResponse{
@@ -91,11 +81,7 @@ func (s *server) GetAdministrators(ctx context.Context, in *pb.GetAdministrators
 		return nil, err
 	}
 
-	actorId, err := strconv.Atoi(parse.ActorId)
-	if err != nil {
-		return nil, err
-	}
-	administrators, err := NewAdministratesPermission(uint(channelId), uint(actorId)).GetAdministrators()
+	administrators, err := NewAdministratesPermission(uint(channelId), parse.ActorId).GetAdministrators()
 	if err != nil {
 		return nil, err
 	}

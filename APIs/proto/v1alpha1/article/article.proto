@@ -6,6 +6,7 @@ option go_package = "github.com/hvxahv/hvx/APIs/v1alpha1/article";
 import "google/api/annotations.proto";
 import "google/api/field_behavior.proto";
 import "google/protobuf/empty.proto";
+import "proto/v1alpha1/actor/actor.proto";
 
 service Article {
   // Create article or status.
@@ -55,14 +56,6 @@ service Article {
   }
 }
 
-// ActorInfo Actor information.
-message ActorInfo {
-  string preferred_username = 2;
-  string address = 3;
-  string username = 4;
-  string avatar = 5;
-}
-
 message ArticleInfo {
   string id = 1;
   string title = 2;
@@ -78,30 +71,25 @@ message ArticleInfo {
   string visibility = 12;
 }
 
-message ArticleData {
-  ActorInfo actor = 1;
-  ArticleInfo article = 2;
-}
 
 message CreateRequest {
-  string id = 1;
-  string account_id = 2;
-  string title = 3;
-  string summary = 4;
-  string article = 5;
-  repeated string tags = 6;
-  string attachmentType = 7;
-  repeated string attachments = 8;
-  repeated string to = 9;
-  repeated string cc = 10;
-  bool state = 11;
-  bool nsfw = 12;
-  string visibility = 13;
+  string actor_id = 1;
+  string title = 2;
+  string summary = 3;
+  string article = 4;
+  repeated string tags = 5;
+  string attachmentType = 6 [json_name = "attachments_type"];
+  repeated string attachments = 7;
+  repeated string to = 8;
+  repeated string cc = 9;
+  bool state = 10;
+  bool nsfw = 11;
+  string visibility = 12;
 }
 
 message CreateResponse {
   string code = 1;
-  string reply = 2;
+  string status = 2;
 }
 
 message GetRequest {
@@ -110,8 +98,8 @@ message GetRequest {
 
 message GetResponse {
   string code = 1;
-  string id = 2;
-  ArticleData data = 3;
+  actor.proto.ActorData actor = 2;
+  ArticleInfo article = 3;
 }
 
 message GetArticlesRequest {
@@ -120,7 +108,7 @@ message GetArticlesRequest {
 
 message GetArticlesResponse {
   string code = 1;
-  repeated ArticleData data = 2;
+  repeated ArticleInfo data = 2;
 }
 
 message UpdateRequest {
@@ -129,7 +117,7 @@ message UpdateRequest {
   string summary = 3;
   string article = 4;
   repeated string tags = 5;
-  string attachmentType = 6;
+  string attachmentType = 6 [json_name = "attachments_type"];
   repeated string attachments = 7;
   string nsfw = 8;
   string visibility = 9;

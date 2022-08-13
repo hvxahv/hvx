@@ -28,7 +28,6 @@ func (s *server) Create(ctx context.Context, in *pb.CreateRequest) (*pb.CreateRe
 		return nil, err
 	}
 
-	
 	return &pb.CreateResponse{Code: "200", Reply: "ok"}, nil
 }
 
@@ -64,12 +63,8 @@ func (s *server) EditUsername(ctx context.Context, in *pb.EditUsernameRequest) (
 	if err != nil {
 		return nil, err
 	}
-	id, err := strconv.Atoi(parse.AccountId)
-	if err != nil {
-		return nil, err
-	}
 
-	if err := NewAccountsID(uint(id)).EditUsername(in.Username); err != nil {
+	if err := NewAccountsID(parse.AccountId).EditUsername(in.Username); err != nil {
 		return nil, err
 	}
 	return &pb.EditUsernameResponse{Code: "200", Status: "ok"}, nil
@@ -81,12 +76,7 @@ func (s *server) EditEmail(ctx context.Context, in *pb.EditEmailRequest) (*pb.Ed
 		return nil, err
 	}
 
-	aid, err := strconv.Atoi(parse.AccountId)
-	if err != nil {
-		return nil, err
-	}
-
-	if err := NewAccountsID(uint(aid)).EditEmail(in.Mail); err != nil {
+	if err := NewAccountsID(parse.AccountId).EditEmail(in.Mail); err != nil {
 		return nil, err
 	}
 	return &pb.EditEmailResponse{Code: "200", Status: "ok"}, nil
@@ -107,9 +97,10 @@ func (s *server) EditPassword(ctx context.Context, in *pb.EditPasswordRequest) (
 	if err != nil {
 		return nil, err
 	}
+	defer client.Close()
 
 	d, err := device.NewDevicesClient(client.Conn).DeleteDevices(ctx, &device.DeleteDevicesRequest{
-		AccountId: parse.AccountId,
+		AccountId: strconv.Itoa(int(parse.AccountId)),
 	})
 	if err != nil {
 		return nil, err

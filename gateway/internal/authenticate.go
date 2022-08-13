@@ -55,6 +55,7 @@ func Auth(c *gin.Context) {
 	if err != nil {
 		return
 	}
+	defer cli.Close()
 	devices, err := device.NewDevicesClient(cli.Conn).IsExist(c, &device.IsExistRequest{Id: parse.DeviceID})
 	if err != nil {
 		c.JSON(501, gin.H{

@@ -234,6 +234,7 @@ func (x *CreateResponse) GetActorId() string {
 	return ""
 }
 
+// GetRequest is the request for Get. It contains the actor id.
 type GetRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -328,6 +329,7 @@ func (x *GetResponse) GetActor() *ActorData {
 	return nil
 }
 
+// ActorData is the actor data. It contains the actor's public key, preferred username, and actor type.
 type ActorData struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -604,6 +606,7 @@ func (x *GetActorByAddressRequest) GetAddress() string {
 	return ""
 }
 
+// The actor data to be updated.
 type EditRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -727,6 +730,7 @@ type DeleteRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
+	// The id of the actor to delete.
 	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 }
 
@@ -829,6 +833,7 @@ type GetActorByUsernameRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
+	// The account username.
 	Username string `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
 }
 
