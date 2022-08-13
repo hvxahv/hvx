@@ -21,16 +21,16 @@ type Broadcasts struct {
 }
 
 type Broadcast interface {
-	CreateBroadcast() error
-	GetBroadcasts() (*[]Broadcasts, error) // Get all broadcasts.
-	DeleteBroadcast() error
+	Create() error
+	GetBroadcasts() ([]*Broadcasts, error) // Get all broadcasts.
+	Delete() error
 }
 
-func NewBoardcast(channelId, adminId, articleId uint, cid string) *Broadcasts {
+func NewBroadcasts(channelId, adminId, articleId uint, cid string) *Broadcasts {
 	return &Broadcasts{ChannelId: channelId, AdminId: adminId, ArticleId: articleId, CID: cid}
 }
 
-func (b *Broadcasts) CreateBroadcast() error {
+func (b *Broadcasts) Create() error {
 	db := cockroach.GetDB()
 
 	if err := db.AutoMigrate(&Broadcasts{}); err != nil {
@@ -46,13 +46,13 @@ func (b *Broadcasts) CreateBroadcast() error {
 	return nil
 }
 
-func NewBoardcastsChannelId(channelId uint) *Broadcasts {
+func NewBroadcastsChannelId(channelId uint) *Broadcasts {
 	return &Broadcasts{ChannelId: channelId}
 }
 
-func (b *Broadcasts) GetBroadcasts() (*[]Broadcasts, error) {
+func (b *Broadcasts) GetBroadcasts() ([]*Broadcasts, error) {
 	db := cockroach.GetDB()
-	var broadcasts []Broadcasts
+	var broadcasts []*Broadcasts
 
 	if err := db.Debug().
 		Table(BroadcastsTableName).
@@ -62,10 +62,10 @@ func (b *Broadcasts) GetBroadcasts() (*[]Broadcasts, error) {
 		return nil, err
 	}
 
-	return &broadcasts, nil
+	return broadcasts, nil
 }
 
-func NewDeleteBroadcast(id, channelId, adminId uint) *Broadcasts {
+func NewBroadcastsDelete(id, channelId, adminId uint) *Broadcasts {
 	return &Broadcasts{
 		Model:     gorm.Model{ID: id},
 		ChannelId: channelId,
@@ -73,7 +73,7 @@ func NewDeleteBroadcast(id, channelId, adminId uint) *Broadcasts {
 	}
 }
 
-func (b *Broadcasts) DeleteBroadcast() error {
+func (b *Broadcasts) Delete() error {
 	isAdmin := NewAdministratesPermission(b.AdminId, b.ChannelId).IsAdministrator()
 	if !isAdmin {
 		return errors.New(errors.ErrNotAchannelAdministrator)

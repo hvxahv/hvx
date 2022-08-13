@@ -38,11 +38,6 @@ func (s *server) CreateChannel(ctx context.Context, in *pb.CreateChannelRequest)
 	if err != nil {
 		return nil, err
 	}
-	createdId, err := strconv.Atoi(parse.ActorId)
-	if err != nil {
-		return nil, err
-	}
-
 	// Generate rsa Key.
 	rsa, err := rsa.NewRsa(2048).Generate()
 	if err != nil {
@@ -66,7 +61,7 @@ func (s *server) CreateChannel(ctx context.Context, in *pb.CreateChannelRequest)
 		return nil, err
 	}
 
-	if err := NewChannels(uint(actorId), uint(createdId), rsa.Private).CreateChannel(); err != nil {
+	if err := NewChannels(uint(actorId), parse.ActorId, rsa.Private).CreateChannel(); err != nil {
 		return nil, err
 	}
 	return &pb.CreateChannelResponse{
@@ -80,12 +75,8 @@ func (s *server) GetChannels(ctx context.Context, in *empty.Empty) (*pb.GetChann
 	if err != nil {
 		return nil, err
 	}
-	actorId, err := strconv.Atoi(parse.ActorId)
-	if err != nil {
-		return nil, err
-	}
 
-	channels, err := NewChannelsCreatorId(uint(actorId)).GetChannels()
+	channels, err := NewChannelsCreatorId(parse.ActorId).GetChannels()
 	if err != nil {
 		return nil, err
 	}
@@ -131,11 +122,7 @@ func (s *server) DeleteChannel(ctx context.Context, in *pb.DeleteChannelRequest)
 		return nil, err
 	}
 
-	creatorId, err := strconv.Atoi(parse.ActorId)
-	if err != nil {
-		return nil, err
-	}
-	if err := NewChannelsDelete(uint(cid), uint(creatorId)).DeleteChannel(); err != nil {
+	if err := NewChannelsDelete(uint(cid), parse.ActorId).DeleteChannel(); err != nil {
 		return nil, err
 	}
 	return &pb.DeleteChannelResponse{

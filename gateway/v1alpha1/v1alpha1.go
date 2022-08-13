@@ -50,3 +50,12 @@ func ChannelHandler(c *gin.Context) {
 		return
 	}
 }
+
+func ArticleHandler(c *gin.Context) {
+	if err := proxy.NewProxy(c, "/api/v1/article"+c.Param("x"), address.Article).Proxy(); err != nil {
+		c.JSON(502, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+}

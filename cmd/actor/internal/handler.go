@@ -131,18 +131,13 @@ func (s *server) GetActorByAddress(ctx context.Context, in *pb.GetActorByAddress
 
 // Edit ...
 func (s *server) Edit(ctx context.Context, in *pb.EditRequest) (*pb.EditResponse, error) {
-	userdata, err := microsvc.GetUserdataByAuthorizationToken(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	actorId, err := strconv.Atoi(userdata.ActorId)
+	parse, err := microsvc.GetUserdataByAuthorizationToken(ctx)
 	if err != nil {
 		return nil, err
 	}
 
 	a := new(Actors)
-	a.ID = uint(actorId)
+	a.ID = parse.ActorId
 	if in.Avatar != "" {
 		a.Avatar = in.Avatar
 	}

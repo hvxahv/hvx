@@ -12,6 +12,7 @@ import (
 	"github.com/hvxahv/hvx/errors"
 	"github.com/lib/pq"
 	"gorm.io/gorm"
+	"strconv"
 )
 
 const (
@@ -21,9 +22,9 @@ const (
 type Articles struct {
 	gorm.Model
 
-	AccountId uint   `gorm:"primaryKey;account_id"`
-	Title     string `gorm:"type:text;title"`
-	Summary   string `gorm:"type:text;summary"`
+	ActorId uint   `gorm:"primaryKey;actor_id"`
+	Title   string `gorm:"type:text;title"`
+	Summary string `gorm:"type:text;summary"`
 
 	// Article The content of the article or status. It needs to store the
 	// text in HTML format, But please be aware of XSS attacks.
@@ -72,7 +73,7 @@ type Articles struct {
 type Article interface {
 	Create() error
 	Get(actorId uint) (*Articles, error)
-	GetArticles() (*[]Articles, error)
+	GetArticles() ([]*Articles, error)
 	Update(articleId, accountId uint) error
 	Delete() error
 	DeleteArticles() error
@@ -91,37 +92,9 @@ type Editor interface {
 
 // NewArticles is a constructor for Articles.
 func NewArticles(
-	accountId uint,
+	actorId uint,
 	title string,
 	summary string,
-	article string,
-	tags []string,
-	TO []int64,
-	CC []int64,
-	NSFW bool,
-	visibility uint,
-) *Articles {
-	if visibility >= 2 {
-		TO = nil
-		CC = nil
-	}
-	return &Articles{
-		AccountId:  accountId,
-		Title:      title,
-		Summary:    summary,
-		Article:    article,
-		Tags:       tags,
-		TO:         TO,
-		CC:         CC,
-		Statuses:   false,
-		NSFW:       NSFW,
-		Visibility: visibility,
-	}
-}
-
-// NewStatus is a constructor for Status.
-func NewStatus(
-	accountId uint,
 	article string,
 	tags []string,
 	attachmentType string,
@@ -136,7 +109,39 @@ func NewStatus(
 		CC = nil
 	}
 	return &Articles{
-		AccountId:      accountId,
+		ActorId:        actorId,
+		Title:          title,
+		Summary:        summary,
+		Article:        article,
+		Tags:           tags,
+		AttachmentType: attachmentType,
+		Attachments:    attachments,
+		TO:             TO,
+		CC:             CC,
+		Statuses:       false,
+		NSFW:           NSFW,
+		Visibility:     visibility,
+	}
+}
+
+// NewStatus is a constructor for Status.
+func NewStatus(
+	actorId uint,
+	article string,
+	tags []string,
+	attachmentType string,
+	attachments []string,
+	TO []int64,
+	CC []int64,
+	NSFW bool,
+	visibility uint,
+) *Articles {
+	if visibility >= 2 {
+		TO = nil
+		CC = nil
+	}
+	return &Articles{
+		ActorId:        actorId,
 		Article:        article,
 		Tags:           tags,
 		AttachmentType: attachmentType,
@@ -151,11 +156,9 @@ func NewStatus(
 
 func (a *Articles) Create() error {
 	db := cockroach.GetDB()
-
 	if err := db.AutoMigrate(&Articles{}); err != nil {
 		return errors.NewDatabaseCreate(ArticleTable)
 	}
-
 	if err := db.Debug().
 		Table(ArticleTable).
 		Create(&a).
@@ -165,7 +168,7 @@ func (a *Articles) Create() error {
 	return nil
 }
 
-func NewGetArticle(articleId uint) *Articles {
+func NewArticlesId(articleId uint) *Articles {
 	return &Articles{
 		Model: gorm.Model{
 			ID: articleId,
@@ -182,8 +185,6 @@ func (a *Articles) Get(actorId uint) (*Articles, error) {
 		return nil, err
 	}
 
-	// Find out if the actor exists in CC and TO,
-	// and return no permission to view if it does not exist.
 	var isExist []int64
 	for _, v := range a.TO {
 		if int64(actorId) == v {
@@ -196,30 +197,29 @@ func (a *Articles) Get(actorId uint) (*Articles, error) {
 		}
 	}
 
-	if len(isExist) < 1 {
+	if len(isExist) < 1 && a.ActorId != actorId {
 		return nil, errors.New(errors.ErrNoPermission)
 	}
-
 	return a, nil
 }
 
-func NewArticlesAccountId(accountId uint) *Articles {
+func NewArticlesActorId(actorId uint) *Articles {
 	return &Articles{
-		AccountId: accountId,
+		ActorId: actorId,
 	}
 }
 
-func (a *Articles) GetArticles() (*[]Articles, error) {
+func (a *Articles) GetArticles() ([]*Articles, error) {
 	db := cockroach.GetDB()
-	var articles []Articles
+	var articles []*Articles
 	if err := db.Debug().
 		Table(ArticleTable).
-		Where("account_id = ?", a.AccountId).
+		Where("actor_id = ?", a.ActorId).
 		Find(&articles).
 		Error; err != nil {
 		return nil, err
 	}
-	return &articles, nil
+	return articles, nil
 }
 
 func (a *Articles) EditTitle(title string) *Articles {
@@ -262,11 +262,11 @@ func (a *Articles) EditVisibility(visibility uint) *Articles {
 	return a
 }
 
-func (a *Articles) Update(articleId, accountId uint) error {
+func (a *Articles) Update(articleId, actorId uint) error {
 	db := cockroach.GetDB()
 	if err := db.Debug().
 		Table(ArticleTable).
-		Where("id = ? AND account_id = ?", a.ID, a.AccountId).
+		Where("id = ? AND actor_id = ?", articleId, actorId).
 		Updates(a).
 		Error; err != nil {
 		return nil
@@ -275,12 +275,12 @@ func (a *Articles) Update(articleId, accountId uint) error {
 	return nil
 }
 
-func NewArticlesDelete(articleId, accountId uint) *Articles {
+func NewArticlesDelete(articleId, actorId uint) *Articles {
 	return &Articles{
 		Model: gorm.Model{
 			ID: articleId,
 		},
-		AccountId: accountId,
+		ActorId: actorId,
 	}
 }
 
@@ -289,7 +289,7 @@ func (a *Articles) Delete() error {
 
 	if err := db.Debug().
 		Table(ArticleTable).
-		Where("id = ? AND account_id = ?", a.ID, a.AccountId).
+		Where("id = ? AND actor_id = ?", a.ID, a.ActorId).
 		Unscoped().
 		Delete(&Articles{}).
 		Error; err != nil {
@@ -304,7 +304,7 @@ func (a *Articles) DeleteArticles() error {
 
 	if err := db.Debug().
 		Table(ArticleTable).
-		Where("account_id = ?", a.AccountId).
+		Where("actor_id = ?", a.ActorId).
 		Unscoped().
 		Delete(&Articles{}).
 		Error; err != nil {
@@ -312,4 +312,23 @@ func (a *Articles) DeleteArticles() error {
 	}
 
 	return nil
+}
+
+// StringArrayToInt64Array ...
+func StringArrayToInt64Array(in []string) []int64 {
+	var ret []int64
+	for _, s := range in {
+		i, _ := strconv.ParseInt(s, 10, 64)
+		ret = append(ret, i)
+	}
+	return ret
+}
+
+// Int64ArrayToStringArray ...
+func Int64ArrayToStringArray(in []int64) []string {
+	var ret []string
+	for _, i := range in {
+		ret = append(ret, strconv.Itoa(int(i)))
+	}
+	return ret
 }

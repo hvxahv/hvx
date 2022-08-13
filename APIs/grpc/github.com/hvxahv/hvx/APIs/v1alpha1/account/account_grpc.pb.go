@@ -22,42 +22,21 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AccountsClient interface {
-	// IsExist Check the account creation status by username,
-	// return true if not created, otherwise return false, used
-	// when checking if the user exists.
+	// IsExist checks if the account exists. The account name(username) is specified in the request.
+	// If the account exists, it returns true. Otherwise, it returns false.
 	IsExist(ctx context.Context, in *IsExistRequest, opts ...grpc.CallOption) (*IsExistResponse, error)
 	// Create a new account.
-	// Actor is created first and then the returned ActorID is used to
-	//  create a unique account for the current instance account system.
-	// The Actor's PreferredUsername is used to identify the actor in the
-	// current instance account system. The username in the account system
-	// is unique, but the Actor's PreferredUsername is not unique,
-	// as it may have the same username in different instances.
 	Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error)
 	// Get the account by username.
-	// Internal methods in the program should not be exposed to API
-	// structures for users to call. There is no other solution for
-	// the time being, so we will use the code for now and modify it later.
 	GetByUsername(ctx context.Context, in *GetByUsernameRequest, opts ...grpc.CallOption) (*GetByUsernameResponse, error)
-	// First you need the password as a parameter to verify that the account
-	// is correct, and then delete the account system and actor table when
-	// the password is verified to be correct.
-	// With http api.
+	// Delete the account.
 	Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error)
 	// EditUsername Update the account username.
-	// will change both the username and preferred_username in the
-	// accounts and actors tables.
-	// As with password changes, you need to take down all clients
-	// and log back in to issue the token.
+	// will change the account username and the preferred_username in Actor.
 	EditUsername(ctx context.Context, in *EditUsernameRequest, opts ...grpc.CallOption) (*EditUsernameResponse, error)
 	// EditPassword Update the account password.
-	// When changing the password for an account, all client authorizations
-	// need to be removed and all devices that have logged in must log in
-	// again to perform all account operations; this verification is
-	// verified in the REST API TOKEN.
 	EditPassword(ctx context.Context, in *EditPasswordRequest, opts ...grpc.CallOption) (*EditPasswordResponse, error)
 	// EditEmail Edit the unique email for the account.
-	// All devices should be taken offline.
 	EditEmail(ctx context.Context, in *EditEmailRequest, opts ...grpc.CallOption) (*EditEmailResponse, error)
 	Verify(ctx context.Context, in *VerifyRequest, opts ...grpc.CallOption) (*VerifyResponse, error)
 }
@@ -146,42 +125,21 @@ func (c *accountsClient) Verify(ctx context.Context, in *VerifyRequest, opts ...
 // All implementations should embed UnimplementedAccountsServer
 // for forward compatibility
 type AccountsServer interface {
-	// IsExist Check the account creation status by username,
-	// return true if not created, otherwise return false, used
-	// when checking if the user exists.
+	// IsExist checks if the account exists. The account name(username) is specified in the request.
+	// If the account exists, it returns true. Otherwise, it returns false.
 	IsExist(context.Context, *IsExistRequest) (*IsExistResponse, error)
 	// Create a new account.
-	// Actor is created first and then the returned ActorID is used to
-	//  create a unique account for the current instance account system.
-	// The Actor's PreferredUsername is used to identify the actor in the
-	// current instance account system. The username in the account system
-	// is unique, but the Actor's PreferredUsername is not unique,
-	// as it may have the same username in different instances.
 	Create(context.Context, *CreateRequest) (*CreateResponse, error)
 	// Get the account by username.
-	// Internal methods in the program should not be exposed to API
-	// structures for users to call. There is no other solution for
-	// the time being, so we will use the code for now and modify it later.
 	GetByUsername(context.Context, *GetByUsernameRequest) (*GetByUsernameResponse, error)
-	// First you need the password as a parameter to verify that the account
-	// is correct, and then delete the account system and actor table when
-	// the password is verified to be correct.
-	// With http api.
+	// Delete the account.
 	Delete(context.Context, *DeleteRequest) (*DeleteResponse, error)
 	// EditUsername Update the account username.
-	// will change both the username and preferred_username in the
-	// accounts and actors tables.
-	// As with password changes, you need to take down all clients
-	// and log back in to issue the token.
+	// will change the account username and the preferred_username in Actor.
 	EditUsername(context.Context, *EditUsernameRequest) (*EditUsernameResponse, error)
 	// EditPassword Update the account password.
-	// When changing the password for an account, all client authorizations
-	// need to be removed and all devices that have logged in must log in
-	// again to perform all account operations; this verification is
-	// verified in the REST API TOKEN.
 	EditPassword(context.Context, *EditPasswordRequest) (*EditPasswordResponse, error)
 	// EditEmail Edit the unique email for the account.
-	// All devices should be taken offline.
 	EditEmail(context.Context, *EditEmailRequest) (*EditEmailResponse, error)
 	Verify(context.Context, *VerifyRequest) (*VerifyResponse, error)
 }
