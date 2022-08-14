@@ -16,9 +16,9 @@ service Activity {
     };
   }
 
-  rpc GetInboxes (GetInboxesRequest) returns (GetInboxesResponse) {
+  rpc GetInboxes (google.protobuf.Empty) returns (GetInboxesResponse) {
     option (google.api.http) = {
-      get: "/api/v1/activity/inbox"
+      get: "/api/v1/activity/inboxes"
     };
   }
 
@@ -51,10 +51,11 @@ service Activity {
 
 message Inboxes {
   string id = 1;
-  string actor_id = 2;
-  string activity_id = 3;
-  string activity_type = 4;
-  bytes activity_body = 5;
+  string receiverId = 2 [json_name = "receiver_id"];
+  string senderAddr = 3 [json_name = "sender_addr"];
+  string activityId = 4 [json_name = "activity_id"];
+  string activityType = 5 [json_name = "activity_type"];
+  string activityBody = 6 [json_name = "activity_body"];
 }
 
 message InboxRequest {
@@ -74,10 +75,6 @@ message GetInboxRequest {
 message GetInboxResponse {
   string code = 1;
   Inboxes inbox = 2;
-}
-
-message GetInboxesRequest {
-  string limit = 1;
 }
 
 message GetInboxesResponse {

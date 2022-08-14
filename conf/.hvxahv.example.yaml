@@ -18,7 +18,7 @@ authentication:
 
 ipfs:
   address: "127.0.0.1:5001"
-  gateway: "http://127.0.0.1:8080/ipfs/"
+  gateway: "http://127.0.0.1:8081/ipfs/"
 
 matrix:
   address: "http://localhost:8008"
@@ -54,8 +54,8 @@ discovery:
 
 bot:
   telegram:
-    id: "441776537"
-    token: "1891351936:AAHu8rofP6U7rL-912__G-DgJThChGOof0o"
+    id: ""
+    token: ""
 
 microsvcs:
   gateway:
@@ -120,3 +120,10 @@ microsvcs:
     ports:
       http: "7080"
       grpc: "50080"
+
+  activity:
+    version: "0.1.0"
+    hostname: "hvxahv.disism.internal"
+    ports:
+      http: "7090"
+      grpc: "50090"
