@@ -11,6 +11,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -28,10 +29,8 @@ type SavedClient interface {
 	// done in the client and the returned ipfs cid should be
 	// submitted to the server, which will save it.
 	Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error)
-	// GetSaved Get by saved ID.
 	GetSaved(ctx context.Context, in *GetSavedRequest, opts ...grpc.CallOption) (*Save, error)
-	// GetSaves Get a collection of saved files by account ID.
-	GetSaves(ctx context.Context, in *GetSavesRequest, opts ...grpc.CallOption) (*GetSavesResponse, error)
+	GetSaves(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetSavesResponse, error)
 	// EditSaved Edit by saved ID.
 	// View the EditSavedRequest relevant parameters that are allowed
 	// to be changed.
@@ -72,7 +71,7 @@ func (c *savedClient) GetSaved(ctx context.Context, in *GetSavedRequest, opts ..
 	return out, nil
 }
 
-func (c *savedClient) GetSaves(ctx context.Context, in *GetSavesRequest, opts ...grpc.CallOption) (*GetSavesResponse, error) {
+func (c *savedClient) GetSaves(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetSavesResponse, error) {
 	out := new(GetSavesResponse)
 	err := c.cc.Invoke(ctx, "/hvx.api.v1alpha1.saved.proto.Saved/GetSaves", in, out, opts...)
 	if err != nil {
@@ -118,10 +117,8 @@ type SavedServer interface {
 	// done in the client and the returned ipfs cid should be
 	// submitted to the server, which will save it.
 	Create(context.Context, *CreateRequest) (*CreateResponse, error)
-	// GetSaved Get by saved ID.
 	GetSaved(context.Context, *GetSavedRequest) (*Save, error)
-	// GetSaves Get a collection of saved files by account ID.
-	GetSaves(context.Context, *GetSavesRequest) (*GetSavesResponse, error)
+	GetSaves(context.Context, *emptypb.Empty) (*GetSavesResponse, error)
 	// EditSaved Edit by saved ID.
 	// View the EditSavedRequest relevant parameters that are allowed
 	// to be changed.
@@ -146,7 +143,7 @@ func (UnimplementedSavedServer) Create(context.Context, *CreateRequest) (*Create
 func (UnimplementedSavedServer) GetSaved(context.Context, *GetSavedRequest) (*Save, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSaved not implemented")
 }
-func (UnimplementedSavedServer) GetSaves(context.Context, *GetSavesRequest) (*GetSavesResponse, error) {
+func (UnimplementedSavedServer) GetSaves(context.Context, *emptypb.Empty) (*GetSavesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSaves not implemented")
 }
 func (UnimplementedSavedServer) EditSaved(context.Context, *EditSavedRequest) (*EditSavedResponse, error) {
@@ -207,7 +204,7 @@ func _Saved_GetSaved_Handler(srv interface{}, ctx context.Context, dec func(inte
 }
 
 func _Saved_GetSaves_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetSavesRequest)
+	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -219,7 +216,7 @@ func _Saved_GetSaves_Handler(srv interface{}, ctx context.Context, dec func(inte
 		FullMethod: "/hvx.api.v1alpha1.saved.proto.Saved/GetSaves",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SavedServer).GetSaves(ctx, req.(*GetSavesRequest))
+		return srv.(SavedServer).GetSaves(ctx, req.(*emptypb.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
