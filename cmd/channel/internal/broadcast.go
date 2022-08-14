@@ -74,7 +74,7 @@ func NewBroadcastsDelete(id, channelId, adminId uint) *Broadcasts {
 }
 
 func (b *Broadcasts) Delete() error {
-	isAdmin := NewAdministratesPermission(b.AdminId, b.ChannelId).IsAdministrator()
+	isAdmin := NewAdministratesPermission(b.ChannelId, b.AdminId).IsAdministrator()
 	if !isAdmin {
 		return errors.New(errors.ErrNotAchannelAdministrator)
 	}
@@ -82,7 +82,7 @@ func (b *Broadcasts) Delete() error {
 	db := cockroach.GetDB()
 	if err := db.Debug().
 		Table(BroadcastsTableName).
-		Where("id = ? AND channel_id = ?", b.ID, b.ChannelId).
+		Where("id = ?", b.ID).
 		Unscoped().
 		Delete(&Broadcasts{}).
 		Error; err != nil {

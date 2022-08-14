@@ -87,6 +87,10 @@ func (adm *Administrates) AddAdministratorOwner() error {
 		Create(&adm).Error; err != nil {
 		return err
 	}
+	// ADD SUBSCRIBER ...
+	if err := NewSubscribe(adm.ChannelId, adm.AdminId).AddSubscriber(adm.AdminId); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -103,6 +107,11 @@ func (adm *Administrates) AddAdministrator(addedID uint) error {
 	if err := db.Debug().
 		Table(AdministrateTable).
 		Create(&nad).Error; err != nil {
+		return err
+	}
+
+	// ADD SUBSCRIBER ...
+	if err := NewSubscribe(adm.ChannelId, addedID).AddSubscriber(adm.AdminId); err != nil {
 		return err
 	}
 	return nil

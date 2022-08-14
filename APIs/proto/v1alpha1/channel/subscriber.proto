@@ -6,6 +6,7 @@ option go_package = "github.com/hvxahv/hvx/APIs/v1alpha1/channel";
 import "google/api/annotations.proto";
 import "google/api/field_behavior.proto";
 import "google/protobuf/empty.proto";
+import "proto/v1alpha1/actor/actor.proto";
 
 service Subscriber {
   rpc AddSubscriber(AddSubscriberRequest) returns (AddSubscriberResponse) {
@@ -15,8 +16,6 @@ service Subscriber {
     };
   }
 
-  // RemoveSubscriber Only the administrator of the channel
-  // can call to remove the subscribers of the channel.
   rpc RemoveSubscriber(RemoveSubscriberRequest) returns (RemoveSubscriberResponse) {
     option (google.api.http) = {
       delete: "/api/v1/channel/subscriber",
@@ -47,8 +46,8 @@ service Subscriber {
 }
 
 message AddSubscriberRequest {
-  string channel_id = 1;
-  string actor_id = 2;
+  string channelId = 1 [json_name = "channel_id"];
+  string subscriberId = 2 [json_name = "subscriber_id"];
 }
 
 message AddSubscriberResponse {
@@ -57,8 +56,8 @@ message AddSubscriberResponse {
 }
 
 message RemoveSubscriberRequest {
-  string channel_id = 2;
-  string subscriber_id = 3;
+  string channelId = 1 [json_name = "channel_id"];
+  string removedId = 2 [json_name = "removed_id"];
 }
 
 message RemoveSubscriberResponse {
@@ -72,12 +71,11 @@ message GetSubscribersRequest {
 
 message GetSubscribersResponse {
   string code = 1;
-  repeated string subscriber = 2;
+  repeated actor.proto.ActorData subscriber = 2;
 }
 
 message SubscriptionRequest {
-  string channel_id = 1;
-  string account_id = 2;
+  string channelId = 1 [json_name = "channel_id"];
 }
 
 message SubscriptionResponse {
@@ -86,8 +84,7 @@ message SubscriptionResponse {
 }
 
 message UnsubscribeRequest {
-  string channel_id = 1;
-  string account_id = 2;
+  string channelId = 1 [json_name = "channel_id"];
 }
 
 message UnsubscribeResponse {

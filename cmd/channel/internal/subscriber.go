@@ -14,38 +14,42 @@ const (
 type Subscribes struct {
 	gorm.Model
 
-	ChannelId uint `gorm:"primaryKey;channel_id"`
-	ActorId   uint `gorm:"primaryKey;actor_id"`
+	ChannelId    uint `gorm:"primaryKey;channel_id"`
+	SubscriberId uint `gorm:"primaryKey;subscriber_id"`
 }
 
 type Subscribe interface {
-	IsSubscriber() bool
-	AddSubscriber() error
-	GetSubscribers(adminId uint) (*[]Subscribes, error)
+	IsSubscriber() (bool, error)
+	AddSubscriber(adminId uint) error
+	GetSubscribers(adminId uint) ([]*Subscribes, error)
 	RemoveSubscriber(adminId uint) error
+	Subscription() error
 	Unsubscribe() error
 }
 
-func NewSubscribe(channelId, actorId uint) *Subscribes {
+func NewSubscribe(channelId, subscriberId uint) *Subscribes {
 	return &Subscribes{
-		ChannelId: channelId,
-		ActorId:   actorId,
+		ChannelId:    channelId,
+		SubscriberId: subscriberId,
 	}
 }
 
-func (sub *Subscribes) IsSubscriber() bool {
+func (sub *Subscribes) IsSubscriber() (bool, error) {
 	db := cockroach.GetDB()
-	if err := db.Debug().
-		Table(SubscribesTable).
-		Where("channel_id = ? AND actor_id = ?", sub.ChannelId, sub.ActorId).
-		First(&Subscribes{}); err != nil {
-		ok := cockroach.IsNotFound(err.Error)
-		if !ok {
-			return true
-		}
+
+	if err := db.AutoMigrate(&Subscribes{}); err != nil {
+		return true, errors.NewDatabaseCreate("subscribes")
 	}
 
-	return false
+	if err := db.Debug().
+		Table(SubscribesTable).
+		Where("channel_id = ? AND subscriber_id = ?", sub.ChannelId, sub.SubscriberId).
+		First(sub); err != nil {
+		if cockroach.IsNotFound(err.Error) {
+			return false, nil
+		}
+	}
+	return true, nil
 }
 
 func (sub *Subscribes) AddSubscriber(adminId uint) error {
@@ -53,16 +57,15 @@ func (sub *Subscribes) AddSubscriber(adminId uint) error {
 	if !isAdmin {
 		return errors.New(errors.ErrNotAchannelAdministrator)
 	}
-	is := sub.IsSubscriber()
-	if is {
+	isSub, err := sub.IsSubscriber()
+	if err != nil {
+		return err
+	}
+	if isSub {
 		return errors.New(errors.ErrAlreadySubscribed)
 	}
 
 	db := cockroach.GetDB()
-	if err := db.AutoMigrate(&Subscribes{}); err != nil {
-		return errors.NewDatabaseCreate("subscribes")
-	}
-
 	if err := db.Debug().
 		Table(SubscribesTable).
 		Create(&sub).
@@ -72,7 +75,12 @@ func (sub *Subscribes) AddSubscriber(adminId uint) error {
 	return nil
 }
 
-func (sub *Subscribes) GetSubscribers(adminId uint) (*[]Subscribes, error) {
+func NewSubscriberChannelId(channelId uint) *Subscribes {
+	return &Subscribes{
+		ChannelId: channelId,
+	}
+}
+func (sub *Subscribes) GetSubscribers(adminId uint) ([]*Subscribes, error) {
 	isAdmin := NewAdministratesPermission(sub.ChannelId, adminId).IsAdministrator()
 	if !isAdmin {
 		return nil, errors.New(errors.ErrNotAchannelAdministrator)
@@ -80,15 +88,15 @@ func (sub *Subscribes) GetSubscribers(adminId uint) (*[]Subscribes, error) {
 
 	db := cockroach.GetDB()
 
-	var subs []Subscribes
+	var subs []*Subscribes
 	if err := db.Debug().
-		Table("subscribes").
+		Table(SubscribesTable).
 		Where("channel_id = ?", sub.ChannelId).
 		Find(&subs).
 		Error; err != nil {
 		return nil, err
 	}
-	return &subs, nil
+	return subs, nil
 }
 
 func (sub *Subscribes) RemoveSubscriber(adminId uint) error {
@@ -96,16 +104,19 @@ func (sub *Subscribes) RemoveSubscriber(adminId uint) error {
 	if !isAdmin {
 		return errors.New(errors.ErrNotAchannelAdministrator)
 	}
-	is := sub.IsSubscriber()
-	if is {
-		return errors.New(errors.ErrAlreadySubscribed)
+	isSub, err := sub.IsSubscriber()
+	if err != nil {
+		return err
+	}
+	if !isSub {
+		return errors.New(errors.ErrNotSubscribed)
 	}
 
 	db := cockroach.GetDB()
 
 	if err := db.Debug().
 		Table(SubscribesTable).
-		Where("channel_id = ? AND actor_id = ?", sub.ChannelId, sub.ActorId).
+		Where("channel_id = ? AND subscriber_id = ?", sub.ChannelId, sub.SubscriberId).
 		Unscoped().
 		Delete(&Subscribes{}).
 		Error; err != nil {
@@ -114,16 +125,39 @@ func (sub *Subscribes) RemoveSubscriber(adminId uint) error {
 	return nil
 }
 
+func (sub *Subscribes) Subscription() error {
+	db := cockroach.GetDB()
+	isSub, err := sub.IsSubscriber()
+	if err != nil {
+		return err
+	}
+	if isSub {
+		return errors.New(errors.ErrAlreadySubscribed)
+	}
+
+	if err := db.Debug().
+		Table(SubscribesTable).
+		Where("channel_id = ? AND subscriber_id = ?", sub.ChannelId, sub.SubscriberId).
+		Create(&sub).
+		Error; err != nil {
+		return err
+	}
+	return nil
+}
+
 func (sub *Subscribes) Unsubscribe() error {
 	db := cockroach.GetDB()
-	isSub := NewSubscribe(sub.ChannelId, sub.ActorId).IsSubscriber()
+	isSub, err := sub.IsSubscriber()
+	if err != nil {
+		return err
+	}
 	if !isSub {
 		return errors.New(errors.ErrNotSubscribed)
 	}
 
 	if err := db.Debug().
-		Table("subscribes").
-		Where("channel_id = ? AND actor_id = ?", sub.ChannelId, sub.ActorId).
+		Table(SubscribesTable).
+		Where("channel_id = ? AND subscriber_id = ?", sub.ChannelId, sub.SubscriberId).
 		Unscoped().
 		Delete(&Subscribes{}).
 		Error; err != nil {

@@ -33,8 +33,7 @@ message BroadcastData {
   string id = 1;
   string channel_id = 2;
   string admin_id = 3;
-  string article_id = 4;
-  string cid = 5;
+  string cid = 4;
 }
 
 message CreateBroadcastRequest {
@@ -57,8 +56,8 @@ message GetBroadcastsResponse {
 }
 
 message DeleteBroadcastRequest {
-  string channel_id = 1;
-  string broadcast_id = 2;
+  string channelId = 1 [json_name = "channel_id"];
+  string broadcastId = 2 [json_name = "broadcast_id"];
 }
 
 message DeleteBroadcastResponse {
