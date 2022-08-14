@@ -23,8 +23,6 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type SubscriberClient interface {
 	AddSubscriber(ctx context.Context, in *AddSubscriberRequest, opts ...grpc.CallOption) (*AddSubscriberResponse, error)
-	// RemoveSubscriber Only the administrator of the channel
-	// can call to remove the subscribers of the channel.
 	RemoveSubscriber(ctx context.Context, in *RemoveSubscriberRequest, opts ...grpc.CallOption) (*RemoveSubscriberResponse, error)
 	GetSubscribers(ctx context.Context, in *GetSubscribersRequest, opts ...grpc.CallOption) (*GetSubscribersResponse, error)
 	Subscription(ctx context.Context, in *SubscriptionRequest, opts ...grpc.CallOption) (*SubscriptionResponse, error)
@@ -89,8 +87,6 @@ func (c *subscriberClient) Unsubscribe(ctx context.Context, in *UnsubscribeReque
 // for forward compatibility
 type SubscriberServer interface {
 	AddSubscriber(context.Context, *AddSubscriberRequest) (*AddSubscriberResponse, error)
-	// RemoveSubscriber Only the administrator of the channel
-	// can call to remove the subscribers of the channel.
 	RemoveSubscriber(context.Context, *RemoveSubscriberRequest) (*RemoveSubscriberResponse, error)
 	GetSubscribers(context.Context, *GetSubscribersRequest) (*GetSubscribersResponse, error)
 	Subscription(context.Context, *SubscriptionRequest) (*SubscriptionResponse, error)

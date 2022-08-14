@@ -140,6 +140,8 @@ func (c *Channels) DeleteChannel() error {
 	if err := NewAdministratesPermission(c.ID, c.CreatorId).DeleteAdministrators(); err != nil {
 		return err
 	}
+
+	// TODO - DELETE ALL SUB...
 	return nil
 }
 

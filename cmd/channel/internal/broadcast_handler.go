@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"fmt"
 	"github.com/google/uuid"
 	pb "github.com/hvxahv/hvx/APIs/v1alpha1/channel"
 	"github.com/hvxahv/hvx/microsvc"
@@ -48,14 +47,40 @@ func (s *server) GetBroadcasts(ctx context.Context, in *pb.GetBroadcastsRequest)
 		return nil, err
 	}
 
-	fmt.Println(broadcasts)
+	var b []*pb.BroadcastData
+	for _, broadcast := range broadcasts {
+		b = append(b, &pb.BroadcastData{
+			Id:        strconv.Itoa(int(broadcast.ID)),
+			ChannelId: strconv.Itoa(int(broadcast.ChannelId)),
+			AdminId:   strconv.Itoa(int(broadcast.AdminId)),
+			Cid:       broadcast.CID,
+		})
+	}
 	return &pb.GetBroadcastsResponse{
 		Code:       "200",
-		Broadcasts: nil,
+		Broadcasts: b,
 	}, nil
 
 }
 
 func (s *server) DeleteBroadcast(ctx context.Context, in *pb.DeleteBroadcastRequest) (*pb.DeleteBroadcastResponse, error) {
-	return &pb.DeleteBroadcastResponse{}, nil
+	parse, err := microsvc.GetUserdataByAuthorizationToken(ctx)
+	if err != nil {
+		return nil, err
+	}
+	id, err := strconv.Atoi(in.BroadcastId)
+	if err != nil {
+		return nil, err
+	}
+	channelId, err := strconv.Atoi(in.ChannelId)
+	if err != nil {
+		return nil, err
+	}
+	if err := NewBroadcastsDelete(uint(id), uint(channelId), parse.ActorId).Delete(); err != nil {
+		return nil, err
+	}
+	return &pb.DeleteBroadcastResponse{
+		Code:  "200",
+		Reply: "ok",
+	}, nil
 }
