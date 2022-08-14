@@ -1,10 +1,6 @@
 package internal
 
 import (
-	"encoding/json"
-	"fmt"
-
-	"github.com/hvxahv/hvx/activitypub"
 	"github.com/hvxahv/hvx/cockroach"
 	"gorm.io/gorm"
 )
@@ -13,29 +9,31 @@ const (
 	InboxTableName = "inboxes"
 )
 
-type Inbox struct {
-	CurrentUsername string
-	ActivityActor   string
-	ActivityType    string
-	ActivityId      string
-	ActivityData    []byte
-}
-
 type Inboxes struct {
 	gorm.Model
 
-	// AccountID is current account id.
-	AccountID  uint   `gorm:"primaryKey;type:bigint;account_id"`
-	ActivityID string `gorm:"primaryKey;type:text;activity_id"`
-
-	// ActorID is activity actor id.
-	ActorID      uint   `gorm:"type:bigint;actor_id"`
+	ReceiverId   uint   `gorm:"primaryKey;type:bigint;receiver_id"`
+	SenderAddr   string `gorm:"type:text;sender_addr"`
+	ActivityId   string `gorm:"primaryKey;type:text;activity_id"`
 	ActivityType string `gorm:"type:text;activity_type"`
 	ActivityBody string `gorm:"type:text;activity_body"`
 }
 
-func NewInboxes(accountID uint, activityID string, actorID uint, activityType string, activityBody []byte) *Inboxes {
-	return &Inboxes{AccountID: accountID, ActivityID: activityID, ActorID: actorID, ActivityType: activityType, ActivityBody: string(activityBody)}
+func NewInboxes(receiverId uint, senderId, activityId, activityType string, activityBody []byte) *Inboxes {
+	return &Inboxes{
+		ReceiverId:   receiverId,
+		SenderAddr:   senderId,
+		ActivityId:   activityId,
+		ActivityType: activityType,
+		ActivityBody: string(activityBody),
+	}
+}
+
+type Ibx interface {
+	Create() error
+	Delete() error
+	GetInbox() (*Inboxes, error)
+	GetInboxes() ([]*Inboxes, error)
 }
 
 func (i *Inboxes) Create() error {
@@ -43,24 +41,24 @@ func (i *Inboxes) Create() error {
 	if err := db.AutoMigrate(&Inboxes{}); err != nil {
 		return err
 	}
+
 	if err := db.Debug().
 		Table(InboxTableName).
-		Create(NewInboxes(i.AccountID, i.ActivityID, i.ActorID, i.ActivityType, []byte(i.ActivityBody))).
-		Error; err != nil {
+		Create(i).Error; err != nil {
 		return err
 	}
 	return nil
 }
 
-func NewActivityID(activityID string) *Inboxes {
-	return &Inboxes{ActivityID: activityID}
+func NewInboxesActivityId(activityId string) *Inboxes {
+	return &Inboxes{ActivityId: activityId}
 }
 
-func (i *Inboxes) DeleteByActivityID() error {
+func (i *Inboxes) Delete() error {
 	db := cockroach.GetDB()
 	if err := db.Debug().
 		Table(InboxTableName).
-		Where("activity_id = ?", i.ActivityID).
+		Where("activity_id = ?", i.ActivityId).
 		Unscoped().
 		Delete(Inboxes{}).
 		Error; err != nil {
@@ -69,68 +67,100 @@ func (i *Inboxes) DeleteByActivityID() error {
 	return nil
 }
 
-func (a *Inbox) Inbox() error {
+func NewInboxesGetInbox(receiverId uint, activityId string) *Inboxes {
+	return &Inboxes{ReceiverId: receiverId}
+}
+func (i *Inboxes) GetInbox() (*Inboxes, error) {
+	db := cockroach.GetDB()
 
-	switch ibx.ActivityType {
-	case "Follow":
-		fmt.Println("Follow")
-		if err := NewInboxes(uint(aid), ibx.ActivityId, uint(addressID), ibx.ActivityType, ibx.ActivityData).Create(); err != nil {
-			return err
-		}
-	case "Undo":
-		undo := activitypub.Undo{}
-		if err := json.Unmarshal(in.Data, &undo); err != nil {
-			fmt.Println(err)
-		}
-		fmt.Println("Undo")
-		if err := NewActivityID(undo.Object.Object).DeleteByActivityID(); err != nil {
-			return err
-		}
-	case "Accept":
-		accept := activitypub.Accept{}
-		if err := json.Unmarshal(in.Data, &accept); err != nil {
-			return err
-		}
-		fmt.Println(accept)
-		fmt.Println("Accept")
-	case "Reject":
-		reject := activitypub.Reject{}
-		if err := json.Unmarshal(in.Data, &reject); err != nil {
-			fmt.Println(err)
-		}
-		fmt.Println("Reject")
-	case "Create":
-		fmt.Println("Create")
-	case "Announce":
-		fmt.Println("Announce")
-	case "Like":
-		fmt.Println("Like")
-	case "Dislike":
-		fmt.Println("Dislike")
-	case "Delete":
-		fmt.Println("Delete")
-	case "Update":
-		fmt.Println("Update")
-	case "Add":
-		fmt.Println("Add")
-	case "Remove":
-		fmt.Println("Remove")
-	case "Move":
-		fmt.Println("Move")
-	case "Block":
-		fmt.Println("Block")
-	case "Unblock":
-		fmt.Println("Unblock")
-	case "Flag":
-		fmt.Println("Flag")
-	case "Unflag":
-		fmt.Println("Unflag")
-	default:
-		fmt.Println("default")
+	if err := db.Debug().
+		Table(InboxTableName).
+		Where("receiver_id = ? AND activity_id = ?", i.ReceiverId, i.ActivityId).
+		First(&i).
+		Error; err != nil {
+		return nil, err
 	}
 
-	return nil
+	return i, nil
 }
+
+func NewInboxesReceiverId(receiverId uint) *Inboxes {
+	return &Inboxes{ReceiverId: receiverId}
+}
+
+func (i *Inboxes) GetInboxes() ([]*Inboxes, error) {
+	db := cockroach.GetDB()
+	var inboxes []*Inboxes
+	if err := db.Debug().
+		Table(InboxTableName).
+		Where("receiver_id = ?", i.ReceiverId).
+		Find(&inboxes).Error; err != nil {
+		return nil, err
+	}
+	return inboxes, nil
+}
+
+//
+//	switch ibx.ActivityType {
+//	case "Follow":
+//		fmt.Println("Follow")
+//		if err := NewInboxes(uint(aid), ibx.ActivityId, uint(addressID), ibx.ActivityType, ibx.ActivityData).Create(); err != nil {
+//			return err
+//		}
+//	case "Undo":
+//		undo := activitypub.Undo{}
+//		if err := json.Unmarshal(in.Data, &undo); err != nil {
+//			fmt.Println(err)
+//		}
+//		fmt.Println("Undo")
+//		if err := NewActivityID(undo.Object.Object).DeleteByActivityID(); err != nil {
+//			return err
+//		}
+//	case "Accept":
+//		accept := activitypub.Accept{}
+//		if err := json.Unmarshal(in.Data, &accept); err != nil {
+//			return err
+//		}
+//		fmt.Println(accept)
+//		fmt.Println("Accept")
+//	case "Reject":
+//		reject := activitypub.Reject{}
+//		if err := json.Unmarshal(in.Data, &reject); err != nil {
+//			fmt.Println(err)
+//		}
+//		fmt.Println("Reject")
+//	case "Create":
+//		fmt.Println("Create")
+//	case "Announce":
+//		fmt.Println("Announce")
+//	case "Like":
+//		fmt.Println("Like")
+//	case "Dislike":
+//		fmt.Println("Dislike")
+//	case "Delete":
+//		fmt.Println("Delete")
+//	case "Update":
+//		fmt.Println("Update")
+//	case "Add":
+//		fmt.Println("Add")
+//	case "Remove":
+//		fmt.Println("Remove")
+//	case "Move":
+//		fmt.Println("Move")
+//	case "Block":
+//		fmt.Println("Block")
+//	case "Unblock":
+//		fmt.Println("Unblock")
+//	case "Flag":
+//		fmt.Println("Flag")
+//	case "Unflag":
+//		fmt.Println("Unflag")
+//	default:
+//		fmt.Println("default")
+//	}
+//
+//	return nil
+//}
 
 // func (a *activity) GetInboxByActivityID(ctx context.Context, in *pb.GetInboxByActivityIDRequest) (*pb.GetInboxByActivityIDResponse, error) {
 // 	aid, err := strconv.Atoi(in.GetActivityId())

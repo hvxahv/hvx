@@ -34,7 +34,6 @@ type PublicClient interface {
 	// Get the actors in the activityPub protocol.
 	// https://www.w3.org/TR/activitypub/#actor-objects
 	GetActor(ctx context.Context, in *GetActorRequest, opts ...grpc.CallOption) (*GetActorResponse, error)
-	Inbox(ctx context.Context, in *GetInboxRequest, opts ...grpc.CallOption) (*GetInboxResponse, error)
 }
 
 type publicClient struct {
@@ -81,15 +80,6 @@ func (c *publicClient) GetActor(ctx context.Context, in *GetActorRequest, opts .
 	return out, nil
 }
 
-func (c *publicClient) Inbox(ctx context.Context, in *GetInboxRequest, opts ...grpc.CallOption) (*GetInboxResponse, error) {
-	out := new(GetInboxResponse)
-	err := c.cc.Invoke(ctx, "/hvx.api.v1alpha1.public.proto.Public/Inbox", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // PublicServer is the server API for Public service.
 // All implementations should embed UnimplementedPublicServer
 // for forward compatibility
@@ -105,7 +95,6 @@ type PublicServer interface {
 	// Get the actors in the activityPub protocol.
 	// https://www.w3.org/TR/activitypub/#actor-objects
 	GetActor(context.Context, *GetActorRequest) (*GetActorResponse, error)
-	Inbox(context.Context, *GetInboxRequest) (*GetInboxResponse, error)
 }
 
 // UnimplementedPublicServer should be embedded to have forward compatible implementations.
@@ -123,9 +112,6 @@ func (UnimplementedPublicServer) GetWebfinger(context.Context, *GetWebfingerRequ
 }
 func (UnimplementedPublicServer) GetActor(context.Context, *GetActorRequest) (*GetActorResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetActor not implemented")
-}
-func (UnimplementedPublicServer) Inbox(context.Context, *GetInboxRequest) (*GetInboxResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Inbox not implemented")
 }
 
 // UnsafePublicServer may be embedded to opt out of forward compatibility for this service.
@@ -211,24 +197,6 @@ func _Public_GetActor_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Public_Inbox_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetInboxRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(PublicServer).Inbox(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/hvx.api.v1alpha1.public.proto.Public/Inbox",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(PublicServer).Inbox(ctx, req.(*GetInboxRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // Public_ServiceDesc is the grpc.ServiceDesc for Public service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -251,10 +219,6 @@ var Public_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetActor",
 			Handler:    _Public_GetActor_Handler,
-		},
-		{
-			MethodName: "Inbox",
-			Handler:    _Public_Inbox_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

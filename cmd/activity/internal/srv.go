@@ -1,16 +1,18 @@
 package internal
 
 import (
-	"github.com/hvxahv/hvx/APIs/v1alpha1/activity"
+	pb "github.com/hvxahv/hvx/APIs/v1alpha1/activity"
 	svc "github.com/hvxahv/hvx/microsvc"
 	"github.com/pkg/errors"
 )
 
-const serviceName = "activity"
-
 type server struct {
-	activity.ActivityServer
+	pb.ActivityServer
 }
+
+const (
+	serviceName = "activity"
+)
 
 func Run() error {
 	s := svc.New(
@@ -19,9 +21,9 @@ func Run() error {
 		svc.WithServiceID("serviceName"),
 	).ListenerWithEndpoints()
 
-	activity.RegisterActivityServer(s, &server{})
+	pb.RegisterActivityServer(s, &server{})
 
-	if err := activity.RegisterActivityHandler(s.Ctx, s.Mux, s.Conn); err != nil {
+	if err := pb.RegisterActivityHandler(s.Ctx, s.Mux, s.Conn); err != nil {
 		return errors.Errorf("Failed to register %s services: %v", serviceName, err)
 	}
 

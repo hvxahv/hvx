@@ -11,6 +11,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -24,7 +25,7 @@ const _ = grpc.SupportPackageIsVersion7
 type ActivityClient interface {
 	Inbox(ctx context.Context, in *InboxRequest, opts ...grpc.CallOption) (*InboxResponse, error)
 	GetInbox(ctx context.Context, in *GetInboxRequest, opts ...grpc.CallOption) (*GetInboxResponse, error)
-	GetInboxes(ctx context.Context, in *GetInboxesRequest, opts ...grpc.CallOption) (*GetInboxesResponse, error)
+	GetInboxes(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetInboxesResponse, error)
 	DeleteInbox(ctx context.Context, in *DeleteInboxRequest, opts ...grpc.CallOption) (*DeleteInboxResponse, error)
 	CreateOutbox(ctx context.Context, in *CreateOutboxRequest, opts ...grpc.CallOption) (*CreateOutboxResponse, error)
 	GetOutbox(ctx context.Context, in *GetOutboxRequest, opts ...grpc.CallOption) (*GetOutboxResponse, error)
@@ -57,7 +58,7 @@ func (c *activityClient) GetInbox(ctx context.Context, in *GetInboxRequest, opts
 	return out, nil
 }
 
-func (c *activityClient) GetInboxes(ctx context.Context, in *GetInboxesRequest, opts ...grpc.CallOption) (*GetInboxesResponse, error) {
+func (c *activityClient) GetInboxes(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetInboxesResponse, error) {
 	out := new(GetInboxesResponse)
 	err := c.cc.Invoke(ctx, "/hvx.api.v1alpha1.activity.proto.Activity/GetInboxes", in, out, opts...)
 	if err != nil {
@@ -108,7 +109,7 @@ func (c *activityClient) GetOutboxes(ctx context.Context, in *GetOutboxesRequest
 type ActivityServer interface {
 	Inbox(context.Context, *InboxRequest) (*InboxResponse, error)
 	GetInbox(context.Context, *GetInboxRequest) (*GetInboxResponse, error)
-	GetInboxes(context.Context, *GetInboxesRequest) (*GetInboxesResponse, error)
+	GetInboxes(context.Context, *emptypb.Empty) (*GetInboxesResponse, error)
 	DeleteInbox(context.Context, *DeleteInboxRequest) (*DeleteInboxResponse, error)
 	CreateOutbox(context.Context, *CreateOutboxRequest) (*CreateOutboxResponse, error)
 	GetOutbox(context.Context, *GetOutboxRequest) (*GetOutboxResponse, error)
@@ -125,7 +126,7 @@ func (UnimplementedActivityServer) Inbox(context.Context, *InboxRequest) (*Inbox
 func (UnimplementedActivityServer) GetInbox(context.Context, *GetInboxRequest) (*GetInboxResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetInbox not implemented")
 }
-func (UnimplementedActivityServer) GetInboxes(context.Context, *GetInboxesRequest) (*GetInboxesResponse, error) {
+func (UnimplementedActivityServer) GetInboxes(context.Context, *emptypb.Empty) (*GetInboxesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetInboxes not implemented")
 }
 func (UnimplementedActivityServer) DeleteInbox(context.Context, *DeleteInboxRequest) (*DeleteInboxResponse, error) {
@@ -189,7 +190,7 @@ func _Activity_GetInbox_Handler(srv interface{}, ctx context.Context, dec func(i
 }
 
 func _Activity_GetInboxes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetInboxesRequest)
+	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -201,7 +202,7 @@ func _Activity_GetInboxes_Handler(srv interface{}, ctx context.Context, dec func
 		FullMethod: "/hvx.api.v1alpha1.activity.proto.Activity/GetInboxes",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ActivityServer).GetInboxes(ctx, req.(*GetInboxesRequest))
+		return srv.(ActivityServer).GetInboxes(ctx, req.(*emptypb.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }

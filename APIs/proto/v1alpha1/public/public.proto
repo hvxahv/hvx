@@ -40,13 +40,6 @@ service Public {
     };
   }
 
-  rpc Inbox(GetInboxRequest) returns (GetInboxResponse) {
-    option (google.api.http) = {
-      post: "/u/{actor}/inbox"
-      body: "*"
-    };
-  }
-
 }
 
 message GetInstanceResponse {
@@ -118,12 +111,4 @@ message GetActorResponse {
   string summary = 10;
   string url = 11;
   PublicKey publicKey = 12;
-}
-
-message GetInboxRequest {
-  string actor = 1 [(google.api.field_behavior) = REQUIRED];
-}
-
-message GetInboxResponse {
-
 }
