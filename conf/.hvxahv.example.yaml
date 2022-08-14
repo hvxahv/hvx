@@ -37,7 +37,7 @@ redis:
   password: "hvxahv123"
 
 minio:
-  addr: "hvxahv.disism.internal:9000"
+  addr: "10.143.24.84:9000"
   accessKeyID: "hvxahv"
   secretAccessKey: "hvxahv123"
   useSSL: false
@@ -55,7 +55,7 @@ discovery:
 bot:
   telegram:
     id: "441776537"
-    token: ""
+    token: "1891351936:AAHu8rofP6U7rL-912__G-DgJThChGOof0o"
 
 microsvcs:
   gateway:
@@ -78,13 +78,13 @@ microsvcs:
     ports:
       http: "7020"
       grpc: "50020"
+
   auth:
     version: "0.1.0"
     hostname: "hvxahv.disism.internal"
     ports:
       http: "7030"
       grpc: "50030"
-
 
   public:
     version: "0.1.0"
@@ -99,3 +99,24 @@ microsvcs:
     ports:
       http: "7050"
       grpc: "50050"
+
+  channel:
+    version: "0.1.0"
+    hostname: "hvxahv.disism.internal"
+    ports:
+      http: "7060"
+      grpc: "50060"
+
+  article:
+    version: "0.1.0"
+    hostname: "hvxahv.disism.internal"
+    ports:
+      http: "7070"
+      grpc: "50070"
+
+  saved:
+    version: "0.1.0"
+    hostname: "hvxahv.disism.internal"
+    ports:
+      http: "7080"
+      grpc: "50080"

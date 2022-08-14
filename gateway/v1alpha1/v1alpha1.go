@@ -59,3 +59,12 @@ func ArticleHandler(c *gin.Context) {
 		return
 	}
 }
+
+func SavedHandler(c *gin.Context) {
+	if err := proxy.NewProxy(c, "/api/v1/saved"+c.Param("x"), address.Saved).Proxy(); err != nil {
+		c.JSON(502, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+}

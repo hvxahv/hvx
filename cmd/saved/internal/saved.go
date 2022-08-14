@@ -47,25 +47,20 @@ type Saves struct {
 
 	AccountId uint `gorm:"primaryKey;type:bigint;account_id"`
 
-	// Name of the file.
-	Name string `gorm:"type:text;name"`
-
-	// Comments on the file.
-	Comment string `gorm:"type:text;comment"`
-	// Cid IPFS CID.
-	Cid string `gorm:"type:text;cid"`
-
-	// Types Is the file type identifier.
-	Types string `gorm:"type:text;types"`
+	Name      string `gorm:"type:text;name"`
+	Comment   string `gorm:"type:text;comment"`
+	Cid       string `gorm:"type:text;cid"`
+	Types     string `gorm:"type:text;types"`
+	IsPrivate bool   `gorm:"type:boolean;is_private"`
 }
 
 type Saved interface {
 	Create() error
 	GetSaved() (*Saves, error)
-	GetSaves() (*[]Saves, error)
-	EditSaved(id, accountId uint) error
-	DeleteSave() error
-	DeleteSaves() error
+	GetSaves() ([]*Saves, error)
+	//EditSaved(id, accountId uint) error
+	//DeleteSave() error
+	//DeleteSaves() error
 }
 
 type Editor interface {
@@ -73,15 +68,17 @@ type Editor interface {
 	EditSavedComment(comment string) *Saves
 }
 
-func NewSaves(accountID uint, name string, comment string, cid string, types string) Saves {
-	return Saves{
+func NewSaves(accountID uint, name, comment, cid, types string, isPrivate bool) *Saves {
+	return &Saves{
 		AccountId: accountID,
 		Name:      name,
 		Comment:   comment,
 		Cid:       cid,
 		Types:     types,
+		IsPrivate: isPrivate,
 	}
 }
+
 func (s *Saves) Create() error {
 	db := cockroach.GetDB()
 	if err := db.AutoMigrate(&Saves{}); err != nil {
@@ -123,29 +120,17 @@ func NewSavesAccountId(accountID uint) *Saves {
 	}
 }
 
-func (s *Saves) GetSaves() (*[]Saves, error) {
+func (s *Saves) GetSaves() ([]*Saves, error) {
 	db := cockroach.GetDB()
-	var saves []Saves
+	var saves []*Saves
 	if err := db.Debug().
 		Table(SavesTable).
 		Where("account_id = ?", s.AccountId).
-		Find(&s).
+		Find(&saves).
 		Error; err != nil {
 		return nil, err
 	}
-	return &saves, nil
-}
-
-func (s *Saves) EditSavedName(name string) *Saves {
-	return &Saves{
-		Name: name,
-	}
-}
-
-func (s *Saves) EditSavedComment(comment string) *Saves {
-	return &Saves{
-		Comment: comment,
-	}
+	return saves, nil
 }
 
 func (s *Saves) EditSaved(id, accountId uint) error {

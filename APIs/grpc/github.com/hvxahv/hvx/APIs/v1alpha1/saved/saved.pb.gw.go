@@ -21,6 +21,7 @@ import (
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 // Suppress "imported and not used" errors
@@ -65,19 +66,25 @@ func local_request_Saved_Create_0(ctx context.Context, marshaler runtime.Marshal
 
 }
 
-var (
-	filter_Saved_GetSaved_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
-)
-
 func request_Saved_GetSaved_0(ctx context.Context, marshaler runtime.Marshaler, client SavedClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetSavedRequest
 	var metadata runtime.ServerMetadata
 
-	if err := req.ParseForm(); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Saved_GetSaved_0); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+
+	protoReq.Id, err = runtime.String(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
 	}
 
 	msg, err := client.GetSaved(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -89,11 +96,21 @@ func local_request_Saved_GetSaved_0(ctx context.Context, marshaler runtime.Marsh
 	var protoReq GetSavedRequest
 	var metadata runtime.ServerMetadata
 
-	if err := req.ParseForm(); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+	var (
+		val string
+		ok  bool
+		err error
+		_   = err
+	)
+
+	val, ok = pathParams["id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Saved_GetSaved_0); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
+
+	protoReq.Id, err = runtime.String(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
 	}
 
 	msg, err := server.GetSaved(ctx, &protoReq)
@@ -101,20 +118,9 @@ func local_request_Saved_GetSaved_0(ctx context.Context, marshaler runtime.Marsh
 
 }
 
-var (
-	filter_Saved_GetSaves_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
-)
-
 func request_Saved_GetSaves_0(ctx context.Context, marshaler runtime.Marshaler, client SavedClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetSavesRequest
+	var protoReq emptypb.Empty
 	var metadata runtime.ServerMetadata
-
-	if err := req.ParseForm(); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Saved_GetSaves_0); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
 
 	msg, err := client.GetSaves(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
@@ -122,15 +128,8 @@ func request_Saved_GetSaves_0(ctx context.Context, marshaler runtime.Marshaler, 
 }
 
 func local_request_Saved_GetSaves_0(ctx context.Context, marshaler runtime.Marshaler, server SavedServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetSavesRequest
+	var protoReq emptypb.Empty
 	var metadata runtime.ServerMetadata
-
-	if err := req.ParseForm(); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Saved_GetSaves_0); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
 
 	msg, err := server.GetSaves(ctx, &protoReq)
 	return msg, metadata, err
@@ -276,7 +275,7 @@ func RegisterSavedHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/hvx.api.v1alpha1.saved.proto.Saved/GetSaved", runtime.WithHTTPPathPattern("/api/v1/saved"))
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/hvx.api.v1alpha1.saved.proto.Saved/GetSaved", runtime.WithHTTPPathPattern("/api/v1/saved/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -456,7 +455,7 @@ func RegisterSavedHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/hvx.api.v1alpha1.saved.proto.Saved/GetSaved", runtime.WithHTTPPathPattern("/api/v1/saved"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/hvx.api.v1alpha1.saved.proto.Saved/GetSaved", runtime.WithHTTPPathPattern("/api/v1/saved/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -562,7 +561,7 @@ func RegisterSavedHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 var (
 	pattern_Saved_Create_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "v1", "saved"}, ""))
 
-	pattern_Saved_GetSaved_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "v1", "saved"}, ""))
+	pattern_Saved_GetSaved_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "v1", "saved", "id"}, ""))
 
 	pattern_Saved_GetSaves_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "saved", "saves"}, ""))
 

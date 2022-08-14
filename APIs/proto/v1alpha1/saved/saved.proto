@@ -20,15 +20,13 @@ service Saved {
     };
   }
 
-  // GetSaved Get by saved ID.
   rpc GetSaved (GetSavedRequest) returns (Save) {
     option (google.api.http) = {
-      get: "/api/v1/saved",
+      get: "/api/v1/saved/{id}",
     };
   }
 
-  // GetSaves Get a collection of saved files by account ID.
-  rpc GetSaves (GetSavesRequest) returns (GetSavesResponse) {
+  rpc GetSaves (google.protobuf.Empty) returns (GetSavesResponse) {
     option (google.api.http) = {
       get: "/api/v1/saved/saves",
     };
@@ -68,19 +66,18 @@ service Saved {
 message Save {
   string id = 1;
   string name = 3;
-  string description = 4;
+  string comment = 4;
   string cid = 5;
   string types = 6;
   string created_at = 7;
 }
 
 message CreateRequest {
-  string account_id = 1;
-  string name = 2;
-  string comment = 3;
-  string cid = 4;
-  string fileType = 5 [json_name = "file_type"];
-  bool isPrivate = 6  [json_name = "is_private"];
+  string name = 1;
+  string comment = 2;
+  string cid = 3;
+  string fileType = 4 [json_name = "file_type"];
+  bool isPrivate = 5  [json_name = "is_private"];
 }
 
 message CreateResponse {
@@ -94,11 +91,7 @@ message GetSavesResponse {
 }
 
 message GetSavedRequest {
-  string id = 2;
-}
-
-message GetSavesRequest {
-  string limit = 2;
+  string id = 1 [(google.api.field_behavior) = REQUIRED];
 }
 
 message EditSavedRequest {

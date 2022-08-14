@@ -8,4 +8,5 @@ const (
 	Device  string = "http://hvxahv.disism.internal:7050"
 	Channel string = "http://hvxahv.disism.internal:7060"
 	Article string = "http://hvxahv.disism.internal:7070"
+	Saved   string = "http://hvxahv.disism.internal:7080"
 )
