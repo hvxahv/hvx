@@ -12,17 +12,15 @@ type Public struct {
 	ctx context.Context
 }
 
-type AccountHandler interface {
+type PublicHandler interface {
+	// IsExist determines if the account name exists.
 	IsExist(name string) (bool, error)
+
+	// GetActorByUsername get the actor object data by account name.
+	GetActorByUsername(username string) (*actor.ActorData, error)
+
+	// CreateAccount public create account API, connects to the account service.
 	CreateAccount(username, mail, password, publicKey string) (*account.CreateResponse, error)
-}
-
-type ActorHandler interface {
-	//GetActorByUsername(username string) (*actor.ActorData, error)
-}
-
-type AuthHandler interface {
-	//Auth(username, password string) (*auth.VerifyResponse, error)
 }
 
 func NewPublic(ctx context.Context) *Public {
@@ -46,7 +44,6 @@ func (p *Public) IsExist(name string) (bool, error) {
 	return exist.IsExist, nil
 }
 
-// GetActorByUsername ...
 func (p *Public) GetActorByUsername(username string) (*actor.ActorData, error) {
 	c, err := clientv1.New(p.ctx, microsvc.NewGRPCAddress("actor").Get())
 	if err != nil {

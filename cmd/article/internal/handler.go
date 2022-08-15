@@ -28,43 +28,18 @@ func (s *server) Create(ctx context.Context, in *pb.CreateRequest) (*pb.CreateRe
 		Cc = StringArrayToInt64Array(in.Cc)
 	)
 	if in.State {
-		if err := NewStatus(
-			parse.ActorId,
-			in.Article,
-			in.Tags,
-			in.AttachmentType,
-			in.Attachments,
-			To,
-			Cc,
-			in.Nsfw,
-			uint(visibility),
-		).Create(); err != nil {
+		if err := NewStatus(parse.ActorId, in.Article, in.Tags, in.AttachmentType, in.Attachments, To, Cc, in.Nsfw, uint(visibility)).Create(); err != nil {
 			return nil, err
 		}
 	} else {
-		if err := NewArticles(
-			parse.ActorId,
-			in.Title,
-			in.Summary,
-			in.Article,
-			in.Tags,
-			in.AttachmentType,
-			in.Attachments,
-			To,
-			Cc,
-			in.Nsfw,
-			uint(visibility),
-		).Create(); err != nil {
+		if err := NewArticles(parse.ActorId, in.Title, in.Summary, in.Article, in.Tags, in.AttachmentType, in.Attachments, To, Cc, in.Nsfw, uint(visibility)).Create(); err != nil {
 			return nil, err
 		}
 	}
 
 	// TODO - ACTIVITYPUB FOLLOWER PUSH.
 
-	return &pb.CreateResponse{
-		Code:   "200",
-		Status: "ok",
-	}, nil
+	return &pb.CreateResponse{Code: "200", Status: "ok"}, nil
 }
 
 func (s *server) Get(ctx context.Context, in *pb.GetRequest) (*pb.GetResponse, error) {

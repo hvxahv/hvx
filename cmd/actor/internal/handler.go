@@ -22,7 +22,6 @@ func (s *server) IsExist(ctx context.Context, in *pb.IsExistRequest) (*pb.IsExis
 	return &pb.IsExistResponse{IsExist: b}, nil
 }
 
-// GetActorByUsername ...
 func (s *server) GetActorByUsername(ctx context.Context, in *pb.GetActorByUsernameRequest) (*pb.ActorData, error) {
 	actor, err := NewAccountUsername(in.Username).GetActorByUsername()
 	if err != nil {
@@ -44,7 +43,6 @@ func (s *server) GetActorByUsername(ctx context.Context, in *pb.GetActorByUserna
 	}, nil
 }
 
-// Create actor.
 func (s *server) Create(ctx context.Context, in *pb.CreateRequest) (*pb.CreateResponse, error) {
 	actor, err := NewActors(in.PreferredUsername, in.PublicKey, in.ActorType).Create()
 	if err != nil {
@@ -80,7 +78,6 @@ func (s *server) Get(ctx context.Context, in *pb.GetRequest) (*pb.GetResponse, e
 	}, nil
 }
 
-// GetActorsByPreferredUsername ...
 func (s *server) GetActorsByPreferredUsername(ctx context.Context, in *pb.GetActorsByPreferredUsernameRequest) (*pb.GetActorsByPreferredUsernameResponse, error) {
 	actors, err := NewPreferredUsername(in.GetPreferredUsername()).GetActorsByPreferredUsername()
 	if err != nil {
@@ -107,7 +104,6 @@ func (s *server) GetActorsByPreferredUsername(ctx context.Context, in *pb.GetAct
 	return &pb.GetActorsByPreferredUsernameResponse{Code: "200", Actors: a}, nil
 }
 
-// GetActorByAddress ...
 func (s *server) GetActorByAddress(ctx context.Context, in *pb.GetActorByAddressRequest) (*pb.ActorData, error) {
 	actor, err := NewActorAddress(in.GetAddress()).GetActorByAddress()
 	if err != nil {
@@ -129,7 +125,6 @@ func (s *server) GetActorByAddress(ctx context.Context, in *pb.GetActorByAddress
 	}, nil
 }
 
-// Edit ...
 func (s *server) Edit(ctx context.Context, in *pb.EditRequest) (*pb.EditResponse, error) {
 	parse, err := microsvc.GetUserdataByAuthorizationToken(ctx)
 	if err != nil {
@@ -153,7 +148,6 @@ func (s *server) Edit(ctx context.Context, in *pb.EditRequest) (*pb.EditResponse
 	return &pb.EditResponse{Code: "200", Reply: "ok"}, nil
 }
 
-// Delete ...
 func (s *server) Delete(ctx context.Context, in *pb.DeleteRequest) (*pb.DeleteResponse, error) {
 	id, err := strconv.Atoi(in.GetId())
 	if err != nil {

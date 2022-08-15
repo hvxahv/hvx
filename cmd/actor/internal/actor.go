@@ -19,8 +19,6 @@ import (
 
 // Actors is a struct that represents a role in the ActivityPub social system.
 type Actors struct {
-
-	// ActorID is the unique identifier for the actor.
 	gorm.Model
 
 	// PreferredUsername is the preferred username for the actor.
@@ -31,9 +29,7 @@ type Actors struct {
 	// for example: https://example.com, example.com is the domain name.
 	Domain string `gorm:"index;type:text;domain"`
 
-	// Avatar is the URL of the avatar image.
-	// It is not required.
-	// It can also be an empty string.
+	// Avatar is the URL of the avatar image. it can also be an empty string.
 	Avatar string `gorm:"type:text;avatar"`
 
 	// Name is the name of the actor, for example: John Doe.
@@ -56,23 +52,40 @@ type Actors struct {
 	// ActorType is the type of the actor. It is used to determine the type of the actor.
 	ActorType string `gorm:"type:text;actor_type"`
 
-	// IsRemote is a flag that indicates whether the actor is a remote actor.
-	// Remote actors are still stored in the database.
-	// They are used to indicating whether the actor is in the current instance or not.
+	// IsRemote is a flag indicating whether the actor is a remote actor or not.
+	// Remote participants are still stored in the database.
+	// Used to indicate whether the actor's account is in the current instance.
 	IsRemote bool `gorm:"type:boolean;is_remote"`
 }
 
 type Actor interface {
+	// IsExist Actor exists or not.
 	IsExist() bool
+
+	// Create Actor.
 	Create() (*Actors, error)
+
+	// Get Actor.
 	Get() (*Actors, error)
+
+	// GetActorsByPreferredUsername Get Actors by preferred username.
 	GetActorsByPreferredUsername() ([]*Actors, error)
+
+	// AddActor Add Actor.
+	// Used when saving users from other instances to this instance.
 	AddActor() error
+
+	// GetActorByUsername Get Actor by username.
 	GetActorByUsername() (*Actors, error)
+
+	// Edit Actor.
 	Edit() error
+
+	// Delete Actor.
 	Delete() error
 }
 
+// NewActorsIsExist Determines if the Actor exists in the constructor of the current instance.
 func NewActorsIsExist(domain, preferredUsername string) *Actors {
 	return &Actors{
 		PreferredUsername: preferredUsername,
@@ -80,7 +93,6 @@ func NewActorsIsExist(domain, preferredUsername string) *Actors {
 	}
 }
 
-// IsExist ...
 func (a *Actors) IsExist() bool {
 	db := cockroach.GetDB()
 
@@ -94,7 +106,7 @@ func (a *Actors) IsExist() bool {
 	return false
 }
 
-// NewActors creates a new instance of Actors.
+// NewActors The constructor for creating a new Actor.
 func NewActors(preferredUsername, publicKey, actorType string) *Actors {
 	domain := viper.GetString("domain")
 	return &Actors{
@@ -127,6 +139,7 @@ func (a *Actors) Create() (*Actors, error) {
 	}, nil
 }
 
+// NewActorsId Instantiates the constructor of an ActorsId.
 func NewActorsId(id uint) *Actors {
 	return &Actors{
 		Model: gorm.Model{
@@ -145,6 +158,7 @@ func (a *Actors) Get() (*Actors, error) {
 	return a, nil
 }
 
+// NewPreferredUsername The constructor creates a new PreferredUsername.
 func NewPreferredUsername(preferredUsername string) *Actors {
 	return &Actors{
 		PreferredUsername: preferredUsername,
@@ -162,6 +176,7 @@ func (a *Actors) GetActorsByPreferredUsername() ([]*Actors, error) {
 	return actors, nil
 }
 
+// NewAddActors The constructor is used to add a new Actor.
 func NewAddActors(preferredUsername, host, avatar, name, summary, inbox, address, publicKey, actorType string) *Actors {
 	return &Actors{
 		PreferredUsername: preferredUsername,
@@ -187,6 +202,7 @@ func (a *Actors) AddActor() error {
 	return nil
 }
 
+// NewActorAddress The constructor is used to get an Actor by address.
 func NewActorAddress(address string) *Actors {
 	return &Actors{
 		Address: address,
@@ -236,6 +252,7 @@ func (a *Actors) GetActorByAddress() (*Actors, error) {
 	return a, nil
 }
 
+// NewAccountUsername The constructor is used to get an Actor by username.
 func NewAccountUsername(preferredUsername string) *Actors {
 	return &Actors{
 		PreferredUsername: preferredUsername,

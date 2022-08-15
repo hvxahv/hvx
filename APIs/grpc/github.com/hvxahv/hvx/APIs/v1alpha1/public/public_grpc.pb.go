@@ -25,6 +25,7 @@ const _ = grpc.SupportPackageIsVersion7
 type PublicClient interface {
 	// Get the instance details of the current instance.
 	GetInstance(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetInstanceResponse, error)
+	// CreateAccounts creates new accounts.
 	CreateAccounts(ctx context.Context, in *CreateAccountsRequest, opts ...grpc.CallOption) (*CreateAccountsResponse, error)
 	// Open API routing for the ActivityPub protocol.
 	// ActivityPub https://www.w3.org/TR/activitypub/
@@ -86,6 +87,7 @@ func (c *publicClient) GetActor(ctx context.Context, in *GetActorRequest, opts .
 type PublicServer interface {
 	// Get the instance details of the current instance.
 	GetInstance(context.Context, *emptypb.Empty) (*GetInstanceResponse, error)
+	// CreateAccounts creates new accounts.
 	CreateAccounts(context.Context, *CreateAccountsRequest) (*CreateAccountsResponse, error)
 	// Open API routing for the ActivityPub protocol.
 	// ActivityPub https://www.w3.org/TR/activitypub/

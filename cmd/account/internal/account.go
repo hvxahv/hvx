@@ -63,14 +63,13 @@ type Account interface {
 	Verify(password string) (*Accounts, error)
 }
 
-// NewUsername ...
+// NewUsername  constructor account's username.
 func NewUsername(username string) *Accounts {
 	return &Accounts{
 		Username: username,
 	}
 }
 
-// IsExist ...
 func (a *Accounts) IsExist() bool {
 	db := cockroach.GetDB()
 
@@ -84,7 +83,6 @@ func (a *Accounts) IsExist() bool {
 	return false
 }
 
-// GetAccountByUsername ...
 func (a *Accounts) GetAccountByUsername() (*Accounts, error) {
 	db := cockroach.GetDB()
 	if err := db.Debug().

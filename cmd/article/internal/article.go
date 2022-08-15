@@ -26,21 +26,18 @@ type Articles struct {
 	Title   string `gorm:"type:text;title"`
 	Summary string `gorm:"type:text;summary"`
 
-	// Article The content of the article or status. It needs to store the
-	// text in HTML format, But please be aware of XSS attacks.
+	// Article The content of the article or status,
+	// it needs to store the text in html format, but please be aware of XSS attacks.
 	Article string `gorm:"type:text;article"`
 
-	// Tags The tag setting of the article, when statuses is false, then
-	// the tag of the article should be selected.
+	// Tags When the content is an article (status is false), the tag of the article should be selected.
 	Tags pq.StringArray `gorm:"type:text[];tags"`
 
-	// TODO - AttachmentType The design of the attachment type consistency
-	// should be addressed.
-	// AttachmentType Mark the type of attachment,
+	// TODO - AttachmentType The design of the attachment type consistency should be addressed. Attachment marker attachment type.
 	// AUDIO / VIDEO / IMAGES / FILE.
 	AttachmentType string `gorm:"type:text;attachment_type"`
 
-	// Attachments Form the storage addresses of the attachments into an array.
+	// Attachments Compose an array of attached storage addresses.
 	Attachments pq.StringArray `gorm:"type:text[];attachments"`
 
 	// TO This field stores the address of the inbox sent to a specific user.

@@ -15,6 +15,7 @@ service Public {
     };
   }
 
+  // CreateAccounts creates new accounts.
   rpc CreateAccounts(CreateAccountsRequest) returns (CreateAccountsResponse) {
     option (google.api.http) = {
       post: "/public/account/create",
@@ -111,4 +112,5 @@ message GetActorResponse {
   string summary = 10;
   string url = 11;
   PublicKey publicKey = 12;
+  Icon icon = 13;
 }

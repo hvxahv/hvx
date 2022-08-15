@@ -33,6 +33,7 @@ func (s *server) GetWebfinger(ctx context.Context, in *pb.GetWebfingerRequest) (
 	if err != nil {
 		return nil, err
 	}
+	// If the user exists, Webfinger data will be returned.
 	if !exist {
 		return &pb.GetWebfingerResponse{
 			Subject: in.Resource,
@@ -86,10 +87,14 @@ func (s *server) GetActor(ctx context.Context, in *pb.GetActorRequest) (*pb.GetA
 			Owner:        a.Address,
 			PublicKeyPem: a.PublicKey,
 		},
+		Icon: &pb.GetActorResponse_Icon{
+			Type:      "Image",
+			MediaType: "image/jpeg",
+			Url:       a.Icon,
+		},
 	}, nil
 }
 
-// CreateAccounts ..
 func (s *server) CreateAccounts(ctx context.Context, in *pb.CreateAccountsRequest) (*pb.CreateAccountsResponse, error) {
 	res, err := NewPublic(ctx).CreateAccount(in.Username, in.Mail, in.Password, in.PublicKey)
 	if err != nil {
