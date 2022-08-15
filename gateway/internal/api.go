@@ -63,5 +63,6 @@ func APIServer() *gin.Engine {
 
 	// ACTIVITY INBOX SERVICES
 	v1.GET("/activity/*x", v1alpha1.ActivityHandler)
+	v1.DELETE("/activity/*x", v1alpha1.ActivityHandler)
 	return api
 }

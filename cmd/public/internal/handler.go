@@ -90,7 +90,7 @@ func (s *server) GetActor(ctx context.Context, in *pb.GetActorRequest) (*pb.GetA
 		Icon: &pb.GetActorResponse_Icon{
 			Type:      "Image",
 			MediaType: "image/jpeg",
-			Url:       a.Icon,
+			Url:       a.Avatar,
 		},
 	}, nil
 }

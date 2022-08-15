@@ -43,14 +43,14 @@ func request_Activity_GetInbox_0(ctx context.Context, marshaler runtime.Marshale
 		_   = err
 	)
 
-	val, ok = pathParams["activity_id"]
+	val, ok = pathParams["inbox_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "activity_id")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "inbox_id")
 	}
 
-	protoReq.ActivityId, err = runtime.String(val)
+	protoReq.InboxId, err = runtime.String(val)
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "activity_id", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "inbox_id", err)
 	}
 
 	msg, err := client.GetInbox(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -69,14 +69,14 @@ func local_request_Activity_GetInbox_0(ctx context.Context, marshaler runtime.Ma
 		_   = err
 	)
 
-	val, ok = pathParams["activity_id"]
+	val, ok = pathParams["inbox_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "activity_id")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "inbox_id")
 	}
 
-	protoReq.ActivityId, err = runtime.String(val)
+	protoReq.InboxId, err = runtime.String(val)
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "activity_id", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "inbox_id", err)
 	}
 
 	msg, err := server.GetInbox(ctx, &protoReq)
@@ -121,14 +121,14 @@ func request_Activity_DeleteInbox_0(ctx context.Context, marshaler runtime.Marsh
 		_   = err
 	)
 
-	val, ok = pathParams["activity_id"]
+	val, ok = pathParams["inbox_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "activity_id")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "inbox_id")
 	}
 
-	protoReq.ActivityId, err = runtime.String(val)
+	protoReq.InboxId, err = runtime.String(val)
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "activity_id", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "inbox_id", err)
 	}
 
 	msg, err := client.DeleteInbox(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -155,14 +155,14 @@ func local_request_Activity_DeleteInbox_0(ctx context.Context, marshaler runtime
 		_   = err
 	)
 
-	val, ok = pathParams["activity_id"]
+	val, ok = pathParams["inbox_id"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "activity_id")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "inbox_id")
 	}
 
-	protoReq.ActivityId, err = runtime.String(val)
+	protoReq.InboxId, err = runtime.String(val)
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "activity_id", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "inbox_id", err)
 	}
 
 	msg, err := server.DeleteInbox(ctx, &protoReq)
@@ -287,7 +287,7 @@ func RegisterActivityHandlerServer(ctx context.Context, mux *runtime.ServeMux, s
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/hvx.api.v1alpha1.activity.proto.Activity/GetInbox", runtime.WithHTTPPathPattern("/api/v1/activity/{activity_id}"))
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/hvx.api.v1alpha1.activity.proto.Activity/GetInbox", runtime.WithHTTPPathPattern("/api/v1/activity/{inbox_id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -335,7 +335,7 @@ func RegisterActivityHandlerServer(ctx context.Context, mux *runtime.ServeMux, s
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/hvx.api.v1alpha1.activity.proto.Activity/DeleteInbox", runtime.WithHTTPPathPattern("/api/v1/activity/{activity_id}"))
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/hvx.api.v1alpha1.activity.proto.Activity/DeleteInbox", runtime.WithHTTPPathPattern("/api/v1/activity/{inbox_id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -470,7 +470,7 @@ func RegisterActivityHandlerClient(ctx context.Context, mux *runtime.ServeMux, c
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/hvx.api.v1alpha1.activity.proto.Activity/GetInbox", runtime.WithHTTPPathPattern("/api/v1/activity/{activity_id}"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/hvx.api.v1alpha1.activity.proto.Activity/GetInbox", runtime.WithHTTPPathPattern("/api/v1/activity/{inbox_id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -512,7 +512,7 @@ func RegisterActivityHandlerClient(ctx context.Context, mux *runtime.ServeMux, c
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/hvx.api.v1alpha1.activity.proto.Activity/DeleteInbox", runtime.WithHTTPPathPattern("/api/v1/activity/{activity_id}"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/hvx.api.v1alpha1.activity.proto.Activity/DeleteInbox", runtime.WithHTTPPathPattern("/api/v1/activity/{inbox_id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -595,11 +595,11 @@ func RegisterActivityHandlerClient(ctx context.Context, mux *runtime.ServeMux, c
 }
 
 var (
-	pattern_Activity_GetInbox_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "v1", "activity", "activity_id"}, ""))
+	pattern_Activity_GetInbox_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "v1", "activity", "inbox_id"}, ""))
 
 	pattern_Activity_GetInboxes_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "activity", "inboxes"}, ""))
 
-	pattern_Activity_DeleteInbox_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "v1", "activity", "activity_id"}, ""))
+	pattern_Activity_DeleteInbox_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "v1", "activity", "inbox_id"}, ""))
 
 	pattern_Activity_CreateOutbox_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "activity", "outbox"}, ""))
 

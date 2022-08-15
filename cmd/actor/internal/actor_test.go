@@ -1,5 +1,15 @@
 package internal
 
+import (
+	"fmt"
+	"github.com/hvxahv/hvx/cockroach"
+	"github.com/mitchellh/go-homedir"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
+	"os"
+	"testing"
+)
+
 func init() {
 	home, err := homedir.Dir()
 	cobra.CheckErr(err)
@@ -22,7 +32,7 @@ func init() {
 	}
 }
 
-func TestIsExist() {
+func TestActors_IsExist(t *testing.T) {
 	a := NewActorsIsExist("example.com", "alice")
 	if a.IsExist() {
 		t.Log("Actor exists")
@@ -31,49 +41,34 @@ func TestIsExist() {
 	}
 }
 
-func TestCreate() {
-	a := NewActors("alice", "alice", "Person")
-	if err := a.Create(); err != nil {
-		t.Error(err)
-	}
+func TestActors_Create(t *testing.T) {
+
 }
 
-func TestGet() {
-	a := NewActorsId(1)
-	if err := a.Get(); err != nil {
-		t.Error(err)
-	}
+func TestActors_Get(t *testing.T) {
+
 }
 
-func TestGetActorsByPreferredUsername() {
-	a := NewActorsPreferredUsername("alice", "example.com")
-	if err := a.GetActorsByPreferredUsername(); err != nil {
-		t.Error(err)
-	}
+func TestActors_GetActorsByPreferredUsername(t *testing.T) {
+
 }
 
-func AddActor() {
-	a := NewAddActors("alice", "alice", "Person")
-	if err := a.AddActor(); err != nil {
-		t.Error(err)
-	}
+func TestActors_Add(t *testing.T) {
+
 }
 
-func TestGetActorByUsername() {
-	a := NewActorsPreferredUsername("alice", "example.com")
-	if err := a.GetActorByUsername(); err != nil {
-		t.Error(err)
-	}
+func TestGetActorByUsername(t *testing.T) {
+
 }
 
-func TestEdit() {
+func TestActors_Edit(t *testing.T) {
 	a := NewActorsId(1)
 	if err := a.Edit(); err != nil {
 		t.Error(err)
 	}
 }
 
-func TestDelete() {
+func TestActors_Delete(t *testing.T) {
 	a := NewActorsId(1)
 	if err := a.Delete(); err != nil {
 		t.Error(err)
