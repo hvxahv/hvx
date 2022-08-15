@@ -12,7 +12,7 @@ service Activity {
 
   rpc GetInbox (GetInboxRequest) returns (GetInboxResponse) {
     option (google.api.http) = {
-      get: "/api/v1/activity/{activity_id}"
+      get: "/api/v1/activity/{inbox_id}"
     };
   }
 
@@ -24,7 +24,7 @@ service Activity {
 
   rpc DeleteInbox (DeleteInboxRequest) returns (DeleteInboxResponse) {
     option (google.api.http) = {
-      delete: "/api/v1/activity/{activity_id}"
+      delete: "/api/v1/activity/{inbox_id}"
       body: "*"
     };
   }
@@ -69,7 +69,7 @@ message InboxResponse {
 }
 
 message GetInboxRequest {
-  string activity_id = 1 [(google.api.field_behavior) = REQUIRED];
+  string inbox_id = 1 [(google.api.field_behavior) = REQUIRED];
 }
 
 message GetInboxResponse {
@@ -83,7 +83,7 @@ message GetInboxesResponse {
 }
 
 message DeleteInboxRequest {
-  string activity_id = 1;
+  string inbox_id = 1 [json_name = "inbox_id"];
 }
 
 message DeleteInboxResponse {
