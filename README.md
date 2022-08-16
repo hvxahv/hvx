@@ -2,29 +2,33 @@
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/hvxahv/hvx)](https://goreportcard.com/report/github.com/hvxahv/hvxahv) [![Go](https://github.com/hvxahv/hvxahv/actions/workflows/lint.yml/badge.svg)](https://github.com/hvxahv/hvxahv/actions/workflows/lint.yml)
 
-Currently, the first version of hvxahv is being implemented, and the current plan is to make the program work first, and then optimize the performance, so the current program code will be very confusing, please pay attention.
+Disism - HALFMEMORIES
 
-If you have any questions, please submit ISSUES.
+Currently, the first version is being implemented intensively, all we are doing is trying to get the program working first and then optimize it for performance, so please note that the code is very confusing at the moment.
 
-Or enter the community discussion of the project: [Discussions hvxahv/community (github.com)](https://github.com/hvxahv/community/discussions)
+If you have any questions, please submit them to ISSUES.
 
-## Next plans:
+Or go to the project's community discussion: Discussions - [hvxahv/community](github.com)
 
-- In the process of implementation, the developer believes that the user's key and some personal sensitive data should not be stored in the server, even the instance custodian should not see it, so hvxahv is changing the design about user privacy.
-- The current hvxahv does not represent the final design, the developers are pursuing the best solution for user privacy and security.
-- The current hvxahv is under active development and cannot be used as any production environment for the time being. The source code will be modified or rewritten frequently, please pay attention.
-- hvxahv's pursuit of privacy is the ultimate, please believe that the future hvxahv will become safe and reliable.
+## The next plan.
+- Perfect Forward Secrecy In the process of enabling encryption in saved, a right way should be found to secure encrypted data, and Perfect Forward Secrecy is one of the next directions to be investigated.
+- During the implementation, the developers believe that the user's keys and some personal sensitive data should not be stored in the server and should not be visible even to the instance host, so hvxahv is revamping the design regarding user privacy.
+- The current hvxahv does not represent the final design, and the developers are pursuing the best solution for user privacy and security.
+- Please note that the current version of hvxahv is under active development and cannot be used in any production environment at this time, and that the source code will be modified or rewritten on a regular basis.
+- hvxahv puts privacy first, so trust that the future of hvxahv will be safe and secure.
 
-## A fully decentralized social network implementation, building an open source, free, decentralized open network.
 
-A social platform based on the decentralized ActivityPub decentralized social network protocol, the ipfs distributed persistent storage protocol and the matrix.org real-time communication protocol, an open source decentralized social network with data really in its own hands.
+## A fully decentralized social network implementation to build open source, free, decentralized open networks.
 
-1. Find and add your social network friends as easy as an email format (`name@domain`) address.
-2. Cross-server content publishing channel (channel), the content cannot be deleted or modified.
-3. Directly communicate end-to-end encrypted instant messaging with friends.
-4. An unlimited space encrypted cloud storage with interplanetary file system.
+Based on the decentralized ActivityPub decentralized social network protocol, ipfs distributed persistent storage protocol and matrix.org real-time communication protocol social platform, an open source decentralized social network with data truly in your own hands.
 
-It is a platform for content publishing, social networking, and instant messaging. Anyone can build their own instance and design their own interface. Social communication is possible with all platforms that implement the ActivityPub protocol. Store broadcast channel data in the IPFS file system, persistent and non-deletable and unmodifiable. Can communicate with end-to-end encryption programs on all platforms that implement the Matrix.org protocol.
+1. like email format (`name@domain`) address as simple as finding and adding your social network friends , built on the ActivityPub protocol .
+2. cross-server content distribution channel (channel), based on ipfs distributed persistent storage protocol .
+3. end-to-end encrypted instant messaging directly with your friends, adding [matrix.org](http://matrix.org) protocol server. 4.
+4. Encrypted cloud storage with unlimited space based on ipfs features.
+
+It is a comprehensive, content publishing, social, instant messaging platform. Anyone can build their own instance and design their own interface.
+
 
 ## Half Memories is an officially maintained instance of hvxahv.
 
@@ -40,21 +44,40 @@ Preview version: [dev.halfmemories.com](https://dev.halfmemories.com) is current
 
 [SECURITY.md](./SECURITY.md)
 
-FOR CLIENT DEVELOPERS: 
+## For developers
 
-- WEB CLIENT REPO REACT: [HVXAHV-REACT-WEB](https://github.com/hvxahv/hvxahv-web)
-- WEB CLIENT REPO ANGULAR: [HVXAHV-ANGULAR-WEB](https://github.com/hvxahv/sarkv)
-- ANDROID CLIENT: [HVX-ANDROID](https://github.com/hvxahv/hvx-android)
-- API DOCS: [APIs](./APIs)
+[DOCS](./docs)
+
+CONFIG EXAMPLE: [CONFIG_FILE](./conf)
+
+Development environment deployment with terraform.
+
+[infra4dev](https://github.com/hvxahv/infra4dev)
+
+FOR CLIENT DEVELOPERS:
+
+- Web Client:
+    - https://github.com/hvxahv/sarkv
+    - https://github.com/hvxahv/hvxahv-web
+- Android:
+    - https://github.com/hvxahv/hvx-android
+- Lib
+    - [hvxahv/hvx-webassembly - GitHub](https://github.com/hvxahv/hvx-webassembly)
+
+API DOCS:
+
+- gRPC PROTOBUF: [APIs](./APIs)
+- DESIGN DOCS: [APIs_METHODS](./docs/APIs_METHODS.md)
+- cRUL EXAMPLE: [cURL_EXAMPLES](./docs/cURL_EXAMPLES)
+
 
 ## Finally
 
 Everyone has the right to control their own data and privacy and to choose who they share it with.
 
-MIT License: [LISENSE](https://github.com/hvxahv/hvx/blob/main/LICENSE).
+MIT License: [LISENSE](https://github.com/hvxahv/hvxahv/blob/main/LICENSE).
 
-[disism.com](https://disism.com/) OPEN SOURCE. 
-
+[**DISISM**](https://disism.com) OPEN SOURCE
 
 
 🍬 A love letter to the future~

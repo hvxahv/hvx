@@ -8,11 +8,12 @@
 package internal
 
 import (
+	"strconv"
+
 	"github.com/hvxahv/hvx/cockroach"
 	"github.com/hvxahv/hvx/errors"
 	"github.com/lib/pq"
 	"gorm.io/gorm"
-	"strconv"
 )
 
 const (
@@ -40,14 +41,11 @@ type Articles struct {
 	// Attachments Compose an array of attached storage addresses.
 	Attachments pq.StringArray `gorm:"type:text[];attachments"`
 
-	// TO This field stores the address of the inbox sent to a specific user.
-	// Note! When implementing the sending system, if the TO field is nil,
-	// it means that it is not set to send to the specified user's inbox.
-	// So, it should be sent to the inboxes of all users of that user's
-	// Follower by default.
+	// TO This field stores a slice of the recipient's address, which can be multiple addresses or a single address.
+	// If the slice is empty, it is sent to all followers.
 	TO pq.Int64Array `gorm:"type:bigint[];to"`
 
-	// CC This field stores the array of inbox addresses of the copied users.
+	// CC This field stores the sliced inbox address of the person being copied.
 	CC pq.Int64Array `gorm:"type:bigint[];cc"`
 
 	// Statuses sets whether the content is an article or a status.
@@ -68,22 +66,48 @@ type Articles struct {
 }
 
 type Article interface {
+	// Create is a method for creating an article.
 	Create() error
+
+	// Get is a method for getting an article.
 	Get(actorId uint) (*Articles, error)
+
+	// GetArticles is a method for getting all articles by actor.
 	GetArticles() ([]*Articles, error)
+
+	// Update is a method for updating an article.
 	Update(articleId, accountId uint) error
+
+	// Delete is a method for deleting an article.
 	Delete() error
+
+	// DeleteArticles is a method for deleting all articles by actor.
 	DeleteArticles() error
 }
 
 type Editor interface {
+	// EditTitle is a method for editing the title of an article.
 	EditTitle(title string) *Articles
+
+	// EditSummary is a method for editing the summary of an article.
 	EditSummary(summary string) *Articles
+
+	// EditArticle is a method for editing the article of an article.
 	EditArticle(article string) *Articles
+
+	// EditTags is a method for editing the tags of an article.
 	EditTags(tags []string) *Articles
+
+	// EditAttachmentType is a method for editing the attachment type of an article.
 	EditAttachmentType(attachmentType string) *Articles
+
+	// EditAttachments is a method for editing the attachments of an article.
 	EditAttachments(attachments []string) *Articles
+
+	// EditNSFW is a method for editing the nsfw of an article.
 	EditNSFW(nsfw bool) *Articles
+
+	// EditVisibility is a method for editing the visibility of an article.
 	EditVisibility(visibility uint) *Articles
 }
 
@@ -165,6 +189,7 @@ func (a *Articles) Create() error {
 	return nil
 }
 
+// NewArticlesId is a constructor for ArticlesId.
 func NewArticlesId(articleId uint) *Articles {
 	return &Articles{
 		Model: gorm.Model{
@@ -200,6 +225,7 @@ func (a *Articles) Get(actorId uint) (*Articles, error) {
 	return a, nil
 }
 
+// NewArticlesActorId is a constructor for ArticlesActorId.
 func NewArticlesActorId(actorId uint) *Articles {
 	return &Articles{
 		ActorId: actorId,
@@ -311,7 +337,7 @@ func (a *Articles) DeleteArticles() error {
 	return nil
 }
 
-// StringArrayToInt64Array ...
+// StringArrayToInt64Array 	convert string array to int64 array.
 func StringArrayToInt64Array(in []string) []int64 {
 	var ret []int64
 	for _, s := range in {
@@ -321,7 +347,7 @@ func StringArrayToInt64Array(in []string) []int64 {
 	return ret
 }
 
-// Int64ArrayToStringArray ...
+// Int64ArrayToStringArray 	convert int64 array to string array.
 func Int64ArrayToStringArray(in []int64) []string {
 	var ret []string
 	for _, i := range in {
