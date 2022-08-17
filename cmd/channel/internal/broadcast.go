@@ -14,7 +14,10 @@ const (
 type Broadcasts struct {
 	gorm.Model
 
-	ChannelId uint   `gorm:"primaryKey;type:bigint;channel_id"`
+	ChannelId uint `gorm:"primaryKey;type:bigint;channel_id"`
+
+	// ActorId in the AdminId Actor data table, which identifies the creator of the Broadcast.
+	// Must be the administrator of the channel.
 	AdminId   uint   `gorm:"type:bigint;admin_id"`
 	ArticleId uint   `gorm:"type:bigint;article_id"`
 	CID       string `gorm:"type:text;cid"`

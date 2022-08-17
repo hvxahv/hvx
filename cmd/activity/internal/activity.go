@@ -38,6 +38,7 @@ type InboxActivity struct {
 func NewActivity(name string, body []byte) (*InboxActivity, error) {
 	fmt.Println(string(body))
 	a := Activity{}
+	// TODO - sync.Pool
 	if err := json.Unmarshal(body, &a); err != nil {
 		return nil, errors.New("UNMARSHAL_ACTIVITY")
 	}

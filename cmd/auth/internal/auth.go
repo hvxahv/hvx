@@ -17,7 +17,11 @@ func NewAuthorization(ctx context.Context) *authorization {
 }
 
 type AuthorizationHandler interface {
+	// Authorization Connect to the account system to verify the username and first name password and
+	// return the authorization result.
 	Authorization(username, password string) (*account.VerifyResponse, error)
+
+	// AddDevice Add a device to the device system.
 	AddDevice(accountId, ua string) (*device.CreateResponse, error)
 }
 
@@ -42,7 +46,7 @@ func (a *authorization) Authorization(username, password string) (*account.Verif
 
 func (a *authorization) AddDevice(accountId, ua string) (*device.CreateResponse, error) {
 	c, err := clientv1.New(a.ctx,
-		microsvc.NewGRPCAddress("account").Get(),
+		microsvc.NewGRPCAddress("device").Get(),
 	)
 	if err != nil {
 		return nil, err

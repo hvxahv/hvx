@@ -9,30 +9,28 @@
 package internal
 
 import (
+	"time"
+
 	pb "github.com/hvxahv/hvx/APIs/v1alpha1/auth"
 	"github.com/hvxahv/hvx/auth"
 	"github.com/spf13/viper"
 	"golang.org/x/net/context"
-	"time"
 )
 
+// Authorization authenticate via the account service.
+// add the login device information to the device service after successful authentication
+// Generate an AccessToken from the authentication result and return it to the client.
 func (s *server) Authorization(ctx context.Context, in *pb.AuthorizationRequest) (*pb.AuthorizationResponse, error) {
-	// Implement the authorization logic here.
-	// You can use the `in` parameter to get the username and password.
-	// account server.
-
 	v, err := NewAuthorization(ctx).Authorization(in.Username, in.Password)
 	if err != nil {
 		return nil, err
 	}
 
-	// Implement the create devices.
 	device, err := NewAuthorization(ctx).AddDevice(v.Id, in.UserAgent)
 	if err != nil {
 		return nil, err
 	}
 
-	// Implement Generate TOKEN...
 	var (
 		issuer = viper.GetString("domain")
 		expir  = time.Duration(viper.GetInt("authentication.token.expired")) * 24 * time.Hour
