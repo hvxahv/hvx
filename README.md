@@ -18,6 +18,7 @@ Or go to the project's community discussion: Discussions - [hvxahv/community](gi
 - hvxahv puts privacy first, so trust that the future of hvxahv will be safe and secure.
 
 
+## Features
 ## A fully decentralized social network implementation to build open source, free, decentralized open networks.
 
 Based on the decentralized ActivityPub decentralized social network protocol, ipfs distributed persistent storage protocol and matrix.org real-time communication protocol social platform, an open source decentralized social network with data truly in your own hands.

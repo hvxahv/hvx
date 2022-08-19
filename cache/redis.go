@@ -1,12 +1,13 @@
 package cache
 
 import (
-	"github.com/go-redis/redis/v8"
-	"github.com/spf13/viper"
-	"golang.org/x/net/context"
 	"log"
 	"sync"
 	"time"
+
+	"github.com/go-redis/redis/v8"
+	"github.com/spf13/viper"
+	"golang.org/x/net/context"
 )
 
 var (
@@ -14,6 +15,10 @@ var (
 	once sync.Once
 	rdb  *redis.Client
 )
+
+type Redis interface {
+	Dial(db int) error
+}
 
 type option struct {
 	addr     string

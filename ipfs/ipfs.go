@@ -2,9 +2,10 @@ package ipfs
 
 import (
 	"fmt"
+	"io"
+
 	ipfs "github.com/ipfs/go-ipfs-api"
 	"github.com/spf13/viper"
-	"io"
 )
 
 type addr struct {
@@ -12,7 +13,7 @@ type addr struct {
 	ipfs    *ipfs.Shell
 }
 
-type i interface {
+type IPFS interface {
 	Add(data io.Reader) (cid string, err error)
 	GetGatewayAddress(cid string) (address string)
 }

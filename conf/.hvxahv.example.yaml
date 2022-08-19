@@ -37,7 +37,7 @@ redis:
   password: "hvxahv123"
 
 minio:
-  addr: "10.143.24.84:9000"
+  endpoint: "hvxahv.disism.internal:9000"
   accessKeyID: "hvxahv"
   secretAccessKey: "hvxahv123"
   useSSL: false
