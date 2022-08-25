@@ -5,6 +5,7 @@ import (
 
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/hvxahv/hvx/errors"
+	"github.com/spf13/viper"
 )
 
 type Userdata struct {
@@ -59,4 +60,8 @@ func (p *JWTParse) JWTTokenParse() (*Claims, error) {
 		return claims, nil
 	}
 	return nil, errors.New(errors.ErrTokenInvalid)
+}
+
+func GetTokenSecret() string {
+	return viper.GetString("authentication.token.secret")
 }
