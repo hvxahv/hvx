@@ -2,11 +2,21 @@ package internal
 
 import (
 	"context"
+
 	pb "github.com/hvxahv/hvx/APIs/v1alpha1/message"
 )
 
 func (s *server) AccessRegister(ctx context.Context, in *pb.AccessRegisterRequest) (*pb.AccessRegisterResponse, error) {
-	return &pb.AccessRegisterResponse{}, nil
+	d, err := NewRegister().Register(in.Username, in.Password)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.AccessRegisterResponse{
+		Code:        "200",
+		AccessToken: d.AccessToken,
+		UserId:      d.UserId,
+	}, nil
 }
 
 func (s *server) AccessLogin(ctx context.Context, in *pb.AccessLoginRequest) (*pb.AccessLoginResponse, error) {

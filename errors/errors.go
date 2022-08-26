@@ -31,6 +31,10 @@ const (
 )
 
 const (
+	ErrMatrixAccountRegister = "MATRIX_ACCOUNT_REGISTRATION_FAILED"
+)
+
+const (
 	ErrNoPermission = "NO_PERMISSION"
 )
 

@@ -11,7 +11,7 @@ service Messages {
   // AccessRegister Register a matrix account with a username and password.
   rpc AccessRegister (AccessRegisterRequest) returns (AccessRegisterResponse) {
     option (google.api.http) = {
-      post: "/api/v1/message/access/register"
+      post: "/api/v1/message/access/register",
       body: "*"
     };
   }
@@ -20,7 +20,7 @@ service Messages {
   // is wrong or when you reauthorize.
   rpc AccessLogin (AccessLoginRequest) returns (AccessLoginResponse) {
     option (google.api.http) = {
-      post: "/api/v1/message/access/login"
+      post: "/api/v1/message/access/login",
       body: "*"
     };
   }
@@ -41,12 +41,13 @@ message AccessRegisterRequest {
 
 message AccessRegisterResponse {
   string code = 1;
-  string reply = 2;
+  string accessToken = 2 [json_name = "access_token"];
+  string userId = 3 [json_name = "user_id"];
 }
 
 message AccessLoginRequest {
-  string username = 2;
-  string password = 3;
+  string username = 2 [json_name = "username"];;
+  string password = 3 [json_name = "password"];;
 }
 
 message AccessLoginResponse {

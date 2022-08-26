@@ -16,16 +16,21 @@ limitations under the License.
 package cmd
 
 import (
+	"fmt"
+
+	"github.com/hvxahv/hvx/cmd/message/internal"
 	"github.com/spf13/cobra"
 )
 
 // runCmd represents the run command
 var runCmd = &cobra.Command{
 	Use:   "run",
-	Short: "",
+	Short: "run message services.",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-
+		if err := internal.Run(); err != nil {
+			fmt.Println(err)
+		}
 	},
 }
 
