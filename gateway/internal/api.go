@@ -9,6 +9,7 @@ package internal
 
 import (
 	"github.com/gin-gonic/gin"
+
 	"github.com/hvxahv/hvx/gateway/v1alpha1"
 )
 
@@ -64,5 +65,10 @@ func APIServer() *gin.Engine {
 	// ACTIVITY INBOX SERVICES
 	v1.GET("/activity/*x", v1alpha1.ActivityHandler)
 	v1.DELETE("/activity/*x", v1alpha1.ActivityHandler)
+
+	// FS
+	// The avatar is uploaded through the http interface provided by Gin,
+	// and the uploaded link is then sent to the actor server via gRPC to change or add the actor avatar.
+	v1.POST("/fs/avatar", AvatarHandler)
 	return api
 }

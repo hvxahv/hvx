@@ -8,7 +8,6 @@ import (
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"golang.org/x/net/context"
 )
 
 func init() {
@@ -28,21 +27,34 @@ func init() {
 }
 
 func TestGetMinio(t *testing.T) {
-	if err := NewMinio().Dial(); err != nil {
-		t.Error(err)
-		return
-	}
-
-	client := GetMinio()
-
-	ctx := context.Background()
-
-	exists, err := client.BucketExists(ctx, "avatar")
+	_, err := NewMinio().Dial()
 	if err != nil {
 		t.Error(err)
 		return
 	}
-	if exists {
-		t.Log("Bucket found")
+
+}
+
+func TestMinio_CreateBucket(t *testing.T) {
+	minio, err := NewMinio().Dial()
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	if err := minio.CreateBucket("avatar"); err != nil {
+		t.Error(err)
+		return
+	}
+}
+
+func TestMinio_ListBuckets(t *testing.T) {
+	minio, err := NewMinio().Dial()
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	if err := minio.ListBucket(); err != nil {
+		t.Error(err)
+		return
 	}
 }
