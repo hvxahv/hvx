@@ -36,12 +36,13 @@ redis:
   addr: "hvxahv.disism.internal:6379"
   password: "hvxahv123"
 
-minio:
-  endpoint: "hvxahv.disism.internal:9000"
-  accessKeyID: "hvxahv"
-  secretAccessKey: "hvxahv123"
-  useSSL: false
-  location: "ap-northeast-3"
+fs:
+  minio:
+    endpoint: "hvxahv.disism.internal:9000"
+    accessKeyID: "hvxahv"
+    secretAccessKey: "hvxahv123"
+    useSSL: false
+    region: "ap-northeast-3"
 
 nats:
   address: ""

@@ -1,8 +1,8 @@
 #!/bin/bash
 
-SCRIPT_WD=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+#SCRIPT_WD=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
-source "${SCRIPT_WD}/lib/util.sh"
+source "./util.sh"
 
 version=$(get_version)
 go_version=$(get_go_version)

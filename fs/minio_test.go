@@ -27,7 +27,7 @@ func init() {
 }
 
 func TestGetMinio(t *testing.T) {
-	_, err := NewMinio().Dial()
+	_, err := NewDefaultMinio().Dial()
 	if err != nil {
 		t.Error(err)
 		return
@@ -36,25 +36,39 @@ func TestGetMinio(t *testing.T) {
 }
 
 func TestMinio_CreateBucket(t *testing.T) {
-	minio, err := NewMinio().Dial()
+	minio, err := NewDefaultMinio().Dial()
 	if err != nil {
 		t.Error(err)
 		return
 	}
-	if err := minio.CreateBucket("avatar"); err != nil {
+	if err := minio.MakeBucket("avatar", ""); err != nil {
 		t.Error(err)
 		return
 	}
 }
 
 func TestMinio_ListBuckets(t *testing.T) {
-	minio, err := NewMinio().Dial()
+	minio, err := NewDefaultMinio().Dial()
 	if err != nil {
 		t.Error(err)
 		return
 	}
-	if err := minio.ListBucket(); err != nil {
+	if err := minio.ListBuckets(); err != nil {
 		t.Error(err)
 		return
 	}
+}
+
+func TestMinio_GetBucketPolicy(t *testing.T) {
+	minio, err := NewDefaultMinio().Dial()
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	policy, err := minio.GetBucketPolicy("avatar")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	t.Log(policy)
 }

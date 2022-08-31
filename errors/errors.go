@@ -10,8 +10,8 @@ const (
 	ErrTokenUnauthorized = "TOKEN_UNAUTHORIZED"
 )
 
+// Err is returned account errors.
 const (
-	// ErrNotFound is returned account errors.
 	ErrAccountVerification          = "ACCOUNT_VERIFICATION_FAILED"
 	ErrAccountAlready               = "THE_USERNAME_OR_MAIL_ALREADY_EXISTS"
 	ErrAccountUsernameAlreadyExists = "THE_USERNAME_ALREADY_EXISTS"
@@ -19,6 +19,7 @@ const (
 	ErrActorDelete                  = "FAILED_TO_DELETE_ACTOR"
 )
 
+// Err channel errors.
 const (
 	ErrChannelAlready               = "THE_CHANNEL_EXISTS"
 	ErrNotAchannelAdministrator     = "NOT_A_CHANNEL_ADMINISTRATOR"

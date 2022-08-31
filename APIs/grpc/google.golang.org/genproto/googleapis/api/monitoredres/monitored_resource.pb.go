@@ -46,7 +46,6 @@ const (
 // Different APIs can support different monitored resource types. APIs generally
 // provide a `list` method that returns the monitored resource descriptors used
 // by the API.
-//
 type MonitoredResourceDescriptor struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -162,9 +161,9 @@ func (x *MonitoredResourceDescriptor) GetLaunchStage() api.LaunchStage {
 // [MonitoredResourceDescriptor][google.api.MonitoredResourceDescriptor] for `"gce_instance"` has labels
 // `"instance_id"` and `"zone"`:
 //
-//     { "type": "gce_instance",
-//       "labels": { "instance_id": "12345678901234",
-//                   "zone": "us-central1-a" }}
+//	{ "type": "gce_instance",
+//	  "labels": { "instance_id": "12345678901234",
+//	              "zone": "us-central1-a" }}
 type MonitoredResource struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -244,9 +243,9 @@ type MonitoredResourceMetadata struct {
 	// System label values can be only strings, Boolean values, or a list of
 	// strings. For example:
 	//
-	//     { "name": "my-test-instance",
-	//       "security_group": ["a", "b", "c"],
-	//       "spot_instance": false }
+	//	{ "name": "my-test-instance",
+	//	  "security_group": ["a", "b", "c"],
+	//	  "spot_instance": false }
 	SystemLabels *structpb.Struct `protobuf:"bytes,1,opt,name=system_labels,json=systemLabels,proto3" json:"system_labels,omitempty"`
 	// Output only. A map of user-defined metadata labels.
 	UserLabels map[string]string `protobuf:"bytes,2,rep,name=user_labels,json=userLabels,proto3" json:"user_labels,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`

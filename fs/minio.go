@@ -2,19 +2,17 @@ package fs
 
 import (
 	"fmt"
-	"io"
-
+	"github.com/hvxahv/hvx/errors"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
-	"github.com/pkg/errors"
+
 	"github.com/spf13/viper"
 	"golang.org/x/net/context"
+	"io"
 )
 
 const (
-	defaultEndpoint        = "minio.halfmemories.com"
-	defaultAccessKeyID     = "hvxahv"
-	defaultSecretAccessKey = "hvxahv123"
+	MinioPublicBucketPolicy = `{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":{"AWS":["*"]},"Action":["s3:GetBucketLocation","s3:ListBucket","s3:ListBucketMultipartUploads"],"Resource":["arn:aws:s3:::avatar"]},{"Effect":"Allow","Principal":{"AWS":["*"]},"Action":["s3:AbortMultipartUpload","s3:DeleteObject","s3:GetObject","s3:ListMultipartUploadParts","s3:PutObject"],"Resource":["arn:aws:s3:::avatar/*"]}]}`
 )
 
 type Minio struct {
@@ -23,40 +21,39 @@ type Minio struct {
 	secretAccessKey string
 	useSSL          bool
 	Region          string
+	Ctx             context.Context
+	Client          *minio.Client
+}
 
-	Ctx    context.Context
-	Client *minio.Client
+type MinioBucket interface {
+	MakeBucket(name, policy string) error
+	ListBuckets() error
+	GetBucketPolicy(name string) (string, error)
+}
 
+type MinioFiles struct {
+	Ctx         context.Context
+	Client      *minio.Client
 	BucketName  string
 	ObjectName  string
 	ContentType string
+
+	Buffer io.Reader
+	Size   int64
 }
 
-func (x *Minio) SetPutOption(bucketName, objectName, contentType string) *Minio {
-	x.ObjectName = objectName
-	x.BucketName = bucketName
-	x.ContentType = contentType
-	return x
+type MinioFile interface {
+	Put() (*minio.UploadInfo, error)
 }
 
-func NewMinio() *Minio {
+func NewDefaultMinio() *Minio {
 	var (
-		endpoint        = viper.GetString("minio.endpoint")
-		accessKeyID     = viper.GetString("minio.accessKeyID")
-		secretAccessKey = viper.GetString("minio.secretAccessKey")
-		useSSL          = viper.GetBool("minio.useSSL")
-		region          = viper.GetString("minio.region")
+		endpoint        = viper.GetString("fs.minio.endpoint")
+		accessKeyID     = viper.GetString("fs.minio.accessKeyID")
+		secretAccessKey = viper.GetString("fs.minio.secretAccessKey")
+		useSSL          = viper.GetBool("fs.minio.useSSL")
+		region          = viper.GetString("fs.minio.region")
 	)
-
-	if endpoint == "" {
-		endpoint = defaultEndpoint
-	}
-	if accessKeyID == "" {
-		accessKeyID = defaultAccessKeyID
-	}
-	if secretAccessKey == "" {
-		secretAccessKey = defaultSecretAccessKey
-	}
 	return &Minio{
 		endpoint:        endpoint,
 		accessKeyID:     accessKeyID,
@@ -72,19 +69,14 @@ func (x *Minio) Dial() (*Minio, error) {
 		Creds:  credentials.NewStaticV4(x.accessKeyID, x.secretAccessKey, ""),
 		Secure: x.useSSL})
 	if err != nil {
-		return nil, errors.Errorf("minio connection error: %v ", err)
+		return nil, errors.Newf("minio connection error: %v ", err)
 	}
 	x.Client = client
 	x.Ctx = context.Background()
 	return x, err
 }
 
-type Miner interface {
-	CreateBucket(name string) error
-	ListBucket() error
-}
-
-func (x *Minio) CreateBucket(name string) error {
+func (x *Minio) MakeBucket(name, policy string) error {
 	if err := x.Client.MakeBucket(x.Ctx, name, minio.MakeBucketOptions{
 		Region:        x.Region,
 		ObjectLocking: false,
@@ -95,10 +87,13 @@ func (x *Minio) CreateBucket(name string) error {
 		}
 		return err
 	}
+	if err := x.Client.SetBucketPolicy(x.Ctx, name, policy); err != nil {
+		return err
+	}
 	return nil
 }
 
-func (x *Minio) ListBucket() error {
+func (x *Minio) ListBuckets() error {
 	buckets, err := x.Client.ListBuckets(x.Ctx)
 	if err != nil {
 		return err
@@ -109,11 +104,22 @@ func (x *Minio) ListBucket() error {
 	return nil
 }
 
-func (x *Minio) FilePut(buffer io.Reader, size int64) (*minio.UploadInfo, error) {
-	o, err := x.Client.PutObject(x.Ctx, x.BucketName, x.ObjectName, buffer, size, minio.PutObjectOptions{
+func (x *Minio) GetBucketPolicy(name string) (string, error) {
+	policy, err := x.Client.GetBucketPolicy(x.Ctx, name)
+	if err != nil {
+		return "", err
+	}
+	return policy, nil
+}
+
+func NewMinioFiles(client *minio.Client, ctx context.Context, bucketName, objectName, contentType string, buffer io.Reader, size int64) *MinioFiles {
+	return &MinioFiles{Client: client, Ctx: ctx, BucketName: bucketName, ObjectName: objectName, ContentType: contentType, Buffer: buffer, Size: size}
+}
+
+func (x *MinioFiles) Put() (*minio.UploadInfo, error) {
+	o, err := x.Client.PutObject(x.Ctx, x.BucketName, x.ObjectName, x.Buffer, x.Size, minio.PutObjectOptions{
 		ContentType: x.ContentType,
 	})
-
 	if err != nil {
 		return nil, err
 	}

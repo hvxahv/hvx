@@ -2,10 +2,12 @@ package internal
 
 import (
 	"fmt"
+	"github.com/google/uuid"
+	"github.com/hvxahv/hvx/errors"
+	"github.com/hvxahv/hvx/fs"
 	"log"
 
 	"github.com/gin-gonic/gin"
-	"github.com/hvxahv/hvx/fs"
 )
 
 func AvatarHandler(c *gin.Context) {
@@ -15,42 +17,35 @@ func AvatarHandler(c *gin.Context) {
 	}
 
 	if f.Size > 1024*1024*2 {
-		c.JSON(403, gin.H{
-			"code":   "403",
-			"errors": "FILE_SIZE_OUT_OF_RANGE",
-		})
+		c.JSON(403, errors.NewHandler("403", errors.ErrFilesSize))
 		return
 	}
 
 	ft := f.Header.Get("Content-Type")
-	// Only image formats of type PNG / JPEG are accepted.
-	if ft != "image/png" && ft != "image/jpeg" {
-		c.JSON(403, gin.H{
-			"code":   "403",
-			"errors": "FORMAT_NOT_OF_PNG_OR_JPEG",
-		})
+	var suffix string
+	switch ft {
+	case "image/png":
+		suffix = "png"
+	case "image/jpeg":
+		suffix = "jpeg"
+	default:
+		c.JSON(403, errors.NewHandler("403", errors.ErrFilesAllowedPNGAndJPEG))
 		return
 	}
-	client, err := fs.NewMinio().Dial()
-	if err != nil {
-		c.JSON(500, gin.H{
-			"code":   "500",
-			"errors": "INTERNAL_SERVER_ERROR",
-		})
-		return
-	}
+	fn := fmt.Sprintf("%s.%s", uuid.New().String(), suffix)
 	reader, _ := f.Open()
-	info, err := client.SetPutOption("avatar", f.Filename, ft).FilePut(reader, f.Size)
+	put, err := fs.NewFs("minio", "avatar", fn, ft, reader, f.Size).Put()
 	if err != nil {
-		c.JSON(500, gin.H{
-			"code":   "500",
-			"errors": "FAILED_TO_UPLOAD_FILE",
-		})
+		log.Println(err)
+		c.JSON(500, errors.NewHandler("500", errors.ErrFilesPut))
 		return
 	}
-	fmt.Println(info)
 	c.JSON(200, gin.H{
 		"code":   "200",
-		"avatar": info.Location,
+		"avatar": put,
 	})
+}
+
+func FsHandler(c *gin.Context) {
+
 }
