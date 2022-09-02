@@ -12,7 +12,8 @@ import (
 )
 
 const (
-	MinioPublicBucketPolicy = `{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":{"AWS":["*"]},"Action":["s3:GetBucketLocation","s3:ListBucket","s3:ListBucketMultipartUploads"],"Resource":["arn:aws:s3:::avatar"]},{"Effect":"Allow","Principal":{"AWS":["*"]},"Action":["s3:AbortMultipartUpload","s3:DeleteObject","s3:GetObject","s3:ListMultipartUploadParts","s3:PutObject"],"Resource":["arn:aws:s3:::avatar/*"]}]}`
+	MinioPublicAvatarBucketPolicy = `{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":{"AWS":["*"]},"Action":["s3:GetBucketLocation","s3:ListBucket","s3:ListBucketMultipartUploads"],"Resource":["arn:aws:s3:::avatar"]},{"Effect":"Allow","Principal":{"AWS":["*"]},"Action":["s3:AbortMultipartUpload","s3:DeleteObject","s3:GetObject","s3:ListMultipartUploadParts","s3:PutObject"],"Resource":["arn:aws:s3:::avatar/*"]}]}`
+	MinioPublicAttachBucketPolicy = `{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":{"AWS":["*"]},"Action":["s3:GetBucketLocation","s3:ListBucket","s3:ListBucketMultipartUploads"],"Resource":["arn:aws:s3:::attach"]},{"Effect":"Allow","Principal":{"AWS":["*"]},"Action":["s3:AbortMultipartUpload","s3:DeleteObject","s3:GetObject","s3:ListMultipartUploadParts","s3:PutObject"],"Resource":["arn:aws:s3:::attach/*"]}]}`
 )
 
 type Minio struct {
@@ -44,6 +45,7 @@ type MinioFiles struct {
 
 type MinioFile interface {
 	Put() (*minio.UploadInfo, error)
+	Remove(o string)
 }
 
 func NewDefaultMinio() *Minio {
@@ -124,4 +126,22 @@ func (x *MinioFiles) Put() (*minio.UploadInfo, error) {
 		return nil, err
 	}
 	return &o, nil
+}
+
+func NewMinioRemoveFile(client *minio.Client, ctx context.Context, bucket, name string) *MinioFiles {
+	return &MinioFiles{
+		Ctx:        ctx,
+		Client:     client,
+		BucketName: bucket,
+		ObjectName: name,
+	}
+}
+
+func (x *MinioFiles) Remove() error {
+	if err := x.Client.RemoveObject(x.Ctx, x.BucketName, x.ObjectName, minio.RemoveObjectOptions{
+		ForceDelete: true}); err != nil {
+		return err
+	}
+
+	return nil
 }

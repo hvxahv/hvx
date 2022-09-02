@@ -70,6 +70,6 @@ func APIServer() *gin.Engine {
 	// The avatar is uploaded through the http interface provided by Gin,
 	// and the uploaded link is then sent to the actor server via gRPC to change or add the actor avatar.
 	v1.POST("/fs/avatar", AvatarHandler)
-	v1.POST("/fs", FsHandler)
+	v1.POST("/fs/attach", AttachHandler)
 	return api
 }

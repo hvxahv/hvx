@@ -72,3 +72,15 @@ func TestMinio_GetBucketPolicy(t *testing.T) {
 	}
 	t.Log(policy)
 }
+
+func TestMinioFiles_Remove(t *testing.T) {
+	minio, err := NewDefaultMinio().Dial()
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	if err := NewMinioRemoveFile(minio.Client, minio.Ctx, "attach", "fn").Remove(); err != nil {
+		t.Error(err)
+		return
+	}
+}

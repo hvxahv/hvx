@@ -9,41 +9,27 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/hvxahv/hvx/cockroach"
-	"github.com/hvxahv/hvx/fs"
+
 	"github.com/spf13/cobra"
 )
 
-var createCmd = &cobra.Command{
-	Use:     "create",
-	Aliases: []string{"c"},
+var Version string
+var GoVersion string
+
+// versionCmd represents the version command
+var versionCmd = &cobra.Command{
+	Use:     "version",
+	Aliases: []string{"v"},
 	Short:   "",
 	Long:    ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		switch args[0] {
-		case "db":
-			fmt.Println("create database...")
-
-			if err := cockroach.NewRoach().Create(args[1]); err != nil {
-				fmt.Println(err)
-				return
-			}
-		case "fs":
-			buckets := []string{"avatar", "attach"}
-			for _, b := range buckets {
-				fmt.Println(fmt.Printf("create %s bucket...", b))
-				if err := fs.NewBucket(args[1], b).Create(); err != nil {
-					fmt.Println(err)
-					return
-				}
-			}
-
-		}
+		fmt.Println("HVXAHV Version:", Version)
+		fmt.Println("Go Version:", GoVersion)
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(createCmd)
+	rootCmd.AddCommand(versionCmd)
 
 	// Here you will define your flags and configuration settings.
 

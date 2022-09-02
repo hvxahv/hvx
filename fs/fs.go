@@ -7,11 +7,15 @@ import (
 )
 
 type Bucket interface {
+	// Create a storage bucket and use the provider to distinguish the fs server.
 	Create() error
 }
 
 type Files interface {
+	// Put method and use the provider to distinguish the fs server.
 	Put() (string, error)
+
+	Remove() error
 }
 
 type Fs struct {
@@ -35,16 +39,25 @@ func (f *Fs) Create() error {
 		if err != nil {
 			return err
 		}
-		if err := client.MakeBucket(f.BucketName, MinioPublicBucketPolicy); err != nil {
+		var policy string
+		switch f.BucketName {
+		case "avatar":
+			policy = MinioPublicAvatarBucketPolicy
+		case "attach":
+			policy = MinioPublicAttachBucketPolicy
+		default:
+			return errors.New("don't know the name to create the bucket.")
+		}
+		if err := client.MakeBucket(f.BucketName, policy); err != nil {
 			return err
 		}
 	default:
-		return errors.New("NO_MATCHING_PROVIDER")
+		return errors.New(errors.ErrFSProvider)
 	}
 	return nil
 }
 
-func NewFs(provider string, bucketName string, fileName string, contentType string, buffer io.Reader, fileSize int64) *Fs {
+func NewFsPut(provider string, bucketName string, fileName string, contentType string, buffer io.Reader, fileSize int64) *Fs {
 	return &Fs{Provider: provider, BucketName: bucketName, FileName: fileName, ContentType: contentType, FileBuffer: buffer, FileSize: fileSize}
 }
 
@@ -66,5 +79,26 @@ func (f *Fs) Put() (string, error) {
 
 	default:
 		return "", errors.New("NO_MATCHING_PROVIDER")
+	}
+}
+
+func NewFsRemove(provider string, bucketName string, fileName string) *Fs {
+	return &Fs{Provider: provider, BucketName: bucketName, FileName: fileName}
+}
+
+func (f *Fs) Remove() error {
+	switch f.Provider {
+	case "minio":
+		minio, err := NewDefaultMinio().Dial()
+		if err != nil {
+			return err
+		}
+		if err := NewMinioRemoveFile(minio.Client, minio.Ctx, f.BucketName, f.FileName).Remove(); err != nil {
+			return err
+		}
+		return nil
+
+	default:
+		return errors.New("NO_MATCHING_PROVIDER")
 	}
 }

@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package hvx.api.v1alpha1.fs.proto;
+option go_package = "github.com/hvxahv/hvx/APIs/v1alpha1/fs";
+
+import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
+import "google/protobuf/empty.proto";
+
+service Fs {
+  rpc FsPut (FsPutRequest) returns (FsPutResponse) {}
+  rpc FsRemove (FsRemoveRequest) returns (FsRemoveResponse) {}
+}
+
+message FsPutRequest {}
+
+message FsPutResponse {}
+
+message FsRemoveRequest {}
+
+message FsRemoveResponse {}
