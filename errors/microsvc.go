@@ -1,0 +1,11 @@
+package errors
+
+const (
+	ErrConnectFsRPCServer      = "FAILED_TO_CONNECT_TO_FS_SERVICE"
+	ErrConnectAccountRPCServer = "FAILED_TO_CONNECT_TO_ACCOUNT_SERVICE"
+	ErrConnectActorRPCServer   = "FAILED_TO_CONNECT_TO_ACTOR_SERVICE"
+	ErrConnectAuthRPCServer    = "FAILED_TO_CONNECT_TO_AUTH_SERVICE"
+	ErrConnectDeviceRPCServer  = "FAILED_TO_CONNECT_TO_DEVICE_SERVICE"
+	ErrConnectChannelRPCServer = "FAILED_TO_CONNECT_TO_CHANNEL_SERVICE"
+	ErrConnectArticleRPCServer = "FAILED_TO_CONNECT_TO_ARTICLE_SERVICE"
+)

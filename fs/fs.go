@@ -15,7 +15,8 @@ type Files interface {
 	// Put method and use the provider to distinguish the fs server.
 	Put() (string, error)
 
-	Remove() error
+	// Delete objects from the object store by filename.
+	Delete() error
 }
 
 type Fs struct {
@@ -82,11 +83,11 @@ func (f *Fs) Put() (string, error) {
 	}
 }
 
-func NewFsRemove(provider string, bucketName string, fileName string) *Fs {
+func NewFsDelete(provider string, bucketName string, fileName string) *Fs {
 	return &Fs{Provider: provider, BucketName: bucketName, FileName: fileName}
 }
 
-func (f *Fs) Remove() error {
+func (f *Fs) Delete() error {
 	switch f.Provider {
 	case "minio":
 		minio, err := NewDefaultMinio().Dial()

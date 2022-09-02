@@ -8,14 +8,39 @@ import "google/api/field_behavior.proto";
 import "google/protobuf/empty.proto";
 
 service Fs {
-  rpc FsPut (FsPutRequest) returns (FsPutResponse) {}
-  rpc FsRemove (FsRemoveRequest) returns (FsRemoveResponse) {}
+  rpc Create (CreateRequest) returns (CreateResponse) {}
+  rpc Delete (DeleteRequest) returns (DeleteResponse) {}
+  rpc Get(GetRequest) returns (GetResponse) {}
 }
 
-message FsPutRequest {}
+message CreateRequest {
+  string accountId = 1;
+  string fileName = 2;
+  string address = 3;
+}
 
-message FsPutResponse {}
+message CreateResponse {
+  string code = 1;
+  string status = 2;
+}
 
-message FsRemoveRequest {}
+message DeleteRequest {
+  string accountId = 1;
+  string fileName = 2;
+}
 
-message FsRemoveResponse {}
+message DeleteResponse {
+  string code = 1;
+  string status = 2;
+}
+
+message GetRequest {
+  string accountId = 1;
+  string fileName = 2;
+}
+
+message GetResponse {
+  string code = 1;
+  string fileName = 2;
+  string address = 3;
+}

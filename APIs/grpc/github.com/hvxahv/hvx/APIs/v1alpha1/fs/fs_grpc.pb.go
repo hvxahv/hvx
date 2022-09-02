@@ -22,8 +22,9 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type FsClient interface {
-	FsPut(ctx context.Context, in *FsPutRequest, opts ...grpc.CallOption) (*FsPutResponse, error)
-	FsRemove(ctx context.Context, in *FsRemoveRequest, opts ...grpc.CallOption) (*FsRemoveResponse, error)
+	Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error)
+	Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error)
+	Get(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error)
 }
 
 type fsClient struct {
@@ -34,18 +35,27 @@ func NewFsClient(cc grpc.ClientConnInterface) FsClient {
 	return &fsClient{cc}
 }
 
-func (c *fsClient) FsPut(ctx context.Context, in *FsPutRequest, opts ...grpc.CallOption) (*FsPutResponse, error) {
-	out := new(FsPutResponse)
-	err := c.cc.Invoke(ctx, "/hvx.api.v1alpha1.fs.proto.Fs/FsPut", in, out, opts...)
+func (c *fsClient) Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error) {
+	out := new(CreateResponse)
+	err := c.cc.Invoke(ctx, "/hvx.api.v1alpha1.fs.proto.Fs/Create", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *fsClient) FsRemove(ctx context.Context, in *FsRemoveRequest, opts ...grpc.CallOption) (*FsRemoveResponse, error) {
-	out := new(FsRemoveResponse)
-	err := c.cc.Invoke(ctx, "/hvx.api.v1alpha1.fs.proto.Fs/FsRemove", in, out, opts...)
+func (c *fsClient) Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error) {
+	out := new(DeleteResponse)
+	err := c.cc.Invoke(ctx, "/hvx.api.v1alpha1.fs.proto.Fs/Delete", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *fsClient) Get(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error) {
+	out := new(GetResponse)
+	err := c.cc.Invoke(ctx, "/hvx.api.v1alpha1.fs.proto.Fs/Get", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -56,19 +66,23 @@ func (c *fsClient) FsRemove(ctx context.Context, in *FsRemoveRequest, opts ...gr
 // All implementations should embed UnimplementedFsServer
 // for forward compatibility
 type FsServer interface {
-	FsPut(context.Context, *FsPutRequest) (*FsPutResponse, error)
-	FsRemove(context.Context, *FsRemoveRequest) (*FsRemoveResponse, error)
+	Create(context.Context, *CreateRequest) (*CreateResponse, error)
+	Delete(context.Context, *DeleteRequest) (*DeleteResponse, error)
+	Get(context.Context, *GetRequest) (*GetResponse, error)
 }
 
 // UnimplementedFsServer should be embedded to have forward compatible implementations.
 type UnimplementedFsServer struct {
 }
 
-func (UnimplementedFsServer) FsPut(context.Context, *FsPutRequest) (*FsPutResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method FsPut not implemented")
+func (UnimplementedFsServer) Create(context.Context, *CreateRequest) (*CreateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
 }
-func (UnimplementedFsServer) FsRemove(context.Context, *FsRemoveRequest) (*FsRemoveResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method FsRemove not implemented")
+func (UnimplementedFsServer) Delete(context.Context, *DeleteRequest) (*DeleteResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
+}
+func (UnimplementedFsServer) Get(context.Context, *GetRequest) (*GetResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
 }
 
 // UnsafeFsServer may be embedded to opt out of forward compatibility for this service.
@@ -82,38 +96,56 @@ func RegisterFsServer(s grpc.ServiceRegistrar, srv FsServer) {
 	s.RegisterService(&Fs_ServiceDesc, srv)
 }
 
-func _Fs_FsPut_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FsPutRequest)
+func _Fs_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(FsServer).FsPut(ctx, in)
+		return srv.(FsServer).Create(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/hvx.api.v1alpha1.fs.proto.Fs/FsPut",
+		FullMethod: "/hvx.api.v1alpha1.fs.proto.Fs/Create",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FsServer).FsPut(ctx, req.(*FsPutRequest))
+		return srv.(FsServer).Create(ctx, req.(*CreateRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Fs_FsRemove_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FsRemoveRequest)
+func _Fs_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(FsServer).FsRemove(ctx, in)
+		return srv.(FsServer).Delete(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/hvx.api.v1alpha1.fs.proto.Fs/FsRemove",
+		FullMethod: "/hvx.api.v1alpha1.fs.proto.Fs/Delete",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FsServer).FsRemove(ctx, req.(*FsRemoveRequest))
+		return srv.(FsServer).Delete(ctx, req.(*DeleteRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Fs_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FsServer).Get(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/hvx.api.v1alpha1.fs.proto.Fs/Get",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FsServer).Get(ctx, req.(*GetRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -126,12 +158,16 @@ var Fs_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*FsServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "FsPut",
-			Handler:    _Fs_FsPut_Handler,
+			MethodName: "Create",
+			Handler:    _Fs_Create_Handler,
 		},
 		{
-			MethodName: "FsRemove",
-			Handler:    _Fs_FsRemove_Handler,
+			MethodName: "Delete",
+			Handler:    _Fs_Delete_Handler,
+		},
+		{
+			MethodName: "Get",
+			Handler:    _Fs_Get_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

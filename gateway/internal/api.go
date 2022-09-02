@@ -67,9 +67,9 @@ func APIServer() *gin.Engine {
 	v1.DELETE("/activity/*x", v1alpha1.ActivityHandler)
 
 	// FS
-	// The avatar is uploaded through the http interface provided by Gin,
-	// and the uploaded link is then sent to the actor server via gRPC to change or add the actor avatar.
 	v1.POST("/fs/avatar", AvatarHandler)
 	v1.POST("/fs/attach", AttachHandler)
+	v1.DELETE("/fs/source", DeleteFsHandler)
+	v1.GET("/fs/address/:name", GetFsAddressHandler)
 	return api
 }

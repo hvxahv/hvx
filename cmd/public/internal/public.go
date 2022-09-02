@@ -4,7 +4,7 @@ import (
 	"github.com/hvxahv/hvx/APIs/v1alpha1/account"
 	"github.com/hvxahv/hvx/APIs/v1alpha1/actor"
 	"github.com/hvxahv/hvx/clientv1"
-	"github.com/hvxahv/hvx/microsvc"
+	microsvc "github.com/hvxahv/hvx/microsvc"
 	"golang.org/x/net/context"
 )
 

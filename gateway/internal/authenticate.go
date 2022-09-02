@@ -27,28 +27,16 @@ import (
 func Auth(c *gin.Context) {
 	a := c.Request.Header.Get("Authorization")
 	if a == "" {
-		c.JSON(500, gin.H{
-			"code":    "500",
-			"message": "TOKEN IS NOT CARRIED IN THE REQUEST",
-		})
+		c.JSON(500, errors.NewHandler("500", errors.ErrNotAuthorizationTOKEN))
 		c.Abort()
 		return
 	}
-	var (
-		token  = strings.Split(a, "Bearer ")[1]
-		secret = viper.GetString("authentication.token.secret")
-	)
-
-	parse, err := auth2.NewParseJWTToken(token, secret).JWTTokenParse()
+	parse, err := ParseAuthorization(a)
 	if err != nil {
-		c.JSON(401, gin.H{
-			"code":  "401",
-			"error": errors.New("TOKEN_PARSING_FAILURE").Error(),
-		})
+		c.JSON(401, errors.NewHandler("401", errors.ErrTokenParse))
 		c.Abort()
 		return
 	}
-
 	cli, err := clientv1.New(c,
 		microsvc.NewGRPCAddress("device").Get(),
 	)
@@ -58,22 +46,29 @@ func Auth(c *gin.Context) {
 	defer cli.Close()
 	devices, err := device.NewDevicesClient(cli.Conn).IsExist(c, &device.IsExistRequest{Id: parse.DeviceID})
 	if err != nil {
-		c.JSON(501, gin.H{
-			"code":  "500",
-			"error": err.Error(),
-		})
+		c.JSON(501, errors.NewHandler("501", err.Error()))
 		c.Abort()
 		return
 	}
 
 	if devices.IsExist {
-		c.JSON(401, gin.H{
-			"code":  "401",
-			"error": errors.New(errors.ErrTokenUnauthorized).Error(),
-		})
+		c.JSON(401, errors.NewHandler("401", errors.New(errors.ErrTokenUnauthorized).Error()))
 		c.Abort()
 		return
 	}
 
 	c.Next()
+}
+
+func ParseAuthorization(a string) (*auth2.Claims, error) {
+	var (
+		token  = strings.Split(a, "Bearer ")[1]
+		secret = viper.GetString("authentication.token.secret")
+	)
+
+	parse, err := auth2.NewParseJWTToken(token, secret).JWTTokenParse()
+	if err != nil {
+		return nil, err
+	}
+	return parse, nil
 }
