@@ -1,13 +1,28 @@
 package address
 
-const (
-	Account  string = "http://hvxahv.disism.internal:7010"
-	Actor    string = "http://hvxahv.disism.internal:7020"
-	Public   string = "http://hvxahv.disism.internal:7040"
-	Auth     string = "http://hvxahv.disism.internal:7030"
-	Device   string = "http://hvxahv.disism.internal:7050"
-	Channel  string = "http://hvxahv.disism.internal:7060"
-	Article  string = "http://hvxahv.disism.internal:7070"
-	Saved    string = "http://hvxahv.disism.internal:7080"
-	Activity string = "http://hvxahv.disism.internal:7090"
+import (
+	"fmt"
+	"github.com/spf13/viper"
 )
+
+const (
+	Account  string = "account"
+	Actor    string = "actor"
+	Public   string = "public"
+	Auth     string = "auth"
+	Device   string = "device"
+	Channel  string = "channel"
+	Article  string = "article"
+	Saved    string = "saved"
+	Activity string = "activity"
+	Message  string = "message"
+)
+
+func GetHTTP(svcName string) string {
+	hostname := viper.GetString(fmt.Sprintf("microsvcs.%s.hostname", svcName))
+	port := viper.GetString(fmt.Sprintf("microsvcs.%s.ports.http", svcName))
+	if viper.GetBool(fmt.Sprintf("microsvcs.%s.ports.useSSL", svcName)) {
+		return fmt.Sprintf("https://%s:%s", hostname, port)
+	}
+	return fmt.Sprintf("http://%s:%s", hostname, port)
+}

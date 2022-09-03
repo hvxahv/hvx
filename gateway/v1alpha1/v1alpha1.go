@@ -7,7 +7,7 @@ import (
 )
 
 func SearchActorsHandler(c *gin.Context) {
-	if err := proxy.NewProxy(c, "/api/v1/search/"+c.Param("actor"), address.Actor).Proxy(); err != nil {
+	if err := proxy.NewProxy(c, "/api/v1/search/"+c.Param("actor"), address.GetHTTP(address.Actor)).Proxy(); err != nil {
 		c.JSON(502, gin.H{
 			"error": "502_BAD_GATEWAY",
 		})
@@ -16,7 +16,7 @@ func SearchActorsHandler(c *gin.Context) {
 }
 
 func AccountHandler(c *gin.Context) {
-	if err := proxy.NewProxy(c, "/api/v1/account"+c.Param("x"), address.Account).Proxy(); err != nil {
+	if err := proxy.NewProxy(c, "/api/v1/account"+c.Param("x"), address.GetHTTP(address.Account)).Proxy(); err != nil {
 		c.JSON(502, gin.H{
 			"error": err.Error(),
 		})
@@ -25,7 +25,7 @@ func AccountHandler(c *gin.Context) {
 }
 
 func ActorHandler(c *gin.Context) {
-	if err := proxy.NewProxy(c, "/api/v1/actor", address.Actor).Proxy(); err != nil {
+	if err := proxy.NewProxy(c, "/api/v1/actor", address.GetHTTP(address.Actor)).Proxy(); err != nil {
 		c.JSON(502, gin.H{
 			"error": "502_BAD_GATEWAY",
 		})
@@ -34,7 +34,7 @@ func ActorHandler(c *gin.Context) {
 }
 
 func DeviceHandler(c *gin.Context) {
-	if err := proxy.NewProxy(c, "/api/v1/device"+c.Param("x"), address.Device).Proxy(); err != nil {
+	if err := proxy.NewProxy(c, "/api/v1/device"+c.Param("x"), address.GetHTTP(address.Device)).Proxy(); err != nil {
 		c.JSON(502, gin.H{
 			"error": err.Error(),
 		})
@@ -43,7 +43,7 @@ func DeviceHandler(c *gin.Context) {
 }
 
 func ChannelHandler(c *gin.Context) {
-	if err := proxy.NewProxy(c, "/api/v1/channel"+c.Param("x"), address.Channel).Proxy(); err != nil {
+	if err := proxy.NewProxy(c, "/api/v1/channel"+c.Param("x"), address.GetHTTP(address.Channel)).Proxy(); err != nil {
 		c.JSON(502, gin.H{
 			"error": err.Error(),
 		})
@@ -52,7 +52,7 @@ func ChannelHandler(c *gin.Context) {
 }
 
 func ArticleHandler(c *gin.Context) {
-	if err := proxy.NewProxy(c, "/api/v1/article"+c.Param("x"), address.Article).Proxy(); err != nil {
+	if err := proxy.NewProxy(c, "/api/v1/article"+c.Param("x"), address.GetHTTP(address.Article)).Proxy(); err != nil {
 		c.JSON(502, gin.H{
 			"error": err.Error(),
 		})
@@ -61,7 +61,7 @@ func ArticleHandler(c *gin.Context) {
 }
 
 func SavedHandler(c *gin.Context) {
-	if err := proxy.NewProxy(c, "/api/v1/saved"+c.Param("x"), address.Saved).Proxy(); err != nil {
+	if err := proxy.NewProxy(c, "/api/v1/saved"+c.Param("x"), address.GetHTTP(address.Saved)).Proxy(); err != nil {
 		c.JSON(502, gin.H{
 			"error": err.Error(),
 		})
@@ -70,7 +70,16 @@ func SavedHandler(c *gin.Context) {
 }
 
 func ActivityHandler(c *gin.Context) {
-	if err := proxy.NewProxy(c, "/api/v1/activity"+c.Param("x"), address.Activity).Proxy(); err != nil {
+	if err := proxy.NewProxy(c, "/api/v1/activity"+c.Param("x"), address.GetHTTP(address.Activity)).Proxy(); err != nil {
+		c.JSON(502, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+}
+
+func MessageAccessHandler(c *gin.Context) {
+	if err := proxy.NewProxy(c, "/api/v1/message/access"+c.Param("x"), address.GetHTTP(address.Message)).Proxy(); err != nil {
 		c.JSON(502, gin.H{
 			"error": err.Error(),
 		})

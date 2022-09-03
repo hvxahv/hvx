@@ -71,5 +71,8 @@ func APIServer() *gin.Engine {
 	v1.POST("/fs/attach", AttachHandler)
 	v1.DELETE("/fs/source", DeleteFsHandler)
 	v1.GET("/fs/address/:name", GetFsAddressHandler)
+
+	// MESSAGE
+	v1.POST("/message/access/*x", v1alpha1.MessageAccessHandler)
 	return api
 }

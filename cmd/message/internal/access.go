@@ -33,15 +33,15 @@ type Matrix interface {
 	// Verify whether the user is correct,
 	// register to matrix after successful verification,
 	// and return the registration information to the client.
-	Register(username, password string) (string, error)
+	Register(username, password string) (*matrix.RegisterRes, error)
 }
 
-// Constructor for NewMatrices to create matrix data.
+// NewMatrices constructor for NewMatrices to create matrix data.
 func NewMatrices(actorId uint, deviceId, homeServer, userId string) *Matrices {
 	return &Matrices{ActorId: actorId, DeviceId: deviceId, HomeServer: homeServer, UserId: userId}
 }
 
-func (m *Matrices) Create() error {
+func (a *Matrices) Create() error {
 	db := cockroach.GetDB()
 
 	if err := db.AutoMigrate(&Matrices{}); err != nil {
@@ -50,7 +50,7 @@ func (m *Matrices) Create() error {
 
 	if err := db.Debug().
 		Table(AccountsTable).
-		Create(&m).Error; err != nil {
+		Create(&a).Error; err != nil {
 		return err
 	}
 	return nil

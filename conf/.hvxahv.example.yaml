@@ -62,6 +62,7 @@ microsvcs:
   gateway:
     version: "0.1.0"
     hostname: "hvxahv.disism.internal"
+    useSSL: false
     ports:
       http: "8080"
       grpc: "50000"
@@ -69,6 +70,7 @@ microsvcs:
   account:
     version: "0.1.0"
     hostname: "hvxahv.disism.internal"
+    useSSL: false
     ports:
       http: "7010"
       grpc: "50010"
@@ -76,6 +78,7 @@ microsvcs:
   actor:
     version: "0.1.0"
     hostname: "hvxahv.disism.internal"
+    useSSL: false
     ports:
       http: "7020"
       grpc: "50020"
@@ -83,6 +86,7 @@ microsvcs:
   auth:
     version: "0.1.0"
     hostname: "hvxahv.disism.internal"
+    useSSL: false
     ports:
       http: "7030"
       grpc: "50030"
@@ -90,6 +94,7 @@ microsvcs:
   public:
     version: "0.1.0"
     hostname: "hvxahv.disism.internal"
+    useSSL: false
     ports:
       http: "7040"
       grpc: "50040"
@@ -97,6 +102,7 @@ microsvcs:
   device:
     version: "0.1.0"
     hostname: "hvxahv.disism.internal"
+    useSSL: false
     ports:
       http: "7050"
       grpc: "50050"
@@ -104,6 +110,7 @@ microsvcs:
   channel:
     version: "0.1.0"
     hostname: "hvxahv.disism.internal"
+    useSSL: false
     ports:
       http: "7060"
       grpc: "50060"
@@ -111,6 +118,7 @@ microsvcs:
   article:
     version: "0.1.0"
     hostname: "hvxahv.disism.internal"
+    useSSL: false
     ports:
       http: "7070"
       grpc: "50070"
@@ -118,6 +126,7 @@ microsvcs:
   saved:
     version: "0.1.0"
     hostname: "hvxahv.disism.internal"
+    useSSL: false
     ports:
       http: "7080"
       grpc: "50080"
@@ -125,6 +134,7 @@ microsvcs:
   activity:
     version: "0.1.0"
     hostname: "hvxahv.disism.internal"
+    useSSL: false
     ports:
       http: "7090"
       grpc: "50090"
@@ -132,6 +142,15 @@ microsvcs:
   fs:
     version: "0.1.0"
     hostname: "hvxahv.disism.internal"
+    useSSL: false
     ports:
-    http: "7100"
-    grpc: "60100"
+      http: "7100"
+      grpc: "60100"
+
+  message:
+    version: "0.1.0"
+    hostname: "hvxahv.disism.internal"
+    useSSL: false
+    ports:
+      http: "7110"
+      grpc: "60110"
