@@ -17,6 +17,7 @@ const (
 	ErrAccountUsernameAlreadyExists = "THE_USERNAME_ALREADY_EXISTS"
 	ErrAccountCreate                = "FAILED_TO_CREATE_ACCOUNT"
 	ErrActorDelete                  = "FAILED_TO_DELETE_ACTOR"
+	ErrAccountGetByUsername         = "FAILED_TO_GET_THE_ACCOUNT_BY_USERNAME"
 )
 
 // Err channel errors.

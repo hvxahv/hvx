@@ -12,12 +12,13 @@ import (
 
 func (s *server) GetInstance(ctx context.Context, g *emptypb.Empty) (*pb.GetInstanceResponse, error) {
 	return &pb.GetInstanceResponse{
-		Code:       "200",
-		Version:    viper.GetString("version"),
-		Build:      "2022-01-01",
-		Maintainer: viper.GetString("author"),
-		Repo:       viper.GetString("name"),
-		Host:       viper.GetString("domain"),
+		Code:          "200",
+		Version:       viper.GetString("version"),
+		Build:         "2022-01-01",
+		Maintainer:    viper.GetString("author"),
+		Repo:          viper.GetString("name"),
+		Host:          viper.GetString("domain"),
+		MatrixAddress: viper.GetString("matrix.address"),
 	}, nil
 }
 
@@ -70,7 +71,7 @@ func (s *server) GetActor(ctx context.Context, in *pb.GetActorRequest) (*pb.GetA
 	return &pb.GetActorResponse{
 		Context: []string{
 			"https://www.w3.org/ns/activitystreams",
-			"https://w3id.org/security/v1alpha1",
+			"https://w3id.org/security/v1",
 		},
 		Id:                id,
 		Type:              a.ActorType,

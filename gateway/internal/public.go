@@ -7,7 +7,7 @@ import (
 )
 
 func PublicHandler(c *gin.Context) {
-	if err := proxy.NewProxy(c, "/public"+c.Param("x"), address.Public).Proxy(); err != nil {
+	if err := proxy.NewProxy(c, "/public"+c.Param("x"), address.GetHTTP(address.Public)).Proxy(); err != nil {
 		c.JSON(502, gin.H{
 			"error": err.Error(),
 		})
@@ -16,7 +16,7 @@ func PublicHandler(c *gin.Context) {
 }
 
 func WellKnownHandler(c *gin.Context) {
-	if err := proxy.NewProxy(c, "/.well-known/webfinger", address.Public).Proxy(); err != nil {
+	if err := proxy.NewProxy(c, "/.well-known/webfinger", address.GetHTTP(address.Public)).Proxy(); err != nil {
 		c.JSON(502, gin.H{
 			"error": "502_BAD_GATEWAY",
 		})
@@ -25,7 +25,7 @@ func WellKnownHandler(c *gin.Context) {
 }
 
 func GetActorHandler(c *gin.Context) {
-	if err := proxy.NewProxy(c, "/u/"+c.Param("actor"), address.Public).Proxy(); err != nil {
+	if err := proxy.NewProxy(c, "/u/"+c.Param("actor"), address.GetHTTP(address.Public)).Proxy(); err != nil {
 		c.JSON(502, gin.H{
 			"error": "502_BAD_GATEWAY",
 		})
@@ -34,7 +34,7 @@ func GetActorHandler(c *gin.Context) {
 }
 
 func AuthHandler(c *gin.Context) {
-	if err := proxy.NewProxy(c, "/auth", address.Auth).Proxy(); err != nil {
+	if err := proxy.NewProxy(c, "/auth", address.GetHTTP(address.Auth)).Proxy(); err != nil {
 		c.JSON(502, gin.H{
 			"error": err.Error(),
 		})

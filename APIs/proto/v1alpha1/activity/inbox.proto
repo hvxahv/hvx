@@ -1,0 +1,74 @@
+syntax = "proto3";
+
+package hvx.api.v1alpha1.activity.proto;
+option go_package = "github.com/hvxahv/hvx/APIs/v1alpha1/activity";
+
+import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
+import "google/protobuf/empty.proto";
+
+
+service Inbox {
+  rpc Inbox (InboxRequest) returns (InboxResponse) {}
+  rpc GetInbox (GetInboxRequest) returns (GetInboxResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/activity/{inbox_id}"
+    };
+  }
+
+  rpc GetInboxes (google.protobuf.Empty) returns (GetInboxesResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/activity/inboxes"
+    };
+  }
+
+  rpc DeleteInbox (DeleteInboxRequest) returns (DeleteInboxResponse) {
+    option (google.api.http) = {
+      delete: "/api/v1/activity/{inbox_id}"
+      body: "*"
+    };
+  }
+}
+
+message Inboxes {
+  string id = 1;
+  string receiverId = 2 [json_name = "receiver_id"];
+  string senderAddr = 3 [json_name = "sender_addr"];
+  string activityId = 4 [json_name = "activity_id"];
+  string activityType = 5 [json_name = "activity_type"];
+  string activityBody = 6 [json_name = "activity_body"];
+}
+
+message InboxRequest {
+  string name = 1;
+  bytes data = 2;
+}
+
+message InboxResponse {
+  string code = 1;
+  string status = 2;
+}
+
+
+message GetInboxRequest {
+  string inbox_id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message GetInboxResponse {
+  string code = 1;
+  Inboxes inbox = 2;
+}
+
+message GetInboxesResponse {
+  string code = 1;
+  repeated Inboxes inboxes = 2;
+}
+
+message DeleteInboxRequest {
+  string inbox_id = 1 [json_name = "inbox_id"];
+}
+
+message DeleteInboxResponse {
+  string code = 1;
+  string reply = 2;
+}

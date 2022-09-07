@@ -21,12 +21,12 @@ func (s *server) Inbox(ctx context.Context, in *pb.InboxRequest) (*pb.InboxRespo
 	if err != nil {
 		return nil, err
 	}
-	if err := activity.Activity(); err != nil {
+	if err := activity.Handler(); err != nil {
 		return nil, err
 	}
 	return &pb.InboxResponse{
-		Code:     "200",
-		Response: "success",
+		Code:   "200",
+		Status: "success",
 	}, nil
 }
 

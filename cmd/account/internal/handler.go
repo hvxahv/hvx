@@ -9,6 +9,7 @@
 package internal
 
 import (
+	"github.com/hvxahv/hvx/errors"
 	"strconv"
 
 	pb "github.com/hvxahv/hvx/APIs/v1alpha1/account"
@@ -82,7 +83,6 @@ func (s *server) EditEmail(ctx context.Context, in *pb.EditEmailRequest) (*pb.Ed
 	return &pb.EditEmailResponse{Code: "200", Status: "ok"}, nil
 }
 
-// EditPassword When the password is changed, all online devices need to be logged out.
 func (s *server) EditPassword(ctx context.Context, in *pb.EditPasswordRequest) (*pb.EditPasswordResponse, error) {
 	parse, err := microsvc.GetUserdataByAuthorizationToken(ctx)
 	if err != nil {
@@ -93,12 +93,13 @@ func (s *server) EditPassword(ctx context.Context, in *pb.EditPasswordRequest) (
 		return nil, err
 	}
 
+	// // Delete all online devices, as the updated password requires a new login
 	client, err := clientv1.New(ctx, microsvc.NewGRPCAddress("device").Get())
 	if err != nil {
-		return nil, err
+		errors.Throw("error occurred while connecting to the device service while edit the password.", err)
+		return nil, errors.New(errors.ErrConnectDeviceRPCServer)
 	}
 	defer client.Close()
-
 	d, err := device.NewDevicesClient(client.Conn).DeleteDevices(ctx, &device.DeleteDevicesRequest{
 		AccountId: strconv.Itoa(int(parse.AccountId)),
 	})
@@ -106,6 +107,7 @@ func (s *server) EditPassword(ctx context.Context, in *pb.EditPasswordRequest) (
 		return nil, err
 	}
 
+	// TODO - EDIT MATRIX ACCESS PASSWORD.
 	return &pb.EditPasswordResponse{Code: "200", Reply: d.Reply}, nil
 }
 
@@ -114,7 +116,7 @@ func (s *server) Verify(ctx context.Context, in *pb.VerifyRequest) (*pb.VerifyRe
 	if err != nil {
 		return &pb.VerifyResponse{
 			Code:   "401",
-			Status: "unauthorized",
+			Status: "UNAUTHORIZED",
 		}, err
 	}
 	return &pb.VerifyResponse{

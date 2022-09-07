@@ -1,6 +1,9 @@
 package rsa
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
 
 func TestGenerate(t *testing.T) {
 	rsa := NewRsa(2048)
@@ -17,6 +20,9 @@ func TestGenerate(t *testing.T) {
 		t.Errorf("public key is empty")
 	}
 
-	t.Logf("private key: %s", key.Private)
-	t.Logf("public key: %s", key.PublicKey)
+	//t.Logf("private key: %s", key.Private)
+	//t.Logf("public key: %s", key.PublicKey)
+	fmt.Println(key.Private)
+	fmt.Println(key.PublicKey)
+
 }

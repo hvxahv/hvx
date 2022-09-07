@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/hvxahv/hvx/APIs/v1alpha1/activity"
 	"github.com/hvxahv/hvx/clientv1"
@@ -9,6 +10,7 @@ import (
 )
 
 func InboxHandler(c *gin.Context) {
+	fmt.Println(c.Request.Header)
 	name := c.Param("actor")
 	var body []byte
 	body, err := ioutil.ReadAll(c.Request.Body)

@@ -21,7 +21,7 @@ ipfs:
   gateway: "http://127.0.0.1:8081/ipfs/"
 
 matrix:
-  address: "http://localhost:8008"
+  address: "https://matrix.disism.com"
 
 cockroach:
   host: "hvxahv.disism.internal"

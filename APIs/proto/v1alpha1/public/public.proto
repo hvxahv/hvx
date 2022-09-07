@@ -50,6 +50,7 @@ message GetInstanceResponse {
   string maintainer = 4;
   string repo = 5;
   string host = 6;
+  string matrixAddress = 7 [json_name = "matrix_address"];
 }
 
 message GetInstancesResponse {

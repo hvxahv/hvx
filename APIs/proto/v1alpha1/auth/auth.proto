@@ -51,8 +51,8 @@ message AuthorizationResponse {
   string code = 1;
   string status = 2;
   string id = 3;
-  string authorization_token = 4;
-  string actor_id = 5;
+  string authorizationToken = 4 [json_name = "authorization_token"];
+  string actorId = 5 [json_name = "actor_id"];
   string mail = 6;
   string deviceId = 7 [json_name = "device_id"];
 }

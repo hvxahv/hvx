@@ -7,100 +7,17 @@ import "google/api/annotations.proto";
 import "google/api/field_behavior.proto";
 import "google/protobuf/empty.proto";
 
+// Note - This interface is subject to frequent changes in the course of implementation.
 service Activity {
-  rpc Inbox (InboxRequest) returns (InboxResponse) {}
 
-  rpc GetInbox (GetInboxRequest) returns (GetInboxResponse) {
-    option (google.api.http) = {
-      get: "/api/v1/activity/{inbox_id}"
-    };
-  }
-
-  rpc GetInboxes (google.protobuf.Empty) returns (GetInboxesResponse) {
-    option (google.api.http) = {
-      get: "/api/v1/activity/inboxes"
-    };
-  }
-
-  rpc DeleteInbox (DeleteInboxRequest) returns (DeleteInboxResponse) {
-    option (google.api.http) = {
-      delete: "/api/v1/activity/{inbox_id}"
-      body: "*"
-    };
-  }
-
-  rpc CreateOutbox (CreateOutboxRequest) returns (CreateOutboxResponse) {
-    option (google.api.http) = {
-      post: "/api/v1/activity/outbox"
-      body: "*"
-    };
-  }
-
-  rpc GetOutbox (GetOutboxRequest) returns (GetOutboxResponse) {
-    option (google.api.http) = {
-      get: "/api/v1/activity/outbox/{activity_id}"
-    };
-  }
-
-  rpc GetOutboxes (GetOutboxesRequest) returns (GetOutboxesResponse) {
-    option (google.api.http) = {
-      get: "/api/v1/activity/outbox"
-    };
-  }
+  // Activity create an activity that is sent to the activity pub instance server of the specified actor
+  // Because the server should not know the user's private key, we forbid the server to access the user's private key,
+  // and the user's private key should be saved only in the client and the user's own backup file,
+  // so the active signature should be performed in the client, and then the signed data is sent through the server to the server.
+  rpc Activity (ActivityRequest) returns (ActivityResponse) {}
 }
 
-message Inboxes {
-  string id = 1;
-  string receiverId = 2 [json_name = "receiver_id"];
-  string senderAddr = 3 [json_name = "sender_addr"];
-  string activityId = 4 [json_name = "activity_id"];
-  string activityType = 5 [json_name = "activity_type"];
-  string activityBody = 6 [json_name = "activity_body"];
-}
+message ActivityRequest {}
 
-message InboxRequest {
-  string name = 1;
-  bytes data = 2;
-}
+message ActivityResponse {}
 
-message InboxResponse {
-  string code = 1;
-  string response = 2;
-}
-
-message GetInboxRequest {
-  string inbox_id = 1 [(google.api.field_behavior) = REQUIRED];
-}
-
-message GetInboxResponse {
-  string code = 1;
-  Inboxes inbox = 2;
-}
-
-message GetInboxesResponse {
-  string code = 1;
-  repeated Inboxes inboxes = 2;
-}
-
-message DeleteInboxRequest {
-  string inbox_id = 1 [json_name = "inbox_id"];
-}
-
-message DeleteInboxResponse {
-  string code = 1;
-  string reply = 2;
-}
-
-message CreateOutboxRequest {}
-
-message CreateOutboxResponse {}
-
-message GetOutboxRequest {
-  string activity_id = 1 [(google.api.field_behavior) = REQUIRED];
-}
-
-message GetOutboxResponse {}
-
-
-message GetOutboxesRequest {}
-message GetOutboxesResponse {}

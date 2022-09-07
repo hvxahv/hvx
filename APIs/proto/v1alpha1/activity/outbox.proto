@@ -1,0 +1,45 @@
+
+syntax = "proto3";
+
+package hvx.api.v1alpha1.activity.proto;
+option go_package = "github.com/hvxahv/hvx/APIs/v1alpha1/activity";
+
+import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
+import "google/protobuf/empty.proto";
+
+service Outbox {
+  rpc CreateOutbox (CreateOutboxRequest) returns (CreateOutboxResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/activity/outbox"
+      body: "*"
+    };
+  }
+
+  rpc GetOutbox (GetOutboxRequest) returns (GetOutboxResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/activity/outbox/{activity_id}"
+    };
+  }
+
+  rpc GetOutboxes (GetOutboxesRequest) returns (GetOutboxesResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/activity/outbox"
+    };
+  }
+}
+
+
+message CreateOutboxRequest {}
+
+message CreateOutboxResponse {}
+
+message GetOutboxRequest {
+  string activity_id = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message GetOutboxResponse {}
+
+
+message GetOutboxesRequest {}
+message GetOutboxesResponse {}

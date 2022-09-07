@@ -9,6 +9,7 @@
 package internal
 
 import (
+	"github.com/hvxahv/hvx/errors"
 	"time"
 
 	pb "github.com/hvxahv/hvx/APIs/v1alpha1/auth"
@@ -41,6 +42,7 @@ func (s *server) Authorization(ctx context.Context, in *pb.AuthorizationRequest)
 		auth.NewRegisteredClaims(issuer, device.DeviceId, v.Id, expir),
 	).JWTTokenGenerator(secret)
 	if err != nil {
+		errors.Throw("cannot generate token error during authentication.", err)
 		return nil, err
 	}
 

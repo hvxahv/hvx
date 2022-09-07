@@ -60,11 +60,11 @@ RES
 {
   "code": "200",
   "status": "ok",
-  "id": "785503308019695617",
-  "authorizationToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyZGF0YSI6eyJhY2NvdW50X2lkIjoiNzg1NTAzMzA4MDE5Njk1NjE3IiwiYWN0b3JfaWQiOiI3ODU1MDMzMDc2OTM0OTAxNzciLCJkZXZpY2VfaWQiOiI3ODU1MDM0MDkyMzEzMzEzMjkiLCJ1c2VybmFtZSI6Imh2dHVyaW5nZ2EiLCJtYWlsIjoiaHZ0dXJpbmdnYUBkaXNpc20uY29tIn0sImp3dF8uX3N0YW5kYXJkX2NsYWltcyI6eyJpc3MiOiJoYWxmbWVtb3JpZXMuY29tIiwic3ViIjoiNzg1NTAzMzA4MDE5Njk1NjE3IiwiYXVkIjpbIjc4NTUwMzQwOTIzMTMzMTMyOSJdLCJleHAiOjE2NjQ5NzEwMTYsIm5iZiI6MTY1OTc4NzAxNiwiaWF0IjoxNjU5Nzg3MDE2LCJqdGkiOiJmNGNhZTRlNC1lZWJmLTRhNzUtYmM3Yy03MGQ5ZmU1OGQ4MWIifX0.18s6VB150j6thI6yekO1FbR5yLIk0Hkyc0siz_o3-vo",
-  "actorId": "785503307693490177",
-  "mail": "hvturingga@disism.com",
-  "device_id": "785503409231331329"
+  "id": "<ACCOUNT_ID>",
+  "authorization_token": "<TOKEN>",
+  "actor_id": "<ACTOR_ID>",
+  "mail": "<MAIL>",
+  "device_id": "<DEVICE_ID>"
 }
 ```
 

@@ -4,6 +4,7 @@ import (
 	"github.com/hvxahv/hvx/APIs/v1alpha1/account"
 	"github.com/hvxahv/hvx/APIs/v1alpha1/device"
 	"github.com/hvxahv/hvx/clientv1"
+	"github.com/hvxahv/hvx/errors"
 	"github.com/hvxahv/hvx/microsvc"
 	"golang.org/x/net/context"
 )
@@ -30,6 +31,7 @@ func (a *authorization) Authorization(username, password string) (*account.Verif
 		microsvc.NewGRPCAddress("account").Get(),
 	)
 	if err != nil {
+		errors.Throw("error while connecting to the account server for authentication in public service.", err)
 		return nil, err
 	}
 	defer c.Close()
@@ -39,9 +41,9 @@ func (a *authorization) Authorization(username, password string) (*account.Verif
 		Password: password,
 	})
 	if err != nil {
-		return nil, err
+		return nil, errors.New(errors.ErrAccountVerification)
 	}
-	return v, err
+	return v, nil
 }
 
 func (a *authorization) AddDevice(accountId, ua string) (*device.CreateResponse, error) {
@@ -49,7 +51,8 @@ func (a *authorization) AddDevice(accountId, ua string) (*device.CreateResponse,
 		microsvc.NewGRPCAddress("device").Get(),
 	)
 	if err != nil {
-		return nil, err
+		errors.Throw("error occurred while connecting to the device server in public service.", err)
+		return nil, errors.New(errors.ErrConnectDeviceRPCServer)
 	}
 	defer c.Close()
 	d, err := device.NewDevicesClient(c.Conn).Create(a.ctx, &device.CreateRequest{

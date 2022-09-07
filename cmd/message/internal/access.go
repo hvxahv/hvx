@@ -30,8 +30,7 @@ type Matrix interface {
 	Create() error
 
 	// Register for a Matrix account.
-	// Verify whether the user is correct,
-	// register to matrix after successful verification,
+	// Verify whether the user is correct, register to matrix after successful verification,
 	// and return the registration information to the client.
 	Register(username, password string) (*matrix.RegisterRes, error)
 }
@@ -62,7 +61,13 @@ func NewRegister() *Matrices {
 }
 
 func (a *Matrices) Register(username, password string) (*matrix.RegisterRes, error) {
-	ctx := context.Background()
+	var (
+		ctx     = context.Background()
+		address = matrix.GetRegisterAddress()
+		data    = matrix.NewRegisterReq(a.DeviceId, username, password)
+	)
+
+	// Go to the account server to verify the username and password.
 	c, err := clientv1.New(ctx,
 		microsvc.NewGRPCAddress("account").Get(),
 	)
@@ -76,16 +81,17 @@ func (a *Matrices) Register(username, password string) (*matrix.RegisterRes, err
 		Password: password,
 	})
 	if err != nil {
-		return nil, err
+		return nil, errors.New(errors.ErrAccountVerification)
 	}
 
-	d, err := matrix.NewMatrixReq(matrix.GetRegisterAddress(), matrix.NewRegisterReq(a.DeviceId, username, password)).Do()
+	// Go to the matrix server to register an account.
+	d, err := matrix.NewMatrixReq(address, data).Do()
 	if err != nil {
 		return nil, errors.New(errors.ErrMatrixAccountRegister)
 	}
 	// ERR PROCESSING...
-	// https://matrix.org/docs/api/#post-/_matrix/client/v3/register
 	if d.Code != 200 {
+		errors.Throw("access api error when registering to matrix server ", errors.New(string(d.Body)))
 		var unmarshal matrix.RegisterErrRes
 		if err := json.Unmarshal(d.Body, &unmarshal); err != nil {
 			return nil, err
@@ -94,6 +100,8 @@ func (a *Matrices) Register(username, password string) (*matrix.RegisterRes, err
 		}
 	}
 
+	// If the registration is successful, the returned results are processed
+	// and the information is sent to the database for persistence.
 	var x matrix.RegisterRes
 	if err := json.Unmarshal(d.Body, &x); err != nil {
 		return nil, err
@@ -102,7 +110,7 @@ func (a *Matrices) Register(username, password string) (*matrix.RegisterRes, err
 	if err != nil {
 		return nil, err
 	}
-	if err := NewMatrices(uint(aid), a.DeviceId, matrix.GetMatrixServiceAddress(), x.UserId).Create(); err != nil {
+	if err := NewMatrices(uint(aid), a.DeviceId, matrix.GetMatrixAddress(), x.UserId).Create(); err != nil {
 		return nil, err
 	}
 

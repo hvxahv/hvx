@@ -11,7 +11,6 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
-	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -23,13 +22,11 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ActivityClient interface {
-	Inbox(ctx context.Context, in *InboxRequest, opts ...grpc.CallOption) (*InboxResponse, error)
-	GetInbox(ctx context.Context, in *GetInboxRequest, opts ...grpc.CallOption) (*GetInboxResponse, error)
-	GetInboxes(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetInboxesResponse, error)
-	DeleteInbox(ctx context.Context, in *DeleteInboxRequest, opts ...grpc.CallOption) (*DeleteInboxResponse, error)
-	CreateOutbox(ctx context.Context, in *CreateOutboxRequest, opts ...grpc.CallOption) (*CreateOutboxResponse, error)
-	GetOutbox(ctx context.Context, in *GetOutboxRequest, opts ...grpc.CallOption) (*GetOutboxResponse, error)
-	GetOutboxes(ctx context.Context, in *GetOutboxesRequest, opts ...grpc.CallOption) (*GetOutboxesResponse, error)
+	// Activity create an activity that is sent to the activity pub instance server of the specified actor
+	// Because the server should not know the user's private key, we forbid the server to access the user's private key,
+	// and the user's private key should be saved only in the client and the user's own backup file,
+	// so the active signature should be performed in the client, and then the signed data is sent through the server to the server.
+	Activity(ctx context.Context, in *ActivityRequest, opts ...grpc.CallOption) (*ActivityResponse, error)
 }
 
 type activityClient struct {
@@ -40,63 +37,9 @@ func NewActivityClient(cc grpc.ClientConnInterface) ActivityClient {
 	return &activityClient{cc}
 }
 
-func (c *activityClient) Inbox(ctx context.Context, in *InboxRequest, opts ...grpc.CallOption) (*InboxResponse, error) {
-	out := new(InboxResponse)
-	err := c.cc.Invoke(ctx, "/hvx.api.v1alpha1.activity.proto.Activity/Inbox", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *activityClient) GetInbox(ctx context.Context, in *GetInboxRequest, opts ...grpc.CallOption) (*GetInboxResponse, error) {
-	out := new(GetInboxResponse)
-	err := c.cc.Invoke(ctx, "/hvx.api.v1alpha1.activity.proto.Activity/GetInbox", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *activityClient) GetInboxes(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetInboxesResponse, error) {
-	out := new(GetInboxesResponse)
-	err := c.cc.Invoke(ctx, "/hvx.api.v1alpha1.activity.proto.Activity/GetInboxes", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *activityClient) DeleteInbox(ctx context.Context, in *DeleteInboxRequest, opts ...grpc.CallOption) (*DeleteInboxResponse, error) {
-	out := new(DeleteInboxResponse)
-	err := c.cc.Invoke(ctx, "/hvx.api.v1alpha1.activity.proto.Activity/DeleteInbox", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *activityClient) CreateOutbox(ctx context.Context, in *CreateOutboxRequest, opts ...grpc.CallOption) (*CreateOutboxResponse, error) {
-	out := new(CreateOutboxResponse)
-	err := c.cc.Invoke(ctx, "/hvx.api.v1alpha1.activity.proto.Activity/CreateOutbox", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *activityClient) GetOutbox(ctx context.Context, in *GetOutboxRequest, opts ...grpc.CallOption) (*GetOutboxResponse, error) {
-	out := new(GetOutboxResponse)
-	err := c.cc.Invoke(ctx, "/hvx.api.v1alpha1.activity.proto.Activity/GetOutbox", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *activityClient) GetOutboxes(ctx context.Context, in *GetOutboxesRequest, opts ...grpc.CallOption) (*GetOutboxesResponse, error) {
-	out := new(GetOutboxesResponse)
-	err := c.cc.Invoke(ctx, "/hvx.api.v1alpha1.activity.proto.Activity/GetOutboxes", in, out, opts...)
+func (c *activityClient) Activity(ctx context.Context, in *ActivityRequest, opts ...grpc.CallOption) (*ActivityResponse, error) {
+	out := new(ActivityResponse)
+	err := c.cc.Invoke(ctx, "/hvx.api.v1alpha1.activity.proto.Activity/Activity", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -107,39 +50,19 @@ func (c *activityClient) GetOutboxes(ctx context.Context, in *GetOutboxesRequest
 // All implementations should embed UnimplementedActivityServer
 // for forward compatibility
 type ActivityServer interface {
-	Inbox(context.Context, *InboxRequest) (*InboxResponse, error)
-	GetInbox(context.Context, *GetInboxRequest) (*GetInboxResponse, error)
-	GetInboxes(context.Context, *emptypb.Empty) (*GetInboxesResponse, error)
-	DeleteInbox(context.Context, *DeleteInboxRequest) (*DeleteInboxResponse, error)
-	CreateOutbox(context.Context, *CreateOutboxRequest) (*CreateOutboxResponse, error)
-	GetOutbox(context.Context, *GetOutboxRequest) (*GetOutboxResponse, error)
-	GetOutboxes(context.Context, *GetOutboxesRequest) (*GetOutboxesResponse, error)
+	// Activity create an activity that is sent to the activity pub instance server of the specified actor
+	// Because the server should not know the user's private key, we forbid the server to access the user's private key,
+	// and the user's private key should be saved only in the client and the user's own backup file,
+	// so the active signature should be performed in the client, and then the signed data is sent through the server to the server.
+	Activity(context.Context, *ActivityRequest) (*ActivityResponse, error)
 }
 
 // UnimplementedActivityServer should be embedded to have forward compatible implementations.
 type UnimplementedActivityServer struct {
 }
 
-func (UnimplementedActivityServer) Inbox(context.Context, *InboxRequest) (*InboxResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Inbox not implemented")
-}
-func (UnimplementedActivityServer) GetInbox(context.Context, *GetInboxRequest) (*GetInboxResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetInbox not implemented")
-}
-func (UnimplementedActivityServer) GetInboxes(context.Context, *emptypb.Empty) (*GetInboxesResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetInboxes not implemented")
-}
-func (UnimplementedActivityServer) DeleteInbox(context.Context, *DeleteInboxRequest) (*DeleteInboxResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteInbox not implemented")
-}
-func (UnimplementedActivityServer) CreateOutbox(context.Context, *CreateOutboxRequest) (*CreateOutboxResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateOutbox not implemented")
-}
-func (UnimplementedActivityServer) GetOutbox(context.Context, *GetOutboxRequest) (*GetOutboxResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetOutbox not implemented")
-}
-func (UnimplementedActivityServer) GetOutboxes(context.Context, *GetOutboxesRequest) (*GetOutboxesResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetOutboxes not implemented")
+func (UnimplementedActivityServer) Activity(context.Context, *ActivityRequest) (*ActivityResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Activity not implemented")
 }
 
 // UnsafeActivityServer may be embedded to opt out of forward compatibility for this service.
@@ -153,128 +76,20 @@ func RegisterActivityServer(s grpc.ServiceRegistrar, srv ActivityServer) {
 	s.RegisterService(&Activity_ServiceDesc, srv)
 }
 
-func _Activity_Inbox_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(InboxRequest)
+func _Activity_Activity_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ActivityRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ActivityServer).Inbox(ctx, in)
+		return srv.(ActivityServer).Activity(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/hvx.api.v1alpha1.activity.proto.Activity/Inbox",
+		FullMethod: "/hvx.api.v1alpha1.activity.proto.Activity/Activity",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ActivityServer).Inbox(ctx, req.(*InboxRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Activity_GetInbox_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetInboxRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ActivityServer).GetInbox(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/hvx.api.v1alpha1.activity.proto.Activity/GetInbox",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ActivityServer).GetInbox(ctx, req.(*GetInboxRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Activity_GetInboxes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(emptypb.Empty)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ActivityServer).GetInboxes(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/hvx.api.v1alpha1.activity.proto.Activity/GetInboxes",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ActivityServer).GetInboxes(ctx, req.(*emptypb.Empty))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Activity_DeleteInbox_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteInboxRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ActivityServer).DeleteInbox(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/hvx.api.v1alpha1.activity.proto.Activity/DeleteInbox",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ActivityServer).DeleteInbox(ctx, req.(*DeleteInboxRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Activity_CreateOutbox_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateOutboxRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ActivityServer).CreateOutbox(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/hvx.api.v1alpha1.activity.proto.Activity/CreateOutbox",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ActivityServer).CreateOutbox(ctx, req.(*CreateOutboxRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Activity_GetOutbox_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetOutboxRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ActivityServer).GetOutbox(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/hvx.api.v1alpha1.activity.proto.Activity/GetOutbox",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ActivityServer).GetOutbox(ctx, req.(*GetOutboxRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Activity_GetOutboxes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetOutboxesRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ActivityServer).GetOutboxes(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/hvx.api.v1alpha1.activity.proto.Activity/GetOutboxes",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ActivityServer).GetOutboxes(ctx, req.(*GetOutboxesRequest))
+		return srv.(ActivityServer).Activity(ctx, req.(*ActivityRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -287,32 +102,8 @@ var Activity_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*ActivityServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Inbox",
-			Handler:    _Activity_Inbox_Handler,
-		},
-		{
-			MethodName: "GetInbox",
-			Handler:    _Activity_GetInbox_Handler,
-		},
-		{
-			MethodName: "GetInboxes",
-			Handler:    _Activity_GetInboxes_Handler,
-		},
-		{
-			MethodName: "DeleteInbox",
-			Handler:    _Activity_DeleteInbox_Handler,
-		},
-		{
-			MethodName: "CreateOutbox",
-			Handler:    _Activity_CreateOutbox_Handler,
-		},
-		{
-			MethodName: "GetOutbox",
-			Handler:    _Activity_GetOutbox_Handler,
-		},
-		{
-			MethodName: "GetOutboxes",
-			Handler:    _Activity_GetOutboxes_Handler,
+			MethodName: "Activity",
+			Handler:    _Activity_Activity_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

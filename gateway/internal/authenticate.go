@@ -21,9 +21,9 @@ import (
 
 // Auth authentication middleware for gin network framework,
 // Check whether the Token is carried in the request,
-// and verify whether the Token is correct,
+// Verify whether the Token is correct,
 // Will obtain the username by parsing the Token
-// and add the username in the context and set the key to loginUser.
+// Add the username in the context and set the key to loginUser.
 func Auth(c *gin.Context) {
 	a := c.Request.Header.Get("Authorization")
 	if a == "" {
@@ -41,6 +41,8 @@ func Auth(c *gin.Context) {
 		microsvc.NewGRPCAddress("device").Get(),
 	)
 	if err != nil {
+		c.JSON(500, errors.NewHandler("500", errors.ErrConnectDeviceRPCServer))
+		c.Abort()
 		return
 	}
 	defer cli.Close()
@@ -60,12 +62,13 @@ func Auth(c *gin.Context) {
 	c.Next()
 }
 
+// ParseAuthorization Parses the obtained Authorization and returns the Claims data.
+// GET AUTHORIZATION EXAMPLE: a := c.Request.Header.Get("Authorization")
 func ParseAuthorization(a string) (*auth2.Claims, error) {
 	var (
 		token  = strings.Split(a, "Bearer ")[1]
 		secret = viper.GetString("authentication.token.secret")
 	)
-
 	parse, err := auth2.NewParseJWTToken(token, secret).JWTTokenParse()
 	if err != nil {
 		return nil, err

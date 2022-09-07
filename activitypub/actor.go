@@ -165,7 +165,7 @@ type Actor struct {
 
 func NewActorContext() []interface{} {
 	arr := make([]interface{}, 0)
-	ctx := []string{"https://www.w3.org/ns/activitystreams", "https://w3id.org/security/v1alpha1"}
+	ctx := []string{"https://www.w3.org/ns/activitystreams", "https://w3id.org/security/v1"}
 	for _, i := range ctx {
 		arr = append(arr, i)
 	}
@@ -175,7 +175,7 @@ func NewActorContext() []interface{} {
 // NewActor Return standard ActivityPub protocol user data.
 func NewActor(preferredUsername, name, summary, publicKey, avatar string) *Actor {
 	var (
-		addr = viper.GetString("localhost")
+		addr = viper.GetString("domain")
 
 		id  = fmt.Sprintf("https://%s/u/%s", addr, preferredUsername)
 		kid = fmt.Sprintf("%s#main-key", id)

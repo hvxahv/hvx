@@ -7,10 +7,13 @@
 
 package internal
 
+import "C"
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
-
+	"github.com/go-resty/resty/v2"
 	"github.com/hvxahv/hvx/gateway/v1alpha1"
+	"log"
 )
 
 func APIServer() *gin.Engine {
@@ -22,9 +25,13 @@ func APIServer() *gin.Engine {
 	api.POST("/public/*x", PublicHandler)
 	// AUTH
 	api.POST("auth", AuthHandler)
+
 	// ACTIVITYPUB
 	api.GET("/.well-known/webfinger", WellKnownHandler)
 	api.GET("/u/:actor", GetActorHandler)
+
+	// For HTTP signature based client authentication when receiving inbox messages,
+	// a custom oauth client authenticator needs to be written.
 	api.POST("/u/:actor/inbox", InboxHandler)
 
 	v1 := api.Group("/api/v1")
@@ -74,5 +81,33 @@ func APIServer() *gin.Engine {
 
 	// MESSAGE
 	v1.POST("/message/access/*x", v1alpha1.MessageAccessHandler)
+
+	// ACTIVITY
+	v1.POST("/activity/follow", func(c *gin.Context) {
+		object := c.PostForm("object")
+		body := c.PostForm("body")
+		date := c.PostForm("date")
+		host := c.PostForm("host")
+		digest := c.PostForm("digest")
+		signature := c.PostForm("signature")
+
+		client := resty.New()
+		resp, err := client.R().
+			SetHeader("Content-Type", "application/activity+json").
+			SetHeader("Content-Type", "application/ld+json").
+			SetHeader("Content-Type", "application/json; charset=utf-8").
+			SetHeader("Host", host).
+			SetHeader("Date", date).
+			SetHeader("Digest", fmt.Sprintf("SHA-256=%s", digest)).
+			SetHeader("Signature", signature).
+			SetBody(body).
+			Post(fmt.Sprintf("%s/inbox", object))
+		if err != nil {
+			log.Println(err)
+		}
+
+		fmt.Println(resp)
+
+	})
 	return api
 }

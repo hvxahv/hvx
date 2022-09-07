@@ -2,48 +2,31 @@ package matrix
 
 import (
 	"encoding/json"
-	"fmt"
+	"github.com/hvxahv/hvx/errors"
 
 	"github.com/go-resty/resty/v2"
-	"github.com/spf13/viper"
 )
+
+// Currently, due to the numerous server implementations of matrix.org, I am experiencing
+// unsuccessful registration after deploying the https://gitlab.com/famedly/conduit server.
+// Since the matrix package of hvx has not been implemented in detail and tested extensively,
+// I would like to use a more mature and stable library to implement matrix. org protocol's account features.
+// Then I used js sdk to register without any problems, so hvx will decide to move all matrix.org
+// account operations to client-side implementation, and the server will accept the data after
+// successful client-side operations for saving. So this package will be deprecated in the future.
 
 // https://matrix.org/
 // An open network for secure, decentralized communication.
 // https://matrix.org/docs/api/#overview
 // https://spec.matrix.org/v1.3/
 
-// CONFIG EXAMPLE
-// matrix:
-//   address: "matrix.disism.com"
-
-const (
-	matrixDefaultAddress = "matrix.disism.com"
-)
-
-func GetMatrixServiceAddress() string {
-	address := viper.GetString("matrix.address")
-	if address != "" {
-		return address
-	}
-	return matrixDefaultAddress
-}
-
-func GetRegisterAddress() string {
-	return fmt.Sprintf("https://%s/_matrix/client/v3/register?kind=user", GetMatrixServiceAddress())
-}
-
-func GetDeactivateAddress() string {
-	return fmt.Sprintf("https://%s/_matrix/client/v3/account/deactivate", GetMatrixServiceAddress())
-}
-
-func GetEditPasswordAddress() string {
-	return fmt.Sprintf("https://%s/_matrix/client/v3/account/password", GetMatrixServiceAddress())
-}
-
 type MatrixReq struct {
 	Address string
 	Data    interface{}
+}
+type Handler interface {
+	// Do requesting data from matrix services.
+	Do() (*MatrixRes, error)
 }
 
 func NewMatrixReq(address string, data interface{}) *MatrixReq {
@@ -63,6 +46,7 @@ func (m *MatrixReq) Do() (*MatrixRes, error) {
 		SetBody(data).
 		Post(m.Address)
 	if err != nil {
+		errors.Throw("failed to send a message to the matrix service.", err)
 		return nil, err
 	}
 	return NewMatrixRes(res.StatusCode(), res.Body()), nil
