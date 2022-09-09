@@ -10,6 +10,7 @@ package internal
 
 import (
 	"github.com/hvxahv/hvx/errors"
+	"strconv"
 	"time"
 
 	pb "github.com/hvxahv/hvx/APIs/v1alpha1/auth"
@@ -55,4 +56,15 @@ func (s *server) Authorization(ctx context.Context, in *pb.AuthorizationRequest)
 		Mail:               v.Mail,
 		DeviceId:           device.DeviceId,
 	}, nil
+}
+
+func (s *server) SetPublicKey(ctx context.Context, in *pb.SetPublicKeyRequest) (*pb.SetPublicKeyResponse, error) {
+	accountId, err := strconv.Atoi(in.GetAccountId())
+	if err != nil {
+		return nil, err
+	}
+	if err := NewAuthorization(ctx).SetPublicKey(uint(accountId), in.GetPublicKey()); err != nil {
+		return nil, err
+	}
+	return &pb.SetPublicKeyResponse{Code: "200", Status: "ok"}, nil
 }

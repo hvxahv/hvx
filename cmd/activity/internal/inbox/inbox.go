@@ -1,4 +1,4 @@
-package internal
+package inbox
 
 import (
 	"encoding/json"

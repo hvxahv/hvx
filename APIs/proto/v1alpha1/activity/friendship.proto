@@ -7,80 +7,80 @@ import "google/api/annotations.proto";
 import "google/api/field_behavior.proto";
 import "google/protobuf/empty.proto";
 import "proto/v1alpha1/actor/actor.proto";
-
-service Friendship {
-  rpc GetFollowers (GetFollowersRequest) returns (GetFollowersResponse) {
-    option (google.api.http) = {
-      get: "/api/v1/activity/followers"
-    };
-  }
-
-  rpc GetFollowings (GetFollowingsRequest) returns (GetFollowingsResponse) {
-    option (google.api.http) = {
-      get: "/api/v1/activity/followings"
-    };
-  }
-
-  rpc Follow (FollowRequest) returns (FollowResponse) {
-    option (google.api.http) = {
-      post: "/api/v1/activity/follow",
-      body: "*"
-    };
-  }
-
-  rpc UnFollow (UnFollowRequest) returns (UnFollowResponse) {
-    option (google.api.http) = {
-      post: "/api/v1/activity/unfollow",
-      body: "*"
-    };
-  }
-
-  rpc GetFriends (google.protobuf.Empty) returns (GetFriendsResponse) {
-    option (google.api.http) = {
-      get: "/api/v1/activity/friends",
-    };
-  }
-
-}
-
-message GetFollowersRequest {
-  string limit = 1;
-}
-
-message GetFollowersResponse {
-  string code = 1;
-  repeated actor.proto.ActorData followers = 2;
-}
-
-message GetFollowingsRequest {
-  string limit = 1;
-}
-
-message GetFollowingsResponse {
-  string code = 1;
-  repeated actor.proto.ActorData followings = 2;
-}
-
-message FollowRequest {
-  // request the inbox address of to follow
-  string inboxAddress = 1 [json_name = "inbox_address"];
-}
-
-message FollowResponse {
-  string code = 1;
-  string reply = 2;
-}
-
-message UnFollowRequest {
-  string actor_address = 1;
-}
-
-message UnFollowResponse {
-  string code = 1;
-  string reply = 2;
-}
-
-message GetFriendsResponse {
-  string code = 1;
-  repeated actor.proto.ActorData friends = 2;
-}
+//
+//service Friendship {
+//  rpc GetFollowers (GetFollowersRequest) returns (GetFollowersResponse) {
+//    option (google.api.http) = {
+//      get: "/api/v1/activity/followers"
+//    };
+//  }
+//
+//  rpc GetFollowings (GetFollowingsRequest) returns (GetFollowingsResponse) {
+//    option (google.api.http) = {
+//      get: "/api/v1/activity/followings"
+//    };
+//  }
+//
+//  rpc Follow (FollowRequest) returns (FollowResponse) {
+//    option (google.api.http) = {
+//      post: "/api/v1/activity/follow",
+//      body: "*"
+//    };
+//  }
+//
+//  rpc UnFollow (UnFollowRequest) returns (UnFollowResponse) {
+//    option (google.api.http) = {
+//      post: "/api/v1/activity/unfollow",
+//      body: "*"
+//    };
+//  }
+//
+//  rpc GetFriends (google.protobuf.Empty) returns (GetFriendsResponse) {
+//    option (google.api.http) = {
+//      get: "/api/v1/activity/friends",
+//    };
+//  }
+//
+//}
+//
+//message GetFollowersRequest {
+//  string limit = 1;
+//}
+//
+//message GetFollowersResponse {
+//  string code = 1;
+//  repeated actor.proto.ActorData followers = 2;
+//}
+//
+//message GetFollowingsRequest {
+//  string limit = 1;
+//}
+//
+//message GetFollowingsResponse {
+//  string code = 1;
+//  repeated actor.proto.ActorData followings = 2;
+//}
+//
+//message FollowRequest {
+//  // request the inbox address of to follow
+//  string inboxAddress = 1 [json_name = "inbox_address"];
+//}
+//
+//message FollowResponse {
+//  string code = 1;
+//  string reply = 2;
+//}
+//
+//message UnFollowRequest {
+//  string actor_address = 1;
+//}
+//
+//message UnFollowResponse {
+//  string code = 1;
+//  string reply = 2;
+//}
+//
+//message GetFriendsResponse {
+//  string code = 1;
+//  repeated actor.proto.ActorData friends = 2;
+//}

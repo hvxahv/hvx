@@ -12,9 +12,9 @@ type R interface {
 	Generate() (*Rsa, error)
 }
 type Rsa struct {
-	bits      int
-	Private   string
-	PublicKey string
+	bits       int
+	PrivateKey string
+	PublicKey  string
 }
 
 func NewRsa(bits int) *Rsa {
@@ -48,7 +48,7 @@ func (r *Rsa) Generate() (*Rsa, error) {
 	pub := pem.EncodeToMemory(block)
 
 	return &Rsa{
-		Private:   string(prv),
-		PublicKey: string(pub),
+		PrivateKey: string(prv),
+		PublicKey:  string(pub),
 	}, nil
 }

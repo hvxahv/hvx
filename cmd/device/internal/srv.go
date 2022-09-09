@@ -10,8 +10,8 @@ package internal
 import (
 	"github.com/google/uuid"
 	pb "github.com/hvxahv/hvx/APIs/v1alpha1/device"
+	"github.com/hvxahv/hvx/errors"
 	v "github.com/hvxahv/hvx/microsvc"
-	"github.com/pkg/errors"
 )
 
 const (
@@ -31,7 +31,7 @@ func Run() error {
 
 	pb.RegisterDevicesServer(s, &server{})
 	if err := pb.RegisterDevicesHandler(s.Ctx, s.Mux, s.Conn); err != nil {
-		return errors.Errorf("Failed to register public services: %v", err)
+		return errors.Newf("Failed to register public services: %v", err)
 	}
 	if err := s.Run(); err != nil {
 		return err

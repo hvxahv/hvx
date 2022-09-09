@@ -29,6 +29,10 @@ type AuthClient interface {
 	// A valid Token is returned and must be carried in subsequent API access operations.
 	// https://datatracker.ietf.org/doc/html/rfc9068
 	Authorization(ctx context.Context, in *AuthorizationRequest, opts ...grpc.CallOption) (*AuthorizationResponse, error)
+	// SetPublicKey unlike activitypub, his private key is inaccessible to the server.
+	// The public key is used for hvxahv privacy-related asymmetric encryption key.
+	SetPublicKey(ctx context.Context, in *SetPublicKeyRequest, opts ...grpc.CallOption) (*SetPublicKeyResponse, error)
+	GetPublicKey(ctx context.Context, in *GetPublicKeyRequest, opts ...grpc.CallOption) (*GetPublicKeyResponse, error)
 	// D-H Diffie–Hellman key exchange.
 	// https://www.rfc-editor.org/rfc/rfc2631.html
 	DHRequest(ctx context.Context, in *DHRequestData, opts ...grpc.CallOption) (*DHRequestResponse, error)
@@ -47,6 +51,24 @@ func NewAuthClient(cc grpc.ClientConnInterface) AuthClient {
 func (c *authClient) Authorization(ctx context.Context, in *AuthorizationRequest, opts ...grpc.CallOption) (*AuthorizationResponse, error) {
 	out := new(AuthorizationResponse)
 	err := c.cc.Invoke(ctx, "/hvx.api.v1alpha1.auth.proto.Auth/Authorization", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authClient) SetPublicKey(ctx context.Context, in *SetPublicKeyRequest, opts ...grpc.CallOption) (*SetPublicKeyResponse, error) {
+	out := new(SetPublicKeyResponse)
+	err := c.cc.Invoke(ctx, "/hvx.api.v1alpha1.auth.proto.Auth/SetPublicKey", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authClient) GetPublicKey(ctx context.Context, in *GetPublicKeyRequest, opts ...grpc.CallOption) (*GetPublicKeyResponse, error) {
+	out := new(GetPublicKeyResponse)
+	err := c.cc.Invoke(ctx, "/hvx.api.v1alpha1.auth.proto.Auth/GetPublicKey", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -90,6 +112,10 @@ type AuthServer interface {
 	// A valid Token is returned and must be carried in subsequent API access operations.
 	// https://datatracker.ietf.org/doc/html/rfc9068
 	Authorization(context.Context, *AuthorizationRequest) (*AuthorizationResponse, error)
+	// SetPublicKey unlike activitypub, his private key is inaccessible to the server.
+	// The public key is used for hvxahv privacy-related asymmetric encryption key.
+	SetPublicKey(context.Context, *SetPublicKeyRequest) (*SetPublicKeyResponse, error)
+	GetPublicKey(context.Context, *GetPublicKeyRequest) (*GetPublicKeyResponse, error)
 	// D-H Diffie–Hellman key exchange.
 	// https://www.rfc-editor.org/rfc/rfc2631.html
 	DHRequest(context.Context, *DHRequestData) (*DHRequestResponse, error)
@@ -103,6 +129,12 @@ type UnimplementedAuthServer struct {
 
 func (UnimplementedAuthServer) Authorization(context.Context, *AuthorizationRequest) (*AuthorizationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Authorization not implemented")
+}
+func (UnimplementedAuthServer) SetPublicKey(context.Context, *SetPublicKeyRequest) (*SetPublicKeyResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetPublicKey not implemented")
+}
+func (UnimplementedAuthServer) GetPublicKey(context.Context, *GetPublicKeyRequest) (*GetPublicKeyResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPublicKey not implemented")
 }
 func (UnimplementedAuthServer) DHRequest(context.Context, *DHRequestData) (*DHRequestResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DHRequest not implemented")
@@ -139,6 +171,42 @@ func _Auth_Authorization_Handler(srv interface{}, ctx context.Context, dec func(
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AuthServer).Authorization(ctx, req.(*AuthorizationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Auth_SetPublicKey_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetPublicKeyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServer).SetPublicKey(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/hvx.api.v1alpha1.auth.proto.Auth/SetPublicKey",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServer).SetPublicKey(ctx, req.(*SetPublicKeyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Auth_GetPublicKey_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetPublicKeyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServer).GetPublicKey(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/hvx.api.v1alpha1.auth.proto.Auth/GetPublicKey",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServer).GetPublicKey(ctx, req.(*GetPublicKeyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -207,6 +275,14 @@ var Auth_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Authorization",
 			Handler:    _Auth_Authorization_Handler,
+		},
+		{
+			MethodName: "SetPublicKey",
+			Handler:    _Auth_SetPublicKey_Handler,
+		},
+		{
+			MethodName: "GetPublicKey",
+			Handler:    _Auth_GetPublicKey_Handler,
 		},
 		{
 			MethodName: "DHRequest",

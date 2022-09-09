@@ -6,18 +6,52 @@ option go_package = "github.com/hvxahv/hvx/APIs/v1alpha1/activity";
 import "google/api/annotations.proto";
 import "google/api/field_behavior.proto";
 import "google/protobuf/empty.proto";
+import "google/protobuf/any.proto";
 
 // Note - This interface is subject to frequent changes in the course of implementation.
 service Activity {
-
-  // Activity create an activity that is sent to the activity pub instance server of the specified actor
+  // Old design...
   // Because the server should not know the user's private key, we forbid the server to access the user's private key,
-  // and the user's private key should be saved only in the client and the user's own backup file,
-  // so the active signature should be performed in the client, and then the signed data is sent through the server to the server.
-  rpc Activity (ActivityRequest) returns (ActivityResponse) {}
+  // and the user's private key should be saved only in the client and the user's own backup file, so the
+  // active signature should be performed in the client, and then the signed data is sent through the server to the server.
+
+  // New Design...
+  // Activity create an activity that is sent to the activity pub instance server of the specified actor (server to server interactions),
+  // When sending messages to the Mastodon server, we found that Mastodon must verify the user's identity by signing,
+  // and if the actor's private key is stored locally,
+  // we need to sign locally and then submit the signature to the server before sending,
+  // but we found serious performance problems when doing rsa private key signing on the client side,
+  // which is why we put the key supporting activitypub feature on the server.
+  // So in the tradeoff of privacy, we decided to design two key systems,
+  // one for asymmetric encryption of accounts and one for activitypub key pairs.
+  rpc Activity (ActivityRequest) returns (ActivityResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/activity",
+      body: "*"
+    };
+  }
 }
 
-message ActivityRequest {}
+message ActivityRequest {
+  // An activity is delivered to its targets (which are actors) by first looking up the targets' inboxes and then
+  // posting the activity to those inboxes. Targets for delivery are determined by checking the ActivityStreams audience targeting;
+  // namely, the to, bto, cc, bcc, and audience fields of the activity.
+  repeated string TO = 1 [json_name = "to"];
+  repeated string CC = 2 [json_name = "cc"];
+  repeated string BTO = 3 [json_name = "bto"];
+  repeated string BCC = 4 [json_name = "bcc"];
+  repeated string audience = 5;
 
-message ActivityResponse {}
+  // event activity type.
+  string event = 6;
+
+  // body data that will have the final request for server-to-server interaction.
+  string body = 7;
+}
+
+message ActivityResponse {
+  string code = 1;
+  string status = 2;
+  repeated string inbox = 3;
+}
 

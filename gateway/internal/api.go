@@ -9,11 +9,8 @@ package internal
 
 import "C"
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/go-resty/resty/v2"
 	"github.com/hvxahv/hvx/gateway/v1alpha1"
-	"log"
 )
 
 func APIServer() *gin.Engine {
@@ -72,6 +69,7 @@ func APIServer() *gin.Engine {
 	// ACTIVITY INBOX SERVICES
 	v1.GET("/activity/*x", v1alpha1.ActivityHandler)
 	v1.DELETE("/activity/*x", v1alpha1.ActivityHandler)
+	v1.POST("/activity", v1alpha1.ActivityHandler)
 
 	// FS
 	v1.POST("/fs/avatar", AvatarHandler)
@@ -82,32 +80,5 @@ func APIServer() *gin.Engine {
 	// MESSAGE
 	v1.POST("/message/access/*x", v1alpha1.MessageAccessHandler)
 
-	// ACTIVITY
-	v1.POST("/activity/follow", func(c *gin.Context) {
-		object := c.PostForm("object")
-		body := c.PostForm("body")
-		date := c.PostForm("date")
-		host := c.PostForm("host")
-		digest := c.PostForm("digest")
-		signature := c.PostForm("signature")
-
-		client := resty.New()
-		resp, err := client.R().
-			SetHeader("Content-Type", "application/activity+json").
-			SetHeader("Content-Type", "application/ld+json").
-			SetHeader("Content-Type", "application/json; charset=utf-8").
-			SetHeader("Host", host).
-			SetHeader("Date", date).
-			SetHeader("Digest", fmt.Sprintf("SHA-256=%s", digest)).
-			SetHeader("Signature", signature).
-			SetBody(body).
-			Post(fmt.Sprintf("%s/inbox", object))
-		if err != nil {
-			log.Println(err)
-		}
-
-		fmt.Println(resp)
-
-	})
 	return api
 }

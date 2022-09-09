@@ -3,7 +3,7 @@ package microsvc
 import (
 	"fmt"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
-	"github.com/pkg/errors"
+	"github.com/hvxahv/hvx/errors"
 	"github.com/spf13/viper"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
@@ -48,7 +48,7 @@ func (c *Cfg) ListenerWithEndpoints() *server {
 
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%s", grpcPort))
 	if err != nil {
-		err = errors.Wrap(err, "failed to listen")
+		err = errors.Newf("failed to listen", err)
 	}
 
 	conn, err := grpc.Dial(
@@ -56,7 +56,7 @@ func (c *Cfg) ListenerWithEndpoints() *server {
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
-		err = errors.Wrap(err, "failed to dial server...")
+		err = errors.Newf("failed to dial server...", err)
 	}
 
 	return &server{
@@ -94,7 +94,7 @@ func (s *server) Run() error {
 	s.wg.Add(1)
 	go func() {
 		if err := s.Serve(s.Listener); err != nil {
-			s.Err = errors.Wrap(err, "failed to serve")
+			s.Err = errors.Newf("failed to serve", err)
 			s.wg.Done()
 		}
 	}()

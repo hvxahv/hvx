@@ -1,12 +1,12 @@
 package cache
 
-import "github.com/pkg/errors"
+import "github.com/hvxahv/hvx/errors"
 
 // DELKey Delete the redis key by passing in the key.
 func DELKey(k string) error {
 	rd := GetRDB()
 	if err := rd.Del(ctx, k).Err(); err != nil {
-		return errors.Errorf("failed to delete redis key.")
+		return errors.New("failed to delete redis key.")
 	}
 
 	return nil
@@ -16,7 +16,7 @@ func DELKey(k string) error {
 func DELAcctMail(mail string) error {
 	ok := SISAcctMail(mail)
 	if !ok {
-		return errors.Errorf("mail does't exist!")
+		return errors.New("mail does't exist!")
 	}
 
 	err := DELSet("ACCT_MAIL", mail)

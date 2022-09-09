@@ -2,6 +2,7 @@ package internal
 
 import (
 	"fmt"
+	"github.com/hvxahv/hvx/APIs/v1alpha1/auth"
 	"strconv"
 
 	"github.com/hvxahv/hvx/APIs/v1alpha1/actor"
@@ -9,6 +10,7 @@ import (
 	"github.com/hvxahv/hvx/cockroach"
 	"github.com/hvxahv/hvx/errors"
 	"github.com/hvxahv/hvx/microsvc"
+	"github.com/hvxahv/hvx/rsa"
 	"github.com/spf13/viper"
 	"golang.org/x/crypto/bcrypt"
 	"golang.org/x/net/context"
@@ -37,13 +39,17 @@ type Accounts struct {
 
 	// IsPrivate Set whether the account is private or not, private accounts are not displayed publicly.
 	IsPrivate bool `gorm:"type:boolean;is_private"`
+
+	// PrivateKey The private key corresponding to the Activitypub protocol is used
+	// only for social activities and no other encryption is involved.
+	PrivateKey string `gorm:"type:text;private_key"`
 }
 
 type Account interface {
 	// IsExist Determine if the account exists.
 	IsExist() bool
 
-	// Create need to verify whether the user name and email address have been registered or not,
+	// Create need to verify whether the username and email address have been registered or not,
 	// and return an error if they have been registered.
 	Create(publicKey string) error
 
@@ -61,6 +67,10 @@ type Account interface {
 
 	// Verify password is correct.
 	Verify(password string) (*Accounts, error)
+
+	// GetPrivateKey When performing activitypub activities,
+	// you need to obtain the private key for signing and other operations.
+	GetPrivateKey() (string, error)
 }
 
 // NewUsername  constructor account's username.
@@ -95,13 +105,14 @@ func (a *Accounts) GetAccountByUsername() (*Accounts, error) {
 }
 
 // NewAccounts This constructor is needed to formally create a complete account in the Create Account method.
-func NewAccounts(actorID uint, username, mail, password string) *Accounts {
+func NewAccounts(actorID uint, username, mail, password, privateKey string) *Accounts {
 	hash, _ := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	return &Accounts{
-		Username: username,
-		Mail:     mail,
-		Password: string(hash),
-		ActorID:  actorID,
+		Username:   username,
+		Mail:       mail,
+		Password:   string(hash),
+		ActorID:    actorID,
+		PrivateKey: privateKey,
 	}
 }
 
@@ -147,9 +158,14 @@ func (a *Accounts) Create(publicKey string) error {
 		return err
 	}
 	defer client.Close()
+
+	apk, err := rsa.NewRsa(2048).Generate()
+	if err != nil {
+		return err
+	}
 	create, err := actor.NewActorClient(client.Conn).Create(ctx, &actor.CreateRequest{
 		PreferredUsername: a.Username,
-		PublicKey:         publicKey,
+		PublicKey:         apk.PublicKey,
 		ActorType:         "Person",
 	})
 	if err != nil {
@@ -161,10 +177,26 @@ func (a *Accounts) Create(publicKey string) error {
 		return err
 	}
 
-	v := NewAccounts(uint(actorId), a.Username, a.Mail, a.Password)
+	v := NewAccounts(uint(actorId), a.Username, a.Mail, a.Password, apk.PrivateKey)
 	if err := db.Debug().Table(AccountsTable).
 		Create(&v).Error; err != nil {
 		return fmt.Errorf(errors.ErrAccountCreate)
+	}
+
+	authc, err := clientv1.New(ctx, microsvc.NewGRPCAddress("auth").Get())
+	if err != nil {
+		return err
+	}
+	defer authc.Close()
+	spk, err := auth.NewAuthClient(authc.Conn).SetPublicKey(ctx, &auth.SetPublicKeyRequest{
+		AccountId: strconv.Itoa(int(v.ID)),
+		PublicKey: publicKey,
+	})
+	if err != nil {
+		return err
+	}
+	if spk.Code != "200" {
+		return errors.New(spk.Status)
 	}
 	return nil
 }
@@ -307,4 +339,17 @@ func (a *Accounts) Verify(password string) (*Accounts, error) {
 		Mail:     a.Mail,
 		ActorID:  a.ActorID,
 	}, nil
+}
+
+func (a *Accounts) GetPrivateKey() (string, error) {
+	db := cockroach.GetDB()
+
+	if err := db.Debug().
+		Table(AccountsTable).
+		Where("id = ?", a.ID).
+		First(&a).Error; err != nil {
+		return "", err
+	}
+
+	return a.PrivateKey, nil
 }

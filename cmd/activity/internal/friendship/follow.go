@@ -1,10 +1,10 @@
-package internal
+package friendship
 
 import (
 	"fmt"
 
 	"github.com/hvxahv/hvx/cockroach"
-	"github.com/pkg/errors"
+	"github.com/hvxahv/hvx/errors"
 	"gorm.io/gorm"
 )
 

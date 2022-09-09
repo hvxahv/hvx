@@ -2,8 +2,8 @@ package internal
 
 import (
 	pb "github.com/hvxahv/hvx/APIs/v1alpha1/actor"
+	"github.com/hvxahv/hvx/errors"
 	svc "github.com/hvxahv/hvx/microsvc"
-	"github.com/pkg/errors"
 )
 
 type server struct {
@@ -29,7 +29,7 @@ func Run() error {
 	pb.RegisterActorServer(s, &server{})
 
 	if err := pb.RegisterActorHandler(s.Ctx, s.Mux, s.Conn); err != nil {
-		return errors.Errorf("Failed to register %s services: %v", serviceName, err)
+		return errors.Newf("Failed to register %s services: %v", serviceName, err)
 	}
 
 	if err := s.Run(); err != nil {

@@ -3,8 +3,8 @@ package internal
 import (
 	"github.com/google/uuid"
 	pb "github.com/hvxahv/hvx/APIs/v1alpha1/message"
+	"github.com/hvxahv/hvx/errors"
 	"github.com/hvxahv/hvx/microsvc"
-	"github.com/pkg/errors"
 )
 
 type server struct {
@@ -22,7 +22,7 @@ func Run() error {
 
 	pb.RegisterMessagesServer(s, &server{})
 	if err := pb.RegisterMessagesHandler(s.Ctx, s.Mux, s.Conn); err != nil {
-		return errors.Errorf("Failed to register message services: %v", err)
+		return errors.Newf("Failed to register message services: %v", err)
 	}
 	if err := s.Run(); err != nil {
 		return err

@@ -5,6 +5,7 @@ go 1.18
 require (
 	github.com/SherClockHolmes/webpush-go v1.2.0
 	github.com/gin-gonic/gin v1.8.1
+	github.com/go-fed/httpsig v1.1.0
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/golang-jwt/jwt/v4 v4.4.2
@@ -17,7 +18,6 @@ require (
 	github.com/minio/minio-go/v7 v7.0.34
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/nats-io/nats.go v1.16.0
-	github.com/pkg/errors v0.9.1
 	github.com/spf13/cobra v1.5.0
 	github.com/spf13/viper v1.12.0
 	golang.org/x/crypto v0.0.0-20220722155217-630584e8d5aa

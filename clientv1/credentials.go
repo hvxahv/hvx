@@ -1,7 +1,7 @@
 package clientv1
 
 import (
-	"github.com/pkg/errors"
+	"github.com/hvxahv/hvx/errors"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc/metadata"
 	"strings"

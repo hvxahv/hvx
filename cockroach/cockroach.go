@@ -7,8 +7,8 @@ import (
 	"log"
 	"time"
 
+	"github.com/hvxahv/hvx/errors"
 	_ "github.com/lib/pq"
-	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"

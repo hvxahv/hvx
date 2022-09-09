@@ -128,3 +128,18 @@ func (s *server) Verify(ctx context.Context, in *pb.VerifyRequest) (*pb.VerifyRe
 		ActorId:  strconv.Itoa(int(verify.ActorID)),
 	}, nil
 }
+
+func (s *server) GetPrivateKey(ctx context.Context, in *pb.GetPrivateKeyRequest) (*pb.GetPrivateKeyResponse, error) {
+	id, err := strconv.Atoi(in.GetAccountId())
+	if err != nil {
+		return nil, err
+	}
+	x, err := NewAccountsID(uint(id)).GetPrivateKey()
+	if err != nil {
+		return nil, err
+	}
+	return &pb.GetPrivateKeyResponse{
+		Code:       "200",
+		PrivateKey: x,
+	}, nil
+}

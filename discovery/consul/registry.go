@@ -5,7 +5,7 @@ import (
 	"strconv"
 
 	"github.com/hashicorp/consul/api"
-	"github.com/pkg/errors"
+	"github.com/hvxahv/hvx/errors"
 )
 
 type Registry interface {
@@ -40,7 +40,7 @@ func (c *cfg) Register() error {
 	}
 
 	if err := cli.Agent().ServiceRegister(r); err != nil {
-		return errors.Errorf("consul registration failed: %v", err)
+		return errors.Newf("consul registration failed: %v", err)
 	}
 	return nil
 }

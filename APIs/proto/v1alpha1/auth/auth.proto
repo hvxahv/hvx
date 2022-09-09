@@ -19,6 +19,15 @@ service Auth {
       body: "*"
     };
   }
+
+  // SetPublicKey unlike activitypub, his private key is inaccessible to the server.
+  // The public key is used for hvxahv privacy-related asymmetric encryption key.
+  rpc SetPublicKey(SetPublicKeyRequest) returns (SetPublicKeyResponse) {}
+  rpc GetPublicKey(GetPublicKeyRequest) returns (GetPublicKeyResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/auth/{accountId}",
+    };
+  }
   
   // D-H Diffie–Hellman key exchange. 
   // https://www.rfc-editor.org/rfc/rfc2631.html
@@ -55,6 +64,24 @@ message AuthorizationResponse {
   string actorId = 5 [json_name = "actor_id"];
   string mail = 6;
   string deviceId = 7 [json_name = "device_id"];
+}
+
+message SetPublicKeyRequest {
+  string accountId = 1;
+  string publicKey = 2;
+}
+
+message SetPublicKeyResponse {
+  string code = 1;
+  string status = 2;
+}
+
+message GetPublicKeyRequest {
+  string accountId = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+message GetPublicKeyResponse {
+  string publicKey = 2;
 }
 
 message DHRequestData {

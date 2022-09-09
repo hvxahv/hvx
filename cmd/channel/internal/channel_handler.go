@@ -61,7 +61,7 @@ func (s *server) CreateChannel(ctx context.Context, in *pb.CreateChannelRequest)
 		return nil, err
 	}
 
-	if err := NewChannels(uint(actorId), parse.ActorId, rsa.Private).CreateChannel(); err != nil {
+	if err := NewChannels(uint(actorId), parse.ActorId, rsa.PrivateKey).CreateChannel(); err != nil {
 		return nil, err
 	}
 	return &pb.CreateChannelResponse{

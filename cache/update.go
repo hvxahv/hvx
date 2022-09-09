@@ -1,14 +1,14 @@
 package cache
 
-import "github.com/pkg/errors"
+import "github.com/hvxahv/hvx/errors"
 
 // UPDATEAcct ...
 func UPDATEAcct(username string, data []byte) error {
 	if err := DELKey(username); err != nil {
-		return errors.Errorf("FAILED TO DELETE USER CACHE.")
+		return errors.New("FAILED TO DELETE USER CACHE.")
 	}
 	if err := SETAcct(username, data, 0); err != nil {
-		return errors.Errorf("SYNC TO CACHE FAILED.")
+		return errors.New("SYNC TO CACHE FAILED.")
 	}
 	return nil
 }

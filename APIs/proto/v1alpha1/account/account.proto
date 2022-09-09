@@ -56,6 +56,8 @@ service Accounts {
   }
 
   rpc Verify (VerifyRequest) returns (VerifyResponse) {}
+
+  rpc GetPrivateKey (GetPrivateKeyRequest) returns (GetPrivateKeyResponse) {}
 }
 
 message IsExistRequest {
@@ -141,4 +143,13 @@ message VerifyResponse {
   string username = 4;
   string mail = 5;
   string actor_id = 6;
+}
+
+message GetPrivateKeyRequest {
+  string accountId = 1;
+}
+
+message GetPrivateKeyResponse {
+  string code = 1;
+  string privateKey = 2;
 }
