@@ -17,15 +17,15 @@ service Actor {
   // Get returns the actor with the given name(PreferredUsername).
   rpc Get(GetRequest) returns (GetResponse) {}
 
-  // GetActorsByPreferredUsername Returns the set of actors by the PreferredUsername.
-  rpc GetActorsByPreferredUsername (GetActorsByPreferredUsernameRequest) returns (GetActorsByPreferredUsernameResponse) {
+  // Search returns the set of actors by the username.
+  rpc Search (SearchRequest) returns (SearchResponse) {
     option (google.api.http) = {
       get: "/api/v1/search/{preferred_username}"
     };
   }
 
   // GetActorByAddress Returns the actor by the address.
-  rpc GetByAddress (GetActorByAddressRequest) returns (ActorData) {}
+  // rpc GetByAddress (GetActorByAddressRequest) returns (ActorData) {}
 
   // EditActor Edits the actor profile.
   rpc Edit (EditRequest) returns (EditResponse) {
@@ -38,8 +38,10 @@ service Actor {
   // Delete Delete the actor.
   rpc Delete (DeleteRequest) returns (DeleteResponse) {}
 
-  // GetActorByUsername Returns the actor by account username.
+  // GetActorByUsername returns the actor by account username.
   rpc GetActorByUsername (GetActorByUsernameRequest) returns (ActorData) {}
+
+  rpc GetActorByAddress (GetActorByAddressRequest) returns (ActorData) {}
 }
 
 message IsExistRequest {
@@ -85,17 +87,21 @@ message ActorData {
   string is_remote = 11;
 }
 
-message GetActorsByPreferredUsernameRequest {
+message SearchRequest {
   string preferred_username = 1 [(google.api.field_behavior) = REQUIRED];
 }
 
-message GetActorsByPreferredUsernameResponse {
+message SearchResponse {
   string code = 1;
   repeated ActorData actors = 2;
 }
 
 message GetActorByAddressRequest {
   string address = 1;
+}
+
+message GetActorByAddressResponse {
+  ActorData actor = 1;
 }
 
 // The actor data to be updated.

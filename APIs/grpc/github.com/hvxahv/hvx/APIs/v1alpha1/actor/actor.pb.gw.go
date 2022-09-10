@@ -31,8 +31,8 @@ var _ = runtime.String
 var _ = utilities.NewDoubleArray
 var _ = metadata.Join
 
-func request_Actor_GetActorsByPreferredUsername_0(ctx context.Context, marshaler runtime.Marshaler, client ActorClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetActorsByPreferredUsernameRequest
+func request_Actor_Search_0(ctx context.Context, marshaler runtime.Marshaler, client ActorClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq SearchRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -52,13 +52,13 @@ func request_Actor_GetActorsByPreferredUsername_0(ctx context.Context, marshaler
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "preferred_username", err)
 	}
 
-	msg, err := client.GetActorsByPreferredUsername(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.Search(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_Actor_GetActorsByPreferredUsername_0(ctx context.Context, marshaler runtime.Marshaler, server ActorServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetActorsByPreferredUsernameRequest
+func local_request_Actor_Search_0(ctx context.Context, marshaler runtime.Marshaler, server ActorServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+	var protoReq SearchRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -78,7 +78,7 @@ func local_request_Actor_GetActorsByPreferredUsername_0(ctx context.Context, mar
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "preferred_username", err)
 	}
 
-	msg, err := server.GetActorsByPreferredUsername(ctx, &protoReq)
+	msg, err := server.Search(ctx, &protoReq)
 	return msg, metadata, err
 
 }
@@ -123,7 +123,7 @@ func local_request_Actor_Edit_0(ctx context.Context, marshaler runtime.Marshaler
 // Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterActorHandlerFromEndpoint instead.
 func RegisterActorHandlerServer(ctx context.Context, mux *runtime.ServeMux, server ActorServer) error {
 
-	mux.Handle("GET", pattern_Actor_GetActorsByPreferredUsername_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Actor_Search_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -131,12 +131,12 @@ func RegisterActorHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/hvx.api.v1alpha1.actor.proto.Actor/GetActorsByPreferredUsername", runtime.WithHTTPPathPattern("/api/v1/search/{preferred_username}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/hvx.api.v1alpha1.actor.proto.Actor/Search", runtime.WithHTTPPathPattern("/api/v1/search/{preferred_username}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_Actor_GetActorsByPreferredUsername_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_Actor_Search_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -144,7 +144,7 @@ func RegisterActorHandlerServer(ctx context.Context, mux *runtime.ServeMux, serv
 			return
 		}
 
-		forward_Actor_GetActorsByPreferredUsername_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Actor_Search_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -214,25 +214,25 @@ func RegisterActorHandler(ctx context.Context, mux *runtime.ServeMux, conn *grpc
 // "ActorClient" to call the correct interceptors.
 func RegisterActorHandlerClient(ctx context.Context, mux *runtime.ServeMux, client ActorClient) error {
 
-	mux.Handle("GET", pattern_Actor_GetActorsByPreferredUsername_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_Actor_Search_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/hvx.api.v1alpha1.actor.proto.Actor/GetActorsByPreferredUsername", runtime.WithHTTPPathPattern("/api/v1/search/{preferred_username}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/hvx.api.v1alpha1.actor.proto.Actor/Search", runtime.WithHTTPPathPattern("/api/v1/search/{preferred_username}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_Actor_GetActorsByPreferredUsername_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_Actor_Search_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_Actor_GetActorsByPreferredUsername_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_Actor_Search_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -262,13 +262,13 @@ func RegisterActorHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 }
 
 var (
-	pattern_Actor_GetActorsByPreferredUsername_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "v1", "search", "preferred_username"}, ""))
+	pattern_Actor_Search_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "v1", "search", "preferred_username"}, ""))
 
 	pattern_Actor_Edit_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "v1", "actor"}, ""))
 )
 
 var (
-	forward_Actor_GetActorsByPreferredUsername_0 = runtime.ForwardResponseMessage
+	forward_Actor_Search_0 = runtime.ForwardResponseMessage
 
 	forward_Actor_Edit_0 = runtime.ForwardResponseMessage
 )

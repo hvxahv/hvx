@@ -73,7 +73,7 @@ type Actor interface {
 
 	// AddActor Add Actor.
 	// Used when saving users from other instances to this instance.
-	AddActor() error
+	AddActor() (*Actors, error)
 
 	// GetActorByUsername Get Actor by username.
 	GetActorByUsername() (*Actors, error)
@@ -177,10 +177,10 @@ func (a *Actors) GetActorsByPreferredUsername() ([]*Actors, error) {
 }
 
 // NewAddActors The constructor is used to add a new Actor.
-func NewAddActors(preferredUsername, host, avatar, name, summary, inbox, address, publicKey, actorType string) *Actors {
+func NewAddActors(preferredUsername, domain, avatar, name, summary, inbox, address, publicKey, actorType string) *Actors {
 	return &Actors{
 		PreferredUsername: preferredUsername,
-		Domain:            host,
+		Domain:            domain,
 		Avatar:            avatar,
 		Name:              name,
 		Summary:           summary,
@@ -192,14 +192,14 @@ func NewAddActors(preferredUsername, host, avatar, name, summary, inbox, address
 	}
 }
 
-func (a *Actors) AddActor() error {
+func (a *Actors) AddActor() (*Actors, error) {
 	db := cockroach.GetDB()
 	if err := db.Debug().Table(ActorsTable).
 		Create(&a).Error; err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return a, nil
 }
 
 // NewActorAddress The constructor is used to get an Actor by address.
@@ -232,7 +232,8 @@ func (a *Actors) GetActorByAddress() (*Actors, error) {
 			if err != nil {
 				return nil, err
 			}
-			actor := NewAddActors(
+
+			actor, err := NewAddActors(
 				f.PreferredUsername,
 				h.Host,
 				f.Icon.Url,
@@ -242,8 +243,8 @@ func (a *Actors) GetActorByAddress() (*Actors, error) {
 				a.Address,
 				f.PublicKey.PublicKeyPem,
 				f.Type,
-			)
-			if err := actor.AddActor(); err != nil {
+			).AddActor()
+			if err != nil {
 				return nil, err
 			}
 			return actor, nil

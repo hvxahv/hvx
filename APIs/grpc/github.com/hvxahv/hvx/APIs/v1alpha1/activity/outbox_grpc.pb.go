@@ -11,6 +11,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -24,7 +25,7 @@ const _ = grpc.SupportPackageIsVersion7
 type OutboxClient interface {
 	CreateOutbox(ctx context.Context, in *CreateOutboxRequest, opts ...grpc.CallOption) (*CreateOutboxResponse, error)
 	GetOutbox(ctx context.Context, in *GetOutboxRequest, opts ...grpc.CallOption) (*GetOutboxResponse, error)
-	GetOutboxes(ctx context.Context, in *GetOutboxesRequest, opts ...grpc.CallOption) (*GetOutboxesResponse, error)
+	GetOutboxes(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetOutboxesResponse, error)
 }
 
 type outboxClient struct {
@@ -53,7 +54,7 @@ func (c *outboxClient) GetOutbox(ctx context.Context, in *GetOutboxRequest, opts
 	return out, nil
 }
 
-func (c *outboxClient) GetOutboxes(ctx context.Context, in *GetOutboxesRequest, opts ...grpc.CallOption) (*GetOutboxesResponse, error) {
+func (c *outboxClient) GetOutboxes(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetOutboxesResponse, error) {
 	out := new(GetOutboxesResponse)
 	err := c.cc.Invoke(ctx, "/hvx.api.v1alpha1.activity.proto.Outbox/GetOutboxes", in, out, opts...)
 	if err != nil {
@@ -68,7 +69,7 @@ func (c *outboxClient) GetOutboxes(ctx context.Context, in *GetOutboxesRequest, 
 type OutboxServer interface {
 	CreateOutbox(context.Context, *CreateOutboxRequest) (*CreateOutboxResponse, error)
 	GetOutbox(context.Context, *GetOutboxRequest) (*GetOutboxResponse, error)
-	GetOutboxes(context.Context, *GetOutboxesRequest) (*GetOutboxesResponse, error)
+	GetOutboxes(context.Context, *emptypb.Empty) (*GetOutboxesResponse, error)
 }
 
 // UnimplementedOutboxServer should be embedded to have forward compatible implementations.
@@ -81,7 +82,7 @@ func (UnimplementedOutboxServer) CreateOutbox(context.Context, *CreateOutboxRequ
 func (UnimplementedOutboxServer) GetOutbox(context.Context, *GetOutboxRequest) (*GetOutboxResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetOutbox not implemented")
 }
-func (UnimplementedOutboxServer) GetOutboxes(context.Context, *GetOutboxesRequest) (*GetOutboxesResponse, error) {
+func (UnimplementedOutboxServer) GetOutboxes(context.Context, *emptypb.Empty) (*GetOutboxesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetOutboxes not implemented")
 }
 
@@ -133,7 +134,7 @@ func _Outbox_GetOutbox_Handler(srv interface{}, ctx context.Context, dec func(in
 }
 
 func _Outbox_GetOutboxes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetOutboxesRequest)
+	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -145,7 +146,7 @@ func _Outbox_GetOutboxes_Handler(srv interface{}, ctx context.Context, dec func(
 		FullMethod: "/hvx.api.v1alpha1.activity.proto.Outbox/GetOutboxes",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(OutboxServer).GetOutboxes(ctx, req.(*GetOutboxesRequest))
+		return srv.(OutboxServer).GetOutboxes(ctx, req.(*emptypb.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }

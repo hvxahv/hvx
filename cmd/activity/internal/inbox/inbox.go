@@ -21,20 +21,22 @@ const (
 type Inboxes struct {
 	gorm.Model
 
-	ReceiverId   uint   `gorm:"primaryKey;type:bigint;receiver_id"`
-	SenderAddr   string `gorm:"type:text;sender_addr"`
-	ActivityId   string `gorm:"primaryKey;type:text;activity_id"`
-	ActivityType string `gorm:"type:text;activity_type"`
-	ActivityBody string `gorm:"type:text;activity_body"`
+	ActorId    uint   `gorm:"primaryKey;type:bigint;actor_id"`
+	ActivityId string `gorm:"primaryKey;type:text;activity_id"`
+	From       string `gorm:"type:text;sender_addr"`
+	Types      string `gorm:"type:text;types"`
+	Body       string `gorm:"type:text;body"`
+	Viewed     bool   `gorm:"type:boolean;viewed"`
 }
 
-func NewInboxes(receiverId uint, senderId, activityId, activityType string, activityBody []byte) *Inboxes {
+func NewInboxes(actorId uint, activityId, from, types, body string) *Inboxes {
 	return &Inboxes{
-		ReceiverId:   receiverId,
-		SenderAddr:   senderId,
-		ActivityId:   activityId,
-		ActivityType: activityType,
-		ActivityBody: string(activityBody),
+		ActorId:    actorId,
+		ActivityId: activityId,
+		From:       from,
+		Types:      types,
+		Body:       body,
+		Viewed:     false,
 	}
 }
 
@@ -44,6 +46,7 @@ type Ibx interface {
 	GetInbox() (*Inboxes, error)
 	DeleteInbox() error
 	GetInboxes() ([]*Inboxes, error)
+	SetViewed() error
 }
 
 func (i *Inboxes) Create() error {
@@ -77,12 +80,12 @@ func (i *Inboxes) Delete() error {
 	return nil
 }
 
-func NewInboxesIdAndActorId(id, receiverId uint) *Inboxes {
+func NewInboxesIdAndActorId(id, actorId uint) *Inboxes {
 	return &Inboxes{
 		Model: gorm.Model{
 			ID: id,
 		},
-		ReceiverId: receiverId,
+		ActorId: actorId,
 	}
 }
 
@@ -91,7 +94,7 @@ func (i *Inboxes) GetInbox() (*Inboxes, error) {
 
 	if err := db.Debug().
 		Table(InboxTableName).
-		Where("id = ? AND receiver_id = ?", i.ID, i.ReceiverId).
+		Where("id = ? AND actor_id = ?", i.ID, i.ActorId).
 		First(&i).
 		Error; err != nil {
 		return nil, err
@@ -104,7 +107,7 @@ func (i *Inboxes) DeleteInbox() error {
 	db := cockroach.GetDB()
 	if err := db.Debug().
 		Table(InboxTableName).
-		Where("id = ? AND receiver_id = ?", i.ID, i.ReceiverId).
+		Where("id = ? AND actor_id = ?", i.ID, i.ActorId).
 		Unscoped().
 		Delete(Inboxes{}).Error; err != nil {
 		return err
@@ -112,8 +115,8 @@ func (i *Inboxes) DeleteInbox() error {
 	return nil
 }
 
-func NewInboxesReceiverId(receiverId uint) *Inboxes {
-	return &Inboxes{ReceiverId: receiverId}
+func NewInboxesReceiverId(actorId uint) *Inboxes {
+	return &Inboxes{ActorId: actorId}
 }
 
 func (i *Inboxes) GetInboxes() ([]*Inboxes, error) {
@@ -121,11 +124,31 @@ func (i *Inboxes) GetInboxes() ([]*Inboxes, error) {
 	var inboxes []*Inboxes
 	if err := db.Debug().
 		Table(InboxTableName).
-		Where("receiver_id = ?", i.ReceiverId).
+		Where("actor_id = ?", i.ActorId).
 		Find(&inboxes).Error; err != nil {
 		return nil, err
 	}
 	return inboxes, nil
+}
+
+func NewSetViewed(actorId, inboxId uint) *Inboxes {
+	return &Inboxes{
+		Model: gorm.Model{
+			ID: inboxId,
+		},
+		ActorId: actorId,
+		Viewed:  true,
+	}
+}
+func (i *Inboxes) SetViewed() error {
+	db := cockroach.GetDB()
+	if err := db.Debug().
+		Table(InboxTableName).
+		Where("actor_id = ? AND id = ?", i.ActorId, i.ID).
+		Updates(&i).Error; err != nil {
+		return err
+	}
+	return nil
 }
 
 // All Activity Types inherit the properties of the base Activity type.
@@ -144,11 +167,11 @@ type Activity struct {
 }
 
 type InboxActivity struct {
-	ReceiverId   uint
-	SenderId     string
-	ActivityType string
-	ActivityId   string
-	ActivityData []byte
+	ActorId    uint
+	From       string
+	Type       string
+	ActivityId string
+	Data       []byte
 }
 
 // NewActivity The received inbox data is constructed into an InboxActivity,
@@ -174,7 +197,7 @@ func NewActivity(name string, body []byte) (*InboxActivity, error) {
 		return nil, errors.New(errors.ErrAccountGetByUsername)
 	}
 
-	receiver, err := strconv.Atoi(acct.ActorId)
+	actorId, err := strconv.Atoi(acct.ActorId)
 	if err != nil {
 		return nil, err
 	}
@@ -185,25 +208,25 @@ func NewActivity(name string, body []byte) (*InboxActivity, error) {
 		return nil, errors.New("UNMARSHAL_ACTIVITY")
 	}
 	return &InboxActivity{
-		ReceiverId:   uint(receiver),
-		SenderId:     a.Actor,
-		ActivityType: a.Type,
-		ActivityId:   a.ID,
-		ActivityData: body,
+		ActorId:    uint(actorId),
+		From:       a.Actor,
+		Type:       a.Type,
+		ActivityId: a.ID,
+		Data:       body,
 	}, nil
 }
 
 func (ibx *InboxActivity) Handler() error {
-	switch ibx.ActivityType {
+	switch ibx.Type {
 	case "Follow":
 		fmt.Println("Follow")
-		if err := NewInboxes(ibx.ReceiverId, ibx.SenderId, ibx.ActivityId, ibx.ActivityType, ibx.ActivityData).Create(); err != nil {
+		if err := NewInboxes(ibx.ActorId, ibx.ActivityId, ibx.From, ibx.Type, string(ibx.Data)).Create(); err != nil {
 			return err
 		}
 	case "Undo":
 		fmt.Println("Undo")
 		undo := activitypub.Undo{}
-		if err := json.Unmarshal(ibx.ActivityData, &undo); err != nil {
+		if err := json.Unmarshal(ibx.Data, &undo); err != nil {
 			return errors.New("UNMARSHAL_ACTIVITY_UNDO")
 		}
 		if err := NewInboxesActivityId(undo.Object.Id).Delete(); err != nil {

@@ -22,13 +22,25 @@ service Outbox {
     };
   }
 
-  rpc GetOutboxes (GetOutboxesRequest) returns (GetOutboxesResponse) {
+  rpc GetOutboxes (google.protobuf.Empty) returns (GetOutboxesResponse) {
     option (google.api.http) = {
       get: "/api/v1/activity/outbox"
     };
   }
 }
 
+message OutboxData {
+  string Id = 1;
+  string ActorId = 2;
+  string ActivityId = 3;
+  string To = 4;
+  string Cc = 5;
+  string Bcc = 6;
+  string Bto = 7;
+  string Audience = 8;
+  string Types = 9;
+  string Body = 10;
+}
 
 message CreateOutboxRequest {}
 
@@ -42,4 +54,8 @@ message GetOutboxResponse {}
 
 
 message GetOutboxesRequest {}
-message GetOutboxesResponse {}
+
+message GetOutboxesResponse {
+  string code = 1;
+  repeated OutboxData outboxes = 2;
+}

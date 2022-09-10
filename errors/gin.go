@@ -6,6 +6,7 @@ const (
 	ErrInternalServer        = "INTERNAL_SERVER_ERROR"
 	ErrNotAuthorizationTOKEN = "AUTHORIZATION_TOKEN_IS_NOT_IN_REQUEST"
 	ErrTokenParse            = "TOKEN_PARSING_FAILURE"
+	ErrWebfinger             = "FAILED_TO_GET_WEBFINGER"
 )
 
 func NewHandler(code, errors string) gin.H {

@@ -9,6 +9,8 @@ package activitypub
 
 import (
 	"fmt"
+	"github.com/go-resty/resty/v2"
+	"github.com/hvxahv/hvx/errors"
 	"strings"
 	"time"
 
@@ -241,30 +243,46 @@ func GetActorName(resource string) string {
 	return resource
 }
 
+// GetActorByWebfinger Get remote Actor via WebFinger.
+func GetActorByWebfinger(wf *WebFinger) (*resty.Response, error) {
+	g, err := resty.New().
+		R().
+		SetHeader("Content-Type", "application/activitypub+json; charset=utf-8").
+		SetHeader("Accept", "application/ld+json").
+		Get(wf.Links[0].Href)
+	if err != nil {
+		return nil, err
+	}
+	if g.StatusCode() != 200 {
+		return nil, errors.New(errors.ErrWebfinger)
+	}
+	return g, nil
+}
+
 // IsRemote Get host to determine whether it is a remote
 // instance user (not a user of this instance).
-func IsRemote(resource string) bool {
-	host := GetHost(resource)
-	if !strings.Contains(resource, "@") {
-		return false
-	}
+//func IsRemote(resource string) bool {
+//	host := GetActorHost(resource)
+//	if !strings.Contains(resource, "@") {
+//		return false
+//	}
+//
+//	if host != viper.GetString("localhost") {
+//		return true
+//	}
+//	return false
+//
+//}
 
-	if host != viper.GetString("localhost") {
-		return true
-	}
-	return false
-
-}
-
-// GetHost Get the host of the received resource.
-// // as "/.well-known/webFinger?resource=acct:hvturingga@halfmemories.com" Will get halfmemories.com,
-func GetHost(resource string) string {
-	if strings.HasPrefix(resource, "acct:") {
-		ali := strings.IndexByte(resource, '@')
-		if ali != -1 {
-			return resource[ali+1:]
-		}
-	}
-
-	return resource[5:]
-}
+// GetActorHost Get the host of the received resource.
+// hvturingga@halfmemories.com Will get halfmemories.com,
+//func GetActorHost(resource string) string {
+//	if strings.HasPrefix(resource, "acct:") {
+//		ali := strings.IndexByte(resource, '@')
+//		if ali != -1 {
+//			return resource[ali+1:]
+//		}
+//	}
+//
+//	return resource[5:]
+//}

@@ -27,6 +27,7 @@ type InboxClient interface {
 	GetInbox(ctx context.Context, in *GetInboxRequest, opts ...grpc.CallOption) (*GetInboxResponse, error)
 	GetInboxes(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetInboxesResponse, error)
 	DeleteInbox(ctx context.Context, in *DeleteInboxRequest, opts ...grpc.CallOption) (*DeleteInboxResponse, error)
+	ViewedInbox(ctx context.Context, in *ViewedInboxRequest, opts ...grpc.CallOption) (*ViewedInboxResponse, error)
 }
 
 type inboxClient struct {
@@ -73,6 +74,15 @@ func (c *inboxClient) DeleteInbox(ctx context.Context, in *DeleteInboxRequest, o
 	return out, nil
 }
 
+func (c *inboxClient) ViewedInbox(ctx context.Context, in *ViewedInboxRequest, opts ...grpc.CallOption) (*ViewedInboxResponse, error) {
+	out := new(ViewedInboxResponse)
+	err := c.cc.Invoke(ctx, "/hvx.api.v1alpha1.activity.proto.Inbox/ViewedInbox", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // InboxServer is the server API for Inbox service.
 // All implementations should embed UnimplementedInboxServer
 // for forward compatibility
@@ -81,6 +91,7 @@ type InboxServer interface {
 	GetInbox(context.Context, *GetInboxRequest) (*GetInboxResponse, error)
 	GetInboxes(context.Context, *emptypb.Empty) (*GetInboxesResponse, error)
 	DeleteInbox(context.Context, *DeleteInboxRequest) (*DeleteInboxResponse, error)
+	ViewedInbox(context.Context, *ViewedInboxRequest) (*ViewedInboxResponse, error)
 }
 
 // UnimplementedInboxServer should be embedded to have forward compatible implementations.
@@ -98,6 +109,9 @@ func (UnimplementedInboxServer) GetInboxes(context.Context, *emptypb.Empty) (*Ge
 }
 func (UnimplementedInboxServer) DeleteInbox(context.Context, *DeleteInboxRequest) (*DeleteInboxResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteInbox not implemented")
+}
+func (UnimplementedInboxServer) ViewedInbox(context.Context, *ViewedInboxRequest) (*ViewedInboxResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ViewedInbox not implemented")
 }
 
 // UnsafeInboxServer may be embedded to opt out of forward compatibility for this service.
@@ -183,6 +197,24 @@ func _Inbox_DeleteInbox_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Inbox_ViewedInbox_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ViewedInboxRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(InboxServer).ViewedInbox(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/hvx.api.v1alpha1.activity.proto.Inbox/ViewedInbox",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(InboxServer).ViewedInbox(ctx, req.(*ViewedInboxRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Inbox_ServiceDesc is the grpc.ServiceDesc for Inbox service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -205,6 +237,10 @@ var Inbox_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteInbox",
 			Handler:    _Inbox_DeleteInbox_Handler,
+		},
+		{
+			MethodName: "ViewedInbox",
+			Handler:    _Inbox_ViewedInbox_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

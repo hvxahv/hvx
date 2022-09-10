@@ -34,7 +34,6 @@ func (s *server) GetWebfinger(ctx context.Context, in *pb.GetWebfingerRequest) (
 	if err != nil {
 		return nil, err
 	}
-	// If the user exists, Webfinger data will be returned.
 	if !exist {
 		return &pb.GetWebfingerResponse{
 			Subject: in.Resource,

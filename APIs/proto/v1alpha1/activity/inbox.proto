@@ -10,6 +10,7 @@ import "google/protobuf/empty.proto";
 
 service Inbox {
   rpc Inbox (InboxRequest) returns (InboxResponse) {}
+
   rpc GetInbox (GetInboxRequest) returns (GetInboxResponse) {
     option (google.api.http) = {
       get: "/api/v1/activity/{inbox_id}"
@@ -28,15 +29,23 @@ service Inbox {
       body: "*"
     };
   }
+
+  rpc ViewedInbox (ViewedInboxRequest) returns (ViewedInboxResponse) {
+    option (google.api.http) = {
+      patch: "/api/v1/activity/{inboxId}/viewed"
+      body: "*"
+    };
+  }
 }
 
 message Inboxes {
   string id = 1;
-  string receiverId = 2 [json_name = "receiver_id"];
-  string senderAddr = 3 [json_name = "sender_addr"];
-  string activityId = 4 [json_name = "activity_id"];
-  string activityType = 5 [json_name = "activity_type"];
-  string activityBody = 6 [json_name = "activity_body"];
+  string actorId = 2;
+  string from = 3;
+  string activityId = 4;
+  string type = 5;
+  string body = 6;
+  bool viewed = 7;
 }
 
 message InboxRequest {
@@ -71,4 +80,14 @@ message DeleteInboxRequest {
 message DeleteInboxResponse {
   string code = 1;
   string reply = 2;
+}
+
+
+message ViewedInboxRequest {
+  string inboxId = 1 [json_name = "inbox_id"];
+}
+
+message ViewedInboxResponse {
+  string code = 1;
+  string status = 2;
 }

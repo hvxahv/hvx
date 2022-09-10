@@ -36,21 +36,36 @@ func init() {
 func TestGetActorName(t *testing.T) {
 	resource := "acct:hvturingga@halfmemories.com"
 	actor := GetActorName(resource)
-	fmt.Println(actor)
+	t.Log(actor)
 
 }
 
-func TestGetHost(t *testing.T) {
-	resource := "acct:hvturingga@halfmemories.com"
-	host := GetHost(resource)
-	fmt.Println(host)
+func TestGetActorByWebfinger(t *testing.T) {
+	handler, err := GetWebFingerHandler("hvturingga@mastodon.disism.com")
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	webfinger, err := GetActorByWebfinger(handler)
+	if err != nil {
+		t.Error()
+		return
+	}
+	t.Log(webfinger)
 }
 
-func TestIsRemote(t *testing.T) {
-	resource := "acct:hvturingga@halfmemories.com"
-	resource2 := "acct:hvturingga@disism.com"
-	i := IsRemote(resource)
-	fmt.Println(i)
-	i2 := IsRemote(resource2)
-	fmt.Println(i2)
-}
+//
+//func TestGetActorHost(t *testing.T) {
+//	resource := "hvturingga@halfmemories.com"
+//	host := GetActorHost(resource)
+//	fmt.Println(host)
+//}
+
+//func TestIsRemote(t *testing.T) {
+//	resource := "acct:hvturingga@halfmemories.com"
+//	resource2 := "acct:hvturingga@disism.com"
+//	i := IsRemote(resource)
+//	fmt.Println(i)
+//	i2 := IsRemote(resource2)
+//	fmt.Println(i2)
+//}

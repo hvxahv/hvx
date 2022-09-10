@@ -19,7 +19,7 @@ type Follows struct {
 }
 
 type Followee interface {
-	Create() error
+	Follow() error
 	UNFollow() error
 	GetFollows() ([]uint, error)
 }
@@ -41,7 +41,7 @@ func NewGetFollows(actorID uint, followType string) *Follows {
 	return nil
 }
 
-func (f *Follows) Create() error {
+func (f *Follows) Follow() error {
 	db := cockroach.GetDB()
 	if err := db.AutoMigrate(&Follows{}); err != nil {
 		return err

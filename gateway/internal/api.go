@@ -32,6 +32,7 @@ func APIServer() *gin.Engine {
 	api.POST("/u/:actor/inbox", InboxHandler)
 
 	v1 := api.Group("/api/v1")
+
 	v1.Use(Auth)
 	// ACCOUNT SERVICES
 	v1.PATCH("/account/*x", v1alpha1.AccountHandler)
@@ -70,6 +71,7 @@ func APIServer() *gin.Engine {
 	v1.GET("/activity/*x", v1alpha1.ActivityHandler)
 	v1.DELETE("/activity/*x", v1alpha1.ActivityHandler)
 	v1.POST("/activity", v1alpha1.ActivityHandler)
+	v1.PATCH("/activity/*x", v1alpha1.ActivityHandler)
 
 	// FS
 	v1.POST("/fs/avatar", AvatarHandler)

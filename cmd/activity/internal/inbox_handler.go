@@ -1,8 +1,9 @@
 package internal
 
 import (
+	"fmt"
 	pb "github.com/hvxahv/hvx/APIs/v1alpha1/activity"
-	inbox2 "github.com/hvxahv/hvx/cmd/activity/internal/inbox"
+	"github.com/hvxahv/hvx/cmd/activity/internal/inbox"
 	"github.com/hvxahv/hvx/microsvc"
 	"golang.org/x/net/context"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -10,7 +11,7 @@ import (
 )
 
 func (s *server) Inbox(ctx context.Context, in *pb.InboxRequest) (*pb.InboxResponse, error) {
-	activity, err := inbox2.NewActivity(in.Name, in.Data)
+	activity, err := inbox.NewActivity(in.Name, in.Data)
 	if err != nil {
 		return nil, err
 	}
@@ -32,19 +33,20 @@ func (s *server) GetInbox(ctx context.Context, in *pb.GetInboxRequest) (*pb.GetI
 	if err != nil {
 		return nil, err
 	}
-	inbox, err := inbox2.NewInboxesIdAndActorId(uint(inboxId), parse.ActorId).GetInbox()
+
+	ibx, err := inbox.NewInboxesIdAndActorId(uint(inboxId), parse.ActorId).GetInbox()
 	if err != nil {
 		return nil, err
 	}
 	return &pb.GetInboxResponse{
 		Code: "200",
 		Inbox: &pb.Inboxes{
-			Id:           in.GetInboxId(),
-			ReceiverId:   strconv.Itoa(int(inbox.ReceiverId)),
-			SenderAddr:   inbox.SenderAddr,
-			ActivityId:   inbox.ActivityId,
-			ActivityType: inbox.ActivityType,
-			ActivityBody: inbox.ActivityBody,
+			Id:         in.GetInboxId(),
+			ActorId:    strconv.Itoa(int(ibx.ActorId)),
+			From:       ibx.From,
+			ActivityId: ibx.ActivityId,
+			Type:       ibx.Types,
+			Body:       ibx.Body,
 		},
 	}, nil
 }
@@ -58,7 +60,7 @@ func (s *server) DeleteInbox(ctx context.Context, in *pb.DeleteInboxRequest) (*p
 	if err != nil {
 		return nil, err
 	}
-	if err := inbox2.NewInboxesIdAndActorId(uint(inboxId), parse.ActorId).DeleteInbox(); err != nil {
+	if err := inbox.NewInboxesIdAndActorId(uint(inboxId), parse.ActorId).DeleteInbox(); err != nil {
 		return nil, err
 	}
 	return &pb.DeleteInboxResponse{
@@ -72,24 +74,45 @@ func (s *server) GetInboxes(ctx context.Context, in *emptypb.Empty) (*pb.GetInbo
 	if err != nil {
 		return nil, err
 	}
-	inboxes, err := inbox2.NewInboxesReceiverId(parse.ActorId).GetInboxes()
+	inboxes, err := inbox.NewInboxesReceiverId(parse.ActorId).GetInboxes()
 	if err != nil {
 		return nil, err
 	}
 	var ret []*pb.Inboxes
-	for _, inbox := range inboxes {
+	for _, ibx := range inboxes {
 		ret = append(ret, &pb.Inboxes{
-			Id:           strconv.Itoa(int(inbox.ID)),
-			ReceiverId:   strconv.Itoa(int(inbox.ReceiverId)),
-			SenderAddr:   inbox.SenderAddr,
-			ActivityId:   inbox.ActivityId,
-			ActivityType: inbox.ActivityType,
-			ActivityBody: inbox.ActivityBody,
+			Id:         strconv.Itoa(int(ibx.ID)),
+			ActorId:    strconv.Itoa(int(ibx.ActorId)),
+			From:       ibx.From,
+			ActivityId: ibx.ActivityId,
+			Type:       ibx.Types,
+			Body:       ibx.Body,
+			Viewed:     ibx.Viewed,
 		})
 	}
 
 	return &pb.GetInboxesResponse{
 		Code:    "200",
 		Inboxes: ret,
+	}, nil
+}
+
+func (s *server) ViewedInbox(ctx context.Context, in *pb.ViewedInboxRequest) (*pb.ViewedInboxResponse, error) {
+	parse, err := microsvc.GetUserdataByAuthorizationToken(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	id, err := strconv.Atoi(in.GetInboxId())
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println(id)
+	if err := inbox.NewSetViewed(parse.ActorId, uint(id)).SetViewed(); err != nil {
+		return nil, err
+	}
+	return &pb.ViewedInboxResponse{
+		Code:   "200",
+		Status: "ok",
 	}, nil
 }

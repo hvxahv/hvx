@@ -40,10 +40,10 @@ message ActivityRequest {
   repeated string CC = 2 [json_name = "cc"];
   repeated string BTO = 3 [json_name = "bto"];
   repeated string BCC = 4 [json_name = "bcc"];
-  repeated string audience = 5;
+  repeated string Audience = 5 [json_name = "audience"];
 
-  // event activity type.
-  string event = 6;
+  // activity type.
+  string type = 6;
 
   // body data that will have the final request for server-to-server interaction.
   string body = 7;

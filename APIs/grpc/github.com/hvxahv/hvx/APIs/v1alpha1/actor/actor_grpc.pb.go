@@ -28,16 +28,15 @@ type ActorClient interface {
 	Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error)
 	// Get returns the actor with the given name(PreferredUsername).
 	Get(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error)
-	// GetActorsByPreferredUsername Returns the set of actors by the PreferredUsername.
-	GetActorsByPreferredUsername(ctx context.Context, in *GetActorsByPreferredUsernameRequest, opts ...grpc.CallOption) (*GetActorsByPreferredUsernameResponse, error)
-	// GetActorByAddress Returns the actor by the address.
-	GetByAddress(ctx context.Context, in *GetActorByAddressRequest, opts ...grpc.CallOption) (*ActorData, error)
+	// Search returns the set of actors by the username.
+	Search(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*SearchResponse, error)
 	// EditActor Edits the actor profile.
 	Edit(ctx context.Context, in *EditRequest, opts ...grpc.CallOption) (*EditResponse, error)
 	// Delete Delete the actor.
 	Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error)
-	// GetActorByUsername Returns the actor by account username.
+	// GetActorByUsername returns the actor by account username.
 	GetActorByUsername(ctx context.Context, in *GetActorByUsernameRequest, opts ...grpc.CallOption) (*ActorData, error)
+	GetActorByAddress(ctx context.Context, in *GetActorByAddressRequest, opts ...grpc.CallOption) (*ActorData, error)
 }
 
 type actorClient struct {
@@ -75,18 +74,9 @@ func (c *actorClient) Get(ctx context.Context, in *GetRequest, opts ...grpc.Call
 	return out, nil
 }
 
-func (c *actorClient) GetActorsByPreferredUsername(ctx context.Context, in *GetActorsByPreferredUsernameRequest, opts ...grpc.CallOption) (*GetActorsByPreferredUsernameResponse, error) {
-	out := new(GetActorsByPreferredUsernameResponse)
-	err := c.cc.Invoke(ctx, "/hvx.api.v1alpha1.actor.proto.Actor/GetActorsByPreferredUsername", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *actorClient) GetByAddress(ctx context.Context, in *GetActorByAddressRequest, opts ...grpc.CallOption) (*ActorData, error) {
-	out := new(ActorData)
-	err := c.cc.Invoke(ctx, "/hvx.api.v1alpha1.actor.proto.Actor/GetByAddress", in, out, opts...)
+func (c *actorClient) Search(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*SearchResponse, error) {
+	out := new(SearchResponse)
+	err := c.cc.Invoke(ctx, "/hvx.api.v1alpha1.actor.proto.Actor/Search", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -120,6 +110,15 @@ func (c *actorClient) GetActorByUsername(ctx context.Context, in *GetActorByUser
 	return out, nil
 }
 
+func (c *actorClient) GetActorByAddress(ctx context.Context, in *GetActorByAddressRequest, opts ...grpc.CallOption) (*ActorData, error) {
+	out := new(ActorData)
+	err := c.cc.Invoke(ctx, "/hvx.api.v1alpha1.actor.proto.Actor/GetActorByAddress", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ActorServer is the server API for Actor service.
 // All implementations should embed UnimplementedActorServer
 // for forward compatibility
@@ -130,16 +129,15 @@ type ActorServer interface {
 	Create(context.Context, *CreateRequest) (*CreateResponse, error)
 	// Get returns the actor with the given name(PreferredUsername).
 	Get(context.Context, *GetRequest) (*GetResponse, error)
-	// GetActorsByPreferredUsername Returns the set of actors by the PreferredUsername.
-	GetActorsByPreferredUsername(context.Context, *GetActorsByPreferredUsernameRequest) (*GetActorsByPreferredUsernameResponse, error)
-	// GetActorByAddress Returns the actor by the address.
-	GetByAddress(context.Context, *GetActorByAddressRequest) (*ActorData, error)
+	// Search returns the set of actors by the username.
+	Search(context.Context, *SearchRequest) (*SearchResponse, error)
 	// EditActor Edits the actor profile.
 	Edit(context.Context, *EditRequest) (*EditResponse, error)
 	// Delete Delete the actor.
 	Delete(context.Context, *DeleteRequest) (*DeleteResponse, error)
-	// GetActorByUsername Returns the actor by account username.
+	// GetActorByUsername returns the actor by account username.
 	GetActorByUsername(context.Context, *GetActorByUsernameRequest) (*ActorData, error)
+	GetActorByAddress(context.Context, *GetActorByAddressRequest) (*ActorData, error)
 }
 
 // UnimplementedActorServer should be embedded to have forward compatible implementations.
@@ -155,11 +153,8 @@ func (UnimplementedActorServer) Create(context.Context, *CreateRequest) (*Create
 func (UnimplementedActorServer) Get(context.Context, *GetRequest) (*GetResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
 }
-func (UnimplementedActorServer) GetActorsByPreferredUsername(context.Context, *GetActorsByPreferredUsernameRequest) (*GetActorsByPreferredUsernameResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetActorsByPreferredUsername not implemented")
-}
-func (UnimplementedActorServer) GetByAddress(context.Context, *GetActorByAddressRequest) (*ActorData, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetByAddress not implemented")
+func (UnimplementedActorServer) Search(context.Context, *SearchRequest) (*SearchResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Search not implemented")
 }
 func (UnimplementedActorServer) Edit(context.Context, *EditRequest) (*EditResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Edit not implemented")
@@ -169,6 +164,9 @@ func (UnimplementedActorServer) Delete(context.Context, *DeleteRequest) (*Delete
 }
 func (UnimplementedActorServer) GetActorByUsername(context.Context, *GetActorByUsernameRequest) (*ActorData, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetActorByUsername not implemented")
+}
+func (UnimplementedActorServer) GetActorByAddress(context.Context, *GetActorByAddressRequest) (*ActorData, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetActorByAddress not implemented")
 }
 
 // UnsafeActorServer may be embedded to opt out of forward compatibility for this service.
@@ -236,38 +234,20 @@ func _Actor_Get_Handler(srv interface{}, ctx context.Context, dec func(interface
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Actor_GetActorsByPreferredUsername_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetActorsByPreferredUsernameRequest)
+func _Actor_Search_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SearchRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ActorServer).GetActorsByPreferredUsername(ctx, in)
+		return srv.(ActorServer).Search(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/hvx.api.v1alpha1.actor.proto.Actor/GetActorsByPreferredUsername",
+		FullMethod: "/hvx.api.v1alpha1.actor.proto.Actor/Search",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ActorServer).GetActorsByPreferredUsername(ctx, req.(*GetActorsByPreferredUsernameRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Actor_GetByAddress_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetActorByAddressRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ActorServer).GetByAddress(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/hvx.api.v1alpha1.actor.proto.Actor/GetByAddress",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ActorServer).GetByAddress(ctx, req.(*GetActorByAddressRequest))
+		return srv.(ActorServer).Search(ctx, req.(*SearchRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -326,6 +306,24 @@ func _Actor_GetActorByUsername_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Actor_GetActorByAddress_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetActorByAddressRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ActorServer).GetActorByAddress(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/hvx.api.v1alpha1.actor.proto.Actor/GetActorByAddress",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ActorServer).GetActorByAddress(ctx, req.(*GetActorByAddressRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Actor_ServiceDesc is the grpc.ServiceDesc for Actor service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -346,12 +344,8 @@ var Actor_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Actor_Get_Handler,
 		},
 		{
-			MethodName: "GetActorsByPreferredUsername",
-			Handler:    _Actor_GetActorsByPreferredUsername_Handler,
-		},
-		{
-			MethodName: "GetByAddress",
-			Handler:    _Actor_GetByAddress_Handler,
+			MethodName: "Search",
+			Handler:    _Actor_Search_Handler,
 		},
 		{
 			MethodName: "Edit",
@@ -364,6 +358,10 @@ var Actor_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetActorByUsername",
 			Handler:    _Actor_GetActorByUsername_Handler,
+		},
+		{
+			MethodName: "GetActorByAddress",
+			Handler:    _Actor_GetActorByAddress_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

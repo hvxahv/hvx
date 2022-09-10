@@ -9,10 +9,14 @@
 package internal
 
 import (
+	"encoding/json"
 	pb "github.com/hvxahv/hvx/APIs/v1alpha1/actor"
+	"github.com/hvxahv/hvx/activitypub"
 	"github.com/hvxahv/hvx/microsvc"
 	"github.com/spf13/viper"
 	"golang.org/x/net/context"
+	"net/mail"
+	"net/url"
 	"strconv"
 )
 
@@ -78,13 +82,52 @@ func (s *server) Get(ctx context.Context, in *pb.GetRequest) (*pb.GetResponse, e
 	}, nil
 }
 
-func (s *server) GetActorsByPreferredUsername(ctx context.Context, in *pb.GetActorsByPreferredUsernameRequest) (*pb.GetActorsByPreferredUsernameResponse, error) {
+func (s *server) Search(ctx context.Context, in *pb.SearchRequest) (*pb.SearchResponse, error) {
+	var a []*pb.ActorData
+
+	addr, err := mail.ParseAddress(in.GetPreferredUsername())
+	if err == nil {
+		handler, err := activitypub.GetWebFingerHandler(addr.Address)
+		if err != nil {
+			return nil, err
+		}
+		g, err := activitypub.GetActorByWebfinger(handler)
+		if err != nil {
+			return nil, err
+		}
+		var act activitypub.Actor
+		if err := json.Unmarshal(g.Body(), &act); err != nil {
+			return nil, err
+		}
+		parse, err := url.Parse(act.Url)
+		if err != nil {
+			return nil, err
+		}
+		actor, err := NewAddActors(act.PreferredUsername, parse.Host, act.Icon.Url, act.Name, act.Summary,
+			act.Inbox, act.Url, act.PublicKey.PublicKeyPem, act.Type).AddActor()
+		if err != nil {
+			return nil, err
+		}
+		a = append(a, &pb.ActorData{
+			Id:                strconv.Itoa(int(actor.ID)),
+			PreferredUsername: actor.PreferredUsername,
+			Domain:            actor.Domain,
+			Avatar:            actor.Avatar,
+			Name:              actor.Name,
+			Summary:           actor.Summary,
+			Inbox:             actor.Inbox,
+			Address:           actor.Address,
+			PublicKey:         actor.PublicKey,
+			ActorType:         actor.ActorType,
+			IsRemote:          strconv.FormatBool(actor.IsRemote),
+		})
+	}
+
 	actors, err := NewPreferredUsername(in.GetPreferredUsername()).GetActorsByPreferredUsername()
 	if err != nil {
 		return nil, err
 	}
 
-	var a []*pb.ActorData
 	for _, v := range actors {
 		var ad pb.ActorData
 		ad.Id = strconv.Itoa(int(v.ID))
@@ -101,7 +144,7 @@ func (s *server) GetActorsByPreferredUsername(ctx context.Context, in *pb.GetAct
 		a = append(a, &ad)
 	}
 
-	return &pb.GetActorsByPreferredUsernameResponse{Code: "200", Actors: a}, nil
+	return &pb.SearchResponse{Code: "200", Actors: a}, nil
 }
 
 func (s *server) GetActorByAddress(ctx context.Context, in *pb.GetActorByAddressRequest) (*pb.ActorData, error) {

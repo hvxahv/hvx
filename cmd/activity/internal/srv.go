@@ -27,7 +27,7 @@ func Run() error {
 	pb.RegisterActivityServer(s, &server{})
 	pb.RegisterInboxServer(s, &server{})
 	pb.RegisterOutboxServer(s, &server{})
-	pb.RegisterFriendshipServer(s, &server{})
+	//pb.RegisterFriendshipServer(s, &server{})
 
 	if err := pb.RegisterActivityHandler(s.Ctx, s.Mux, s.Conn); err != nil {
 		return errors.Newf("Failed to register %s services: %v", serviceName, err)
