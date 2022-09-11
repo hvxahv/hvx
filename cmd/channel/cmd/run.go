@@ -1,6 +1,5 @@
 /*
 Copyright © 2022 NAME HERE <EMAIL ADDRESS>
-
 */
 package cmd
 
@@ -15,7 +14,7 @@ const serviceName = "channel"
 // runCmd represents the run command
 var runCmd = &cobra.Command{
 	Use:   "run",
-	Short: "A brief description of your command",
+	Short: "",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		if err := internal.Run(); err != nil {

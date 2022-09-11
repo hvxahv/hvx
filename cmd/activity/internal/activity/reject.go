@@ -24,7 +24,7 @@ func (h *Handler) Reject(data []byte) (*pb.ActivityResponse, error) {
 	body := &activitypub.Reject{
 		Context: "https://www.w3.org/ns/activitystreams",
 		Id:      fmt.Sprintf("%s/#rejects/%s", h.aAddr, uuid.NewString()),
-		Type:    Reject,
+		Type:    activitypub.RejectType,
 		Actor:   h.aAddr,
 		Object: struct {
 			Id     string `json:"id"`
@@ -55,7 +55,7 @@ func (h *Handler) Reject(data []byte) (*pb.ActivityResponse, error) {
 	ok = append(ok, h.inbox)
 
 	// CREATE FOLLOW OUTBOX ...
-	if err := outbox.NewOutboxes(h.actorId, id, h.inbox, Reject, string(marshal)).Create(); err != nil {
+	if err := outbox.NewOutboxes(h.actorId, id, h.inbox, activitypub.RejectType, string(marshal)).Create(); err != nil {
 		return nil, err
 	}
 

@@ -1,9 +1,7 @@
 package clientv1
 
-import (
-	"testing"
-)
+import "github.com/hvxahv/hvx/cfg"
 
-func TestGRPC(t *testing.T) {
-
+func init() {
+	cfg.DefaultConfig()
 }

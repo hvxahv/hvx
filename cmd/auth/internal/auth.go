@@ -41,23 +41,15 @@ type AuthorizationHandler interface {
 }
 
 func (a *authorization) Authorization(username, password string) (*account.VerifyResponse, error) {
-	_ := clientv1.New(a.ctx,
-		microsvc.NewGRPCAddress("account").Get(),
-	)
+	verify, err := clientv1.New(context.Background(), microsvc.AccountServiceName).Verify(username, password)
 	if err != nil {
 		errors.Throw("error while connecting to the account server for authentication in public service.", err)
 		return nil, err
 	}
-	defer c.Close()
-
-	v, err := account.NewAccountsClient(c.Conn).Verify(a.ctx, &account.VerifyRequest{
-		Username: username,
-		Password: password,
-	})
 	if err != nil {
 		return nil, errors.New(errors.ErrAccountVerification)
 	}
-	return v, nil
+	return verify, nil
 }
 
 func (a *authorization) SetPublicKey(accountId uint, publicKey string) error {
@@ -76,20 +68,14 @@ func (a *authorization) SetPublicKey(accountId uint, publicKey string) error {
 }
 
 func (a *authorization) AddDevice(accountId, ua string) (*device.CreateResponse, error) {
-	_ := clientv1.New(a.ctx,
-		microsvc.NewGRPCAddress("device").Get(),
-	)
+	add, err := clientv1.New(context.Background(), microsvc.DeviceServiceName).AddDevice(accountId, ua)
+	if err != nil {
+		return nil, err
+	}
 	if err != nil {
 		errors.Throw("error occurred while connecting to the device server in public service.", err)
 		return nil, errors.New(errors.ErrConnectDeviceRPCServer)
 	}
-	defer c.Close()
-	d, err := device.NewDevicesClient(c.Conn).Create(a.ctx, &device.CreateRequest{
-		AccountId: accountId,
-		Ua:        ua,
-	})
-	if err != nil {
-		return nil, err
-	}
-	return d, nil
+
+	return add, nil
 }

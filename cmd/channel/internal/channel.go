@@ -4,7 +4,6 @@ import (
 	"context"
 	"strconv"
 
-	"github.com/hvxahv/hvx/APIs/v1alpha1/actor"
 	"github.com/hvxahv/hvx/clientv1"
 	"github.com/hvxahv/hvx/cockroach"
 	"github.com/hvxahv/hvx/errors"
@@ -119,15 +118,10 @@ func (c *Channels) DeleteChannel() error {
 
 	// DELETE CHANNEL (IS ACTIVITY PUB ACTOR SERVICE)
 	ctx := context.Background()
-	_ := clientv1.New(ctx, microsvc.NewGRPCAddress("actor").Get())
+	d, err := clientv1.New(ctx, microsvc.ActorServiceName).DeleteActor(strconv.Itoa(int(c.ActorId)))
 	if err != nil {
 		return err
 	}
-	defer client.Close()
-
-	d, err := actor.NewActorClient(client.Conn).Delete(ctx, &actor.DeleteRequest{
-		Id: strconv.Itoa(int(c.ActorId)),
-	})
 	if err != nil {
 		return err
 	}

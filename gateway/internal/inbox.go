@@ -2,7 +2,6 @@ package internal
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/hvxahv/hvx/APIs/v1alpha1/activity"
 	"github.com/hvxahv/hvx/clientv1"
 	"github.com/hvxahv/hvx/gateway/address"
 	"github.com/hvxahv/hvx/gateway/proxy"
@@ -19,19 +18,10 @@ func InboxHandler(c *gin.Context) {
 			"status": err.Error(),
 		})
 	}
-	_ := clientv1.New(c, microsvc.NewGRPCAddress("activity").Get())
+	inbox, err := clientv1.New(c, microsvc.ActivityServiceName).Inbox(name, body)
 	if err != nil {
-		c.JSON(502, gin.H{
-			"status": err.Error(),
-		})
 		return
 	}
-	defer client.Close()
-
-	inbox, err := activity.NewInboxClient(client.Conn).Inbox(c, &activity.InboxRequest{
-		Name: name,
-		Data: body,
-	})
 	if err != nil {
 		c.JSON(502, gin.H{
 			"status": err.Error(),

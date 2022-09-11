@@ -2,10 +2,10 @@ package internal
 
 import (
 	"context"
+	"github.com/hvxahv/hvx/activitypub"
 	"strconv"
 
 	"github.com/golang/protobuf/ptypes/empty"
-	"github.com/hvxahv/hvx/APIs/v1alpha1/actor"
 	pb "github.com/hvxahv/hvx/APIs/v1alpha1/channel"
 	"github.com/hvxahv/hvx/clientv1"
 	"github.com/hvxahv/hvx/errors"
@@ -18,15 +18,11 @@ func (s *server) CreateChannel(ctx context.Context, in *pb.CreateChannelRequest)
 	// the method should check if the Actor PreferredUsername exists instead
 	// of calling Create() after calling the IsExist() method when creating the Actor.
 	// This problem is revealed in the current scenario.
-	_ := clientv1.New(ctx, microsvc.NewGRPCAddress("actor").Get())
+
+	exist, err := clientv1.New(ctx, microsvc.ActorServiceName).IsExistActor(in.GetPreferredUsername())
 	if err != nil {
 		return nil, err
 	}
-	defer cli.Close()
-
-	exist, err := actor.NewActorClient(cli.Conn).IsExist(ctx, &actor.IsExistRequest{
-		PreferredUsername: in.GetPreferredUsername(),
-	})
 	if err != nil {
 		return nil, err
 	}
@@ -39,7 +35,7 @@ func (s *server) CreateChannel(ctx context.Context, in *pb.CreateChannelRequest)
 		return nil, err
 	}
 	// Generate rsa Key.
-	rsa, err := rsa.NewRsa(2048).Generate()
+	k, err := rsa.NewRsa(2048).Generate()
 	if err != nil {
 		return nil, err
 	}
@@ -47,11 +43,10 @@ func (s *server) CreateChannel(ctx context.Context, in *pb.CreateChannelRequest)
 	// Use the Actor (actorId) of ActivityPub as the data source of the channel.
 	// and set the type to Service.
 	// https://www.w3.org/TR/activitystreams-vocabulary/#actor-types
-	create, err := actor.NewActorClient(cli.Conn).Create(ctx, &actor.CreateRequest{
-		PreferredUsername: in.PreferredUsername,
-		PublicKey:         rsa.PublicKey,
-		ActorType:         "Service",
-	})
+	create, err := clientv1.New(ctx, microsvc.ActorServiceName).CreateActor(in.GetPreferredUsername(), k.PublicKey, activitypub.ServiceType)
+	if err != nil {
+		return nil, err
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -61,7 +56,7 @@ func (s *server) CreateChannel(ctx context.Context, in *pb.CreateChannelRequest)
 		return nil, err
 	}
 
-	if err := NewChannels(uint(actorId), parse.ActorId, rsa.PrivateKey).CreateChannel(); err != nil {
+	if err := NewChannels(uint(actorId), parse.ActorId, k.PrivateKey).CreateChannel(); err != nil {
 		return nil, err
 	}
 	return &pb.CreateChannelResponse{
@@ -87,20 +82,11 @@ func (s *server) GetChannels(ctx context.Context, in *empty.Empty) (*pb.GetChann
 	var data []*pb.ChannelData
 	for _, d := range channels {
 		var cd pb.ChannelData
-		_ := clientv1.New(ctx,
-			microsvc.NewGRPCAddress("actor").Get())
+		actor, err := clientv1.New(ctx, microsvc.ActorServiceName).GetActor(strconv.Itoa(int(d.ActorId)))
 		if err != nil {
 			return nil, err
 		}
-		defer client.Close()
-
-		as, err := actor.NewActorClient(client.Conn).Get(ctx, &actor.GetRequest{
-			ActorId: strconv.Itoa(int(d.ActorId)),
-		})
-		if err != nil {
-			return nil, err
-		}
-		cd.Channel = as.Actor
+		cd.Channel = actor.Actor
 		cd.ChannelId = strconv.Itoa(int(d.ID))
 
 		data = append(data, &cd)

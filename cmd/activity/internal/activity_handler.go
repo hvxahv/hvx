@@ -10,6 +10,7 @@ package internal
 
 import (
 	pb "github.com/hvxahv/hvx/APIs/v1alpha1/activity"
+	"github.com/hvxahv/hvx/activitypub"
 	"github.com/hvxahv/hvx/clientv1"
 	"github.com/hvxahv/hvx/cmd/activity/internal/activity"
 	"github.com/hvxahv/hvx/microsvc"
@@ -38,28 +39,28 @@ func (s *server) Activity(ctx context.Context, in *pb.ActivityRequest) (*pb.Acti
 
 	var r *pb.ActivityResponse
 	switch in.GetType() {
-	case activity.Follow:
+	case activitypub.FollowType:
 		inbox := in.TO[0]
 		follow, err := activity.NewHandler(inbox, aAddr, privateKey, parse.ActorId).Follow()
 		if err != nil {
 			return nil, err
 		}
 		r = follow
-	case activity.Accept:
+	case activitypub.AcceptType:
 		inbox := in.TO[0]
 		accept, err := activity.NewHandler(inbox, aAddr, privateKey, parse.ActorId).Accept([]byte(in.GetBody()))
 		if err != nil {
 			return nil, err
 		}
 		r = accept
-	case activity.Reject:
+	case activitypub.RejectType:
 		inbox := in.TO[0]
 		reject, err := activity.NewHandler(inbox, aAddr, privateKey, parse.ActorId).Reject([]byte(in.GetBody()))
 		if err != nil {
 			return nil, err
 		}
 		r = reject
-	case activity.Undo:
+	case activitypub.UndoType:
 		inbox := in.TO[0]
 		reject, err := activity.NewHandler(inbox, aAddr, privateKey, parse.ActorId).Undo([]byte(in.GetBody()))
 		if err != nil {

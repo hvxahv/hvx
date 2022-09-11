@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	pb "github.com/hvxahv/hvx/APIs/v1alpha1/fs"
 	"github.com/hvxahv/hvx/clientv1"
 	"github.com/hvxahv/hvx/errors"
 	"github.com/hvxahv/hvx/fs"
@@ -43,17 +42,10 @@ func AvatarHandler(c *gin.Context) {
 		return
 	}
 
-	_ := clientv1.New(c, microsvc.NewGRPCAddress("fs").Get())
+	create, err := clientv1.New(c, microsvc.FsServiceName).CreateFs(parse.AccountId, fn, put)
 	if err != nil {
-		c.JSON(500, errors.NewHandler("500", errors.ErrConnectFsRPCServer))
 		return
 	}
-	defer client.Close()
-	create, err := pb.NewFsClient(client.Conn).Create(c, &pb.CreateRequest{
-		AccountId: parse.AccountId,
-		FileName:  fn,
-		Address:   put,
-	})
 	if err != nil && create.Code != "200" {
 		c.JSON(500, errors.NewHandler("500", errors.ErrInternalServer))
 		return
@@ -88,13 +80,6 @@ func AttachHandler(c *gin.Context) {
 		c.JSON(403, errors.NewHandler("403", errors.ErrFileMaximum))
 		return
 	}
-	_ := clientv1.New(c, microsvc.NewGRPCAddress("fs").Get())
-	if err != nil {
-		c.JSON(500, errors.NewHandler("500", errors.ErrConnectFsRPCServer))
-		return
-	}
-	defer client.Close()
-
 	var a []*Attas
 	for _, f := range form.File["attach"] {
 		var (
@@ -107,11 +92,10 @@ func AttachHandler(c *gin.Context) {
 			c.JSON(500, errors.NewHandler("500", errors.ErrFilesPut))
 			return
 		}
-		create, err := pb.NewFsClient(client.Conn).Create(c, &pb.CreateRequest{
-			AccountId: parse.AccountId,
-			FileName:  fn,
-			Address:   put,
-		})
+		create, err := clientv1.New(c, microsvc.FsServiceName).CreateFs(parse.AccountId, fn, put)
+		if err != nil {
+			return
+		}
 		if err != nil && create.Code != "200" {
 			c.JSON(500, errors.NewHandler("500", errors.ErrInternalServer))
 			return
@@ -139,23 +123,16 @@ func DeleteFsHandler(c *gin.Context) {
 		return
 	}
 
-	_ := clientv1.New(c, microsvc.NewGRPCAddress("fs").Get())
+	d, err := clientv1.New(c, microsvc.FsServiceName).Delete(parse.AccountId, fn)
 	if err != nil {
-		c.JSON(500, errors.NewHandler("500", errors.ErrConnectFsRPCServer))
 		return
 	}
-	defer client.Close()
-	a, err := pb.NewFsClient(client.Conn).Delete(c, &pb.DeleteRequest{
-		AccountId: parse.AccountId,
-		FileName:  fn,
-	})
-	if err != nil && a.Code != "200" {
+	if err != nil && d.Code != "200" {
 		c.JSON(500, errors.NewHandler("500", errors.ErrFileDelete+err.Error()))
 		return
 	}
-
 	c.JSON(200, gin.H{
-		"code":   a.Code,
+		"code":   "200",
 		"status": "ok",
 	})
 }
@@ -163,16 +140,10 @@ func DeleteFsHandler(c *gin.Context) {
 func GetFsAddressHandler(c *gin.Context) {
 	parse, _ := ParseAuthorization(c.Request.Header.Get("Authorization"))
 	fn := c.Param("name")
-	_ := clientv1.New(c, microsvc.NewGRPCAddress("fs").Get())
+	f, err := clientv1.New(c, microsvc.FsServiceName).GetFs(parse.AccountId,fn)
 	if err != nil {
-		c.JSON(500, errors.NewHandler("500", errors.ErrConnectFsRPCServer))
 		return
 	}
-	defer client.Close()
-	f, err := pb.NewFsClient(client.Conn).Get(c, &pb.GetRequest{
-		AccountId: parse.AccountId,
-		FileName:  fn,
-	})
 	if err != nil && f.Code != "200" {
 		c.JSON(500, errors.NewHandler("500", errors.ErrFileDelete+err.Error()))
 		return

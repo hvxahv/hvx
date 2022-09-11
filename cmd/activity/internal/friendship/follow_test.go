@@ -2,9 +2,13 @@ package friendship
 
 import (
 	"fmt"
+	"github.com/hvxahv/hvx/cfg"
 	"testing"
 )
 
+func init() {
+	cfg.DefaultConfig()
+}
 func TestFollows_CreateFollower(t *testing.T) {
 	//f := NewFollower(746931986864701441, 746932029260431361)
 	//if err := f.Create(); err != nil {

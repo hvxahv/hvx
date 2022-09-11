@@ -3,7 +3,6 @@ package inbox
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/hvxahv/hvx/APIs/v1alpha1/account"
 	"github.com/hvxahv/hvx/activitypub"
 	"github.com/hvxahv/hvx/clientv1"
 	"github.com/hvxahv/hvx/cockroach"
@@ -181,23 +180,16 @@ func NewActivity(name string, body []byte) (*InboxActivity, error) {
 
 	// Go to the account server and get the ActorId from the account name received by inbox.
 	ctx := context.Background()
-	_ := clientv1.New(ctx,
-		microsvc.NewGRPCAddress("account").Get(),
-	)
+	account, err := clientv1.New(ctx, microsvc.AccountServiceName).GetAccountByUsername(name)
 	if err != nil {
-		errors.Throw("failed to connect to account server during inbox processing.", err)
 		return nil, err
 	}
-	defer c.Close()
-
-	acct, err := account.NewAccountsClient(c.Conn).GetByUsername(ctx, &account.GetByUsernameRequest{
-		Username: name,
-	})
 	if err != nil {
+		errors.Throw("failed to connect to account server during inbox processing.", err)
 		return nil, errors.New(errors.ErrAccountGetByUsername)
 	}
 
-	actorId, err := strconv.Atoi(acct.ActorId)
+	actorId, err := strconv.Atoi(account.ActorId)
 	if err != nil {
 		return nil, err
 	}

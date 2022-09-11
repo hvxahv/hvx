@@ -84,14 +84,7 @@ func (s *server) GetSubscribers(ctx context.Context, in *pb.GetSubscribersReques
 
 	var reply []*actor.ActorData
 	for _, sub := range subscribers {
-		_ := clientv1.New(ctx, microsvc.NewGRPCAddress("actor").Get())
-		if err != nil {
-			return nil, err
-		}
-		defer client.Close()
-		a, err := actor.NewActorClient(client.Conn).Get(ctx, &actor.GetRequest{
-			ActorId: strconv.Itoa(int(sub.SubscriberId)),
-		})
+		a, err := clientv1.New(ctx, microsvc.ActorServiceName).GetActor(strconv.Itoa(int(sub.SubscriberId)))
 		if err != nil {
 			return nil, err
 		}

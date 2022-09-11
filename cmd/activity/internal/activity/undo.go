@@ -24,7 +24,7 @@ func (h *Handler) Undo(data []byte) (*pb.ActivityResponse, error) {
 	body := &activitypub.Reject{
 		Context: "https://www.w3.org/ns/activitystreams",
 		Id:      id,
-		Type:    Undo,
+		Type:    activitypub.UndoType,
 		Actor:   h.aAddr,
 		Object: struct {
 			Id     string `json:"id"`
@@ -52,7 +52,7 @@ func (h *Handler) Undo(data []byte) (*pb.ActivityResponse, error) {
 		return nil, nil
 	}
 	ok = append(ok, h.inbox)
-	
+
 	if err := outbox.NewOutboxesActivityId(b.Id).Delete(); err != nil {
 		return nil, err
 	}

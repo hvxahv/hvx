@@ -11,7 +11,6 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/hvxahv/hvx/APIs/v1alpha1/device"
 	auth2 "github.com/hvxahv/hvx/auth"
 	"github.com/hvxahv/hvx/clientv1"
 	"github.com/hvxahv/hvx/errors"
@@ -37,23 +36,18 @@ func Auth(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	_ := clientv1.New(c,
-		microsvc.NewGRPCAddress("device").Get(),
-	)
+
+	exist, err := clientv1.New(c, microsvc.DeviceServiceName).IsExistDevice(parse.ActorId)
 	if err != nil {
-		c.JSON(500, errors.NewHandler("500", errors.ErrConnectDeviceRPCServer))
-		c.Abort()
 		return
 	}
-	defer cli.Close()
-	devices, err := device.NewDevicesClient(cli.Conn).IsExist(c, &device.IsExistRequest{Id: parse.DeviceID})
 	if err != nil {
 		c.JSON(501, errors.NewHandler("501", err.Error()))
 		c.Abort()
 		return
 	}
 
-	if devices.IsExist {
+	if exist.IsExist {
 		c.JSON(401, errors.NewHandler("401", errors.New(errors.ErrTokenUnauthorized).Error()))
 		c.Abort()
 		return

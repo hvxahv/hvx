@@ -3,7 +3,6 @@ package internal
 import (
 	"strconv"
 
-	"github.com/hvxahv/hvx/APIs/v1alpha1/actor"
 	pb "github.com/hvxahv/hvx/APIs/v1alpha1/channel"
 	"github.com/hvxahv/hvx/clientv1"
 	"github.com/hvxahv/hvx/microsvc"
@@ -89,20 +88,13 @@ func (s *server) GetAdministrators(ctx context.Context, in *pb.GetAdministrators
 	var admins []*pb.AdminsData
 	for _, a := range administrators {
 		var admin pb.AdminsData
-		_ := clientv1.New(ctx, microsvc.NewGRPCAddress("actor").Get())
-		if err != nil {
-			return nil, err
-		}
-		defer client.Close()
 
-		act, err := actor.NewActorClient(client.Conn).Get(ctx, &actor.GetRequest{
-			ActorId: strconv.Itoa(int(a.AdminId)),
-		})
+		actor, err := clientv1.New(ctx, microsvc.ActorServiceName).GetActor(strconv.Itoa(int(a.AdminId)))
 		if err != nil {
 			return nil, err
 		}
 		admin.IsOwner = a.IsOwner
-		admin.Admin = act.Actor
+		admin.Admin = actor.Actor
 		admins = append(admins, &admin)
 	}
 

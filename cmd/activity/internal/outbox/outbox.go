@@ -1,7 +1,7 @@
 package outbox
 
 import (
-	"github.com/hvxahv/hvx/cmd/activity/internal/activity"
+	"github.com/hvxahv/hvx/activitypub"
 	"github.com/hvxahv/hvx/cockroach"
 	"gorm.io/gorm"
 	"strings"
@@ -30,13 +30,13 @@ func NewOutboxes(actorId uint, activityId, to, types, body string) *Outboxes {
 	const private = false
 	public := true
 	switch types {
-	case activity.Follow:
+	case activitypub.FollowType:
 		public = private
-	case activity.Accept:
+	case activitypub.AcceptType:
 		public = private
-	case activity.Undo:
+	case activitypub.UndoType:
 		public = private
-	case activity.Reject:
+	case activitypub.RejectType:
 		public = private
 	}
 	return &Outboxes{

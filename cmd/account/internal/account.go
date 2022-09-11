@@ -2,10 +2,9 @@ package internal
 
 import (
 	"fmt"
-	"github.com/hvxahv/hvx/APIs/v1alpha1/auth"
+	"github.com/hvxahv/hvx/activitypub"
 	"strconv"
 
-	"github.com/hvxahv/hvx/APIs/v1alpha1/actor"
 	"github.com/hvxahv/hvx/clientv1"
 	"github.com/hvxahv/hvx/cockroach"
 	"github.com/hvxahv/hvx/errors"
@@ -125,6 +124,8 @@ func NewAccountsCreate(username, mail, password string) *Accounts {
 	}
 }
 
+// Create account.
+// publicKey is account auth public key not activitypub public key.
 func (a *Accounts) Create(publicKey string) error {
 	// TODO - Verify that the structure data, username email and password match the criteria.
 	//if err := validator.New().Struct(a); err != nil {
@@ -149,54 +150,36 @@ func (a *Accounts) Create(publicKey string) error {
 			return errors.New(errors.ErrAccountAlready)
 		}
 	}
-
-	// Create an actor for the account, and return the actor id.
-	// Set the type of ActivityPub to Person.
+	// ActivityPub rsa key.
+	k, err := rsa.NewRsa(2048).Generate()
+	if err != nil {
+		return err
+	}
 	ctx := context.Background()
-	_ := clientv1.New(ctx, microsvc.NewGRPCAddress("actor").Get())
-	if err != nil {
-		return err
-	}
-	defer client.Close()
-
-	apk, err := rsa.NewRsa(2048).Generate()
-	if err != nil {
-		return err
-	}
-	create, err := actor.NewActorClient(client.Conn).Create(ctx, &actor.CreateRequest{
-		PreferredUsername: a.Username,
-		PublicKey:         apk.PublicKey,
-		ActorType:         "Person",
-	})
+	// https://www.w3.org/TR/activitystreams-vocabulary/#actor-types
+	actor, err := clientv1.New(ctx, microsvc.ActorServiceName).CreateActor(a.Username, k.PublicKey, activitypub.PersonType)
 	if err != nil {
 		return err
 	}
 
-	actorId, err := strconv.Atoi(create.ActorId)
+	actorId, err := strconv.Atoi(actor.ActorId)
 	if err != nil {
 		return err
 	}
 
-	v := NewAccounts(uint(actorId), a.Username, a.Mail, a.Password, apk.PrivateKey)
+	v := NewAccounts(uint(actorId), a.Username, a.Mail, a.Password, k.PrivateKey)
 	if err := db.Debug().Table(AccountsTable).
 		Create(&v).Error; err != nil {
 		return fmt.Errorf(errors.ErrAccountCreate)
 	}
 
-	_ := clientv1.New(ctx, microsvc.NewGRPCAddress("auth").Get())
+	// SET AUTH PUBLIC KEY...
+	key, err := clientv1.New(ctx, microsvc.AuthServiceName).SetAuthPublicKey(strconv.Itoa(int(v.ID)), publicKey)
 	if err != nil {
 		return err
 	}
-	defer authc.Close()
-	spk, err := auth.NewAuthClient(authc.Conn).SetPublicKey(ctx, &auth.SetPublicKeyRequest{
-		AccountId: strconv.Itoa(int(v.ID)),
-		PublicKey: publicKey,
-	})
-	if err != nil {
-		return err
-	}
-	if spk.Code != "200" {
-		return errors.New(spk.Status)
+	if key.Code != "200" {
+		return errors.New(key.Status)
 	}
 	return nil
 }

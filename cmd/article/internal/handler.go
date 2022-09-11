@@ -2,9 +2,9 @@ package internal
 
 import (
 	"context"
+	"github.com/hvxahv/hvx/APIs/v1alpha1/actor"
 	"strconv"
 
-	"github.com/hvxahv/hvx/APIs/v1alpha1/actor"
 	"github.com/hvxahv/hvx/clientv1"
 	"google.golang.org/protobuf/types/known/emptypb"
 
@@ -58,28 +58,24 @@ func (s *server) Get(ctx context.Context, in *pb.GetRequest) (*pb.GetResponse, e
 	}
 
 	// GET ACTOR DATA
-	_ := clientv1.New(ctx, microsvc.NewGRPCAddress("actor").Get())
+	data, err := clientv1.New(ctx, microsvc.ActorServiceName).GetActor(strconv.Itoa(int(a.ActorId)))
 	if err != nil {
 		return nil, err
 	}
-	defer client.Close()
-	actorData, err := actor.NewActorClient(client.Conn).Get(ctx, &actor.GetRequest{
-		ActorId: strconv.Itoa(int(a.ActorId)),
-	})
 	return &pb.GetResponse{
 		Code: "200",
 		Actor: &actor.ActorData{
-			Id:                actorData.Actor.Id,
-			PreferredUsername: actorData.Actor.PreferredUsername,
-			Domain:            actorData.Actor.Domain,
-			Avatar:            actorData.Actor.Avatar,
-			Name:              actorData.Actor.Name,
-			Summary:           actorData.Actor.Summary,
-			Inbox:             actorData.Actor.Inbox,
-			Address:           actorData.Actor.Address,
-			PublicKey:         actorData.Actor.PublicKey,
-			ActorType:         actorData.Actor.ActorType,
-			IsRemote:          actorData.Actor.IsRemote,
+			Id:                data.Actor.Id,
+			PreferredUsername: data.Actor.PreferredUsername,
+			Domain:            data.Actor.Domain,
+			Avatar:            data.Actor.Avatar,
+			Name:              data.Actor.Name,
+			Summary:           data.Actor.Summary,
+			Inbox:             data.Actor.Inbox,
+			Address:           data.Actor.Address,
+			PublicKey:         data.Actor.PublicKey,
+			ActorType:         data.Actor.ActorType,
+			IsRemote:          data.Actor.IsRemote,
 		},
 		Article: &pb.ArticleInfo{
 			Id:             strconv.Itoa(int(a.ID)),

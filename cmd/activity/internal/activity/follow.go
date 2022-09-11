@@ -41,7 +41,7 @@ func (h *Handler) Follow() (*pb.ActivityResponse, error) {
 	ok = append(ok, h.inbox)
 
 	// CREATE FOLLOW OUTBOX ...
-	if err := outbox.NewOutboxes(h.actorId, id, h.inbox, Follow, string(marshal)).Create(); err != nil {
+	if err := outbox.NewOutboxes(h.actorId, id, h.inbox, activitypub.FollowType, string(marshal)).Create(); err != nil {
 		return nil, err
 	}
 

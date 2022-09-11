@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"strconv"
 
-	"github.com/hvxahv/hvx/APIs/v1alpha1/account"
 	"github.com/hvxahv/hvx/clientv1"
 	"github.com/hvxahv/hvx/cockroach"
 	"github.com/hvxahv/hvx/errors"
@@ -68,18 +67,7 @@ func (a *Matrices) Register(username, password string) (*matrix.RegisterRes, err
 	)
 
 	// Go to the account server to verify the username and password.
-	_ := clientv1.New(ctx,
-		microsvc.NewGRPCAddress("account").Get(),
-	)
-	if err != nil {
-		return nil, err
-	}
-	defer c.Close()
-
-	v, err := account.NewAccountsClient(c.Conn).Verify(ctx, &account.VerifyRequest{
-		Username: username,
-		Password: password,
-	})
+	v, err := clientv1.New(ctx, microsvc.AccountServiceName).Verify(username, password)
 	if err != nil {
 		return nil, errors.New(errors.ErrAccountVerification)
 	}

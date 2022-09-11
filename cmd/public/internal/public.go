@@ -28,16 +28,10 @@ func NewPublic(ctx context.Context) *Public {
 }
 
 func (p *Public) IsExist(name string) (bool, error) {
-	c, err := clientv1.New(p.ctx,
-		microsvc.NewGRPCAddress("account").Get(),
-	)
+	exist, err := clientv1.New(p.ctx, microsvc.AccountServiceName).IsExistAccount(name)
 	if err != nil {
 		return false, err
 	}
-	defer c.Close()
-	exist, err := account.NewAccountsClient(c.Conn).IsExist(p.ctx, &account.IsExistRequest{
-		Username: name,
-	})
 	if err != nil {
 		return false, err
 	}
@@ -45,15 +39,10 @@ func (p *Public) IsExist(name string) (bool, error) {
 }
 
 func (p *Public) GetActorByUsername(username string) (*actor.ActorData, error) {
-	_ := clientv1.New(p.ctx, microsvc.NewGRPCAddress("actor").Get())
+	a, err := clientv1.New(p.ctx, microsvc.ActorServiceName).GetActorByUsername(username)
 	if err != nil {
 		return nil, err
 	}
-	defer c.Close()
-
-	a, err := actor.NewActorClient(c.Conn).GetActorByUsername(p.ctx, &actor.GetActorByUsernameRequest{
-		Username: username,
-	})
 	if err != nil {
 		return nil, err
 	}
@@ -62,20 +51,7 @@ func (p *Public) GetActorByUsername(username string) (*actor.ActorData, error) {
 }
 
 func (p *Public) CreateAccount(username, mail, password, publicKey string) (*account.CreateResponse, error) {
-	_ := clientv1.New(p.ctx,
-		microsvc.NewGRPCAddress("account").Get(),
-	)
-	if err != nil {
-		return nil, err
-	}
-	defer c.Close()
-
-	create, err := account.NewAccountsClient(c.Conn).Create(p.ctx, &account.CreateRequest{
-		Username:  username,
-		Mail:      mail,
-		Password:  password,
-		PublicKey: publicKey,
-	})
+	create, err := clientv1.New(p.ctx, microsvc.AccountServiceName).CreateAccount(username, mail, password, publicKey)
 	if err != nil {
 		return nil, err
 	}

@@ -30,7 +30,7 @@ func (h *Handler) Accept(data []byte) (*pb.ActivityResponse, error) {
 	marshal, err := json.Marshal(&activitypub.Accept{
 		Context: "https://www.w3.org/ns/activitystreams",
 		Id:      id,
-		Type:    Accept,
+		Type:    activitypub.AcceptType,
 		Actor:   h.aAddr,
 		Object: struct {
 			Id     string `json:"id"`
@@ -60,12 +60,12 @@ func (h *Handler) Accept(data []byte) (*pb.ActivityResponse, error) {
 	ok = append(ok, h.inbox)
 
 	// CREATE FOLLOW OUTBOX ...
-	if err := outbox.NewOutboxes(h.actorId, id, h.inbox, Accept, string(marshal)).Create(); err != nil {
+	if err := outbox.NewOutboxes(h.actorId, id, h.inbox, activitypub.AcceptType, string(marshal)).Create(); err != nil {
 		return nil, err
 	}
 
 	switch b.Type {
-	case Follow:
+	case activitypub.FollowType:
 		object, err := clientv1.New(context.Background(), microsvc.ActorServiceName).GetActorByAddress(h.inbox)
 		if err != nil {
 			return nil, err

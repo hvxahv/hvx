@@ -9,12 +9,11 @@
 package internal
 
 import (
+	"github.com/hvxahv/hvx/clientv1"
 	"github.com/hvxahv/hvx/errors"
 	"strconv"
 
 	pb "github.com/hvxahv/hvx/APIs/v1alpha1/account"
-	"github.com/hvxahv/hvx/APIs/v1alpha1/device"
-	"github.com/hvxahv/hvx/clientv1"
 	"github.com/hvxahv/hvx/microsvc"
 	"golang.org/x/net/context"
 )
@@ -93,22 +92,13 @@ func (s *server) EditPassword(ctx context.Context, in *pb.EditPasswordRequest) (
 		return nil, err
 	}
 
-	// // Delete all online devices, as the updated password requires a new login
-	_ := clientv1.New(ctx, microsvc.NewGRPCAddress("device").Get())
+	devices, err := clientv1.New(ctx, microsvc.DeviceServiceName).DeleteDevices(strconv.Itoa(int(parse.AccountId)))
 	if err != nil {
 		errors.Throw("error occurred while connecting to the device service while edit the password.", err)
-		return nil, errors.New(errors.ErrConnectDeviceRPCServer)
-	}
-	defer client.Close()
-	d, err := device.NewDevicesClient(client.Conn).DeleteDevices(ctx, &device.DeleteDevicesRequest{
-		AccountId: strconv.Itoa(int(parse.AccountId)),
-	})
-	if err != nil {
 		return nil, err
 	}
-
 	// TODO - EDIT MATRIX ACCESS PASSWORD.
-	return &pb.EditPasswordResponse{Code: "200", Reply: d.Reply}, nil
+	return &pb.EditPasswordResponse{Code: "200", Reply: devices.Reply}, nil
 }
 
 func (s *server) Verify(ctx context.Context, in *pb.VerifyRequest) (*pb.VerifyResponse, error) {
