@@ -35,7 +35,7 @@ func init() {
 	}
 }
 
-func TestSender_Do(t *testing.T) {
+func TestDelivery_Do(t *testing.T) {
 	const (
 		actorAddress  = "https://halfmemories.com/u/hvturingga"
 		inbox         = "https://mastodon.disism.com/users/hvturingga/inbox"

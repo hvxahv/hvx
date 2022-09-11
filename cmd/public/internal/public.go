@@ -45,7 +45,7 @@ func (p *Public) IsExist(name string) (bool, error) {
 }
 
 func (p *Public) GetActorByUsername(username string) (*actor.ActorData, error) {
-	c, err := clientv1.New(p.ctx, microsvc.NewGRPCAddress("actor").Get())
+	_ := clientv1.New(p.ctx, microsvc.NewGRPCAddress("actor").Get())
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +62,7 @@ func (p *Public) GetActorByUsername(username string) (*actor.ActorData, error) {
 }
 
 func (p *Public) CreateAccount(username, mail, password, publicKey string) (*account.CreateResponse, error) {
-	c, err := clientv1.New(p.ctx,
+	_ := clientv1.New(p.ctx,
 		microsvc.NewGRPCAddress("account").Get(),
 	)
 	if err != nil {

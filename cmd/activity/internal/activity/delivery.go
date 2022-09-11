@@ -17,24 +17,41 @@ import (
 	"time"
 )
 
-// Sender Server to Server Interactions
-type Sender struct {
+const (
+	FailedToDelivery     = "THERE_ARE_REQUESTS_THAT_FAILED_TO_SEND"
+	DeliverySuccessfully = "SEND_SUCCESSFULLY"
+)
+
+// Delivery ...
+// https://www.w3.org/TR/activitypub/#delivery
+type Delivery struct {
 	actor      string
 	body       []byte
 	privateKey string
 }
 
-func NewSender(body []byte, actor, privateKey string) *Sender {
-	return &Sender{actor: actor, body: body, privateKey: privateKey}
+func NewDelivery(body []byte, actor, privateKey string) *Delivery {
+	return &Delivery{actor: actor, body: body, privateKey: privateKey}
 }
 
-func (i *Sender) Do(inbox string) (*http.Response, error) {
+func (i *Delivery) Do(inbox string) (*http.Response, error) {
+	remote, err := IsRemote(inbox)
+	if err != nil {
+		return nil, errors.New("INBOX_URL_FAILS_WHEN_PARSING")
+	}
+
+	if !remote {
+		// TODO - SEND TO LOCAL USER INBOX...
+
+		return &http.Response{StatusCode: 202}, nil
+	}
+
 	hostname, err := parseInboxHostname(inbox)
 	if err != nil {
 		fmt.Println(err)
 	}
 	client := http.Client{}
-	
+
 	singer, _, _ := httpsig.NewSigner([]httpsig.Algorithm{httpsig.RSA_SHA256}, "SHA-256", []string{"(request-target)", "date", "host", "digest"}, httpsig.Signature, 120)
 
 	req, err := http.NewRequest("POST", inbox, bytes.NewReader(i.body))
@@ -76,7 +93,8 @@ func parseInboxHostname(inbox string) (string, error) {
 	return hostname, nil
 }
 
-func IsLocalInstance(inbox string) (bool, error) {
+// IsRemote ...
+func IsRemote(inbox string) (bool, error) {
 	domain := viper.GetString("domain")
 
 	hostname, err := parseInboxHostname(inbox)
@@ -84,11 +102,12 @@ func IsLocalInstance(inbox string) (bool, error) {
 		return false, err
 	}
 	if domain != hostname {
-		return false, nil
+		return true, nil
 	}
-	return true, nil
+	return false, nil
 }
 
+// GetPrivateKey ParseRawPrivateKey -> crypto.PrivateKey.
 func GetPrivateKey(privateKey string) crypto.PrivateKey {
 	var cpk crypto.PrivateKey
 	key, err := ssh.ParseRawPrivateKey([]byte(privateKey))
@@ -99,6 +118,7 @@ func GetPrivateKey(privateKey string) crypto.PrivateKey {
 	return cpk
 }
 
+// Verify ...
 func Verify(r *http.Request, privateKey string) error {
 	verifier, err := httpsig.NewVerifier(r)
 	if err != nil {

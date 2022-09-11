@@ -153,7 +153,7 @@ func (a *Accounts) Create(publicKey string) error {
 	// Create an actor for the account, and return the actor id.
 	// Set the type of ActivityPub to Person.
 	ctx := context.Background()
-	client, err := clientv1.New(ctx, microsvc.NewGRPCAddress("actor").Get())
+	_ := clientv1.New(ctx, microsvc.NewGRPCAddress("actor").Get())
 	if err != nil {
 		return err
 	}
@@ -183,7 +183,7 @@ func (a *Accounts) Create(publicKey string) error {
 		return fmt.Errorf(errors.ErrAccountCreate)
 	}
 
-	authc, err := clientv1.New(ctx, microsvc.NewGRPCAddress("auth").Get())
+	_ := clientv1.New(ctx, microsvc.NewGRPCAddress("auth").Get())
 	if err != nil {
 		return err
 	}

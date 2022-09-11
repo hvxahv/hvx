@@ -68,7 +68,7 @@ func (a *Matrices) Register(username, password string) (*matrix.RegisterRes, err
 	)
 
 	// Go to the account server to verify the username and password.
-	c, err := clientv1.New(ctx,
+	_ := clientv1.New(ctx,
 		microsvc.NewGRPCAddress("account").Get(),
 	)
 	if err != nil {

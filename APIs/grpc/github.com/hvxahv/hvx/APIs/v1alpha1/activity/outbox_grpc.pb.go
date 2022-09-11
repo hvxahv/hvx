@@ -23,7 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type OutboxClient interface {
-	CreateOutbox(ctx context.Context, in *CreateOutboxRequest, opts ...grpc.CallOption) (*CreateOutboxResponse, error)
+	GetOutboxesPublic(ctx context.Context, in *GetOutboxesPublicRequest, opts ...grpc.CallOption) (*GetOutboxesPublicResponse, error)
 	GetOutbox(ctx context.Context, in *GetOutboxRequest, opts ...grpc.CallOption) (*GetOutboxResponse, error)
 	GetOutboxes(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetOutboxesResponse, error)
 }
@@ -36,9 +36,9 @@ func NewOutboxClient(cc grpc.ClientConnInterface) OutboxClient {
 	return &outboxClient{cc}
 }
 
-func (c *outboxClient) CreateOutbox(ctx context.Context, in *CreateOutboxRequest, opts ...grpc.CallOption) (*CreateOutboxResponse, error) {
-	out := new(CreateOutboxResponse)
-	err := c.cc.Invoke(ctx, "/hvx.api.v1alpha1.activity.proto.Outbox/CreateOutbox", in, out, opts...)
+func (c *outboxClient) GetOutboxesPublic(ctx context.Context, in *GetOutboxesPublicRequest, opts ...grpc.CallOption) (*GetOutboxesPublicResponse, error) {
+	out := new(GetOutboxesPublicResponse)
+	err := c.cc.Invoke(ctx, "/hvx.api.v1alpha1.activity.proto.Outbox/GetOutboxesPublic", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -67,7 +67,7 @@ func (c *outboxClient) GetOutboxes(ctx context.Context, in *emptypb.Empty, opts 
 // All implementations should embed UnimplementedOutboxServer
 // for forward compatibility
 type OutboxServer interface {
-	CreateOutbox(context.Context, *CreateOutboxRequest) (*CreateOutboxResponse, error)
+	GetOutboxesPublic(context.Context, *GetOutboxesPublicRequest) (*GetOutboxesPublicResponse, error)
 	GetOutbox(context.Context, *GetOutboxRequest) (*GetOutboxResponse, error)
 	GetOutboxes(context.Context, *emptypb.Empty) (*GetOutboxesResponse, error)
 }
@@ -76,8 +76,8 @@ type OutboxServer interface {
 type UnimplementedOutboxServer struct {
 }
 
-func (UnimplementedOutboxServer) CreateOutbox(context.Context, *CreateOutboxRequest) (*CreateOutboxResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CreateOutbox not implemented")
+func (UnimplementedOutboxServer) GetOutboxesPublic(context.Context, *GetOutboxesPublicRequest) (*GetOutboxesPublicResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetOutboxesPublic not implemented")
 }
 func (UnimplementedOutboxServer) GetOutbox(context.Context, *GetOutboxRequest) (*GetOutboxResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetOutbox not implemented")
@@ -97,20 +97,20 @@ func RegisterOutboxServer(s grpc.ServiceRegistrar, srv OutboxServer) {
 	s.RegisterService(&Outbox_ServiceDesc, srv)
 }
 
-func _Outbox_CreateOutbox_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateOutboxRequest)
+func _Outbox_GetOutboxesPublic_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetOutboxesPublicRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(OutboxServer).CreateOutbox(ctx, in)
+		return srv.(OutboxServer).GetOutboxesPublic(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/hvx.api.v1alpha1.activity.proto.Outbox/CreateOutbox",
+		FullMethod: "/hvx.api.v1alpha1.activity.proto.Outbox/GetOutboxesPublic",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(OutboxServer).CreateOutbox(ctx, req.(*CreateOutboxRequest))
+		return srv.(OutboxServer).GetOutboxesPublic(ctx, req.(*GetOutboxesPublicRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -159,8 +159,8 @@ var Outbox_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*OutboxServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "CreateOutbox",
-			Handler:    _Outbox_CreateOutbox_Handler,
+			MethodName: "GetOutboxesPublic",
+			Handler:    _Outbox_GetOutboxesPublic_Handler,
 		},
 		{
 			MethodName: "GetOutbox",

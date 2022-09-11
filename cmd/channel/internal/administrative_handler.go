@@ -89,7 +89,7 @@ func (s *server) GetAdministrators(ctx context.Context, in *pb.GetAdministrators
 	var admins []*pb.AdminsData
 	for _, a := range administrators {
 		var admin pb.AdminsData
-		client, err := clientv1.New(ctx, microsvc.NewGRPCAddress("actor").Get())
+		_ := clientv1.New(ctx, microsvc.NewGRPCAddress("actor").Get())
 		if err != nil {
 			return nil, err
 		}

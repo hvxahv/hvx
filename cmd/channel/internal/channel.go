@@ -119,7 +119,7 @@ func (c *Channels) DeleteChannel() error {
 
 	// DELETE CHANNEL (IS ACTIVITY PUB ACTOR SERVICE)
 	ctx := context.Background()
-	client, err := clientv1.New(ctx, microsvc.NewGRPCAddress("actor").Get())
+	_ := clientv1.New(ctx, microsvc.NewGRPCAddress("actor").Get())
 	if err != nil {
 		return err
 	}

@@ -18,7 +18,7 @@ func (s *server) CreateChannel(ctx context.Context, in *pb.CreateChannelRequest)
 	// the method should check if the Actor PreferredUsername exists instead
 	// of calling Create() after calling the IsExist() method when creating the Actor.
 	// This problem is revealed in the current scenario.
-	cli, err := clientv1.New(ctx, microsvc.NewGRPCAddress("actor").Get())
+	_ := clientv1.New(ctx, microsvc.NewGRPCAddress("actor").Get())
 	if err != nil {
 		return nil, err
 	}
@@ -87,7 +87,7 @@ func (s *server) GetChannels(ctx context.Context, in *empty.Empty) (*pb.GetChann
 	var data []*pb.ChannelData
 	for _, d := range channels {
 		var cd pb.ChannelData
-		client, err := clientv1.New(ctx,
+		_ := clientv1.New(ctx,
 			microsvc.NewGRPCAddress("actor").Get())
 		if err != nil {
 			return nil, err

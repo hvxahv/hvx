@@ -41,7 +41,7 @@ type AuthorizationHandler interface {
 }
 
 func (a *authorization) Authorization(username, password string) (*account.VerifyResponse, error) {
-	c, err := clientv1.New(a.ctx,
+	_ := clientv1.New(a.ctx,
 		microsvc.NewGRPCAddress("account").Get(),
 	)
 	if err != nil {
@@ -76,7 +76,7 @@ func (a *authorization) SetPublicKey(accountId uint, publicKey string) error {
 }
 
 func (a *authorization) AddDevice(accountId, ua string) (*device.CreateResponse, error) {
-	c, err := clientv1.New(a.ctx,
+	_ := clientv1.New(a.ctx,
 		microsvc.NewGRPCAddress("device").Get(),
 	)
 	if err != nil {

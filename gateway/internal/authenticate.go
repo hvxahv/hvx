@@ -37,7 +37,7 @@ func Auth(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	cli, err := clientv1.New(c,
+	_ := clientv1.New(c,
 		microsvc.NewGRPCAddress("device").Get(),
 	)
 	if err != nil {

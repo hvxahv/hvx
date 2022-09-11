@@ -24,9 +24,6 @@ service Actor {
     };
   }
 
-  // GetActorByAddress Returns the actor by the address.
-  // rpc GetByAddress (GetActorByAddressRequest) returns (ActorData) {}
-
   // EditActor Edits the actor profile.
   rpc Edit (EditRequest) returns (EditResponse) {
     option (google.api.http) = {

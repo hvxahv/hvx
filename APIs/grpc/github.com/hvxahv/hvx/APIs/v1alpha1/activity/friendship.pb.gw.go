@@ -32,20 +32,9 @@ var _ = runtime.String
 var _ = utilities.NewDoubleArray
 var _ = metadata.Join
 
-var (
-	filter_Friendship_GetFollowers_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
-)
-
 func request_Friendship_GetFollowers_0(ctx context.Context, marshaler runtime.Marshaler, client FriendshipClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetFollowersRequest
+	var protoReq emptypb.Empty
 	var metadata runtime.ServerMetadata
-
-	if err := req.ParseForm(); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Friendship_GetFollowers_0); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
 
 	msg, err := client.GetFollowers(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
@@ -53,35 +42,17 @@ func request_Friendship_GetFollowers_0(ctx context.Context, marshaler runtime.Ma
 }
 
 func local_request_Friendship_GetFollowers_0(ctx context.Context, marshaler runtime.Marshaler, server FriendshipServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetFollowersRequest
+	var protoReq emptypb.Empty
 	var metadata runtime.ServerMetadata
-
-	if err := req.ParseForm(); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Friendship_GetFollowers_0); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
 
 	msg, err := server.GetFollowers(ctx, &protoReq)
 	return msg, metadata, err
 
 }
 
-var (
-	filter_Friendship_GetFollowings_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
-)
-
 func request_Friendship_GetFollowings_0(ctx context.Context, marshaler runtime.Marshaler, client FriendshipClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetFollowingsRequest
+	var protoReq emptypb.Empty
 	var metadata runtime.ServerMetadata
-
-	if err := req.ParseForm(); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Friendship_GetFollowings_0); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
 
 	msg, err := client.GetFollowings(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
@@ -89,15 +60,8 @@ func request_Friendship_GetFollowings_0(ctx context.Context, marshaler runtime.M
 }
 
 func local_request_Friendship_GetFollowings_0(ctx context.Context, marshaler runtime.Marshaler, server FriendshipServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq GetFollowingsRequest
+	var protoReq emptypb.Empty
 	var metadata runtime.ServerMetadata
-
-	if err := req.ParseForm(); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_Friendship_GetFollowings_0); err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
 
 	msg, err := server.GetFollowings(ctx, &protoReq)
 	return msg, metadata, err

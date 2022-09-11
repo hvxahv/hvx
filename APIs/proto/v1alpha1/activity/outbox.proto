@@ -9,10 +9,9 @@ import "google/api/field_behavior.proto";
 import "google/protobuf/empty.proto";
 
 service Outbox {
-  rpc CreateOutbox (CreateOutboxRequest) returns (CreateOutboxResponse) {
+  rpc GetOutboxesPublic(GetOutboxesPublicRequest) returns (GetOutboxesPublicResponse) {
     option (google.api.http) = {
-      post: "/api/v1/activity/outbox"
-      body: "*"
+      get: "/api/v1/activity/outbox/{username}"
     };
   }
 
@@ -42,18 +41,33 @@ message OutboxData {
   string Body = 10;
 }
 
-message CreateOutboxRequest {}
+message GetOutboxesPublicRequest {
+  string username = 1 [(google.api.field_behavior) = REQUIRED];
+}
 
-message CreateOutboxResponse {}
+message GetOutboxesPublicResponse {
+  repeated OutboxData outboxes = 1;
+}
 
 message GetOutboxRequest {
   string activity_id = 1 [(google.api.field_behavior) = REQUIRED];
 }
 
-message GetOutboxResponse {}
+// "@context": "https://www.w3.org/ns/activitystreams",
+// "id": "https://mastodon.disism.com/users/hvturingga/outbox",
+// "type": "OrderedCollection",
+// "totalItems": 2,
+// "first": "https://mastodon.disism.com/users/hvturingga/outbox?page=true",
+// "last": "https://mastodon.disism.com/users/hvturingga/outbox?min_id=0&page=true"
+message GetOutboxResponse {
+  string context  = 1  [json_name = "@context"];
+  string id = 2;
+  string type = 3;
+  string totalItems = 4;
+  string first = 5;
+  string last = 6;
+}
 
-
-message GetOutboxesRequest {}
 
 message GetOutboxesResponse {
   string code = 1;

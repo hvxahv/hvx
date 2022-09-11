@@ -14,6 +14,21 @@ import (
 	"sync"
 )
 
+const (
+	AccountServiceName  = "account"
+	ActivityServiceName = "activity"
+	ActorServiceName    = "actor"
+	ArticleServiceName  = "article"
+	AuthServiceName     = "auth"
+	ChannelServiceName  = "channel"
+	DeviceServiceName   = "device"
+	FsServiceName       = "fs"
+	MessageServiceName  = "message"
+	NotifyServiceName   = "notify"
+	PublicServiceName   = "public"
+	SavedServiceName    = "saved"
+)
+
 type server struct {
 	Name string
 	*grpc.Server

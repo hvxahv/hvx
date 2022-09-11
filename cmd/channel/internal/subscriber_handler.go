@@ -84,7 +84,7 @@ func (s *server) GetSubscribers(ctx context.Context, in *pb.GetSubscribersReques
 
 	var reply []*actor.ActorData
 	for _, sub := range subscribers {
-		client, err := clientv1.New(ctx, microsvc.NewGRPCAddress("actor").Get())
+		_ := clientv1.New(ctx, microsvc.NewGRPCAddress("actor").Get())
 		if err != nil {
 			return nil, err
 		}

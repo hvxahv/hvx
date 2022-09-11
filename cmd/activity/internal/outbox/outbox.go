@@ -1,6 +1,7 @@
 package outbox
 
 import (
+	"github.com/hvxahv/hvx/cmd/activity/internal/activity"
 	"github.com/hvxahv/hvx/cockroach"
 	"gorm.io/gorm"
 	"strings"
@@ -22,15 +23,36 @@ type Outboxes struct {
 	Audience   string `gorm:"type:text;audience"`
 	Types      string `gorm:"type:text;types"`
 	Body       string `gorm:"type:text;body"`
+	IsPublic   bool   `gorm:"type:boolean;is_public"`
 }
 
-func NewFollowOutboxes(actorId uint, activityId, to, types, body string) *Outboxes {
-	return &Outboxes{ActorId: actorId, ActivityId: activityId, To: to, Types: types, Body: body}
+func NewOutboxes(actorId uint, activityId, to, types, body string) *Outboxes {
+	const private = false
+	public := true
+	switch types {
+	case activity.Follow:
+		public = private
+	case activity.Accept:
+		public = private
+	case activity.Undo:
+		public = private
+	case activity.Reject:
+		public = private
+	}
+	return &Outboxes{
+		ActorId:    actorId,
+		ActivityId: activityId,
+		To:         to,
+		Types:      types,
+		Body:       body,
+		IsPublic:   public,
+	}
 }
 
 type Outbox interface {
 	Create() error
 	GetOutboxes() ([]*Outboxes, error)
+	GetOutboxesPublic() ([]*Outboxes, error)
 	Delete() error
 }
 
@@ -57,6 +79,18 @@ func (o *Outboxes) GetOutboxes() ([]*Outboxes, error) {
 	if err := db.Debug().
 		Table(TableOutboxesName).
 		Where("actor_id = ?", o.ActorId).
+		Find(&outboxes).Error; err != nil {
+		return nil, err
+	}
+	return outboxes, nil
+}
+
+func (o *Outboxes) GetOutboxesPublic() ([]*Outboxes, error) {
+	db := cockroach.GetDB()
+	var outboxes []*Outboxes
+	if err := db.Debug().
+		Table(TableOutboxesName).
+		Where("actor_id = ? AND is_public = ?", o.ActorId, o.IsPublic).
 		Find(&outboxes).Error; err != nil {
 		return nil, err
 	}

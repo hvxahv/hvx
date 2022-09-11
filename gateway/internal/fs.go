@@ -43,7 +43,7 @@ func AvatarHandler(c *gin.Context) {
 		return
 	}
 
-	client, err := clientv1.New(c, microsvc.NewGRPCAddress("fs").Get())
+	_ := clientv1.New(c, microsvc.NewGRPCAddress("fs").Get())
 	if err != nil {
 		c.JSON(500, errors.NewHandler("500", errors.ErrConnectFsRPCServer))
 		return
@@ -88,7 +88,7 @@ func AttachHandler(c *gin.Context) {
 		c.JSON(403, errors.NewHandler("403", errors.ErrFileMaximum))
 		return
 	}
-	client, err := clientv1.New(c, microsvc.NewGRPCAddress("fs").Get())
+	_ := clientv1.New(c, microsvc.NewGRPCAddress("fs").Get())
 	if err != nil {
 		c.JSON(500, errors.NewHandler("500", errors.ErrConnectFsRPCServer))
 		return
@@ -139,7 +139,7 @@ func DeleteFsHandler(c *gin.Context) {
 		return
 	}
 
-	client, err := clientv1.New(c, microsvc.NewGRPCAddress("fs").Get())
+	_ := clientv1.New(c, microsvc.NewGRPCAddress("fs").Get())
 	if err != nil {
 		c.JSON(500, errors.NewHandler("500", errors.ErrConnectFsRPCServer))
 		return
@@ -163,7 +163,7 @@ func DeleteFsHandler(c *gin.Context) {
 func GetFsAddressHandler(c *gin.Context) {
 	parse, _ := ParseAuthorization(c.Request.Header.Get("Authorization"))
 	fn := c.Param("name")
-	client, err := clientv1.New(c, microsvc.NewGRPCAddress("fs").Get())
+	_ := clientv1.New(c, microsvc.NewGRPCAddress("fs").Get())
 	if err != nil {
 		c.JSON(500, errors.NewHandler("500", errors.ErrConnectFsRPCServer))
 		return

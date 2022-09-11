@@ -9,12 +9,11 @@ import (
 	"strconv"
 )
 
+//func (s *server) GetOutboxesPublic(ctx context.Context, in *pb.GetOutboxesPublicRequest) (*pb.GetOutboxPublicResponse, error) {
 //
-//func (s *server) CreateOutbox(ctx context.Context, in *pb.CreateOutboxRequest) (*pb.CreateOutboxResponse, error) {
-//
-//	return &pb.CreateOutboxResponse{}, nil
+//	return &pb.GetOutboxPublicResponse{}, nil
 //}
-//
+
 //func (s *server) GetOutbox(ctx context.Context, in *pb.GetOutboxRequest) (*pb.GetOutboxResponse, error) {
 //
 //	return &pb.GetOutboxResponse{}, nil

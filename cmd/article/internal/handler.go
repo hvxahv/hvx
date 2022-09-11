@@ -58,7 +58,7 @@ func (s *server) Get(ctx context.Context, in *pb.GetRequest) (*pb.GetResponse, e
 	}
 
 	// GET ACTOR DATA
-	client, err := clientv1.New(ctx, microsvc.NewGRPCAddress("actor").Get())
+	_ := clientv1.New(ctx, microsvc.NewGRPCAddress("actor").Get())
 	if err != nil {
 		return nil, err
 	}

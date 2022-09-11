@@ -9,13 +9,13 @@ import "google/protobuf/empty.proto";
 import "proto/v1alpha1/actor/actor.proto";
 
 service Friendship {
-  rpc GetFollowers (GetFollowersRequest) returns (GetFollowersResponse) {
+  rpc GetFollowers (google.protobuf.Empty) returns (GetFollowersResponse) {
     option (google.api.http) = {
       get: "/api/v1/activity/followers"
     };
   }
 
-  rpc GetFollowings (GetFollowingsRequest) returns (GetFollowingsResponse) {
+  rpc GetFollowings (google.protobuf.Empty) returns (GetFollowingsResponse) {
     option (google.api.http) = {
       get: "/api/v1/activity/followings"
     };
@@ -26,11 +26,6 @@ service Friendship {
       get: "/api/v1/activity/friends",
     };
   }
-
-}
-
-message GetFollowersRequest {
-  string limit = 1;
 }
 
 message GetFollowersResponse {
@@ -38,9 +33,6 @@ message GetFollowersResponse {
   repeated actor.proto.ActorData followers = 2;
 }
 
-message GetFollowingsRequest {
-  string limit = 1;
-}
 
 message GetFollowingsResponse {
   string code = 1;

@@ -181,7 +181,7 @@ func NewActivity(name string, body []byte) (*InboxActivity, error) {
 
 	// Go to the account server and get the ActorId from the account name received by inbox.
 	ctx := context.Background()
-	c, err := clientv1.New(ctx,
+	_ := clientv1.New(ctx,
 		microsvc.NewGRPCAddress("account").Get(),
 	)
 	if err != nil {

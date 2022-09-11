@@ -8,7 +8,7 @@ import (
 )
 
 // Example...
-//cfg, err := New(context.Background(),
+//cfg, err := NewClient(context.Background(),
 //	SetEndpoints("localhost:50051"),
 //	SetDialOptionsWithToken(),
 //	SetDialTimeout(10*time.Second),
@@ -23,7 +23,7 @@ type Client struct {
 	Conn    *grpc.ClientConn
 }
 
-func New(ctx context.Context, endpoint string, cfg ...Option) (*Client, error) {
+func NewClient(ctx context.Context, endpoint string, cfg ...Option) (*Client, error) {
 	c := &Config{
 		Endpoint: endpoint,
 	}

@@ -94,7 +94,7 @@ func (s *server) EditPassword(ctx context.Context, in *pb.EditPasswordRequest) (
 	}
 
 	// // Delete all online devices, as the updated password requires a new login
-	client, err := clientv1.New(ctx, microsvc.NewGRPCAddress("device").Get())
+	_ := clientv1.New(ctx, microsvc.NewGRPCAddress("device").Get())
 	if err != nil {
 		errors.Throw("error occurred while connecting to the device service while edit the password.", err)
 		return nil, errors.New(errors.ErrConnectDeviceRPCServer)

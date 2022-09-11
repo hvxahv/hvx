@@ -19,7 +19,7 @@ func InboxHandler(c *gin.Context) {
 			"status": err.Error(),
 		})
 	}
-	client, err := clientv1.New(c, microsvc.NewGRPCAddress("activity").Get())
+	_ := clientv1.New(c, microsvc.NewGRPCAddress("activity").Get())
 	if err != nil {
 		c.JSON(502, gin.H{
 			"status": err.Error(),

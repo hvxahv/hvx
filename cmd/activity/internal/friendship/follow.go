@@ -11,8 +11,8 @@ import (
 type Follows struct {
 	gorm.Model
 
-	ActorID     uint `gorm:"primaryKey;type:bigint;actor_id;unique"`
-	TargetID    uint `gorm:"primaryKey;type:bigint;target_id;unique"`
+	ActorId     uint `gorm:"primaryKey;type:bigint;actor_id;unique"`
+	ObjectId    uint `gorm:"primaryKey;type:bigint;object_id;unique"`
 	IsFollower  bool `gorm:"type:boolean;is_follower"`
 	IsFollowing bool `gorm:"type:boolean;is_following"`
 	IsFriend    bool `gorm:"type:boolean;is_friend"`
@@ -21,22 +21,24 @@ type Follows struct {
 type Followee interface {
 	Follow() error
 	UNFollow() error
-	GetFollows() ([]uint, error)
+	Get() ([]uint, error)
 }
 
 const (
-	// FollowsTableName is the table name for the Follows table.
 	FollowsTableName = "follows"
+	Follower         = "Follower"
+	Following        = "Following"
+	Friend           = "Friend"
 )
 
-func NewGetFollows(actorID uint, followType string) *Follows {
+func NewFollows(actorId uint, followType string) *Follows {
 	switch followType {
-	case "follower":
-		return &Follows{ActorID: actorID, IsFollower: true}
-	case "following":
-		return &Follows{ActorID: actorID, IsFollowing: true}
-	case "friend":
-		return &Follows{ActorID: actorID, IsFriend: true}
+	case Follower:
+		return &Follows{ActorId: actorId, IsFollower: true}
+	case Following:
+		return &Follows{ActorId: actorId, IsFollowing: true}
+	case Friend:
+		return &Follows{ActorId: actorId, IsFriend: true}
 	}
 	return nil
 }
@@ -56,7 +58,7 @@ func (f *Follows) Follow() error {
 	}
 	if err := db.Debug().
 		Table(FollowsTableName).
-		Where("actor_id = ? AND target_id = ?", f.ActorID, f.TargetID).
+		Where("actor_id = ? AND object_id = ?", f.ActorId, f.ObjectId).
 		First(&f); err != nil {
 		ok := cockroach.IsNotFound(err.Error)
 		if !ok {
@@ -90,7 +92,7 @@ func (f *Follows) UNFollow() error {
 	}
 
 	if err := db.Debug().Table(FollowsTableName).
-		Where("actor_id = ? AND target_id = ?", f.ActorID, f.TargetID).
+		Where("actor_id = ? AND object_id = ?", f.ActorId, f.ObjectId).
 		First(&f); err != nil {
 		ok := cockroach.IsNotFound(err.Error)
 		if ok {
@@ -99,7 +101,7 @@ func (f *Follows) UNFollow() error {
 	}
 	if f.IsFollower && f.IsFollowing {
 		if err := db.Debug().Table(FollowsTableName).
-			Where("actor_id = ? AND target_id = ?", f.ActorID, f.TargetID).
+			Where("actor_id = ? AND object_id = ?", f.ActorId, f.ObjectId).
 			Update(field, false).
 			Update("is_friend", false).
 			Error; err != nil {
@@ -107,7 +109,7 @@ func (f *Follows) UNFollow() error {
 		}
 	} else {
 		if err := db.Debug().Table(FollowsTableName).
-			Where("actor_id = ? AND target_id = ?", f.ActorID, f.TargetID).
+			Where("actor_id = ? AND object_id = ?", f.ActorId, f.ObjectId).
 			Unscoped().
 			Delete(&Follows{}).
 			Error; err != nil {
@@ -118,23 +120,23 @@ func (f *Follows) UNFollow() error {
 	return nil
 }
 
-func NewFollower(actorID uint, targetID uint) *Follows {
+func NewFollower(actorID uint, objectId uint) *Follows {
 	return &Follows{
-		ActorID:    actorID,
-		TargetID:   targetID,
+		ActorId:    actorID,
+		ObjectId:   objectId,
 		IsFollower: true,
 	}
 }
 
-func NewFollowing(actorID uint, targetID uint) *Follows {
+func NewFollowing(actorID uint, objectId uint) *Follows {
 	return &Follows{
-		ActorID:     actorID,
-		TargetID:    targetID,
+		ActorId:     actorID,
+		ObjectId:    objectId,
 		IsFollowing: true,
 	}
 }
 
-func (f *Follows) GetFollows() ([]uint, error) {
+func (f *Follows) Get() ([]uint, error) {
 	var field string
 	switch {
 	case f.IsFollower:
@@ -148,7 +150,7 @@ func (f *Follows) GetFollows() ([]uint, error) {
 	db := cockroach.GetDB()
 	var followers []uint
 	if err := db.Debug().Table(FollowsTableName).
-		Where(fmt.Sprintf("actor_id = ? AND %s = ?", field), f.ActorID, true).
+		Where(fmt.Sprintf("actor_id = ? AND %s = ?", field), f.ActorId, true).
 		Pluck("target_id", &followers).
 		Error; err != nil {
 		return nil, err
