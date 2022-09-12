@@ -17,5 +17,5 @@ vendor/
 # Ignore ide configuration
 .idea
 
-# Ignore releases binary
-.release/binary/*
+# build binary
+build/binary/*

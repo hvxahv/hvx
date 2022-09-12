@@ -140,7 +140,7 @@ func DeleteFsHandler(c *gin.Context) {
 func GetFsAddressHandler(c *gin.Context) {
 	parse, _ := ParseAuthorization(c.Request.Header.Get("Authorization"))
 	fn := c.Param("name")
-	f, err := clientv1.New(c, microsvc.FsServiceName).GetFs(parse.AccountId,fn)
+	f, err := clientv1.New(c, microsvc.FsServiceName).GetFs(parse.AccountId, fn)
 	if err != nil {
 		return
 	}

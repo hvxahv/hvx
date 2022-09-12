@@ -11,7 +11,7 @@ if [ "$version" == 0 ]; then
   echo "VERSION UNKNOWN"
 fi
 
-binary_dir="../.release/binary/"
+binary_dir="../build/binary/"
 pkg_dir="github.com/hvxahv/hvx/cmd/$1"
 
-go build -o $binary_dir -ldflags "-X '$pkg_dir/cmd.Version=$version' -X '$pkg_dir/cmd.GoVersion=$go_version'" ../cmd/"$1"
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-w -s" -o $binary_dir -ldflags "-X '$pkg_dir/cmd.Version=$version' -X '$pkg_dir/cmd.GoVersion=$go_version'" ../cmd/"$1"

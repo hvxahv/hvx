@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/spf13/viper"
+	_ "github.com/spf13/viper/remote"
 )
 
 type Option func(o *options)
