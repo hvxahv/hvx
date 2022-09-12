@@ -22,7 +22,7 @@ import (
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "gateway.bac",
+	Use:   "gateway",
 	Short: "",
 	Long:  ``,
 	// Uncomment the following line if your bare application

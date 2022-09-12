@@ -7,7 +7,6 @@
 
 package internal
 
-import "C"
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/hvxahv/hvx/gateway/v1alpha1"

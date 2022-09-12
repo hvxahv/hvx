@@ -47,7 +47,7 @@ func Auth(c *gin.Context) {
 		return
 	}
 
-	if exist.IsExist {
+	if !exist.IsExist {
 		c.JSON(401, errors.NewHandler("401", errors.New(errors.ErrTokenUnauthorized).Error()))
 		c.Abort()
 		return
