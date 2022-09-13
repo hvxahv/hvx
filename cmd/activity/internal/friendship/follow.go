@@ -31,16 +31,20 @@ const (
 	Friend           = "Friend"
 )
 
-func NewFollows(actorId uint, followType string) *Follows {
-	switch followType {
-	case Follower:
-		return &Follows{ActorId: actorId, IsFollower: true}
-	case Following:
-		return &Follows{ActorId: actorId, IsFollowing: true}
-	case Friend:
-		return &Follows{ActorId: actorId, IsFriend: true}
+func NewFollower(actorID uint, objectId uint) *Follows {
+	return &Follows{
+		ActorId:    actorID,
+		ObjectId:   objectId,
+		IsFollower: true,
 	}
-	return nil
+}
+
+func NewFollowing(actorID uint, objectId uint) *Follows {
+	return &Follows{
+		ActorId:     actorID,
+		ObjectId:    objectId,
+		IsFollowing: true,
+	}
 }
 
 func (f *Follows) Follow() error {
@@ -120,20 +124,16 @@ func (f *Follows) UNFollow() error {
 	return nil
 }
 
-func NewFollower(actorID uint, objectId uint) *Follows {
-	return &Follows{
-		ActorId:    actorID,
-		ObjectId:   objectId,
-		IsFollower: true,
+func NewFollows(actorId uint, followType string) *Follows {
+	switch followType {
+	case Follower:
+		return &Follows{ActorId: actorId, IsFollower: true}
+	case Following:
+		return &Follows{ActorId: actorId, IsFollowing: true}
+	case Friend:
+		return &Follows{ActorId: actorId, IsFriend: true}
 	}
-}
-
-func NewFollowing(actorID uint, objectId uint) *Follows {
-	return &Follows{
-		ActorId:     actorID,
-		ObjectId:    objectId,
-		IsFollowing: true,
-	}
+	return nil
 }
 
 func (f *Follows) Get() ([]uint, error) {
@@ -151,7 +151,7 @@ func (f *Follows) Get() ([]uint, error) {
 	var followers []uint
 	if err := db.Debug().Table(FollowsTableName).
 		Where(fmt.Sprintf("actor_id = ? AND %s = ?", field), f.ActorId, true).
-		Pluck("target_id", &followers).
+		Pluck("object_id", &followers).
 		Error; err != nil {
 		return nil, err
 	}

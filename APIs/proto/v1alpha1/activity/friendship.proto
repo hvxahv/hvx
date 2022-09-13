@@ -9,37 +9,26 @@ import "google/protobuf/empty.proto";
 import "proto/v1alpha1/actor/actor.proto";
 
 service Friendship {
-  rpc GetFollowers (google.protobuf.Empty) returns (GetFollowersResponse) {
+  rpc GetFollower (google.protobuf.Empty) returns (FriendshipResponse) {
     option (google.api.http) = {
-      get: "/api/v1/activity/followers"
+      get: "/api/v1/activity/friendship/follower"
     };
   }
 
-  rpc GetFollowings (google.protobuf.Empty) returns (GetFollowingsResponse) {
+  rpc GetFollowing (google.protobuf.Empty) returns (FriendshipResponse) {
     option (google.api.http) = {
-      get: "/api/v1/activity/followings"
+      get: "/api/v1/activity/friendship/following"
     };
   }
 
-  rpc GetFriends (google.protobuf.Empty) returns (GetFriendsResponse) {
+  rpc GetFriend (google.protobuf.Empty) returns (FriendshipResponse) {
     option (google.api.http) = {
-      get: "/api/v1/activity/friends",
+      get: "/api/v1/activity/friendship/friend",
     };
   }
 }
 
-message GetFollowersResponse {
+message FriendshipResponse {
   string code = 1;
-  repeated actor.proto.ActorData followers = 2;
-}
-
-
-message GetFollowingsResponse {
-  string code = 1;
-  repeated actor.proto.ActorData followings = 2;
-}
-
-message GetFriendsResponse {
-  string code = 1;
-  repeated actor.proto.ActorData friends = 2;
+  repeated actor.proto.ActorData actors = 2;
 }

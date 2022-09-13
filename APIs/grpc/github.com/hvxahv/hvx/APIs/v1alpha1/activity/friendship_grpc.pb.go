@@ -23,9 +23,9 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type FriendshipClient interface {
-	GetFollowers(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetFollowersResponse, error)
-	GetFollowings(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetFollowingsResponse, error)
-	GetFriends(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetFriendsResponse, error)
+	GetFollower(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*FriendshipResponse, error)
+	GetFollowing(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*FriendshipResponse, error)
+	GetFriend(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*FriendshipResponse, error)
 }
 
 type friendshipClient struct {
@@ -36,27 +36,27 @@ func NewFriendshipClient(cc grpc.ClientConnInterface) FriendshipClient {
 	return &friendshipClient{cc}
 }
 
-func (c *friendshipClient) GetFollowers(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetFollowersResponse, error) {
-	out := new(GetFollowersResponse)
-	err := c.cc.Invoke(ctx, "/hvx.api.v1alpha1.activity.proto.Friendship/GetFollowers", in, out, opts...)
+func (c *friendshipClient) GetFollower(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*FriendshipResponse, error) {
+	out := new(FriendshipResponse)
+	err := c.cc.Invoke(ctx, "/hvx.api.v1alpha1.activity.proto.Friendship/GetFollower", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *friendshipClient) GetFollowings(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetFollowingsResponse, error) {
-	out := new(GetFollowingsResponse)
-	err := c.cc.Invoke(ctx, "/hvx.api.v1alpha1.activity.proto.Friendship/GetFollowings", in, out, opts...)
+func (c *friendshipClient) GetFollowing(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*FriendshipResponse, error) {
+	out := new(FriendshipResponse)
+	err := c.cc.Invoke(ctx, "/hvx.api.v1alpha1.activity.proto.Friendship/GetFollowing", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *friendshipClient) GetFriends(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetFriendsResponse, error) {
-	out := new(GetFriendsResponse)
-	err := c.cc.Invoke(ctx, "/hvx.api.v1alpha1.activity.proto.Friendship/GetFriends", in, out, opts...)
+func (c *friendshipClient) GetFriend(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*FriendshipResponse, error) {
+	out := new(FriendshipResponse)
+	err := c.cc.Invoke(ctx, "/hvx.api.v1alpha1.activity.proto.Friendship/GetFriend", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -67,23 +67,23 @@ func (c *friendshipClient) GetFriends(ctx context.Context, in *emptypb.Empty, op
 // All implementations should embed UnimplementedFriendshipServer
 // for forward compatibility
 type FriendshipServer interface {
-	GetFollowers(context.Context, *emptypb.Empty) (*GetFollowersResponse, error)
-	GetFollowings(context.Context, *emptypb.Empty) (*GetFollowingsResponse, error)
-	GetFriends(context.Context, *emptypb.Empty) (*GetFriendsResponse, error)
+	GetFollower(context.Context, *emptypb.Empty) (*FriendshipResponse, error)
+	GetFollowing(context.Context, *emptypb.Empty) (*FriendshipResponse, error)
+	GetFriend(context.Context, *emptypb.Empty) (*FriendshipResponse, error)
 }
 
 // UnimplementedFriendshipServer should be embedded to have forward compatible implementations.
 type UnimplementedFriendshipServer struct {
 }
 
-func (UnimplementedFriendshipServer) GetFollowers(context.Context, *emptypb.Empty) (*GetFollowersResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetFollowers not implemented")
+func (UnimplementedFriendshipServer) GetFollower(context.Context, *emptypb.Empty) (*FriendshipResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetFollower not implemented")
 }
-func (UnimplementedFriendshipServer) GetFollowings(context.Context, *emptypb.Empty) (*GetFollowingsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetFollowings not implemented")
+func (UnimplementedFriendshipServer) GetFollowing(context.Context, *emptypb.Empty) (*FriendshipResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetFollowing not implemented")
 }
-func (UnimplementedFriendshipServer) GetFriends(context.Context, *emptypb.Empty) (*GetFriendsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetFriends not implemented")
+func (UnimplementedFriendshipServer) GetFriend(context.Context, *emptypb.Empty) (*FriendshipResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetFriend not implemented")
 }
 
 // UnsafeFriendshipServer may be embedded to opt out of forward compatibility for this service.
@@ -97,56 +97,56 @@ func RegisterFriendshipServer(s grpc.ServiceRegistrar, srv FriendshipServer) {
 	s.RegisterService(&Friendship_ServiceDesc, srv)
 }
 
-func _Friendship_GetFollowers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Friendship_GetFollower_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(FriendshipServer).GetFollowers(ctx, in)
+		return srv.(FriendshipServer).GetFollower(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/hvx.api.v1alpha1.activity.proto.Friendship/GetFollowers",
+		FullMethod: "/hvx.api.v1alpha1.activity.proto.Friendship/GetFollower",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FriendshipServer).GetFollowers(ctx, req.(*emptypb.Empty))
+		return srv.(FriendshipServer).GetFollower(ctx, req.(*emptypb.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Friendship_GetFollowings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Friendship_GetFollowing_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(FriendshipServer).GetFollowings(ctx, in)
+		return srv.(FriendshipServer).GetFollowing(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/hvx.api.v1alpha1.activity.proto.Friendship/GetFollowings",
+		FullMethod: "/hvx.api.v1alpha1.activity.proto.Friendship/GetFollowing",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FriendshipServer).GetFollowings(ctx, req.(*emptypb.Empty))
+		return srv.(FriendshipServer).GetFollowing(ctx, req.(*emptypb.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Friendship_GetFriends_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Friendship_GetFriend_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(FriendshipServer).GetFriends(ctx, in)
+		return srv.(FriendshipServer).GetFriend(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/hvx.api.v1alpha1.activity.proto.Friendship/GetFriends",
+		FullMethod: "/hvx.api.v1alpha1.activity.proto.Friendship/GetFriend",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FriendshipServer).GetFriends(ctx, req.(*emptypb.Empty))
+		return srv.(FriendshipServer).GetFriend(ctx, req.(*emptypb.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -159,16 +159,16 @@ var Friendship_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*FriendshipServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "GetFollowers",
-			Handler:    _Friendship_GetFollowers_Handler,
+			MethodName: "GetFollower",
+			Handler:    _Friendship_GetFollower_Handler,
 		},
 		{
-			MethodName: "GetFollowings",
-			Handler:    _Friendship_GetFollowings_Handler,
+			MethodName: "GetFollowing",
+			Handler:    _Friendship_GetFollowing_Handler,
 		},
 		{
-			MethodName: "GetFriends",
-			Handler:    _Friendship_GetFriends_Handler,
+			MethodName: "GetFriend",
+			Handler:    _Friendship_GetFriend_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

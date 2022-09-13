@@ -1,6 +1,13 @@
 version: '3'
 
 services:
+  gateway:
+    container_name: gateway
+    restart: always
+    image: hvx:latest
+    network_mode: host
+    command: /bin/sh -c "./binary/gateway run"
+
   account:
     container_name: account
     restart: always

@@ -4,6 +4,19 @@ import (
 	pb "github.com/hvxahv/hvx/APIs/v1alpha1/activity"
 )
 
+// Activity Types inherit the properties of the base Activity type.
+// Some specific Activity Types are subtypes or specializations of more generalized Activity Types
+// (for instance, the Invite Activity Type is a more specific form of the Offer Activity Type).
+// The Activity Types include:
+// https://www.w3.org/TR/activitystreams-vocabulary/#activity-types
+type Activity struct {
+	Context string      `json:"@context"`
+	ID      string      `json:"id"`
+	Type    string      `json:"type"`
+	Actor   string      `json:"actor"`
+	Object  interface{} `json:"object"`
+}
+
 type Object struct {
 	Id     string `json:"id"`
 	Type   string `json:"type"`
@@ -12,10 +25,20 @@ type Object struct {
 }
 
 type Handler struct {
-	inbox      string
-	aAddr      string
+	// inbox is address of the Actor object.
+	// We need to know who is sending us the activity.
+	inbox string
+
+	// aAddr actor address.
+	aAddr string
+
+	// privateKey used to encrypt activitypub delivery requests.
+	// It is stored in the account and the corresponding public key is stored in the actor.
 	privateKey string
-	actorId    uint
+
+	// actorId of the activity recipient actor,
+	// since the id is to be used as the primary key of the inboxes table.
+	actorId uint
 }
 
 func NewHandler(inbox string, aAddr string, privateKey string, actorId uint) *Handler {

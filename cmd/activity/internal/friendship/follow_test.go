@@ -7,22 +7,22 @@ import (
 )
 
 func init() {
-	cfg.DefaultConfig()
+	cfg.DefaultLocalConfig()
 }
 func TestFollows_CreateFollower(t *testing.T) {
-	//f := NewFollower(746931986864701441, 746932029260431361)
-	//if err := f.Create(); err != nil {
-	//	t.Error(err)
-	//	return
-	//}
+	f := NewFollower(795104263552663553, 795165717415231489)
+	if err := f.Follow(); err != nil {
+		t.Error(err)
+		return
+	}
 }
 
 func TestFollows_CreateFollowing(t *testing.T) {
-	//f := NewFollowing(746931986864701441, 746932029260431361)
-	//if err := f.Create(); err != nil {
-	//	t.Error(err)
-	//	return
-	//}
+	f := NewFollowing(795104263552663553, 795165717415231489)
+	if err := f.Follow(); err != nil {
+		t.Error(err)
+		return
+	}
 }
 
 func TestFollows_UNFollower(t *testing.T) {

@@ -75,7 +75,7 @@ func (h *Handler) Accept(data []byte) (*pb.ActivityResponse, error) {
 			return nil, err
 		}
 
-		// IF ACCEPT FOLLOW REQUEST, ADD A FOLLOWER.
+		// IF ACCEPT FOLLOW REQUEST, ADD FOLLOWER.
 		if err := friendship.NewFollower(h.actorId, uint(objectId)).Follow(); err != nil {
 			return nil, err
 		}

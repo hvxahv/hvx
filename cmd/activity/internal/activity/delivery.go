@@ -75,7 +75,7 @@ func (i *Delivery) Do(inbox string) (*http.Response, error) {
 	res, err := client.Do(req)
 	if err != nil {
 		fmt.Println(err)
-		return nil, nil
+		return nil, err
 	}
 	defer res.Body.Close()
 	stdout := os.Stdout
