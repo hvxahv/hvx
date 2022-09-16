@@ -3,8 +3,6 @@ package internal
 import (
 	"fmt"
 	"github.com/hvxahv/hvx/activitypub"
-	"strconv"
-
 	"github.com/hvxahv/hvx/clientv1"
 	"github.com/hvxahv/hvx/cockroach"
 	"github.com/hvxahv/hvx/errors"
@@ -50,6 +48,7 @@ type Account interface {
 
 	// Create need to verify whether the username and email address have been registered or not,
 	// and return an error if they have been registered.
+	// publicKey is account auth public key not activitypub public key.
 	Create(publicKey string) error
 
 	// Delete Verify that the account is correct first, then delete the account by ID.
@@ -79,30 +78,6 @@ func NewUsername(username string) *Accounts {
 	}
 }
 
-func (a *Accounts) IsExist() bool {
-	db := cockroach.GetDB()
-
-	if err := db.Debug().
-		Table(AccountsTable).
-		Where("username = ? ", a.Username).
-		First(&Accounts{}); err != nil {
-		ok := cockroach.IsNotFound(err.Error)
-		return ok
-	}
-	return false
-}
-
-func (a *Accounts) GetAccountByUsername() (*Accounts, error) {
-	db := cockroach.GetDB()
-	if err := db.Debug().
-		Table(AccountsTable).
-		Where("username = ?", a.Username).
-		First(&a).Error; err != nil {
-		return nil, err
-	}
-	return a, nil
-}
-
 // NewAccounts This constructor is needed to formally create a complete account in the Create Account method.
 func NewAccounts(actorID uint, username, mail, password, privateKey string) *Accounts {
 	hash, _ := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
@@ -124,8 +99,51 @@ func NewAccountsCreate(username, mail, password string) *Accounts {
 	}
 }
 
-// Create account.
-// publicKey is account auth public key not activitypub public key.
+// NewAccountsDelete Constructor for deleting an account.
+func NewAccountsDelete(username, password string) *Accounts {
+	return &Accounts{
+		Username: username,
+		Password: password,
+	}
+}
+
+// NewAccountsID Constructing an account ID.
+func NewAccountsID(id uint) *Accounts {
+	return &Accounts{
+		Model: gorm.Model{
+			ID: id,
+		},
+	}
+}
+
+// NewEditPassword Constructor for editing an account's password.
+func NewEditPassword(username, password string) *Accounts {
+	return &Accounts{
+		Username: username,
+		Password: password,
+	}
+}
+
+// NewVerify Constructor for verifying an account.
+func NewVerify(username string) *Accounts {
+	return &Accounts{
+		Username: username,
+	}
+}
+
+func (a *Accounts) IsExist() bool {
+	db := cockroach.GetDB()
+
+	if err := db.Debug().
+		Table(AccountsTable).
+		Where("username = ? ", a.Username).
+		First(&Accounts{}); err != nil {
+		ok := cockroach.IsNotFound(err.Error)
+		return ok
+	}
+	return false
+}
+
 func (a *Accounts) Create(publicKey string) error {
 	// TODO - Verify that the structure data, username email and password match the criteria.
 	//if err := validator.New().Struct(a); err != nil {
@@ -162,19 +180,14 @@ func (a *Accounts) Create(publicKey string) error {
 		return err
 	}
 
-	actorId, err := strconv.Atoi(actor.ActorId)
-	if err != nil {
-		return err
-	}
-
-	v := NewAccounts(uint(actorId), a.Username, a.Mail, a.Password, k.PrivateKey)
+	v := NewAccounts(uint(actor.ActorId), a.Username, a.Mail, a.Password, k.PrivateKey)
 	if err := db.Debug().Table(AccountsTable).
 		Create(&v).Error; err != nil {
 		return fmt.Errorf(errors.ErrAccountCreate)
 	}
 
 	// SET AUTH PUBLIC KEY...
-	key, err := clientv1.New(ctx, microsvc.AuthServiceName).SetAuthPublicKey(strconv.Itoa(int(v.ID)), publicKey)
+	key, err := clientv1.New(ctx, microsvc.AuthServiceName).SetAuthPublicKey(int64(v.ID), publicKey)
 	if err != nil {
 		return err
 	}
@@ -182,14 +195,6 @@ func (a *Accounts) Create(publicKey string) error {
 		return errors.New(key.Status)
 	}
 	return nil
-}
-
-// NewAccountsDelete Constructor for deleting an account.
-func NewAccountsDelete(username, password string) *Accounts {
-	return &Accounts{
-		Username: username,
-		Password: password,
-	}
 }
 
 func (a *Accounts) Delete() error {
@@ -208,15 +213,6 @@ func (a *Accounts) Delete() error {
 	}
 
 	return nil
-}
-
-// NewAccountsID Constructing an account ID.
-func NewAccountsID(id uint) *Accounts {
-	return &Accounts{
-		Model: gorm.Model{
-			ID: id,
-		},
-	}
 }
 
 func (a *Accounts) EditUsername(username string) error {
@@ -265,14 +261,6 @@ func (a *Accounts) EditEmail(mail string) error {
 	return nil
 }
 
-// NewEditPassword Constructor for editing an account's password.
-func NewEditPassword(username, password string) *Accounts {
-	return &Accounts{
-		Username: username,
-		Password: password,
-	}
-}
-
 func (a *Accounts) EditPassword(new string) error {
 	v, err := NewVerify(a.Username).Verify(a.Password)
 	if err != nil {
@@ -290,13 +278,6 @@ func (a *Accounts) EditPassword(new string) error {
 	}
 
 	return nil
-}
-
-// NewVerify Constructor for verifying an account.
-func NewVerify(username string) *Accounts {
-	return &Accounts{
-		Username: username,
-	}
 }
 
 func (a *Accounts) Verify(password string) (*Accounts, error) {
@@ -335,4 +316,15 @@ func (a *Accounts) GetPrivateKey() (string, error) {
 	}
 
 	return a.PrivateKey, nil
+}
+
+func (a *Accounts) GetAccountByUsername() (*Accounts, error) {
+	db := cockroach.GetDB()
+	if err := db.Debug().
+		Table(AccountsTable).
+		Where("username = ?", a.Username).
+		First(&a).Error; err != nil {
+		return nil, err
+	}
+	return a, nil
 }

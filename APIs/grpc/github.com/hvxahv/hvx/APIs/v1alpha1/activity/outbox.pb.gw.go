@@ -95,14 +95,14 @@ func request_Outbox_GetOutbox_0(ctx context.Context, marshaler runtime.Marshaler
 		_   = err
 	)
 
-	val, ok = pathParams["activity_id"]
+	val, ok = pathParams["activityId"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "activity_id")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "activityId")
 	}
 
 	protoReq.ActivityId, err = runtime.String(val)
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "activity_id", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "activityId", err)
 	}
 
 	msg, err := client.GetOutbox(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -121,14 +121,14 @@ func local_request_Outbox_GetOutbox_0(ctx context.Context, marshaler runtime.Mar
 		_   = err
 	)
 
-	val, ok = pathParams["activity_id"]
+	val, ok = pathParams["activityId"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "activity_id")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "activityId")
 	}
 
 	protoReq.ActivityId, err = runtime.String(val)
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "activity_id", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "activityId", err)
 	}
 
 	msg, err := server.GetOutbox(ctx, &protoReq)
@@ -193,7 +193,7 @@ func RegisterOutboxHandlerServer(ctx context.Context, mux *runtime.ServeMux, ser
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/hvx.api.v1alpha1.activity.proto.Outbox/GetOutbox", runtime.WithHTTPPathPattern("/api/v1/activity/outbox/{activity_id}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/hvx.api.v1alpha1.activity.proto.Outbox/GetOutbox", runtime.WithHTTPPathPattern("/api/v1/activity/outbox/{activityId}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -304,7 +304,7 @@ func RegisterOutboxHandlerClient(ctx context.Context, mux *runtime.ServeMux, cli
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/hvx.api.v1alpha1.activity.proto.Outbox/GetOutbox", runtime.WithHTTPPathPattern("/api/v1/activity/outbox/{activity_id}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/hvx.api.v1alpha1.activity.proto.Outbox/GetOutbox", runtime.WithHTTPPathPattern("/api/v1/activity/outbox/{activityId}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -348,7 +348,7 @@ func RegisterOutboxHandlerClient(ctx context.Context, mux *runtime.ServeMux, cli
 var (
 	pattern_Outbox_GetOutboxesPublic_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"api", "v1", "activity", "outbox", "username"}, ""))
 
-	pattern_Outbox_GetOutbox_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"api", "v1", "activity", "outbox", "activity_id"}, ""))
+	pattern_Outbox_GetOutbox_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"api", "v1", "activity", "outbox", "activityId"}, ""))
 
 	pattern_Outbox_GetOutboxes_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "activity", "outbox"}, ""))
 )

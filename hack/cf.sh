@@ -4,4 +4,4 @@
 # Install cloudflare tunnel.
 # https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/install-and-setup/tunnel-guide/local/
 
-cloudflared tunnel run halfmemories.com
+cloudflared tunnel run dev.halfmemories.com

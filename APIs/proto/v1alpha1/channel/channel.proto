@@ -33,7 +33,7 @@ service Channel {
 }
 
 message CreateChannelRequest {
-  string preferredUsername = 1 [json_name = "preferred_username"];
+  string preferredUsername = 1;
 }
 
 message CreateChannelResponse {
@@ -42,7 +42,7 @@ message CreateChannelResponse {
 }
 
 message ChannelData {
-  string channel_id = 1 [json_name = "channel_id"];
+  int64 channelId = 1;
   actor.proto.ActorData channel = 2;
 }
 
@@ -53,7 +53,7 @@ message GetChannelsResponse {
 
 
 message DeleteChannelRequest {
-  string channel_id = 1;
+  int64 channelId = 1;
 }
 
 message DeleteChannelResponse {
@@ -62,7 +62,7 @@ message DeleteChannelResponse {
 }
 
 message DeleteChannelsRequest {
-  string account_id = 1;
+  int64 accountId = 1;
 }
 
 message DeleteChannelsResponse {

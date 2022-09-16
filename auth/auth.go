@@ -20,11 +20,11 @@ func NewUserdata(accountId string, actorId string, deviceID string, username str
 	return &Userdata{AccountId: accountId, ActorId: actorId, DeviceID: deviceID, Username: username, Mail: mail}
 }
 
-type auth interface {
+type JWT interface {
 	JWTTokenGenerator(secret string) (token string, err error)
 }
 
-//JWTTokenGenerator ...
+// JWTTokenGenerator ...
 func (c *Claims) JWTTokenGenerator(secret string) (token string, err error) {
 	g, err := jwt.NewWithClaims(jwt.SigningMethodHS256, c).SignedString([]byte(secret))
 	if err != nil {

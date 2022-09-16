@@ -13,7 +13,7 @@ import (
 )
 
 func init() {
-	cfg.DefaultConfig()
+	cfg.Default()
 }
 
 func TestArticles_Get(t *testing.T) {

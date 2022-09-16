@@ -6,11 +6,11 @@ import (
 
 type Actor interface {
 	IsExistActor(preferredUsername string) (*pb.IsExistResponse, error)
-	GetActor(actorId string) (*pb.GetResponse, error)
+	GetActor(actorId int64) (*pb.GetResponse, error)
 	GetActorByUsername(username string) (*pb.ActorData, error)
 	GetActorByAddress(inbox string) (*pb.ActorData, error)
 	CreateActor(preferredUsername, publicKey, actorType string) (*pb.CreateResponse, error)
-	DeleteActor(actorId string) (*pb.DeleteResponse, error)
+	DeleteActor(actorId int64) (*pb.DeleteResponse, error)
 }
 
 func (svc *Svc) IsExistActor(preferredUsername string) (*pb.IsExistResponse, error) {
@@ -29,7 +29,7 @@ func (svc *Svc) IsExistActor(preferredUsername string) (*pb.IsExistResponse, err
 	return i, nil
 }
 
-func (svc *Svc) GetActor(actorId string) (*pb.GetResponse, error) {
+func (svc *Svc) GetActor(actorId int64) (*pb.GetResponse, error) {
 	c, err := NewClient(svc.ctx, svc.address)
 	if err != nil {
 		return nil, err
@@ -98,7 +98,7 @@ func (svc *Svc) CreateActor(preferredUsername, publicKey, actorType string) (*pb
 	return create, nil
 }
 
-func (svc *Svc) DeleteActor(actorId string) (*pb.DeleteResponse, error) {
+func (svc *Svc) DeleteActor(actorId int64) (*pb.DeleteResponse, error) {
 	c, err := NewClient(svc.ctx, svc.address)
 	if err != nil {
 		return nil, err
@@ -106,7 +106,7 @@ func (svc *Svc) DeleteActor(actorId string) (*pb.DeleteResponse, error) {
 	defer c.Close()
 
 	d, err := pb.NewActorClient(c.Conn).Delete(svc.ctx, &pb.DeleteRequest{
-		Id: actorId,
+		ActorId: actorId,
 	})
 	if err != nil {
 		return nil, err

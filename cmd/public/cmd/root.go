@@ -30,5 +30,5 @@ func Execute() {
 }
 
 func init() {
-	cobra.OnInitialize(cfg.DefaultConfig)
+	cobra.OnInitialize(cfg.Default)
 }

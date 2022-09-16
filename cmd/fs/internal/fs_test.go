@@ -6,7 +6,7 @@ import (
 )
 
 func init() {
-	cfg.DefaultConfig()
+	cfg.Default()
 }
 
 func TestFs_Create(t *testing.T) {

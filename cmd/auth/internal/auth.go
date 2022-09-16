@@ -35,9 +35,9 @@ type AuthorizationHandler interface {
 	// return the authorization result.
 	Authorization(username, password string) (*account.VerifyResponse, error)
 
-	SetPublicKey(accountId, publicKey string) error
+	SetPublicKey(accountId uint, publicKey string) error
 	// AddDevice Add a device to the device system.
-	AddDevice(accountId, ua string) (*device.CreateResponse, error)
+	AddDevice(accountId int64, ua string) (*device.CreateResponse, error)
 }
 
 func (a *authorization) Authorization(username, password string) (*account.VerifyResponse, error) {
@@ -67,14 +67,14 @@ func (a *authorization) SetPublicKey(accountId uint, publicKey string) error {
 	return nil
 }
 
-func (a *authorization) AddDevice(accountId, ua string) (*device.CreateResponse, error) {
+func (a *authorization) AddDevice(accountId int64, ua string) (*device.CreateResponse, error) {
 	add, err := clientv1.New(context.Background(), microsvc.DeviceServiceName).AddDevice(accountId, ua)
 	if err != nil {
 		return nil, err
 	}
 	if err != nil {
 		errors.Throw("error occurred while connecting to the device server in public service.", err)
-		return nil, errors.New(errors.ErrConnectDeviceRPCServer)
+		return nil, errors.NewFailedToConnect(microsvc.DeviceServiceName)
 	}
 
 	return add, nil

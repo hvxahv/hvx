@@ -57,6 +57,7 @@ func GetUserdataByAuthorizationToken(ctx context.Context) (*Userdata, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	d := &Userdata{
 		AccountId: uint(accountId),
 		ActorId:   uint(actor),

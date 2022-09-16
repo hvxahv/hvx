@@ -77,14 +77,14 @@ func request_Article_Get_0(ctx context.Context, marshaler runtime.Marshaler, cli
 		_   = err
 	)
 
-	val, ok = pathParams["id"]
+	val, ok = pathParams["articleId"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "articleId")
 	}
 
-	protoReq.Id, err = runtime.String(val)
+	protoReq.ArticleId, err = runtime.String(val)
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "articleId", err)
 	}
 
 	msg, err := client.Get(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -103,14 +103,14 @@ func local_request_Article_Get_0(ctx context.Context, marshaler runtime.Marshale
 		_   = err
 	)
 
-	val, ok = pathParams["id"]
+	val, ok = pathParams["articleId"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "articleId")
 	}
 
-	protoReq.Id, err = runtime.String(val)
+	protoReq.ArticleId, err = runtime.String(val)
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "articleId", err)
 	}
 
 	msg, err := server.Get(ctx, &protoReq)
@@ -277,7 +277,7 @@ func RegisterArticleHandlerServer(ctx context.Context, mux *runtime.ServeMux, se
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/hvx.api.v1alpha1.article.proto.Article/Get", runtime.WithHTTPPathPattern("/api/v1/article/{id}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/hvx.api.v1alpha1.article.proto.Article/Get", runtime.WithHTTPPathPattern("/api/v1/article/{articleId}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -463,7 +463,7 @@ func RegisterArticleHandlerClient(ctx context.Context, mux *runtime.ServeMux, cl
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/hvx.api.v1alpha1.article.proto.Article/Get", runtime.WithHTTPPathPattern("/api/v1/article/{id}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/hvx.api.v1alpha1.article.proto.Article/Get", runtime.WithHTTPPathPattern("/api/v1/article/{articleId}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -573,7 +573,7 @@ func RegisterArticleHandlerClient(ctx context.Context, mux *runtime.ServeMux, cl
 var (
 	pattern_Article_Create_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "v1", "article"}, ""))
 
-	pattern_Article_Get_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "v1", "article", "id"}, ""))
+	pattern_Article_Get_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"api", "v1", "article", "articleId"}, ""))
 
 	pattern_Article_GetArticles_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "article", "articles"}, ""))
 

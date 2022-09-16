@@ -28,7 +28,7 @@ func (s *server) Authorization(ctx context.Context, in *pb.AuthorizationRequest)
 		return nil, err
 	}
 
-	device, err := NewAuthorization(ctx).AddDevice(v.Id, in.UserAgent)
+	device, err := NewAuthorization(ctx).AddDevice(v.AccountId, in.UserAgent)
 	if err != nil {
 		return nil, err
 	}
@@ -39,8 +39,14 @@ func (s *server) Authorization(ctx context.Context, in *pb.AuthorizationRequest)
 		secret = viper.GetString("authentication.token.secret")
 	)
 	g, err := auth.NewClaims(
-		auth.NewUserdata(v.Id, v.ActorId, device.DeviceId, v.Username, v.Mail),
-		auth.NewRegisteredClaims(issuer, device.DeviceId, v.Id, expir),
+		auth.NewUserdata(
+			strconv.Itoa(int(v.AccountId)),
+			strconv.Itoa(int(v.ActorId)),
+			strconv.Itoa(int(device.DeviceId)),
+			v.Username,
+			v.Mail,
+		),
+		auth.NewRegisteredClaims(issuer, strconv.Itoa(int(device.DeviceId)), strconv.Itoa(int(v.AccountId)), expir),
 	).JWTTokenGenerator(secret)
 	if err != nil {
 		errors.Throw("cannot generate token error during authentication.", err)
@@ -50,7 +56,7 @@ func (s *server) Authorization(ctx context.Context, in *pb.AuthorizationRequest)
 	return &pb.AuthorizationResponse{
 		Code:               "200",
 		Status:             "ok",
-		Id:                 v.Id,
+		AccountId:          v.AccountId,
 		AuthorizationToken: g,
 		ActorId:            v.ActorId,
 		Mail:               v.Mail,
@@ -59,11 +65,7 @@ func (s *server) Authorization(ctx context.Context, in *pb.AuthorizationRequest)
 }
 
 func (s *server) SetPublicKey(ctx context.Context, in *pb.SetPublicKeyRequest) (*pb.SetPublicKeyResponse, error) {
-	accountId, err := strconv.Atoi(in.GetAccountId())
-	if err != nil {
-		return nil, err
-	}
-	if err := NewAuthorization(ctx).SetPublicKey(uint(accountId), in.GetPublicKey()); err != nil {
+	if err := NewAuthorization(ctx).SetPublicKey(uint(in.GetAccountId()), in.GetPublicKey()); err != nil {
 		return nil, err
 	}
 	return &pb.SetPublicKeyResponse{Code: "200", Status: "ok"}, nil

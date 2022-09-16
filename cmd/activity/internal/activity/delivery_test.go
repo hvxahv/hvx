@@ -10,7 +10,7 @@ import (
 )
 
 func init() {
-	cfg.DefaultConfig()
+	cfg.Default()
 }
 
 func TestDelivery_Do(t *testing.T) {

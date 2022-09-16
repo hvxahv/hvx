@@ -3,8 +3,6 @@ package internal
 import (
 	"context"
 	"encoding/json"
-	"strconv"
-
 	"github.com/hvxahv/hvx/clientv1"
 	"github.com/hvxahv/hvx/cockroach"
 	"github.com/hvxahv/hvx/errors"
@@ -94,11 +92,7 @@ func (a *Matrices) Register(username, password string) (*matrix.RegisterRes, err
 	if err := json.Unmarshal(d.Body, &x); err != nil {
 		return nil, err
 	}
-	aid, err := strconv.Atoi(v.ActorId)
-	if err != nil {
-		return nil, err
-	}
-	if err := NewMatrices(uint(aid), a.DeviceId, matrix.GetMatrixAddress(), x.UserId).Create(); err != nil {
+	if err := NewMatrices(uint(v.ActorId), a.DeviceId, matrix.GetMatrixAddress(), x.UserId).Create(); err != nil {
 		return nil, err
 	}
 

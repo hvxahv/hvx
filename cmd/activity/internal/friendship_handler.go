@@ -8,7 +8,6 @@ import (
 	"github.com/hvxahv/hvx/microsvc"
 	"golang.org/x/net/context"
 	"google.golang.org/protobuf/types/known/emptypb"
-	"strconv"
 )
 
 func (s *server) GetFollower(ctx context.Context, in *emptypb.Empty) (*pb.FriendshipResponse, error) {
@@ -23,7 +22,7 @@ func (s *server) GetFollower(ctx context.Context, in *emptypb.Empty) (*pb.Friend
 
 	var f []*actor.ActorData
 	for _, i := range follows {
-		a, err := clientv1.New(ctx, microsvc.ActorServiceName).GetActor(strconv.Itoa(int(i)))
+		a, err := clientv1.New(ctx, microsvc.ActorServiceName).GetActor(int64(i))
 		if err != nil {
 			return nil, err
 		}
@@ -48,7 +47,7 @@ func (s *server) GetFollowing(ctx context.Context, in *emptypb.Empty) (*pb.Frien
 
 	var f []*actor.ActorData
 	for _, i := range follows {
-		a, err := clientv1.New(ctx, microsvc.ActorServiceName).GetActor(strconv.Itoa(int(i)))
+		a, err := clientv1.New(ctx, microsvc.ActorServiceName).GetActor(int64(i))
 		if err != nil {
 			return nil, err
 		}
@@ -73,7 +72,7 @@ func (s *server) GetFriend(ctx context.Context, in *emptypb.Empty) (*pb.Friendsh
 
 	var f []*actor.ActorData
 	for _, i := range follows {
-		a, err := clientv1.New(ctx, microsvc.ActorServiceName).GetActor(strconv.Itoa(int(i)))
+		a, err := clientv1.New(ctx, microsvc.ActorServiceName).GetActor(int64(i))
 		if err != nil {
 			return nil, err
 		}

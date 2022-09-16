@@ -20,7 +20,7 @@ service Actor {
   // Search returns the set of actors by the username.
   rpc Search (SearchRequest) returns (SearchResponse) {
     option (google.api.http) = {
-      get: "/api/v1/search/{preferred_username}"
+      get: "/api/v1/search/{preferredUsername}"
     };
   }
 
@@ -46,23 +46,23 @@ message IsExistRequest {
 }
 
 message IsExistResponse {
-  bool is_exist = 1;
+  bool isExist = 1;
 }
 
 message CreateRequest {
-  string preferred_username = 1;
-  string public_key = 2;
-  string actor_type = 3;
+  string preferredUsername = 1;
+  string publicKey = 2;
+  string actorType = 3;
 }
 
 message CreateResponse {
   string code = 1;
-  string actor_id = 2;
+  int64 actorId = 2;
 }
 
 // GetRequest is the request for Get. It contains the actor id. 
 message GetRequest {
-  string actor_id = 1;
+  int64 actorId = 1;
 }
 
 message GetResponse {
@@ -71,7 +71,7 @@ message GetResponse {
 
 // ActorData is the actor data. It contains the actor's public key, preferred username, and actor type.
 message ActorData {
-  string id = 1;
+  int64 id = 1;
   string preferred_username = 2;
   string domain = 3;
   string avatar = 4;
@@ -81,11 +81,11 @@ message ActorData {
   string address = 8;
   string public_key = 9;
   string actor_type = 10;
-  string is_remote = 11;
+  string isRemote = 11;
 }
 
 message SearchRequest {
-  string preferred_username = 1 [(google.api.field_behavior) = REQUIRED];
+  string preferredUsername = 1 [(google.api.field_behavior) = REQUIRED];
 }
 
 message SearchResponse {
@@ -110,12 +110,11 @@ message EditRequest {
 
 message EditResponse {
   string code = 1;
-  string reply = 2;
+  string status = 2;
 }
 
 message DeleteRequest {
-  // The id of the actor to delete.
-  string id = 1;
+  int64 actorId = 1;
 }
 
 message DeleteResponse {
@@ -124,6 +123,5 @@ message DeleteResponse {
 }
 
 message GetActorByUsernameRequest {
-  // The account username.
   string username = 1;
 }

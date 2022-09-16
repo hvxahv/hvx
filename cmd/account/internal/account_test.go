@@ -9,7 +9,7 @@ import (
 )
 
 func init() {
-	cfg.DefaultConfig()
+	cfg.Default()
 }
 
 func TestAccount_IsExist(t *testing.T) {

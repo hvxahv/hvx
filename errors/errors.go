@@ -2,7 +2,6 @@ package errors
 
 import (
 	"fmt"
-	"strings"
 )
 
 const (
@@ -46,8 +45,4 @@ func New(err string) error {
 
 func Newf(format string, args ...interface{}) error {
 	return fmt.Errorf(format, args...)
-}
-
-func NewDatabaseCreate(tableName string) error {
-	return fmt.Errorf("FAILED_TO_AUTOMATICALLY_CREATE_%s_DATABASE", strings.ToUpper(tableName))
 }

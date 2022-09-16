@@ -42,31 +42,31 @@ service Devices {
 }
 
 message Device {
-  string id = 1;
-  string account_id = 2;
+  int64 id = 1;
+  int64 accountId = 2;
   string device = 3;
-  string created_at = 4;
+  string createdAt = 4;
 }
 
 message IsExistRequest {
-  string id = 1;
+  int64 id = 1;
 }
 
 message IsExistResponse {
-  bool is_exist = 1;
+  bool isExist = 1;
 }
 
 message CreateRequest {
-  string account_id = 1;
+  int64 accountId = 1;
   string ua = 2;
 }
 
 message CreateResponse {
-  string device_id = 1;
+  int64 deviceId = 1;
 }
 
 message GetRequest {
-  string device_id = 1;
+  int64 deviceId = 1;
 }
 
 message GetDevicesResponse {
@@ -75,19 +75,19 @@ message GetDevicesResponse {
 }
 
 message DeleteDevicesRequest {
-  string account_id = 1;
+  int64 accountId = 1;
 }
 
 message DeleteDevicesResponse {
   string code = 1;
-  string reply = 2;
+  string status = 2;
 }
 
 message DeleteRequest {
-  string device_id = 1;
+  int64 deviceId = 1;
 }
 
 message DeleteResponse {
   string code = 1;
-  string reply = 2;
+  string status = 2;
 }

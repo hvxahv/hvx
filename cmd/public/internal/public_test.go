@@ -3,5 +3,5 @@ package internal
 import "github.com/hvxahv/hvx/cfg"
 
 func init() {
-	cfg.DefaultConfig()
+	cfg.Default()
 }

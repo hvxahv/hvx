@@ -3,5 +3,5 @@ package inbox
 import "github.com/hvxahv/hvx/cfg"
 
 func init() {
-	cfg.DefaultConfig()
+	cfg.Default()
 }

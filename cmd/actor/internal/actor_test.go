@@ -6,7 +6,7 @@ import (
 )
 
 func init() {
-	cfg.DefaultConfig()
+	cfg.Default()
 }
 
 func TestActors_IsExist(t *testing.T) {

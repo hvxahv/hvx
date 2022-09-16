@@ -7,7 +7,7 @@ import (
 )
 
 func init() {
-	cfg.DefaultConfig()
+	cfg.Default()
 }
 
 func TestAuthorization_Authorization(t *testing.T) {

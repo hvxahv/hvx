@@ -19,30 +19,30 @@ import (
 )
 
 func (s *server) IsExist(ctx context.Context, in *pb.IsExistRequest) (*pb.IsExistResponse, error) {
-	a := NewUsername(in.Username)
+	a := NewUsername(in.GetUsername())
 	return &pb.IsExistResponse{IsExist: a.IsExist()}, nil
 }
 
 func (s *server) Create(ctx context.Context, in *pb.CreateRequest) (*pb.CreateResponse, error) {
-	if err := NewAccountsCreate(in.Username, in.Mail, in.Password).Create(in.PublicKey); err != nil {
+	if err := NewAccountsCreate(in.GetUsername(), in.GetMail(), in.GetPassword()).Create(in.PublicKey); err != nil {
 		return nil, err
 	}
 
-	return &pb.CreateResponse{Code: "200", Reply: "ok"}, nil
+	return &pb.CreateResponse{Code: "200", Status: "ok"}, nil
 }
 
 func (s *server) GetByUsername(ctx context.Context, in *pb.GetByUsernameRequest) (*pb.GetByUsernameResponse, error) {
-	a, err := NewUsername(in.Username).GetAccountByUsername()
+	account, err := NewUsername(in.Username).GetAccountByUsername()
 	if err != nil {
 		return nil, err
 	}
 	return &pb.GetByUsernameResponse{
-		AccountId: strconv.Itoa(int(a.ID)),
-		Username:  a.Username,
-		Mail:      a.Mail,
-		Password:  a.Password,
-		ActorId:   strconv.Itoa(int(a.ActorID)),
-		IsPrivate: strconv.FormatBool(a.IsPrivate),
+		AccountId: int64(account.ID),
+		Username:  account.Username,
+		Mail:      account.Mail,
+		Password:  account.Password,
+		ActorId:   int64(account.ActorID),
+		IsPrivate: strconv.FormatBool(account.IsPrivate),
 	}, nil
 }
 
@@ -92,13 +92,14 @@ func (s *server) EditPassword(ctx context.Context, in *pb.EditPasswordRequest) (
 		return nil, err
 	}
 
-	devices, err := clientv1.New(ctx, microsvc.DeviceServiceName).DeleteDevices(strconv.Itoa(int(parse.AccountId)))
+	devices, err := clientv1.New(ctx, microsvc.DeviceServiceName).DeleteDevices(int64(parse.AccountId))
 	if err != nil {
 		errors.Throw("error occurred while connecting to the device service while edit the password.", err)
 		return nil, err
 	}
+
 	// TODO - EDIT MATRIX ACCESS PASSWORD.
-	return &pb.EditPasswordResponse{Code: "200", Reply: devices.Reply}, nil
+	return &pb.EditPasswordResponse{Code: "200", Status: devices.Status}, nil
 }
 
 func (s *server) Verify(ctx context.Context, in *pb.VerifyRequest) (*pb.VerifyResponse, error) {
@@ -110,21 +111,17 @@ func (s *server) Verify(ctx context.Context, in *pb.VerifyRequest) (*pb.VerifyRe
 		}, err
 	}
 	return &pb.VerifyResponse{
-		Code:     "200",
-		Status:   "ok",
-		Id:       strconv.Itoa(int(verify.ID)),
-		Username: verify.Username,
-		Mail:     verify.Mail,
-		ActorId:  strconv.Itoa(int(verify.ActorID)),
+		Code:      "200",
+		Status:    "ok",
+		AccountId: int64(verify.ID),
+		Username:  verify.Username,
+		Mail:      verify.Mail,
+		ActorId:   int64(verify.ActorID),
 	}, nil
 }
 
 func (s *server) GetPrivateKey(ctx context.Context, in *pb.GetPrivateKeyRequest) (*pb.GetPrivateKeyResponse, error) {
-	id, err := strconv.Atoi(in.GetAccountId())
-	if err != nil {
-		return nil, err
-	}
-	x, err := NewAccountsID(uint(id)).GetPrivateKey()
+	x, err := NewAccountsID(uint(in.GetAccountId())).GetPrivateKey()
 	if err != nil {
 		return nil, err
 	}

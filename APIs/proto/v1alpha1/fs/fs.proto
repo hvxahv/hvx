@@ -14,7 +14,7 @@ service Fs {
 }
 
 message CreateRequest {
-  string accountId = 1;
+  int64 accountId = 1;
   string fileName = 2;
   string address = 3;
 }
@@ -25,7 +25,7 @@ message CreateResponse {
 }
 
 message DeleteRequest {
-  string accountId = 1;
+  int64 accountId = 1;
   string fileName = 2;
 }
 
@@ -35,7 +35,7 @@ message DeleteResponse {
 }
 
 message GetRequest {
-  string accountId = 1;
+  int64 accountId = 1;
   string fileName = 2;
 }
 

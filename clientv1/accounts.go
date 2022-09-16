@@ -8,7 +8,7 @@ type Accounts interface {
 	IsExistAccount(username string) (*pb.IsExistResponse, error)
 	GetAccountByUsername(username string) (*pb.GetByUsernameResponse, error)
 	CreateAccount(username, mail, password, publicKey string) (*pb.CreateResponse, error)
-	GetPrivateKey(accountId string) (*pb.GetPrivateKeyResponse, error)
+	GetPrivateKey(accountId int64) (*pb.GetPrivateKeyResponse, error)
 	Verify(username, password string) (*pb.VerifyResponse, error)
 }
 
@@ -60,7 +60,7 @@ func (svc *Svc) CreateAccount(username, mail, password, publicKey string) (*pb.C
 	return accounts, nil
 }
 
-func (svc *Svc) GetPrivateKey(accountId string) (*pb.GetPrivateKeyResponse, error) {
+func (svc *Svc) GetPrivateKey(accountId int64) (*pb.GetPrivateKeyResponse, error) {
 	c, err := NewClient(svc.ctx, svc.address)
 	if err != nil {
 		return nil, err

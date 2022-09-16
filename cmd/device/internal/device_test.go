@@ -14,7 +14,7 @@ import (
 )
 
 func init() {
-	cfg.DefaultConfig()
+	cfg.Default()
 }
 
 func TestDevices_Create(t *testing.T) {

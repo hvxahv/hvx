@@ -30,7 +30,7 @@ service Administrative {
 
   rpc GetAdministrators(GetAdministratorsRequest) returns (GetAdministratorsResponse) {
     option (google.api.http) = {
-      get: "/api/v1/channel/admin/{channel_id}",
+      get: "/api/v1/channel/admin/{channelId}",
     };
   }
 
@@ -42,49 +42,49 @@ service Administrative {
 }
 
 message IsAdministratorRequest {
-  string channel_id = 1;
-  string admin_id = 2;
+  int64 channelId = 1;
+  int64 adminId = 2;
 }
 
 message IsAdministratorResponse {
-  bool is_administrator = 1;
+  bool isAdministrator = 1;
 }
 
 message IsOwnerRequest {
-  string channel_id = 1;
-  string owner_id = 2;
+  int64 channelId = 1;
+  int64 ownerId = 2;
 }
 
 message IsOwnerResponse {
-  bool is_owner = 1;
+  bool isOwner = 1;
 }
 
 message AddAdministratorRequest {
-  string channel_id = 1;
-  string added_id = 3;
+  int64 channelId = 1;
+  int64 addedId = 3;
 }
 
 message AddAdministratorResponse {
   string code = 1;
-  string reply = 2;
+  string status = 2;
 }
 
 message RemoveAdministratorRequest {
-  string channel_id = 1;
-  string removed_id = 2;
+  int64 channelId = 1;
+  int64 removedId = 2;
 }
 
 message RemoveAdministratorResponse {
   string code = 1;
-  string reply = 2;
+  string status = 2;
 }
 
 message GetAdministratorsRequest {
-  string channel_id = 1 [(google.api.field_behavior) = REQUIRED];
+  string channelId = 1 [(google.api.field_behavior) = REQUIRED];
 }
 
 message AdminsData {
-  bool is_owner = 1;
+  bool isOwner = 1;
   actor.proto.ActorData admin = 2;
 }
 
@@ -94,8 +94,8 @@ message GetAdministratorsResponse {
 }
 
 message ExitAdministratorRequest {
-  string channel_id = 1;
-  string admin_id = 2;
+  int64 channelId = 1;
+  int64 adminId = 2;
 }
 
 message ExitAdministratorResponse {

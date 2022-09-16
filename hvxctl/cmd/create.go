@@ -15,10 +15,14 @@ import (
 )
 
 var createCmd = &cobra.Command{
-	Use:     "create",
-	Aliases: []string{"c"},
-	Short:   "",
-	Long:    ``,
+	Use:        "create",
+	Aliases:    []string{"c"},
+	SuggestFor: nil,
+	Short:      "",
+	Long:       ``,
+	Example: `create db <NAME>;
+create fs <PROVIDER>;
+`,
 	Run: func(cmd *cobra.Command, args []string) {
 		switch args[0] {
 		case "db":
@@ -40,6 +44,22 @@ var createCmd = &cobra.Command{
 
 		}
 	},
+	RunE:                       nil,
+	PostRun:                    nil,
+	PostRunE:                   nil,
+	PersistentPostRun:          nil,
+	PersistentPostRunE:         nil,
+	FParseErrWhitelist:         cobra.FParseErrWhitelist{},
+	CompletionOptions:          cobra.CompletionOptions{},
+	TraverseChildren:           false,
+	Hidden:                     false,
+	SilenceErrors:              false,
+	SilenceUsage:               false,
+	DisableFlagParsing:         false,
+	DisableAutoGenTag:          false,
+	DisableFlagsInUseLine:      false,
+	DisableSuggestions:         false,
+	SuggestionsMinimumDistance: 0,
 }
 
 func init() {

@@ -18,8 +18,8 @@ func (s *server) Create(ctx context.Context, in *pb.CreateRequest) (*pb.CreateRe
 		return nil, err
 	}
 	return &pb.CreateResponse{
-		Code:  "200",
-		Reply: "ok",
+		Code:   "200",
+		Status: "ok",
 	}, nil
 }
 
@@ -33,7 +33,7 @@ func (s *server) GetSaved(ctx context.Context, in *pb.GetSavedRequest) (*pb.Save
 		return nil, err
 	}
 	return &pb.Save{
-		Id:        strconv.Itoa(int(saved.ID)),
+		Id:        int64(saved.ID),
 		Name:      saved.Name,
 		Comment:   saved.Comment,
 		Cid:       saved.Cid,
@@ -55,7 +55,7 @@ func (s *server) GetSaves(ctx context.Context, in *emptypb.Empty) (*pb.GetSavesR
 	var ret []*pb.Save
 	for _, saved := range saves {
 		ret = append(ret, &pb.Save{
-			Id:        strconv.Itoa(int(saved.ID)),
+			Id:        int64(saved.ID),
 			Name:      saved.Name,
 			Comment:   saved.Comment,
 			Cid:       saved.Cid,
@@ -74,10 +74,6 @@ func (s *server) EditSaved(ctx context.Context, in *pb.EditSavedRequest) (*pb.Ed
 	if err != nil {
 		return nil, err
 	}
-	id, err := strconv.Atoi(in.Id)
-	if err != nil {
-		return nil, err
-	}
 
 	saved := new(Saves)
 	switch {
@@ -87,7 +83,7 @@ func (s *server) EditSaved(ctx context.Context, in *pb.EditSavedRequest) (*pb.Ed
 		saved.Comment = in.Comment
 	}
 
-	if err := saved.EditSaved(uint(id), parse.AccountId); err != nil {
+	if err := saved.EditSaved(uint(in.GetId()), parse.AccountId); err != nil {
 		return nil, err
 	}
 	return &pb.EditSavedResponse{
@@ -101,16 +97,13 @@ func (s *server) Delete(ctx context.Context, in *pb.DeleteRequest) (*pb.DeleteRe
 	if err != nil {
 		return nil, err
 	}
-	id, err := strconv.Atoi(in.Id)
-	if err != nil {
-		return nil, err
-	}
-	if err := NewSavesDelete(uint(id), parse.AccountId).Delete(); err != nil {
+
+	if err := NewSavesDelete(uint(in.GetId()), parse.AccountId).Delete(); err != nil {
 		return nil, err
 	}
 	return &pb.DeleteResponse{
-		Code:  "200",
-		Reply: "ok",
+		Code:   "200",
+		Status: "ok",
 	}, nil
 }
 
@@ -123,7 +116,7 @@ func (s *server) DeleteSaves(ctx context.Context, in *pb.DeleteSavesRequest) (*p
 		return nil, err
 	}
 	return &pb.DeleteSavesResponse{
-		Code:  "200",
-		Reply: "ok",
+		Code:   "200",
+		Status: "ok",
 	}, nil
 }

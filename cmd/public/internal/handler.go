@@ -103,6 +103,6 @@ func (s *server) CreateAccounts(ctx context.Context, in *pb.CreateAccountsReques
 
 	return &pb.CreateAccountsResponse{
 		Code:     res.Code,
-		Response: res.Reply,
+		Response: res.Status,
 	}, nil
 }

@@ -9,6 +9,7 @@ import (
 	"github.com/hvxahv/hvx/fs"
 	"github.com/hvxahv/hvx/microsvc"
 	"log"
+	"strconv"
 )
 
 // AvatarHandler Uploads an avatar to the object store and returns the address (name) of the image.
@@ -42,7 +43,8 @@ func AvatarHandler(c *gin.Context) {
 		return
 	}
 
-	create, err := clientv1.New(c, microsvc.FsServiceName).CreateFs(parse.AccountId, fn, put)
+	accountId, _ := strconv.Atoi(parse.AccountId)
+	create, err := clientv1.New(c, microsvc.FsServiceName).CreateFs(int64(accountId), fn, put)
 	if err != nil {
 		return
 	}
@@ -92,7 +94,9 @@ func AttachHandler(c *gin.Context) {
 			c.JSON(500, errors.NewHandler("500", errors.ErrFilesPut))
 			return
 		}
-		create, err := clientv1.New(c, microsvc.FsServiceName).CreateFs(parse.AccountId, fn, put)
+
+		accountId, _ := strconv.Atoi(parse.AccountId)
+		create, err := clientv1.New(c, microsvc.FsServiceName).CreateFs(int64(accountId), fn, put)
 		if err != nil {
 			return
 		}
@@ -123,7 +127,8 @@ func DeleteFsHandler(c *gin.Context) {
 		return
 	}
 
-	d, err := clientv1.New(c, microsvc.FsServiceName).Delete(parse.AccountId, fn)
+	accountId, _ := strconv.Atoi(parse.AccountId)
+	d, err := clientv1.New(c, microsvc.FsServiceName).Delete(int64(accountId), fn)
 	if err != nil {
 		return
 	}
@@ -140,7 +145,8 @@ func DeleteFsHandler(c *gin.Context) {
 func GetFsAddressHandler(c *gin.Context) {
 	parse, _ := ParseAuthorization(c.Request.Header.Get("Authorization"))
 	fn := c.Param("name")
-	f, err := clientv1.New(c, microsvc.FsServiceName).GetFs(parse.AccountId, fn)
+	accountId, _ := strconv.Atoi(parse.AccountId)
+	f, err := clientv1.New(c, microsvc.FsServiceName).GetFs(int64(accountId), fn)
 	if err != nil {
 		return
 	}

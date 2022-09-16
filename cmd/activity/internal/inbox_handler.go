@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"fmt"
 	pb "github.com/hvxahv/hvx/APIs/v1alpha1/activity"
 	"github.com/hvxahv/hvx/cmd/activity/internal/inbox"
 	"github.com/hvxahv/hvx/microsvc"
@@ -56,16 +55,12 @@ func (s *server) DeleteInbox(ctx context.Context, in *pb.DeleteInboxRequest) (*p
 	if err != nil {
 		return nil, err
 	}
-	inboxId, err := strconv.Atoi(in.InboxId)
-	if err != nil {
-		return nil, err
-	}
-	if err := inbox.NewInboxesIdAndActorId(uint(inboxId), parse.ActorId).DeleteInbox(); err != nil {
+	if err := inbox.NewInboxesIdAndActorId(uint(in.GetInboxId()), parse.ActorId).DeleteInbox(); err != nil {
 		return nil, err
 	}
 	return &pb.DeleteInboxResponse{
-		Code:  "200",
-		Reply: "ok",
+		Code:   "200",
+		Status: "ok",
 	}, nil
 }
 
@@ -103,12 +98,7 @@ func (s *server) ViewedInbox(ctx context.Context, in *pb.ViewedInboxRequest) (*p
 		return nil, err
 	}
 
-	id, err := strconv.Atoi(in.GetInboxId())
-	if err != nil {
-		return nil, err
-	}
-	fmt.Println(id)
-	if err := inbox.NewSetViewed(parse.ActorId, uint(id)).SetViewed(); err != nil {
+	if err := inbox.NewSetViewed(parse.ActorId, uint(in.GetInboxId())).SetViewed(); err != nil {
 		return nil, err
 	}
 	return &pb.ViewedInboxResponse{

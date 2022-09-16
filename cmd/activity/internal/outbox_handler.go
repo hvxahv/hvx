@@ -6,7 +6,6 @@ import (
 	"github.com/hvxahv/hvx/microsvc"
 	"golang.org/x/net/context"
 	"google.golang.org/protobuf/types/known/emptypb"
-	"strconv"
 )
 
 //func (s *server) GetOutboxesPublic(ctx context.Context, in *pb.GetOutboxesPublicRequest) (*pb.GetOutboxPublicResponse, error) {
@@ -31,8 +30,8 @@ func (s *server) GetOutboxes(ctx context.Context, in *emptypb.Empty) (*pb.GetOut
 	var ret []*pb.OutboxData
 	for _, obx := range outboxes {
 		ret = append(ret, &pb.OutboxData{
-			Id:         strconv.Itoa(int(obx.ID)),
-			ActorId:    strconv.Itoa(int(obx.ActorId)),
+			Id:         int64(obx.ID),
+			ActorId:    int64(obx.ActorId),
 			ActivityId: obx.ActivityId,
 			To:         obx.To,
 			Cc:         obx.Cc,

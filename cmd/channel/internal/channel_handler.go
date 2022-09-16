@@ -2,11 +2,9 @@ package internal
 
 import (
 	"context"
-	"github.com/hvxahv/hvx/activitypub"
-	"strconv"
-
 	"github.com/golang/protobuf/ptypes/empty"
 	pb "github.com/hvxahv/hvx/APIs/v1alpha1/channel"
+	"github.com/hvxahv/hvx/activitypub"
 	"github.com/hvxahv/hvx/clientv1"
 	"github.com/hvxahv/hvx/errors"
 	"github.com/hvxahv/hvx/microsvc"
@@ -51,12 +49,7 @@ func (s *server) CreateChannel(ctx context.Context, in *pb.CreateChannelRequest)
 		return nil, err
 	}
 
-	actorId, err := strconv.Atoi(create.ActorId)
-	if err != nil {
-		return nil, err
-	}
-
-	if err := NewChannels(uint(actorId), parse.ActorId, k.PrivateKey).CreateChannel(); err != nil {
+	if err := NewChannels(uint(create.ActorId), parse.ActorId, k.PrivateKey).CreateChannel(); err != nil {
 		return nil, err
 	}
 	return &pb.CreateChannelResponse{
@@ -82,12 +75,12 @@ func (s *server) GetChannels(ctx context.Context, in *empty.Empty) (*pb.GetChann
 	var data []*pb.ChannelData
 	for _, d := range channels {
 		var cd pb.ChannelData
-		actor, err := clientv1.New(ctx, microsvc.ActorServiceName).GetActor(strconv.Itoa(int(d.ActorId)))
+		actor, err := clientv1.New(ctx, microsvc.ActorServiceName).GetActor(int64(d.ActorId))
 		if err != nil {
 			return nil, err
 		}
 		cd.Channel = actor.Actor
-		cd.ChannelId = strconv.Itoa(int(d.ID))
+		cd.ChannelId = int64(d.ID)
 
 		data = append(data, &cd)
 	}
@@ -103,12 +96,7 @@ func (s *server) DeleteChannel(ctx context.Context, in *pb.DeleteChannelRequest)
 		return nil, err
 	}
 
-	cid, err := strconv.Atoi(in.ChannelId)
-	if err != nil {
-		return nil, err
-	}
-
-	if err := NewChannelsDelete(uint(cid), parse.ActorId).DeleteChannel(); err != nil {
+	if err := NewChannelsDelete(uint(in.GetChannelId()), parse.ActorId).DeleteChannel(); err != nil {
 		return nil, err
 	}
 	return &pb.DeleteChannelResponse{

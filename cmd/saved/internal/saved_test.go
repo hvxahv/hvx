@@ -3,7 +3,7 @@ package internal
 import "github.com/hvxahv/hvx/cfg"
 
 func init() {
-	cfg.DefaultConfig()
+	cfg.Default()
 }
 
 // func TestSaved_Create(t *testing.T) {

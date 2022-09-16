@@ -8,6 +8,7 @@
 package internal
 
 import (
+	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -37,7 +38,8 @@ func Auth(c *gin.Context) {
 		return
 	}
 
-	exist, err := clientv1.New(c, microsvc.DeviceServiceName).IsExistDevice(parse.ActorId)
+	actorId, _ := strconv.Atoi(parse.ActorId)
+	exist, err := clientv1.New(c, microsvc.DeviceServiceName).IsExistDevice(int64(actorId))
 	if err != nil {
 		return
 	}

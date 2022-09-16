@@ -6,7 +6,7 @@ import (
 )
 
 func init() {
-	cfg.DefaultConfig()
+	cfg.Default()
 }
 
 func TestChannel_CreateChannel(t *testing.T) {

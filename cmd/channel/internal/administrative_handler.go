@@ -26,22 +26,13 @@ func (s *server) AddAdministrator(ctx context.Context, in *pb.AddAdministratorRe
 		return nil, err
 	}
 
-	channelId, err := strconv.Atoi(in.ChannelId)
-	if err != nil {
-		return nil, err
-	}
-
-	addedID, err := strconv.Atoi(in.AddedId)
-	if err != nil {
-		return nil, err
-	}
-	if err := NewAdministratesAdd(uint(channelId), parse.ActorId).AddAdministrator(uint(addedID)); err != nil {
+	if err := NewAdministratesAdd(uint(in.GetChannelId()), parse.ActorId).AddAdministrator(uint(in.GetAddedId())); err != nil {
 		return nil, err
 	}
 
 	return &pb.AddAdministratorResponse{
-		Code:  "200",
-		Reply: "ok",
+		Code:   "200",
+		Status: "ok",
 	}, nil
 }
 
@@ -51,21 +42,12 @@ func (s *server) RemoveAdministrator(ctx context.Context, in *pb.RemoveAdministr
 		return nil, err
 	}
 
-	channelId, err := strconv.Atoi(in.ChannelId)
-	if err != nil {
-		return nil, err
-	}
-
-	removedID, err := strconv.Atoi(in.RemovedId)
-	if err != nil {
-		return nil, err
-	}
-	if err := NewAdministratesPermission(uint(channelId), parse.ActorId).RemoveAdministrator(uint(removedID)); err != nil {
+	if err := NewAdministratesPermission(uint(in.GetChannelId()), parse.ActorId).RemoveAdministrator(uint(in.GetRemovedId())); err != nil {
 		return nil, err
 	}
 	return &pb.RemoveAdministratorResponse{
-		Code:  "200",
-		Reply: "ok",
+		Code:   "200",
+		Status: "ok",
 	}, nil
 }
 
@@ -89,7 +71,7 @@ func (s *server) GetAdministrators(ctx context.Context, in *pb.GetAdministrators
 	for _, a := range administrators {
 		var admin pb.AdminsData
 
-		actor, err := clientv1.New(ctx, microsvc.ActorServiceName).GetActor(strconv.Itoa(int(a.AdminId)))
+		actor, err := clientv1.New(ctx, microsvc.ActorServiceName).GetActor(int64(a.AdminId))
 		if err != nil {
 			return nil, err
 		}

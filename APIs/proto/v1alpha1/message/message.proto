@@ -41,18 +41,18 @@ message AccessRegisterRequest {
 
 message AccessRegisterResponse {
   string code = 1;
-  string accessToken = 2 [json_name = "access_token"];
-  string userId = 3 [json_name = "user_id"];
+  string accessToken = 2;
+  string userId = 3;
 }
 
 message AccessLoginRequest {
-  string username = 2 [json_name = "username"];;
-  string password = 3 [json_name = "password"];;
+  string username = 2;
+  string password = 3;
 }
 
 message AccessLoginResponse {
   string code = 1;
-  string reply = 2;
+  string status = 2;
 }
 
 message AccessDeleteRequest {
@@ -61,5 +61,5 @@ message AccessDeleteRequest {
 
 message AccessDeleteResponse {
   string code = 1;
-  string reply = 2;
+  string status = 2;
 }

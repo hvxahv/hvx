@@ -2,12 +2,11 @@ package friendship
 
 import (
 	"fmt"
-	"github.com/hvxahv/hvx/cfg"
 	"testing"
 )
 
 func init() {
-	cfg.DefaultLocalConfig()
+
 }
 func TestFollows_CreateFollower(t *testing.T) {
 	f := NewFollower(795104263552663553, 795165717415231489)

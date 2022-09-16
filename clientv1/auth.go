@@ -5,10 +5,10 @@ import (
 )
 
 type Auth interface {
-	SetAuthPublicKey(accountId, publicKey string) (*pb.SetPublicKeyResponse, error)
+	SetAuthPublicKey(accountId int64, publicKey string) (*pb.SetPublicKeyResponse, error)
 }
 
-func (svc *Svc) SetAuthPublicKey(accountId, publicKey string) (*pb.SetPublicKeyResponse, error) {
+func (svc *Svc) SetAuthPublicKey(accountId int64, publicKey string) (*pb.SetPublicKeyResponse, error) {
 	c, err := NewClient(svc.ctx, svc.address)
 	if err != nil {
 		return nil, err

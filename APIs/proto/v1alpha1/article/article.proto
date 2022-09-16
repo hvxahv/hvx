@@ -20,7 +20,7 @@ service Article {
   // Get the content of an article or status by its article ID.
   rpc Get(GetRequest) returns (GetResponse) {
     option (google.api.http) = {
-      get: "/api/v1/article/{id}",
+      get: "/api/v1/article/{articleId}",
     };
   }
 
@@ -57,7 +57,7 @@ service Article {
 }
 
 message ArticleInfo {
-  string id = 1;
+  int64 id = 1;
   string title = 2;
   string summary = 3;
   string article = 4;
@@ -73,12 +73,12 @@ message ArticleInfo {
 
 
 message CreateRequest {
-  string actor_id = 1;
+  int64 actorId = 1;
   string title = 2;
   string summary = 3;
   string article = 4;
   repeated string tags = 5;
-  string attachmentType = 6 [json_name = "attachments_type"];
+  string attachmentType = 6;
   repeated string attachments = 7;
   repeated string to = 8;
   repeated string cc = 9;
@@ -93,7 +93,7 @@ message CreateResponse {
 }
 
 message GetRequest {
-  string id = 1 [(google.api.field_behavior) = REQUIRED];
+  string articleId = 1 [(google.api.field_behavior) = REQUIRED];
 }
 
 message GetResponse {
@@ -103,7 +103,7 @@ message GetResponse {
 }
 
 message GetArticlesRequest {
-  string account_id = 1;
+  int64 accountId = 1;
 }
 
 message GetArticlesResponse {
@@ -117,7 +117,7 @@ message UpdateRequest {
   string summary = 3;
   string article = 4;
   repeated string tags = 5;
-  string attachmentType = 6 [json_name = "attachments_type"];
+  string attachmentType = 6;
   repeated string attachments = 7;
   string nsfw = 8;
   string visibility = 9;
@@ -129,7 +129,7 @@ message UpdateResponse {
 }
 
 message DeleteRequest {
-  string id = 1;
+  int64 articleId = 1;
 }
 
 message DeleteResponse {
@@ -138,7 +138,7 @@ message DeleteResponse {
 }
 
 message DeleteArticlesRequest {
-  string account_id = 1;
+  int64 accountId = 1;
 }
 
 message DeleteArticlesResponse {

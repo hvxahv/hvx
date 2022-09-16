@@ -17,7 +17,7 @@ service Outbox {
 
   rpc GetOutbox (GetOutboxRequest) returns (GetOutboxResponse) {
     option (google.api.http) = {
-      get: "/api/v1/activity/outbox/{activity_id}"
+      get: "/api/v1/activity/outbox/{activityId}"
     };
   }
 
@@ -29,8 +29,8 @@ service Outbox {
 }
 
 message OutboxData {
-  string Id = 1;
-  string ActorId = 2;
+  int64 Id = 1;
+  int64 ActorId = 2;
   string ActivityId = 3;
   string To = 4;
   string Cc = 5;
@@ -50,7 +50,7 @@ message GetOutboxesPublicResponse {
 }
 
 message GetOutboxRequest {
-  string activity_id = 1 [(google.api.field_behavior) = REQUIRED];
+  string activityId = 1 [(google.api.field_behavior) = REQUIRED];
 }
 
 // "@context": "https://www.w3.org/ns/activitystreams",

@@ -1,59 +1,55 @@
 ---
-author: ""
+author: "hvturingga"
 name: "github.com/hvxahv/hvxahv"
-version: ""
+version: "0.1.0	"
 github: "https://github.com/hvxahv"
 
 # Set instance domain.
-domain: "halfmemories.com"
+domain: "dev.halfmemories.com"
 
 authentication:
   admin:
     user: ""
     key: ""
   token:
-    secret: ""
+    secret: "jwt_key_hvxahv.half_memories.com"
     # expiration time, days.
     expired: "60"
 
 ipfs:
-  address: ""
-  gateway: ""
+  address: "127.0.0.1:5001"
+  gateway: "http://127.0.0.1:8081/ipfs/"
 
 matrix:
-  address: ""
+  address: "https://matrix.disism.com"
 
 cockroach:
-  host: ""
-  port: ""
-  user: ""
-  password: ""
-  database: ""
-  # EXAMPLE: "disable" or ""
+  host: "hvxahv.disism.internal"
+  port: "26257"
+  user: "root"
+  password: "root"
+  database: "hvxahv"
   ssl: "disable"
-  # EXAMPLE: "Asia/Shanghai"
-  timezone: ""
+  timezone: "Asia/Shanghai"
 
 redis:
-  addr: ""
-  password: ""
+  addr: "hvxahv.disism.internal:6379"
+  password: "hvxahv123"
 
 fs:
   minio:
-    endpoint: ""
-    accessKeyID: ""
-    secretAccessKey: ""
-    # BOOL
+    endpoint: "hvxahv.disism.internal:9000"
+    accessKeyID: "hvxahv"
+    secretAccessKey: "hvxahv123"
     useSSL: false
-    # EXAMPLE: "ap-northeast-3"
-    region: ""
+    region: "ap-northeast-3"
 
 nats:
   address: ""
 
 discovery:
   consul:
-    address: ""
+    address: "hvxahv.disism.internal:8500"
   etcd:
     address: ""
 

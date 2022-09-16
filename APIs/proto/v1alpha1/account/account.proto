@@ -65,7 +65,7 @@ message IsExistRequest {
 }
 
 message IsExistResponse {
-  bool is_exist = 1;
+  bool isExist = 1;
 }
 
 message CreateRequest {
@@ -77,7 +77,7 @@ message CreateRequest {
 
 message CreateResponse {
   string code = 1;
-  string reply = 2;
+  string status = 2;
 }
 
 message GetByUsernameRequest {
@@ -85,12 +85,12 @@ message GetByUsernameRequest {
 }
 
 message GetByUsernameResponse {
-  string account_id = 1;
+  int64  accountId = 1;
   string username = 2;
   string mail = 3;
   string password = 4;
-  string actor_id = 5;
-  string is_private = 6;
+  int64  actorId = 5;
+  string isPrivate = 6;
 }
 
 message DeleteRequest {
@@ -99,7 +99,7 @@ message DeleteRequest {
 
 message DeleteResponse {
   string code = 1;
-  string reply = 2;
+  string status = 2;
 }
 
 message EditUsernameRequest {
@@ -114,12 +114,12 @@ message EditUsernameResponse {
 message EditPasswordRequest {
   string username = 1;
   string password = 2;
-  string newPassword = 3 [json_name = "new_password"];
+  string newPassword = 3 [json_name = "new"];
 }
 
 message EditPasswordResponse {
   string code = 1;
-  string reply = 2;
+  string status = 2;
 }
 
 message EditEmailRequest {
@@ -139,14 +139,14 @@ message VerifyRequest {
 message VerifyResponse {
   string code = 1;
   string status = 2;
-  string id = 3;
+  int64  accountId = 3;
   string username = 4;
   string mail = 5;
-  string actor_id = 6;
+  int64  actorId = 6;
 }
 
 message GetPrivateKeyRequest {
-  string accountId = 1;
+  int64  accountId = 1;
 }
 
 message GetPrivateKeyResponse {

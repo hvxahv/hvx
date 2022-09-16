@@ -64,25 +64,25 @@ service Saved {
 }
 
 message Save {
-  string id = 1;
+  int64 id = 1;
   string name = 3;
   string comment = 4;
   string cid = 5;
   string types = 6;
-  string created_at = 7;
+  string createdAt = 7;
 }
 
 message CreateRequest {
   string name = 1;
   string comment = 2;
   string cid = 3;
-  string fileType = 4 [json_name = "file_type"];
-  bool isPrivate = 5  [json_name = "is_private"];
+  string fileType = 4;
+  bool isPrivate = 5;
 }
 
 message CreateResponse {
   string code = 1;
-  string reply = 2;
+  string status = 2;
 }
 
 message GetSavesResponse {
@@ -95,7 +95,7 @@ message GetSavedRequest {
 }
 
 message EditSavedRequest {
-  string id = 1;
+  int64 id = 1;
   string name = 3;
   string comment = 4;
 }
@@ -106,12 +106,12 @@ message EditSavedResponse {
 }
 
 message DeleteRequest {
-  string id = 1;
+  int64 id = 1;
 }
 
 message DeleteResponse {
   string code = 1;
-  string reply = 2;
+  string status = 2;
 }
 
 message DeleteSavesRequest {
@@ -120,5 +120,5 @@ message DeleteSavesRequest {
 
 message DeleteSavesResponse {
   string code = 1;
-  string reply = 2;
+  string status = 2;
 }

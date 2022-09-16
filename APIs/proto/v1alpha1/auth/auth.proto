@@ -59,15 +59,15 @@ message AuthorizationRequest {
 message AuthorizationResponse {
   string code = 1;
   string status = 2;
-  string id = 3;
-  string authorizationToken = 4 [json_name = "authorization_token"];
-  string actorId = 5 [json_name = "actor_id"];
+  int64 accountId = 3;
+  string authorizationToken = 4;
+  int64 actorId = 5;
   string mail = 6;
-  string deviceId = 7 [json_name = "device_id"];
+  int64 deviceId = 7;
 }
 
 message SetPublicKeyRequest {
-  string accountId = 1;
+  int64 accountId = 1;
   string publicKey = 2;
 }
 
@@ -85,19 +85,19 @@ message GetPublicKeyResponse {
 }
 
 message DHRequestData {
-  string device_id = 1;
-  string public_key = 2;
+  int64 deviceId = 1;
+  string publicKey = 2;
   string iv = 3;
 }
 
 message DHRequestResponse {
   string code = 1;
-  string reply = 2;
+  string status = 2;
 }
 
 message SendDHRequest {
-  string device_id = 1;
-  string public_key = 2;
+  int64 deviceId = 1;
+  string publicKey = 2;
   string iv = 3;
   // Use the request iv encryption key .
   string private = 4;
@@ -105,7 +105,7 @@ message SendDHRequest {
 
 message SendDHResponse {
   string code = 1;
-  string reply = 2;
+  string status = 2;
 }
 
 message GetPrivateResponse {

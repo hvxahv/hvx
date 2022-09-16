@@ -61,7 +61,7 @@ message CreateAccountsRequest {
   string username = 1;
   string password = 2;
   string mail = 3;
-  string publicKey = 4 [json_name = "public_key"];
+  string publicKey = 4;
 }
 
 message CreateAccountsResponse {

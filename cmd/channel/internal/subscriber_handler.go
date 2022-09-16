@@ -20,20 +20,12 @@ func (s *server) AddSubscriber(ctx context.Context, in *pb.AddSubscriberRequest)
 		adminId = parse.ActorId
 	)
 
-	channelId, err := strconv.Atoi(in.ChannelId)
-	if err != nil {
-		return nil, err
-	}
-	subscriberId, err := strconv.Atoi(in.SubscriberId)
-	if err != nil {
-		return nil, err
-	}
-	if err := NewSubscribe(uint(channelId), uint(subscriberId)).AddSubscriber(adminId); err != nil {
+	if err := NewSubscribe(uint(in.GetChannelId()), uint(in.GetSubscriberId())).AddSubscriber(adminId); err != nil {
 		return nil, err
 	}
 	return &pb.AddSubscriberResponse{
-		Code:  "200",
-		Reply: "ok",
+		Code:   "200",
+		Status: "ok",
 	}, nil
 }
 
@@ -46,21 +38,12 @@ func (s *server) RemoveSubscriber(ctx context.Context, in *pb.RemoveSubscriberRe
 		adminId = parse.ActorId
 	)
 
-	channelId, err := strconv.Atoi(in.ChannelId)
-	if err != nil {
-		return nil, err
-	}
-	removedId, err := strconv.Atoi(in.RemovedId)
-	if err != nil {
-		return nil, err
-	}
-
-	if err := NewSubscribe(uint(channelId), uint(removedId)).RemoveSubscriber(adminId); err != nil {
+	if err := NewSubscribe(uint(in.GetChannelId()), uint(in.GetRemovedId())).RemoveSubscriber(adminId); err != nil {
 		return nil, err
 	}
 	return &pb.RemoveSubscriberResponse{
-		Code:  "200",
-		Reply: "ok",
+		Code:   "200",
+		Status: "ok",
 	}, nil
 }
 
@@ -84,7 +67,7 @@ func (s *server) GetSubscribers(ctx context.Context, in *pb.GetSubscribersReques
 
 	var reply []*actor.ActorData
 	for _, sub := range subscribers {
-		a, err := clientv1.New(ctx, microsvc.ActorServiceName).GetActor(strconv.Itoa(int(sub.SubscriberId)))
+		a, err := clientv1.New(ctx, microsvc.ActorServiceName).GetActor(int64(sub.SubscriberId))
 		if err != nil {
 			return nil, err
 		}
@@ -115,18 +98,13 @@ func (s *server) Subscription(ctx context.Context, in *pb.SubscriptionRequest) (
 		return nil, err
 	}
 
-	channelId, err := strconv.Atoi(in.ChannelId)
-	if err != nil {
-		return nil, err
-	}
-
-	if err := NewSubscribe(uint(channelId), parse.ActorId).Subscription(); err != nil {
+	if err := NewSubscribe(uint(in.GetChannelId()), parse.ActorId).Subscription(); err != nil {
 		return nil, err
 	}
 
 	return &pb.SubscriptionResponse{
-		Code:  "200",
-		Reply: "ok",
+		Code:   "200",
+		Status: "ok",
 	}, nil
 }
 
@@ -135,17 +113,12 @@ func (s *server) Unsubscribe(ctx context.Context, in *pb.UnsubscribeRequest) (*p
 	if err != nil {
 		return nil, err
 	}
-	channelId, err := strconv.Atoi(in.ChannelId)
-	if err != nil {
-		return nil, err
-	}
-
-	if err := NewSubscribe(uint(channelId), parse.ActorId).Unsubscribe(); err != nil {
+	if err := NewSubscribe(uint(in.GetChannelId()), parse.ActorId).Unsubscribe(); err != nil {
 		return nil, err
 	}
 
 	return &pb.UnsubscribeResponse{
-		Code:  "200",
-		Reply: "ok",
+		Code:   "200",
+		Status: "ok",
 	}, nil
 }

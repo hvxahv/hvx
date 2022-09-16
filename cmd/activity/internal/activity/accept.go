@@ -11,7 +11,6 @@ import (
 	"github.com/hvxahv/hvx/cmd/activity/internal/friendship"
 	"github.com/hvxahv/hvx/cmd/activity/internal/outbox"
 	"github.com/hvxahv/hvx/microsvc"
-	"strconv"
 )
 
 func (h *Handler) Accept(data []byte) (*pb.ActivityResponse, error) {
@@ -70,13 +69,9 @@ func (h *Handler) Accept(data []byte) (*pb.ActivityResponse, error) {
 		if err != nil {
 			return nil, err
 		}
-		objectId, err := strconv.Atoi(object.Id)
-		if err != nil {
-			return nil, err
-		}
 
 		// IF ACCEPT FOLLOW REQUEST, ADD FOLLOWER.
-		if err := friendship.NewFollower(h.actorId, uint(objectId)).Follow(); err != nil {
+		if err := friendship.NewFollower(h.actorId, uint(object.Id)).Follow(); err != nil {
 			return nil, err
 		}
 	default:

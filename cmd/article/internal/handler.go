@@ -29,11 +29,31 @@ func (s *server) Create(ctx context.Context, in *pb.CreateRequest) (*pb.CreateRe
 		Cc = StringArrayToInt64Array(in.Cc)
 	)
 	if in.State {
-		if err := NewStatus(parse.ActorId, in.Article, in.Tags, in.AttachmentType, in.Attachments, To, Cc, in.Nsfw, uint(visibility)).Create(); err != nil {
+		if err := NewStatus(parse.ActorId,
+			in.Article,
+			in.Tags,
+			in.AttachmentType,
+			in.Attachments,
+			To,
+			Cc,
+			in.Nsfw,
+			uint(visibility),
+		).Create(); err != nil {
 			return nil, err
 		}
 	} else {
-		if err := NewArticles(parse.ActorId, in.Title, in.Summary, in.Article, in.Tags, in.AttachmentType, in.Attachments, To, Cc, in.Nsfw, uint(visibility)).Create(); err != nil {
+		if err := NewArticles(parse.ActorId,
+			in.Title,
+			in.Summary,
+			in.Article,
+			in.Tags,
+			in.AttachmentType,
+			in.Attachments,
+			To,
+			Cc,
+			in.Nsfw,
+			uint(visibility),
+		).Create(); err != nil {
 			return nil, err
 		}
 	}
@@ -48,7 +68,7 @@ func (s *server) Get(ctx context.Context, in *pb.GetRequest) (*pb.GetResponse, e
 	if err != nil {
 		return nil, err
 	}
-	id, err := strconv.Atoi(in.Id)
+	id, err := strconv.Atoi(in.GetArticleId())
 	if err != nil {
 		return nil, err
 	}
@@ -58,7 +78,7 @@ func (s *server) Get(ctx context.Context, in *pb.GetRequest) (*pb.GetResponse, e
 	}
 
 	// GET ACTOR DATA
-	data, err := clientv1.New(ctx, microsvc.ActorServiceName).GetActor(strconv.Itoa(int(a.ActorId)))
+	data, err := clientv1.New(ctx, microsvc.ActorServiceName).GetActor(int64(a.ActorId))
 	if err != nil {
 		return nil, err
 	}
@@ -78,7 +98,7 @@ func (s *server) Get(ctx context.Context, in *pb.GetRequest) (*pb.GetResponse, e
 			IsRemote:          data.Actor.IsRemote,
 		},
 		Article: &pb.ArticleInfo{
-			Id:             strconv.Itoa(int(a.ID)),
+			Id:             int64(a.ID),
 			Title:          a.Title,
 			Summary:        a.Summary,
 			Article:        a.Article,
@@ -106,7 +126,7 @@ func (s *server) GetArticles(ctx context.Context, in *emptypb.Empty) (*pb.GetArt
 	var articlesInfo []*pb.ArticleInfo
 	for _, a := range articles {
 		articlesInfo = append(articlesInfo, &pb.ArticleInfo{
-			Id:             strconv.Itoa(int(a.ID)),
+			Id:             int64(a.ID),
 			Title:          a.Title,
 			Summary:        a.Summary,
 			Article:        a.Article,
@@ -178,11 +198,7 @@ func (s *server) Delete(ctx context.Context, in *pb.DeleteRequest) (*pb.DeleteRe
 	if err != nil {
 		return nil, err
 	}
-	articleId, err := strconv.Atoi(in.Id)
-	if err != nil {
-		return nil, err
-	}
-	if err := NewArticlesDelete(uint(articleId), parse.ActorId).Delete(); err != nil {
+	if err := NewArticlesDelete(uint(in.GetArticleId()), parse.ActorId).Delete(); err != nil {
 		return nil, err
 	}
 	return &pb.DeleteResponse{

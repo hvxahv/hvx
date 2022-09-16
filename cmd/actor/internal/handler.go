@@ -33,7 +33,7 @@ func (s *server) GetActorByUsername(ctx context.Context, in *pb.GetActorByUserna
 	}
 
 	return &pb.ActorData{
-		Id:                strconv.Itoa(int(actor.ID)),
+		Id:                int64(actor.ID),
 		PreferredUsername: actor.PreferredUsername,
 		Domain:            actor.Domain,
 		Avatar:            actor.Avatar,
@@ -52,20 +52,17 @@ func (s *server) Create(ctx context.Context, in *pb.CreateRequest) (*pb.CreateRe
 	if err != nil {
 		return nil, err
 	}
-	return &pb.CreateResponse{Code: "200", ActorId: strconv.Itoa(int(actor.ID))}, nil
+	return &pb.CreateResponse{Code: "200", ActorId: int64(actor.ID)}, nil
 }
 
 func (s *server) Get(ctx context.Context, in *pb.GetRequest) (*pb.GetResponse, error) {
-	id, err := strconv.Atoi(in.GetActorId())
-	if err != nil {
-		return nil, err
-	}
-	actor, err := NewActorsId(uint(id)).Get()
+
+	actor, err := NewActorsId(uint(in.GetActorId())).Get()
 	if err != nil {
 		return nil, err
 	}
 	data := &pb.ActorData{
-		Id:                strconv.Itoa(int(actor.ID)),
+		Id:                int64(actor.ID),
 		PreferredUsername: actor.PreferredUsername,
 		Domain:            actor.Domain,
 		Avatar:            actor.Avatar,
@@ -109,7 +106,7 @@ func (s *server) Search(ctx context.Context, in *pb.SearchRequest) (*pb.SearchRe
 			return nil, err
 		}
 		a = append(a, &pb.ActorData{
-			Id:                strconv.Itoa(int(actor.ID)),
+			Id:                int64(actor.ID),
 			PreferredUsername: actor.PreferredUsername,
 			Domain:            actor.Domain,
 			Avatar:            actor.Avatar,
@@ -130,7 +127,7 @@ func (s *server) Search(ctx context.Context, in *pb.SearchRequest) (*pb.SearchRe
 
 	for _, v := range actors {
 		var ad pb.ActorData
-		ad.Id = strconv.Itoa(int(v.ID))
+		ad.Id = int64(v.ID)
 		ad.PreferredUsername = v.PreferredUsername
 		ad.Domain = v.Domain
 		ad.Avatar = v.Avatar
@@ -154,7 +151,7 @@ func (s *server) GetActorByAddress(ctx context.Context, in *pb.GetActorByAddress
 	}
 
 	return &pb.ActorData{
-		Id:                strconv.Itoa(int(actor.ID)),
+		Id:                int64(actor.ID),
 		PreferredUsername: actor.PreferredUsername,
 		Domain:            actor.Domain,
 		Avatar:            actor.Avatar,
@@ -188,15 +185,11 @@ func (s *server) Edit(ctx context.Context, in *pb.EditRequest) (*pb.EditResponse
 	if err := a.Edit(); err != nil {
 		return nil, err
 	}
-	return &pb.EditResponse{Code: "200", Reply: "ok"}, nil
+	return &pb.EditResponse{Code: "200", Status: "ok"}, nil
 }
 
 func (s *server) Delete(ctx context.Context, in *pb.DeleteRequest) (*pb.DeleteResponse, error) {
-	id, err := strconv.Atoi(in.GetId())
-	if err != nil {
-		return nil, err
-	}
-	if err := NewActorsId(uint(id)).Delete(); err != nil {
+	if err := NewActorsId(uint(in.GetActorId())).Delete(); err != nil {
 		return nil, err
 	}
 

@@ -2,8 +2,6 @@ package internal
 
 import (
 	"context"
-	"strconv"
-
 	"github.com/hvxahv/hvx/clientv1"
 	"github.com/hvxahv/hvx/cockroach"
 	"github.com/hvxahv/hvx/errors"
@@ -118,7 +116,7 @@ func (c *Channels) DeleteChannel() error {
 
 	// DELETE CHANNEL (IS ACTIVITY PUB ACTOR SERVICE)
 	ctx := context.Background()
-	d, err := clientv1.New(ctx, microsvc.ActorServiceName).DeleteActor(strconv.Itoa(int(c.ActorId)))
+	d, err := clientv1.New(ctx, microsvc.ActorServiceName).DeleteActor(int64(c.ActorId))
 	if err != nil {
 		return err
 	}

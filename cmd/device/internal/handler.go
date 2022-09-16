@@ -13,15 +13,11 @@ import (
 	"github.com/hvxahv/hvx/microsvc"
 	"golang.org/x/net/context"
 	"google.golang.org/protobuf/types/known/emptypb"
-	"strconv"
 )
 
 func (s *server) IsExist(ctx context.Context, in *pb.IsExistRequest) (*pb.IsExistResponse, error) {
-	id, err := strconv.Atoi(in.Id)
-	if err != nil {
 
-	}
-	exist, err := NewDevicesId(uint(id)).IsExist()
+	exist, err := NewDevicesId(uint(in.GetId())).IsExist()
 	if err != nil {
 		return nil, err
 	}
@@ -29,31 +25,24 @@ func (s *server) IsExist(ctx context.Context, in *pb.IsExistRequest) (*pb.IsExis
 }
 
 func (s *server) Create(ctx context.Context, in *pb.CreateRequest) (*pb.CreateResponse, error) {
-	aid, err := strconv.Atoi(in.AccountId)
-	if err != nil {
-		return nil, err
-	}
-	create, err := NewDevices(uint(aid), in.Ua).Create()
+	create, err := NewDevices(uint(in.AccountId), in.Ua).Create()
 	if err != nil {
 		return nil, err
 	}
 	return &pb.CreateResponse{
-		DeviceId: strconv.Itoa(int(create.ID)),
+		DeviceId: int64(create.ID),
 	}, nil
 }
 
 func (s *server) Get(ctx context.Context, in *pb.GetRequest) (*pb.Device, error) {
-	id, err := strconv.Atoi(in.DeviceId)
-	if err != nil {
-		return nil, err
-	}
-	d, err := NewDevicesId(uint(id)).Get()
+
+	d, err := NewDevicesId(uint(in.GetDeviceId())).Get()
 	if err != nil {
 		return nil, err
 	}
 	return &pb.Device{
-		Id:        strconv.Itoa(int(d.ID)),
-		AccountId: strconv.Itoa(int(d.AccountID)),
+		Id:        int64(d.ID),
+		AccountId: int64(d.AccountID),
 		Device:    d.Device,
 	}, nil
 }
@@ -70,8 +59,8 @@ func (s *server) GetDevices(ctx context.Context, g *emptypb.Empty) (*pb.GetDevic
 	var res []*pb.Device
 	for _, d := range devices {
 		var pd pb.Device
-		pd.Id = strconv.Itoa(int(d.ID))
-		pd.AccountId = strconv.Itoa(int(d.AccountID))
+		pd.Id = int64(d.ID)
+		pd.AccountId = int64(d.AccountID)
 		pd.Device = d.Device
 		pd.CreatedAt = d.CreatedAt.Format("2006-01-02 15:04:05")
 		res = append(res, &pd)
@@ -86,24 +75,15 @@ func (s *server) Delete(ctx context.Context, in *pb.DeleteRequest) (*pb.DeleteRe
 		return nil, err
 	}
 
-	id, err := strconv.Atoi(in.DeviceId)
-	if err != nil {
+	if err = NewDevicesDelete(uint(in.DeviceId), parse.AccountId).Delete(); err != nil {
 		return nil, err
 	}
-	if err = NewDevicesDelete(uint(id), parse.AccountId).Delete(); err != nil {
-		return nil, err
-	}
-	return &pb.DeleteResponse{Code: "200", Reply: "ok"}, nil
+	return &pb.DeleteResponse{Code: "200", Status: "ok"}, nil
 }
 
 func (s *server) DeleteDevices(ctx context.Context, in *pb.DeleteDevicesRequest) (*pb.DeleteDevicesResponse, error) {
-	aid, err := strconv.Atoi(in.AccountId)
-	if err != nil {
+	if err := NewDevicesAccountId(uint(in.GetAccountId())).DeleteDevices(); err != nil {
 		return nil, err
 	}
-	err = NewDevicesAccountId(uint(aid)).DeleteDevices()
-	if err != nil {
-		return nil, err
-	}
-	return &pb.DeleteDevicesResponse{Code: "200", Reply: "ok"}, nil
+	return &pb.DeleteDevicesResponse{Code: "200", Status: "ok"}, nil
 }

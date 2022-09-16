@@ -8,6 +8,10 @@ import (
 	_ "github.com/spf13/viper/remote"
 )
 
+const (
+	ConsulProvider = "consul"
+)
+
 type Option func(o *options)
 
 type options struct {

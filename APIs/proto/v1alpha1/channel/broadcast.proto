@@ -17,7 +17,7 @@ service Broadcast {
 
   rpc GetBroadcasts (GetBroadcastsRequest) returns (GetBroadcastsResponse) {
     option (google.api.http) = {
-      get: "/api/v1/channel/broadcast/{channel_id}",
+      get: "/api/v1/channel/broadcast/{channelId}",
     };
   }
 
@@ -30,24 +30,24 @@ service Broadcast {
 }
 
 message BroadcastData {
-  string id = 1;
-  string channel_id = 2;
-  string admin_id = 3;
+  int64  id = 1;
+  int64  channelId = 2;
+  int64  adminId = 3;
   string cid = 4;
 }
 
 message CreateBroadcastRequest {
-  string channel_id = 1;
-  string article_id = 2;
+  int64 channelId = 1;
+  int64 articleId = 2;
 }
 
 message CreateBroadcastResponse {
   string code = 1;
-  string reply = 2;
+  string status = 2;
 }
 
 message GetBroadcastsRequest {
-  string channel_id = 1 [(google.api.field_behavior) = REQUIRED];
+  string channelId = 1 [(google.api.field_behavior) = REQUIRED];
 }
 
 message GetBroadcastsResponse {
@@ -56,12 +56,12 @@ message GetBroadcastsResponse {
 }
 
 message DeleteBroadcastRequest {
-  string channelId = 1 [json_name = "channel_id"];
-  string broadcastId = 2 [json_name = "broadcast_id"];
+  int64 channelId = 1;
+  int64 broadcastId = 2;
 }
 
 message DeleteBroadcastResponse {
   string code = 1;
-  string reply = 2;
+  string status = 2;
 }
 

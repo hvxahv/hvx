@@ -15,25 +15,17 @@ func (s *server) CreateBroadcast(ctx context.Context, in *pb.CreateBroadcastRequ
 	if err != nil {
 		return nil, err
 	}
-	channelId, err := strconv.Atoi(in.ChannelId)
-	if err != nil {
-		return nil, err
-	}
-	articleId, err := strconv.Atoi(in.ArticleId)
-	if err != nil {
-		return nil, err
-	}
 
 	// TODO - SYNC TO IPFS AND RETURN CID.
 	// Return CID for simulated IPFS simulation
 	cid := uuid.New().String()
 
-	if err := NewBroadcasts(uint(channelId), parse.ActorId, uint(articleId), cid).Create(); err != nil {
+	if err := NewBroadcasts(uint(in.GetChannelId()), parse.ActorId, uint(in.GetArticleId()), cid).Create(); err != nil {
 		return nil, err
 	}
 	return &pb.CreateBroadcastResponse{
-		Code:  "200",
-		Reply: "ok",
+		Code:   "200",
+		Status: "ok",
 	}, nil
 }
 
@@ -50,9 +42,9 @@ func (s *server) GetBroadcasts(ctx context.Context, in *pb.GetBroadcastsRequest)
 	var b []*pb.BroadcastData
 	for _, broadcast := range broadcasts {
 		b = append(b, &pb.BroadcastData{
-			Id:        strconv.Itoa(int(broadcast.ID)),
-			ChannelId: strconv.Itoa(int(broadcast.ChannelId)),
-			AdminId:   strconv.Itoa(int(broadcast.AdminId)),
+			Id:        int64(broadcast.ID),
+			ChannelId: int64(broadcast.ChannelId),
+			AdminId:   int64(broadcast.AdminId),
 			Cid:       broadcast.CID,
 		})
 	}
@@ -68,19 +60,12 @@ func (s *server) DeleteBroadcast(ctx context.Context, in *pb.DeleteBroadcastRequ
 	if err != nil {
 		return nil, err
 	}
-	id, err := strconv.Atoi(in.BroadcastId)
-	if err != nil {
-		return nil, err
-	}
-	channelId, err := strconv.Atoi(in.ChannelId)
-	if err != nil {
-		return nil, err
-	}
-	if err := NewBroadcastsDelete(uint(id), uint(channelId), parse.ActorId).Delete(); err != nil {
+
+	if err := NewBroadcastsDelete(uint(in.GetBroadcastId()), uint(in.GetChannelId()), parse.ActorId).Delete(); err != nil {
 		return nil, err
 	}
 	return &pb.DeleteBroadcastResponse{
-		Code:  "200",
-		Reply: "ok",
+		Code:   "200",
+		Status: "ok",
 	}, nil
 }

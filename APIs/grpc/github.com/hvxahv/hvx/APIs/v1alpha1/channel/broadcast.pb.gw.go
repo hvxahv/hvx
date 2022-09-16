@@ -76,14 +76,14 @@ func request_Broadcast_GetBroadcasts_0(ctx context.Context, marshaler runtime.Ma
 		_   = err
 	)
 
-	val, ok = pathParams["channel_id"]
+	val, ok = pathParams["channelId"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "channel_id")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "channelId")
 	}
 
 	protoReq.ChannelId, err = runtime.String(val)
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "channel_id", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "channelId", err)
 	}
 
 	msg, err := client.GetBroadcasts(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -102,14 +102,14 @@ func local_request_Broadcast_GetBroadcasts_0(ctx context.Context, marshaler runt
 		_   = err
 	)
 
-	val, ok = pathParams["channel_id"]
+	val, ok = pathParams["channelId"]
 	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "channel_id")
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "channelId")
 	}
 
 	protoReq.ChannelId, err = runtime.String(val)
 	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "channel_id", err)
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "channelId", err)
 	}
 
 	msg, err := server.GetBroadcasts(ctx, &protoReq)
@@ -190,7 +190,7 @@ func RegisterBroadcastHandlerServer(ctx context.Context, mux *runtime.ServeMux, 
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/hvx.api.v1alpha1.channel.proto.Broadcast/GetBroadcasts", runtime.WithHTTPPathPattern("/api/v1/channel/broadcast/{channel_id}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/hvx.api.v1alpha1.channel.proto.Broadcast/GetBroadcasts", runtime.WithHTTPPathPattern("/api/v1/channel/broadcast/{channelId}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -301,7 +301,7 @@ func RegisterBroadcastHandlerClient(ctx context.Context, mux *runtime.ServeMux, 
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/hvx.api.v1alpha1.channel.proto.Broadcast/GetBroadcasts", runtime.WithHTTPPathPattern("/api/v1/channel/broadcast/{channel_id}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/hvx.api.v1alpha1.channel.proto.Broadcast/GetBroadcasts", runtime.WithHTTPPathPattern("/api/v1/channel/broadcast/{channelId}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -345,7 +345,7 @@ func RegisterBroadcastHandlerClient(ctx context.Context, mux *runtime.ServeMux, 
 var (
 	pattern_Broadcast_CreateBroadcast_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "channel", "broadcast"}, ""))
 
-	pattern_Broadcast_GetBroadcasts_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"api", "v1", "channel", "broadcast", "channel_id"}, ""))
+	pattern_Broadcast_GetBroadcasts_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4}, []string{"api", "v1", "channel", "broadcast", "channelId"}, ""))
 
 	pattern_Broadcast_DeleteBroadcast_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3}, []string{"api", "v1", "channel", "broadcast"}, ""))
 )

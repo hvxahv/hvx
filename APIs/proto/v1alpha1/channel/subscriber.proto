@@ -25,7 +25,7 @@ service Subscriber {
 
   rpc GetSubscribers(GetSubscribersRequest) returns (GetSubscribersResponse) {
     option (google.api.http) = {
-      get: "/api/v1/channel/{channel_id}/subscribers",
+      get: "/api/v1/channel/{channelId}/subscribers",
     };
   }
 
@@ -46,27 +46,27 @@ service Subscriber {
 }
 
 message AddSubscriberRequest {
-  string channelId = 1 [json_name = "channel_id"];
-  string subscriberId = 2 [json_name = "subscriber_id"];
+  int64 channelId = 1;
+  int64 subscriberId = 2;
 }
 
 message AddSubscriberResponse {
   string code = 1;
-  string reply = 2;
+  string status = 2;
 }
 
 message RemoveSubscriberRequest {
-  string channelId = 1 [json_name = "channel_id"];
-  string removedId = 2 [json_name = "removed_id"];
+  int64 channelId = 1;
+  int64 removedId = 2;
 }
 
 message RemoveSubscriberResponse {
   string code = 1;
-  string reply = 2;
+  string status = 2;
 }
 
 message GetSubscribersRequest {
-  string channel_id = 1 [(google.api.field_behavior) = REQUIRED];
+  string channelId = 1 [(google.api.field_behavior) = REQUIRED];
 }
 
 message GetSubscribersResponse {
@@ -75,19 +75,19 @@ message GetSubscribersResponse {
 }
 
 message SubscriptionRequest {
-  string channelId = 1 [json_name = "channel_id"];
+  int64 channelId = 1;
 }
 
 message SubscriptionResponse {
   string code = 1;
-  string reply = 2;
+  string status = 2;
 }
 
 message UnsubscribeRequest {
-  string channelId = 1 [json_name = "channel_id"];
+  int64 channelId = 1;
 }
 
 message UnsubscribeResponse {
   string code = 1;
-  string reply = 2;
+  string status = 2;
 }
