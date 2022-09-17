@@ -67,8 +67,8 @@ func (a *authorization) SetPublicKey(accountId uint, publicKey string) error {
 	return nil
 }
 
-func (a *authorization) AddDevice(accountId int64, ua string) (*device.CreateResponse, error) {
-	add, err := clientv1.New(context.Background(), microsvc.DeviceServiceName).AddDevice(accountId, ua)
+func (a *authorization) AddDevice(accountId int64, userAgent string) (*device.CreateResponse, error) {
+	add, err := clientv1.New(context.Background(), microsvc.DeviceServiceName).AddDevice(accountId, userAgent)
 	if err != nil {
 		return nil, err
 	}

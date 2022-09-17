@@ -33,7 +33,7 @@ func NewInboxes(actorId uint, activityId, from, types, body string) *Inboxes {
 
 type Ibx interface {
 	Create() error
-	Delete() error
+	DeleteByActivityId() error
 	GetInbox() (*Inboxes, error)
 	DeleteInbox() error
 	GetInboxes() ([]*Inboxes, error)
@@ -54,15 +54,18 @@ func (i *Inboxes) Create() error {
 	return nil
 }
 
-func NewInboxesActivityId(activityId string) *Inboxes {
-	return &Inboxes{ActivityId: activityId}
+func NewInboxesDeleteByActivityId(actorId uint, activityId string) *Inboxes {
+	return &Inboxes{
+		ActorId:    actorId,
+		ActivityId: activityId,
+	}
 }
 
-func (i *Inboxes) Delete() error {
+func (i *Inboxes) DeleteByActivityId() error {
 	db := cockroach.GetDB()
 	if err := db.Debug().
 		Table(InboxTableName).
-		Where("activity_id = ?", i.ActivityId).
+		Where("actor_id = ? AND activity_id = ?", i.ActorId, i.ActivityId).
 		Unscoped().
 		Delete(Inboxes{}).
 		Error; err != nil {

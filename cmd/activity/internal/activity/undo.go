@@ -53,7 +53,7 @@ func (h *Handler) Undo(data []byte) (*pb.ActivityResponse, error) {
 	}
 	ok = append(ok, h.inbox)
 
-	if err := outbox.NewOutboxesActivityId(b.Id).Delete(); err != nil {
+	if err := outbox.NewOutboxesDeleteByActivityId(h.actorId, b.Id).Delete(); err != nil {
 		return nil, err
 	}
 

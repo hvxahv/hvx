@@ -42,7 +42,6 @@ func (i *Delivery) Do(inbox string) (*http.Response, error) {
 
 	if !remote {
 		// TODO - SEND TO LOCAL USER INBOX...
-
 		return &http.Response{StatusCode: 202}, nil
 	}
 
@@ -50,6 +49,7 @@ func (i *Delivery) Do(inbox string) (*http.Response, error) {
 	if err != nil {
 		fmt.Println(err)
 	}
+
 	client := http.Client{}
 
 	singer, _, _ := httpsig.NewSigner([]httpsig.Algorithm{httpsig.RSA_SHA256}, "SHA-256", []string{"(request-target)", "date", "host", "digest"}, httpsig.Signature, 120)
@@ -74,7 +74,6 @@ func (i *Delivery) Do(inbox string) (*http.Response, error) {
 	}
 	res, err := client.Do(req)
 	if err != nil {
-		fmt.Println(err)
 		return nil, err
 	}
 	defer res.Body.Close()

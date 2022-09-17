@@ -14,6 +14,7 @@ func (s *server) Inbox(ctx context.Context, in *pb.InboxRequest) (*pb.InboxRespo
 	if err != nil {
 		return nil, err
 	}
+
 	if err := activity.Handler(); err != nil {
 		return nil, err
 	}

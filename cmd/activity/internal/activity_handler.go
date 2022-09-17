@@ -10,9 +10,11 @@ package internal
 
 import (
 	pb "github.com/hvxahv/hvx/APIs/v1alpha1/activity"
+	"github.com/hvxahv/hvx/APIs/v1alpha1/actor"
 	"github.com/hvxahv/hvx/activitypub"
 	"github.com/hvxahv/hvx/clientv1"
 	"github.com/hvxahv/hvx/cmd/activity/internal/activity"
+	"github.com/hvxahv/hvx/cmd/activity/internal/friendship"
 	"github.com/hvxahv/hvx/microsvc"
 	"golang.org/x/net/context"
 )
@@ -23,12 +25,12 @@ func (s *server) Activity(ctx context.Context, in *pb.ActivityRequest) (*pb.Acti
 		return nil, err
 	}
 
-	actor, err := clientv1.New(ctx, microsvc.ActorServiceName).GetActor(int64(parse.ActorId))
+	actors, err := clientv1.New(ctx, microsvc.ActorServiceName).GetActor(int64(parse.ActorId))
 	if err != nil {
 		return nil, err
 	}
 	// Actor address
-	aAddr := actor.Actor.GetAddress()
+	aAddr := actors.Actor.GetAddress()
 
 	accounts, err := clientv1.New(ctx, microsvc.AccountServiceName).GetPrivateKey(int64(parse.AccountId))
 	if err != nil {
@@ -69,6 +71,94 @@ func (s *server) Activity(ctx context.Context, in *pb.ActivityRequest) (*pb.Acti
 			return nil, err
 		}
 		r = reject
+
+	// COMPLEX ACTIVITY HANDLING....
+	case activitypub.CreateType:
+		//inbox := in.TO[0]
+		// TODO - FIX RANGE TO CC BTO BCC...
+		var followers []string
+		var ad []*actor.ActorData
+		if len(in.TO) == 0 {
+			// GET FOLLOWER
+			f, err := friendship.NewFollows(parse.ActorId, friendship.Follower).Get()
+			if err != nil {
+				return nil, err
+			}
+			for _, i := range f {
+				a, err := clientv1.New(ctx, microsvc.ActorServiceName).GetActor(int64(i))
+				if err != nil {
+					return nil, err
+				}
+				ad = append(ad, a.Actor)
+				followers = append(followers, a.Actor.GetAddress())
+			}
+		}
+
+		for _, i := range ad {
+			_, err := activity.NewHandler(i.Inbox,
+				aAddr,
+				privateKey,
+				parse.ActorId,
+			).
+				Create(
+					[]byte(in.GetBody()),
+					followers,
+					in.CC,
+				)
+			if err != nil {
+				r.Status = "ERROR"
+				r.Code = "501"
+			}
+		}
+
+		// TODO - FIX RESPONSE ...
+		return &pb.ActivityResponse{
+			Code:   "200",
+			Status: "ok",
+			Inbox:  nil,
+		}, nil
+
+	case activitypub.DeleteType:
+		var followers []string
+		var ad []*actor.ActorData
+		if len(in.TO) == 0 {
+			// GET FOLLOWER
+			f, err := friendship.NewFollows(parse.ActorId, friendship.Follower).Get()
+			if err != nil {
+				return nil, err
+			}
+			for _, i := range f {
+				a, err := clientv1.New(ctx, microsvc.ActorServiceName).GetActor(int64(i))
+				if err != nil {
+					return nil, err
+				}
+				ad = append(ad, a.Actor)
+				followers = append(followers, a.Actor.GetAddress())
+			}
+		}
+
+		for _, i := range ad {
+			_, err := activity.NewHandler(i.Inbox,
+				aAddr,
+				privateKey,
+				parse.ActorId,
+			).
+				Delete(
+					[]byte(in.GetBody()),
+					followers,
+				)
+			if err != nil {
+				r.Status = "ERROR"
+				r.Code = "501"
+			}
+		}
+
+		// TODO - FIX RESPONSE ...
+		return &pb.ActivityResponse{
+			Code:   "200",
+			Status: "ok",
+			Inbox:  nil,
+		}, nil
 
 	default:
 

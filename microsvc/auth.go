@@ -67,3 +67,9 @@ func GetUserdataByAuthorizationToken(ctx context.Context) (*Userdata, error) {
 	}
 	return d, nil
 }
+
+func GetUserAgent(ctx context.Context) string {
+	md, _ := metadata.FromIncomingContext(ctx)
+	ua := md.Get("grpcgateway-user-agent")
+	return ua[0]
+}

@@ -47,6 +47,8 @@ message ActivityRequest {
 
   // body data that will have the final request for server-to-server interaction.
   string body = 7;
+  repeated string Attachment = 8;
+  string AttachmentType = 9;
 }
 
 message ActivityResponse {

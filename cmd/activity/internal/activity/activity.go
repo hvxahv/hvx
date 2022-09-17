@@ -10,7 +10,7 @@ import (
 // The Activity Types include:
 // https://www.w3.org/TR/activitystreams-vocabulary/#activity-types
 type Activity struct {
-	Context string      `json:"@context"`
+	Context interface{} `json:"@context"`
 	ID      string      `json:"id"`
 	Type    string      `json:"type"`
 	Actor   string      `json:"actor"`
@@ -50,6 +50,8 @@ type AHandler interface {
 	Accept(data []byte) (*pb.ActivityResponse, error)
 	Reject(data []byte) (*pb.ActivityResponse, error)
 	Undo(data []byte) (*pb.ActivityResponse, error)
+	Create(data []byte, to, cc []string) (*pb.ActivityResponse, error)
+	Delete(data []byte, to []string) (*pb.ActivityResponse, error)
 }
 
 func response(notok, ok []string) (*pb.ActivityResponse, error) {

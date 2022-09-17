@@ -10,6 +10,7 @@ package internal
 
 import (
 	"github.com/hvxahv/hvx/errors"
+	"github.com/hvxahv/hvx/microsvc"
 	"strconv"
 	"time"
 
@@ -28,7 +29,7 @@ func (s *server) Authorization(ctx context.Context, in *pb.AuthorizationRequest)
 		return nil, err
 	}
 
-	device, err := NewAuthorization(ctx).AddDevice(v.AccountId, in.UserAgent)
+	device, err := NewAuthorization(ctx).AddDevice(v.AccountId, microsvc.GetUserAgent(ctx))
 	if err != nil {
 		return nil, err
 	}

@@ -4,7 +4,6 @@ import (
 	"github.com/hvxahv/hvx/activitypub"
 	"github.com/hvxahv/hvx/cockroach"
 	"gorm.io/gorm"
-	"strings"
 )
 
 const (
@@ -97,8 +96,9 @@ func (o *Outboxes) GetOutboxesPublic() ([]*Outboxes, error) {
 	return outboxes, nil
 }
 
-func NewOutboxesActivityId(activityId string) *Outboxes {
+func NewOutboxesDeleteByActivityId(actorId uint, activityId string) *Outboxes {
 	return &Outboxes{
+		ActorId:    actorId,
 		ActivityId: activityId,
 	}
 }
@@ -108,15 +108,10 @@ func (o *Outboxes) Delete() error {
 	var outboxes []*Outboxes
 	if err := db.Debug().
 		Table(TableOutboxesName).
-		Where("activity_id = ?", o.ActivityId).
+		Where("actor_id = ? AND activity_id = ?", o.ActorId, o.ActivityId).
 		Unscoped().
 		Delete(&outboxes).Error; err != nil {
 		return err
 	}
 	return nil
-}
-
-// Stos conv slice to strings.
-func Stos(slice []string) string {
-	return strings.Join(slice, ", ")
 }

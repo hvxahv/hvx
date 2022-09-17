@@ -69,21 +69,28 @@ type Reject struct {
 	} `json:"object"`
 }
 
+func NewContext() []interface{} {
+	return []interface{}{
+		"https://www.w3.org/ns/activitystreams",
+	}
+}
+
 // Create Indicates that the actor has created the object.
 // https://www.w3.org/TR/activitystreams-vocabulary/#dfn-create
 type Create struct {
-	Context   string        `json:"@context"`
+	Context   []interface{} `json:"@context"`
 	Id        string        `json:"id"`
 	Type      string        `json:"type"`
 	Actor     string        `json:"actor"`
 	Published time.Time     `json:"published"`
 	To        []string      `json:"to"`
-	Cc        []interface{} `json:"cc"`
+	Cc        []string      `json:"cc"`
 	Object    struct {
 		Id               string      `json:"id"`
 		Type             string      `json:"type"`
+		Title            string      `json:"title"`
 		Summary          interface{} `json:"summary"`
-		InReplyTo        string      `json:"inReplyTo"`
+		InReplyTo        interface{} `json:"inReplyTo"`
 		Published        time.Time   `json:"published"`
 		Url              string      `json:"url"`
 		AttributedTo     string      `json:"attributedTo"`
@@ -94,17 +101,12 @@ type Create struct {
 		InReplyToAtomUri interface{} `json:"inReplyToAtomUri"`
 		Conversation     string      `json:"conversation"`
 		Content          string      `json:"content"`
-		Attachment       []struct {
-			Type      string      `json:"type"`
-			MediaType string      `json:"mediaType"`
-			Url       string      `json:"url"`
-			Name      interface{} `json:"name"`
-			Blurhash  string      `json:"blurhash"`
-			Width     int         `json:"width"`
-			Height    int         `json:"height"`
-		} `json:"attachment"`
-		Tag     []interface{} `json:"tag"`
-		Replies struct {
+		ContentMap       struct {
+			En string `json:"en"`
+		} `json:"contentMap"`
+		Attachment []interface{} `json:"attachment"`
+		Tag        []interface{} `json:"tag"`
+		Replies    struct {
 			Id    string `json:"id"`
 			Type  string `json:"type"`
 			First struct {
@@ -115,4 +117,29 @@ type Create struct {
 			} `json:"first"`
 		} `json:"replies"`
 	} `json:"object"`
+	Signature struct {
+		Type           string    `json:"type"`
+		Creator        string    `json:"creator"`
+		Created        time.Time `json:"created"`
+		SignatureValue string    `json:"signatureValue"`
+	} `json:"signature"`
+}
+
+type Delete struct {
+	Context []interface{} `json:"@context"`
+	Id      string        `json:"id"`
+	Type    string        `json:"type"`
+	Actor   string        `json:"actor"`
+	To      []string      `json:"to"`
+	Object  struct {
+		Id      string `json:"id"`
+		Type    string `json:"type"`
+		AtomUri string `json:"atomUri"`
+	} `json:"object"`
+	Signature struct {
+		Type           string    `json:"type"`
+		Creator        string    `json:"creator"`
+		Created        time.Time `json:"created"`
+		SignatureValue string    `json:"signatureValue"`
+	} `json:"signature"`
 }

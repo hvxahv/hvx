@@ -24,7 +24,7 @@ func (s *server) IsExist(ctx context.Context, in *pb.IsExistRequest) (*pb.IsExis
 }
 
 func (s *server) Create(ctx context.Context, in *pb.CreateRequest) (*pb.CreateResponse, error) {
-	if err := NewAccountsCreate(in.GetUsername(), in.GetMail(), in.GetPassword()).Create(in.PublicKey); err != nil {
+	if err := NewAccountsCreate(in.GetUsername(), in.GetMail(), in.GetPassword()).Create(in.GetPublicKey()); err != nil {
 		return nil, err
 	}
 

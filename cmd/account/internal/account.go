@@ -185,7 +185,6 @@ func (a *Accounts) Create(publicKey string) error {
 		Create(&v).Error; err != nil {
 		return fmt.Errorf(errors.ErrAccountCreate)
 	}
-
 	// SET AUTH PUBLIC KEY...
 	key, err := clientv1.New(ctx, microsvc.AuthServiceName).SetAuthPublicKey(int64(v.ID), publicKey)
 	if err != nil {

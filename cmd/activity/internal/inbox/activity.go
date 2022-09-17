@@ -41,6 +41,7 @@ func NewActivity(name string, body []byte) (*Handler, error) {
 func (h *Handler) Handler() error {
 	a := activity.Activity{}
 	if err := json.Unmarshal(h.body, &a); err != nil {
+		errors.Throw("UNMARSHAL_ACTIVITY_INBOX", err)
 		return errors.New("UNMARSHAL_ACTIVITY")
 	}
 	switch a.Type {
@@ -58,7 +59,11 @@ func (h *Handler) Handler() error {
 		if err := json.Unmarshal(h.body, &undo); err != nil {
 			return errors.New("UNMARSHAL_ACTIVITY_UNDO")
 		}
-		if err := NewInboxesActivityId(undo.Object.Id).Delete(); err != nil {
+		objectId, err := clientv1.New(context.Background(), microsvc.ActorServiceName).GetActorByAddress(undo.Actor)
+		if err != nil {
+			return err
+		}
+		if err := NewInboxesDeleteByActivityId(uint(objectId.GetId()), undo.Object.Id).DeleteByActivityId(); err != nil {
 			return err
 		}
 
@@ -68,11 +73,6 @@ func (h *Handler) Handler() error {
 			if err := NewInboxes(h.actorId, undo.Id, undo.Actor, undo.Type, string(h.body)).Create(); err != nil {
 				return err
 			}
-			objectId, err := clientv1.New(context.Background(), microsvc.ActorServiceName).GetActorByAddress(undo.Actor)
-			if err != nil {
-				return err
-			}
-			// UNFOLLOWING ...
 			if err := friendship.NewFollower(h.actorId, uint(objectId.GetId())).UNFollow(); err != nil {
 				return err
 			}
@@ -107,19 +107,14 @@ func (h *Handler) Handler() error {
 			fmt.Println("Unknown Accept")
 		}
 
-	case "Delete":
-		fmt.Println("DELETE REQUEST...")
-
-	case "Reject":
-		fmt.Println("REJECT REQUEST...")
-
+	case activitypub.RejectType:
 		reject := activitypub.Reject{}
 		if err := json.Unmarshal(h.body, &reject); err != nil {
 			return err
 		}
 
 		switch reject.Object.Type {
-		case "Follow":
+		case activitypub.FollowType:
 			// TODO - CREATE INBOX
 			if err := NewInboxes(h.actorId, reject.Id, reject.Actor, reject.Type, string(h.body)).Create(); err != nil {
 				return err
@@ -137,6 +132,28 @@ func (h *Handler) Handler() error {
 		default:
 			fmt.Println("Unknown Accept")
 		}
+
+	case activitypub.DeleteType:
+		d := activitypub.Delete{}
+		if err := json.Unmarshal(h.body, &d); err != nil {
+			return err
+		}
+
+		if err := NewInboxesDeleteByActivityId(h.actorId, d.Object.Id).DeleteByActivityId(); err != nil {
+			return err
+		}
+
+	case activitypub.CreateType:
+		create := activitypub.Create{}
+		if err := json.Unmarshal(h.body, &create); err != nil {
+			errors.Throw("UNMARSHAL_ACTIVITY_CREATE_INBOX", err)
+			return err
+		}
+
+		if err := NewInboxes(h.actorId, create.Object.Id, create.Actor, create.Type, string(h.body)).Create(); err != nil {
+			return err
+		}
+
 	default:
 		fmt.Println("Unknown")
 	}
