@@ -33,6 +33,15 @@ func GetActorHandler(c *gin.Context) {
 	}
 }
 
+func GetChannelHandler(c *gin.Context) {
+	if err := proxy.NewProxy(c, "/c/"+c.Param("channel"), address.GetHTTP(address.Public)).Proxy(); err != nil {
+		c.JSON(502, gin.H{
+			"error": "502_BAD_GATEWAY",
+		})
+		return
+	}
+}
+
 func AuthHandler(c *gin.Context) {
 	if err := proxy.NewProxy(c, "/auth", address.GetHTTP(address.Auth)).Proxy(); err != nil {
 		c.JSON(502, gin.H{

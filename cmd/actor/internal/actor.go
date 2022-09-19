@@ -60,7 +60,7 @@ type Actors struct {
 
 type Actor interface {
 	// IsExist Actor exists or not.
-	IsExist() bool
+	IsExist() (*Actors, bool)
 
 	// Create Actor.
 	Create() (*Actors, error)
@@ -93,17 +93,17 @@ func NewActorsIsExist(domain, preferredUsername string) *Actors {
 	}
 }
 
-func (a *Actors) IsExist() bool {
+func (a *Actors) IsExist() (*Actors, bool) {
 	db := cockroach.GetDB()
 
 	if err := db.Debug().
 		Table(ActorsTable).
 		Where("preferred_username = ? AND domain = ? ", a.PreferredUsername, a.Domain).
-		First(&Actors{}); err != nil {
+		First(&a); err != nil {
 		ok := cockroach.IsNotFound(err.Error)
-		return ok
+		return a, !ok
 	}
-	return false
+	return nil, false
 }
 
 // NewActors The constructor for creating a new Actor.
@@ -114,6 +114,19 @@ func NewActors(preferredUsername, publicKey, actorType string) *Actors {
 		Domain:            domain,
 		Inbox:             fmt.Sprintf("https://%s/u/%s/inbox", domain, preferredUsername),
 		Address:           fmt.Sprintf("https://%s/u/%s", domain, preferredUsername),
+		PublicKey:         publicKey,
+		ActorType:         actorType,
+		IsRemote:          false,
+	}
+}
+
+func NewChannels(preferredUsername, publicKey, actorType string) *Actors {
+	domain := viper.GetString("domain")
+	return &Actors{
+		PreferredUsername: preferredUsername,
+		Domain:            domain,
+		Inbox:             fmt.Sprintf("https://%s/c/%s/inbox", domain, preferredUsername),
+		Address:           fmt.Sprintf("https://%s/c/%s", domain, preferredUsername),
 		PublicKey:         publicKey,
 		ActorType:         actorType,
 		IsRemote:          false,

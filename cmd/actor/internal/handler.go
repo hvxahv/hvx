@@ -22,8 +22,18 @@ import (
 
 func (s *server) IsExist(ctx context.Context, in *pb.IsExistRequest) (*pb.IsExistResponse, error) {
 	domain := viper.GetString("domain")
-	b := NewActorsIsExist(domain, in.PreferredUsername).IsExist()
-	return &pb.IsExistResponse{IsExist: b}, nil
+	b, ok := NewActorsIsExist(domain, in.PreferredUsername).IsExist()
+
+	if !ok {
+		return &pb.IsExistResponse{
+			IsExist:   !ok,
+			ActorType: "",
+		}, nil
+	}
+	return &pb.IsExistResponse{
+		IsExist:   ok,
+		ActorType: b.ActorType,
+	}, nil
 }
 
 func (s *server) GetActorByUsername(ctx context.Context, in *pb.GetActorByUsernameRequest) (*pb.ActorData, error) {
@@ -48,11 +58,21 @@ func (s *server) GetActorByUsername(ctx context.Context, in *pb.GetActorByUserna
 }
 
 func (s *server) Create(ctx context.Context, in *pb.CreateRequest) (*pb.CreateResponse, error) {
-	actor, err := NewActors(in.PreferredUsername, in.PublicKey, in.ActorType).Create()
-	if err != nil {
-		return nil, err
+	switch in.ActorType {
+	case "Channel":
+		actor, err := NewChannels(in.PreferredUsername, in.PublicKey, in.ActorType).Create()
+		if err != nil {
+			return nil, err
+		}
+		return &pb.CreateResponse{Code: "200", ActorId: int64(actor.ID)}, nil
+	case "Persion":
+		actor, err := NewActors(in.PreferredUsername, in.PublicKey, in.ActorType).Create()
+		if err != nil {
+			return nil, err
+		}
+		return &pb.CreateResponse{Code: "200", ActorId: int64(actor.ID)}, nil
 	}
-	return &pb.CreateResponse{Code: "200", ActorId: int64(actor.ID)}, nil
+	return &pb.CreateResponse{Code: "500", ActorId: 0}, nil
 }
 
 func (s *server) Get(ctx context.Context, in *pb.GetRequest) (*pb.GetResponse, error) {

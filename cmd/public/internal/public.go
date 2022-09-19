@@ -13,8 +13,8 @@ type Public struct {
 }
 
 type PublicHandler interface {
-	// IsExist determines if the account name exists.
-	IsExist(name string) (bool, error)
+	// IsExist determines if the actor name exists.
+	IsExist(name string) (*actor.IsExistResponse, error)
 
 	// GetActorByUsername get the actor object data by account name.
 	GetActorByUsername(username string) (*actor.ActorData, error)
@@ -27,15 +27,15 @@ func NewPublic(ctx context.Context) *Public {
 	return &Public{ctx: ctx}
 }
 
-func (p *Public) IsExist(name string) (bool, error) {
-	exist, err := clientv1.New(p.ctx, microsvc.AccountServiceName).IsExistAccount(name)
+func (p *Public) IsExist(name string) (*actor.IsExistResponse, error) {
+	exist, err := clientv1.New(p.ctx, microsvc.ActorServiceName).IsExistActor(name)
 	if err != nil {
-		return false, err
+		return nil, err
 	}
-	if err != nil {
-		return false, err
-	}
-	return exist.IsExist, nil
+	return &actor.IsExistResponse{
+		IsExist:   exist.IsExist,
+		ActorType: exist.ActorType,
+	}, nil
 }
 
 func (p *Public) GetActorByUsername(username string) (*actor.ActorData, error) {
@@ -43,10 +43,6 @@ func (p *Public) GetActorByUsername(username string) (*actor.ActorData, error) {
 	if err != nil {
 		return nil, err
 	}
-	if err != nil {
-		return nil, err
-	}
-
 	return a, err
 }
 

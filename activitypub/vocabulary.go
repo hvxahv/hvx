@@ -40,4 +40,5 @@ const (
 	OrganizationType = "Organization"
 	PersonType       = "Person"
 	ServiceType      = "Service"
+	ChannelType      = "Channel"
 )

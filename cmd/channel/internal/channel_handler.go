@@ -41,14 +41,10 @@ func (s *server) CreateChannel(ctx context.Context, in *pb.CreateChannelRequest)
 	// Use the Actor (actorId) of ActivityPub as the data source of the channel.
 	// and set the type to Service.
 	// https://www.w3.org/TR/activitystreams-vocabulary/#actor-types
-	create, err := clientv1.New(ctx, microsvc.ActorServiceName).CreateActor(in.GetPreferredUsername(), k.PublicKey, activitypub.ServiceType)
+	create, err := clientv1.New(ctx, microsvc.ActorServiceName).CreateActor(in.GetPreferredUsername(), k.PublicKey, activitypub.ChannelType)
 	if err != nil {
 		return nil, err
 	}
-	if err != nil {
-		return nil, err
-	}
-
 	if err := NewChannels(uint(create.ActorId), parse.ActorId, k.PrivateKey).CreateChannel(); err != nil {
 		return nil, err
 	}

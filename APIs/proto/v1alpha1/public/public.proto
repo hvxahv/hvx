@@ -41,16 +41,22 @@ service Public {
     };
   }
 
+  rpc GetChannel(GetChannelRequest) returns (GetActorResponse) {
+    option (google.api.http) = {
+      get: "/c/{channel}"
+    };
+  }
 }
 
 message GetInstanceResponse {
-  string code = 1;
-  string version = 2;
-  string build = 3;
-  string maintainer = 4;
-  string repo = 5;
-  string host = 6;
-  string matrixAddress = 7 [json_name = "matrix_address"];
+  string Code = 1;
+  string Version = 2;
+  string Build = 3;
+  string Maintainer = 4;
+  string Repo = 5;
+  string Host = 6;
+  string MatrixAPI = 7;
+  string IPFSAPI = 8;
 }
 
 message GetInstancesResponse {
@@ -87,6 +93,11 @@ message GetWebfingerResponse {
 message GetActorRequest {
   string actor = 1 [(google.api.field_behavior) = REQUIRED];
 }
+
+message GetChannelRequest {
+  string channel = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
 
 message GetActorResponse {
   message PublicKey {

@@ -44,6 +44,7 @@ func (h *Handler) Handler() error {
 		errors.Throw("UNMARSHAL_ACTIVITY_INBOX", err)
 		return errors.New("UNMARSHAL_ACTIVITY")
 	}
+
 	switch a.Type {
 	case activitypub.FollowType:
 		var f activitypub.Follow

@@ -25,10 +25,12 @@ func APIServer() *gin.Engine {
 	// ACTIVITYPUB
 	api.GET("/.well-known/webfinger", WellKnownHandler)
 	api.GET("/u/:actor", GetActorHandler)
+	api.GET("/c/:channel", GetChannelHandler)
 
 	// For HTTP signature based client authentication when receiving inbox messages,
 	// a custom oauth client authenticator needs to be written.
 	api.POST("/u/:actor/inbox", InboxHandler)
+	api.POST("/c/:channel/inbox", ChannelInboxHandler)
 
 	v1 := api.Group("/api/v1")
 

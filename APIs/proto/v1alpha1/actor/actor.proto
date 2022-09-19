@@ -47,6 +47,7 @@ message IsExistRequest {
 
 message IsExistResponse {
   bool isExist = 1;
+  string actorType = 2;
 }
 
 message CreateRequest {

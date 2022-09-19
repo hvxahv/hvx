@@ -12,29 +12,34 @@ import (
 
 func (s *server) GetInstance(ctx context.Context, g *emptypb.Empty) (*pb.GetInstanceResponse, error) {
 	return &pb.GetInstanceResponse{
-		Code:          "200",
-		Version:       viper.GetString("version"),
-		Build:         "2022-01-01",
-		Maintainer:    viper.GetString("author"),
-		Repo:          viper.GetString("name"),
-		Host:          viper.GetString("domain"),
-		MatrixAddress: viper.GetString("matrix.address"),
+		Code:       "200",
+		Version:    viper.GetString("version"),
+		Build:      "2022-01-01",
+		Maintainer: viper.GetString("author"),
+		Repo:       viper.GetString("name"),
+		Host:       viper.GetString("domain"),
+		MatrixAPI:  viper.GetString("matrix.address"),
+		IPFSAPI:    viper.GetString("ipfs.address"),
 	}, nil
 }
 
 func (s *server) GetWebfinger(ctx context.Context, in *pb.GetWebfingerRequest) (*pb.GetWebfingerResponse, error) {
 	name := activitypub.GetActorName(in.Resource)
+	actor, err := NewPublic(ctx).IsExist(name)
+	if err != nil {
+		return nil, err
+	}
 	var (
-		address = fmt.Sprintf("https://%s/u/%s", viper.GetString("domain"), name)
+		address string
 	)
-	exist, err := NewPublic(ctx).IsExist(name)
-	if err != nil {
-		return nil, err
+	fmt.Println(actor)
+	switch actor.ActorType {
+	case "Channel":
+		address = fmt.Sprintf("https://%s/c/%s", viper.GetString("domain"), name)
+	case "Person":
+		address = fmt.Sprintf("https://%s/u/%s", viper.GetString("domain"), name)
 	}
-	if err != nil {
-		return nil, err
-	}
-	if !exist {
+	if actor.IsExist {
 		return &pb.GetWebfingerResponse{
 			Subject: in.Resource,
 			Aliases: []string{address},
@@ -74,6 +79,47 @@ func (s *server) GetActor(ctx context.Context, in *pb.GetActorRequest) (*pb.GetA
 		},
 		Id:                id,
 		Type:              a.ActorType,
+		Following:         "",
+		Followers:         "",
+		Inbox:             a.Inbox,
+		Outbox:            fmt.Sprintf("%soutbox", box),
+		PreferredUsername: a.PreferredUsername,
+		Name:              a.Name,
+		Summary:           a.Summary,
+		Url:               a.Address,
+		PublicKey: &pb.GetActorResponse_PublicKey{
+			Id:           kid,
+			Owner:        a.Address,
+			PublicKeyPem: a.PublicKey,
+		},
+		Icon: &pb.GetActorResponse_Icon{
+			Type:      "Image",
+			MediaType: "image/jpeg",
+			Url:       a.Avatar,
+		},
+	}, nil
+}
+
+func (s *server) GetChannel(ctx context.Context, in *pb.GetChannelRequest) (*pb.GetActorResponse, error) {
+	a, err := NewPublic(ctx).GetActorByUsername(in.Channel)
+	if err != nil {
+		return nil, err
+	}
+	var (
+		address = viper.GetString("domain")
+
+		id  = fmt.Sprintf("https://%s/c/%s", address, a.PreferredUsername)
+		kid = fmt.Sprintf("%s#main-key", id)
+		box = fmt.Sprintf("https://%s/c/%s/", address, a.PreferredUsername)
+	)
+
+	return &pb.GetActorResponse{
+		Context: []string{
+			"https://www.w3.org/ns/activitystreams",
+			"https://w3id.org/security/v1",
+		},
+		Id:                id,
+		Type:              "Service",
 		Following:         "",
 		Followers:         "",
 		Inbox:             a.Inbox,

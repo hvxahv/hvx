@@ -15,12 +15,12 @@ services:
     network_mode: host
     command: /bin/sh -c "./binary/account run"
 
-#  activity:
-#    container_name: activity
-#    restart: always
-#    image: hvx:latest
-#    network_mode: host
-#    command: /bin/sh -c "./binary/activity run"
+  activity:
+    container_name: activity
+    restart: always
+    image: hvx:latest
+    network_mode: host
+    command: /bin/sh -c "./binary/activity run"
 
   actor:
     container_name: actor
