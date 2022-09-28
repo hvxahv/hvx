@@ -14,9 +14,12 @@ func (s *server) Create(ctx context.Context, in *pb.CreateRequest) (*pb.CreateRe
 	if err != nil {
 		return nil, err
 	}
-	if err := NewSaves(parse.AccountId, in.Name, in.Comment, in.Cid, in.FileType, in.IsPrivate).Create(); err != nil {
-		return nil, err
+	for _, f := range in.GetFiles() {
+		if err := NewSaves(parse.AccountId, f.Name, f.Comment, f.Cid, f.Type, f.IsPrivate).Create(); err != nil {
+			return nil, err
+		}
 	}
+
 	return &pb.CreateResponse{
 		Code:   "200",
 		Status: "ok",

@@ -17,7 +17,7 @@ authentication:
     expired: "60"
 
 ipfs:
-  address: "127.0.0.1:5001"
+  address: "http://127.0.0.1:5001/api/v0"
   gateway: "http://127.0.0.1:8081/ipfs/"
 
 matrix:

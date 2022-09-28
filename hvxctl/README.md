@@ -3,10 +3,12 @@
 ## create
 
 ### Create a database of hvxahv.
+create db <NAME>
 ```bash
-create db hvxahv
+hvxctl create db hvxahv
 ```
 ### Create a fs bucket provider for minio.
+create fs <PROVIDER>
 ```bash
-create fs minio
+hvxctl create fs minio
 ```

@@ -12,7 +12,7 @@ func TestGenerate(t *testing.T) {
 		t.Errorf("generates an RSA keypair error: %v", err)
 	}
 
-	if len(key.Private) == 0 {
+	if len(key.PrivateKey) == 0 {
 		t.Errorf("private key is empty")
 	}
 
@@ -22,7 +22,7 @@ func TestGenerate(t *testing.T) {
 
 	//t.Logf("private key: %s", key.Private)
 	//t.Logf("public key: %s", key.PublicKey)
-	fmt.Println(key.Private)
+	fmt.Println(key.PublicKey)
 	fmt.Println(key.PublicKey)
 
 }

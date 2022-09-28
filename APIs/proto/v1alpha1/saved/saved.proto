@@ -72,12 +72,15 @@ message Save {
   string createdAt = 7;
 }
 
-message CreateRequest {
+message Files {
   string name = 1;
-  string comment = 2;
+  string type = 2;
   string cid = 3;
-  string fileType = 4;
+  string comment = 4;
   bool isPrivate = 5;
+}
+message CreateRequest {
+  repeated Files files = 1;
 }
 
 message CreateResponse {
