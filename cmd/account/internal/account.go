@@ -168,12 +168,14 @@ func (a *Accounts) Create(publicKey string) error {
 			return errors.New(errors.ErrAccountAlready)
 		}
 	}
+
 	// ActivityPub rsa key.
 	k, err := rsa.NewRsa(2048).Generate()
 	if err != nil {
 		return err
 	}
 	ctx := context.Background()
+
 	// https://www.w3.org/TR/activitystreams-vocabulary/#actor-types
 	actor, err := clientv1.New(ctx, microsvc.ActorServiceName).CreateActor(a.Username, k.PublicKey, activitypub.PersonType)
 	if err != nil {
@@ -185,6 +187,7 @@ func (a *Accounts) Create(publicKey string) error {
 		Create(&v).Error; err != nil {
 		return fmt.Errorf(errors.ErrAccountCreate)
 	}
+
 	// SET AUTH PUBLIC KEY...
 	key, err := clientv1.New(ctx, microsvc.AuthServiceName).SetAuthPublicKey(int64(v.ID), publicKey)
 	if err != nil {

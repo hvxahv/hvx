@@ -1,10 +1,7 @@
 package matrix
 
 import (
-	"encoding/json"
-	"github.com/hvxahv/hvx/errors"
-
-	"github.com/go-resty/resty/v2"
+	"maunium.net/go/mautrix"
 )
 
 // Currently, due to the numerous server implementations of matrix.org, I am experiencing
@@ -19,44 +16,17 @@ import (
 // An open network for secure, decentralized communication.
 // https://matrix.org/docs/api/#overview
 // https://spec.matrix.org/v1.3/
+// https://spec.matrix.org/v1.2/client-server-api/#post_matrixclientv3register
 
-type MatrixReq struct {
-	Address string
-	Data    interface{}
-}
-type Handler interface {
-	// Do requesting data from matrix services.
-	Do() (*MatrixRes, error)
+type Matrix struct {
+	Client *mautrix.Client
+	Err    error
 }
 
-func NewMatrixReq(address string, data interface{}) *MatrixReq {
-	return &MatrixReq{Address: address, Data: data}
-}
-
-func (m *MatrixReq) Do() (*MatrixRes, error) {
-	client := resty.New()
-
-	data, err := json.Marshal(m.Data)
+func New(address string) *Matrix {
+	client, err := mautrix.NewClient(address, "", "")
 	if err != nil {
-		return nil, err
+		return &Matrix{Client: nil, Err: err}
 	}
-	res, err := client.R().
-		SetHeader("Content-Type", "application/json").
-		SetHeader("Accept", "application/json").
-		SetBody(data).
-		Post(m.Address)
-	if err != nil {
-		errors.Throw("failed to send a message to the matrix service.", err)
-		return nil, err
-	}
-	return NewMatrixRes(res.StatusCode(), res.Body()), nil
-}
-
-type MatrixRes struct {
-	Code int
-	Body []byte
-}
-
-func NewMatrixRes(code int, body []byte) *MatrixRes {
-	return &MatrixRes{Code: code, Body: body}
+	return &Matrix{Client: client, Err: nil}
 }

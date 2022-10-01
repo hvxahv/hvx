@@ -12,14 +12,15 @@ import (
 
 func (s *server) GetInstance(ctx context.Context, g *emptypb.Empty) (*pb.GetInstanceResponse, error) {
 	return &pb.GetInstanceResponse{
-		Code:       "200",
-		Version:    viper.GetString("version"),
-		Build:      "2022-01-01",
-		Maintainer: viper.GetString("author"),
-		Repo:       viper.GetString("name"),
-		Host:       viper.GetString("domain"),
-		MatrixAPI:  viper.GetString("matrix.address"),
-		IPFSAPI:    viper.GetString("ipfs.address"),
+		Code:        "200",
+		Version:     viper.GetString("version"),
+		Build:       "2022-01-01",
+		Maintainer:  viper.GetString("author"),
+		Repo:        viper.GetString("name"),
+		Host:        viper.GetString("domain"),
+		MatrixAPI:   viper.GetString("matrix.address"),
+		IpfsAPI:     viper.GetString("ipfs.address"),
+		IpfsGateway: viper.GetString("ipfs.gateway"),
 	}, nil
 }
 

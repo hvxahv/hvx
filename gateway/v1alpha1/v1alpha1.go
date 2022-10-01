@@ -86,3 +86,12 @@ func MessageAccessHandler(c *gin.Context) {
 		return
 	}
 }
+
+func AuthHandler(c *gin.Context) {
+	if err := proxy.NewProxy(c, "/api/v1/auth"+c.Param("x"), address.GetHTTP(address.Auth)).Proxy(); err != nil {
+		c.JSON(502, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+}

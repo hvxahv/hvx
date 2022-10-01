@@ -56,7 +56,8 @@ message GetInstanceResponse {
   string Repo = 5;
   string Host = 6;
   string MatrixAPI = 7;
-  string IPFSAPI = 8;
+  string IpfsAPI = 8;
+  string IpfsGateway = 9;
 }
 
 message GetInstancesResponse {

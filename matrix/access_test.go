@@ -1,39 +1,24 @@
 package matrix
 
 import (
-	"fmt"
-	"os"
+	"github.com/hvxahv/hvx/cfg"
 	"testing"
-
-	"github.com/mitchellh/go-homedir"
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func init() {
 
-	home, err := homedir.Dir()
-	cobra.CheckErr(err)
+	cfg.Default()
+}
 
-	// Search config in home directory with name ".sok" (without extension).
-	viper.AddConfigPath(home)
-	viper.SetConfigName(".hvxahv")
-
-	viper.AutomaticEnv() // read in environment variables that match
-
-	// If a config file is found, read it in.
-	if err := viper.ReadInConfig(); err == nil {
-		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
+func TestMatrix_RegisterDummy(t *testing.T) {
+	res, err := New("").RegisterDummy("ameotoko2", "hvxahv123")
+	if err != nil {
+		t.Error(err)
+		return
 	}
-}
-func TestRegisterReq_Register(t *testing.T) {
-
-}
-
-func TestDeactivateReq_DeactivateReq(t *testing.T) {
-
-}
-
-func TestNewEditPasswordReq(t *testing.T) {
-
+	t.Log(res)
+	t.Log(res.UserID.String())
+	t.Log(res.AccessToken)
+	t.Log(res.ExpiresInMS)
+	t.Log(res.DeviceID)
 }

@@ -65,7 +65,7 @@ func (s *server) Create(ctx context.Context, in *pb.CreateRequest) (*pb.CreateRe
 			return nil, err
 		}
 		return &pb.CreateResponse{Code: "200", ActorId: int64(actor.ID)}, nil
-	case "Persion":
+	case "Person":
 		actor, err := NewActors(in.PreferredUsername, in.PublicKey, in.ActorType).Create()
 		if err != nil {
 			return nil, err

@@ -83,5 +83,8 @@ func APIServer() *gin.Engine {
 	// MESSAGE
 	v1.POST("/message/access/*x", v1alpha1.MessageAccessHandler)
 
+	// AUTH
+	v1.POST("/auth/*x", v1alpha1.AuthHandler)
+	v1.GET("/auth/*x", v1alpha1.AuthHandler)
 	return api
 }

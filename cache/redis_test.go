@@ -3,5 +3,8 @@ package cache
 import "testing"
 
 func TestRdb_Dial(t *testing.T) {
-	NewRdb().Dial(0)
+	if err := NewRdb().Dial(0); err != nil {
+		t.Error(err)
+		return
+	}
 }

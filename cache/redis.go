@@ -1,17 +1,14 @@
 package cache
 
 import (
-	"log"
 	"sync"
 	"time"
 
 	"github.com/go-redis/redis/v8"
 	"github.com/spf13/viper"
-	"golang.org/x/net/context"
 )
 
 var (
-	ctx  = context.Background()
 	once sync.Once
 	rdb  *redis.Client
 )
@@ -58,11 +55,6 @@ func (r *option) Dial(db int) error {
 			Limiter:            nil,
 		})
 	})
-	pong, err := rdb.Ping(ctx).Result()
-	if err != nil {
-		return err
-	}
-	log.Println(pong)
 	return nil
 }
 

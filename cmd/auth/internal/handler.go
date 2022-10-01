@@ -11,6 +11,7 @@ package internal
 import (
 	"github.com/hvxahv/hvx/errors"
 	"github.com/hvxahv/hvx/microsvc"
+	"google.golang.org/protobuf/types/known/emptypb"
 	"strconv"
 	"time"
 
@@ -70,4 +71,64 @@ func (s *server) SetPublicKey(ctx context.Context, in *pb.SetPublicKeyRequest) (
 		return nil, err
 	}
 	return &pb.SetPublicKeyResponse{Code: "200", Status: "ok"}, nil
+}
+
+func (s *server) GetPrivateKey(ctx context.Context, in *pb.GetPrivateKeyRequest) (*pb.GetPrivateKeyResponse, error) {
+	parse, err := microsvc.GetUserdataByAuthorizationToken(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := NewDh(parse.DeviceID, uint(in.GetDeviceId()), in.GetIv(), in.GetPublicKey()).GetPrivateKey(); err != nil {
+		return nil, err
+	}
+	return &pb.GetPrivateKeyResponse{
+		Code:   "200",
+		Status: "ok",
+	}, nil
+}
+
+func (s *server) GetDH(ctx context.Context, in *emptypb.Empty) (*pb.GetDHResponse, error) {
+	parse, err := microsvc.GetUserdataByAuthorizationToken(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	dh, err := NewDHDeviceId(parse.DeviceID).GetDH()
+	if err != nil {
+		return nil, err
+	}
+	return &pb.GetDHResponse{DeviceId: int64(dh.DeviceId), PublicKey: dh.PublicKey, Iv: dh.IV}, nil
+}
+
+func (s *server) SendPrivateKey(ctx context.Context, in *pb.SendPrivateKeyRequest) (*pb.SendPrivateKeyResponse, error) {
+	parse, err := microsvc.GetUserdataByAuthorizationToken(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := NewDh(uint(in.GetDeviceId()), parse.DeviceID, "", in.GetPublicKey()).SendPrivateKey(in.GetPrivateKey()); err != nil {
+		return nil, err
+	}
+	return &pb.SendPrivateKeyResponse{
+		Code:   "200",
+		Status: "ok",
+	}, nil
+}
+
+func (s *server) WaitPrivateKey(ctx context.Context, in *emptypb.Empty) (*pb.WaitPrivateKeyResponse, error) {
+	parse, err := microsvc.GetUserdataByAuthorizationToken(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	dh, err := NewDHDeviceId(parse.DeviceID).GetDH()
+	if err != nil {
+		return nil, err
+	}
+	return &pb.WaitPrivateKeyResponse{
+		DeviceId:  int64(dh.DeviceId),
+		PublicKey: dh.PublicKey,
+		Private:   dh.PrivateKey,
+	}, nil
 }

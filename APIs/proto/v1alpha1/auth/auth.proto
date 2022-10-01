@@ -23,31 +23,41 @@ service Auth {
   // SetPublicKey unlike activitypub, his private key is inaccessible to the server.
   // The public key is used for hvxahv privacy-related asymmetric encryption key.
   rpc SetPublicKey(SetPublicKeyRequest) returns (SetPublicKeyResponse) {}
+
   rpc GetPublicKey(GetPublicKeyRequest) returns (GetPublicKeyResponse) {
     option (google.api.http) = {
-      get: "/api/v1/auth/{accountId}",
+      get: "/api/v1/auth/{accountId}/public",
     };
   }
-  
-  // D-H Diffie–Hellman key exchange. 
+
+  // D-H Diffie–Hellman key exchange.
   // https://www.rfc-editor.org/rfc/rfc2631.html
-  rpc DHRequest (DHRequestData) returns (DHRequestResponse) {
+  rpc GetPrivateKey (GetPrivateKeyRequest) returns (GetPrivateKeyResponse) {
     option (google.api.http) = {
-      post: "/api/v1/dh/request"
+      post: "/api/v1/auth/private"
+      body: "*"
     };
   }
 
-  rpc SendDH (SendDHRequest) returns (SendDHResponse) {
+  rpc GetDH(google.protobuf.Empty) returns (GetDHResponse) {
     option (google.api.http) = {
-      post: "/api/v1/dh"
+      get: "/api/v1/auth/private/dh"
     };
   }
 
-  rpc GetPrivate (google.protobuf.Empty) returns (GetPrivateResponse) {
+  rpc SendPrivateKey (SendPrivateKeyRequest) returns (SendPrivateKeyResponse) {
     option (google.api.http) = {
-      get: "/api/v1/dh/private"
+      post: "/api/v1/auth/private/dh"
+      body: "*"
     };
   }
+
+  rpc WaitPrivateKey (google.protobuf.Empty) returns (WaitPrivateKeyResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/auth/private"
+    };
+  }
+
 }
 
 message AuthorizationRequest {
@@ -83,26 +93,31 @@ message GetPublicKeyResponse {
   string publicKey = 2;
 }
 
-message DHRequestData {
+message GetPrivateKeyRequest {
   int64 deviceId = 1;
   string publicKey = 2;
   string iv = 3;
 }
 
-message DHRequestResponse {
+message GetPrivateKeyResponse {
   string code = 1;
   string status = 2;
 }
 
-message SendDHRequest {
+message GetDHResponse {
   int64 deviceId = 1;
   string publicKey = 2;
   string iv = 3;
-  // Use the request iv encryption key .
-  string private = 4;
 }
 
-message SendDHResponse {
+message SendPrivateKeyRequest {
+  int64 deviceId = 1;
+  string publicKey = 2;
+  // Use the request iv encryption key .
+  string privateKey = 3;
+}
+
+message SendPrivateKeyResponse {
   string code = 1;
   string status = 2;
 }
@@ -110,4 +125,10 @@ message SendDHResponse {
 message GetPrivateResponse {
   string code = 1;
   string private = 2;
+}
+
+message WaitPrivateKeyResponse {
+  int64 deviceId = 1;
+  string publicKey = 2;
+  string private = 3;
 }

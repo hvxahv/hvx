@@ -35,9 +35,10 @@ type AuthClient interface {
 	GetPublicKey(ctx context.Context, in *GetPublicKeyRequest, opts ...grpc.CallOption) (*GetPublicKeyResponse, error)
 	// D-H Diffie–Hellman key exchange.
 	// https://www.rfc-editor.org/rfc/rfc2631.html
-	DHRequest(ctx context.Context, in *DHRequestData, opts ...grpc.CallOption) (*DHRequestResponse, error)
-	SendDH(ctx context.Context, in *SendDHRequest, opts ...grpc.CallOption) (*SendDHResponse, error)
-	GetPrivate(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetPrivateResponse, error)
+	GetPrivateKey(ctx context.Context, in *GetPrivateKeyRequest, opts ...grpc.CallOption) (*GetPrivateKeyResponse, error)
+	GetDH(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetDHResponse, error)
+	SendPrivateKey(ctx context.Context, in *SendPrivateKeyRequest, opts ...grpc.CallOption) (*SendPrivateKeyResponse, error)
+	WaitPrivateKey(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*WaitPrivateKeyResponse, error)
 }
 
 type authClient struct {
@@ -75,27 +76,36 @@ func (c *authClient) GetPublicKey(ctx context.Context, in *GetPublicKeyRequest, 
 	return out, nil
 }
 
-func (c *authClient) DHRequest(ctx context.Context, in *DHRequestData, opts ...grpc.CallOption) (*DHRequestResponse, error) {
-	out := new(DHRequestResponse)
-	err := c.cc.Invoke(ctx, "/hvx.api.v1alpha1.auth.proto.Auth/DHRequest", in, out, opts...)
+func (c *authClient) GetPrivateKey(ctx context.Context, in *GetPrivateKeyRequest, opts ...grpc.CallOption) (*GetPrivateKeyResponse, error) {
+	out := new(GetPrivateKeyResponse)
+	err := c.cc.Invoke(ctx, "/hvx.api.v1alpha1.auth.proto.Auth/GetPrivateKey", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *authClient) SendDH(ctx context.Context, in *SendDHRequest, opts ...grpc.CallOption) (*SendDHResponse, error) {
-	out := new(SendDHResponse)
-	err := c.cc.Invoke(ctx, "/hvx.api.v1alpha1.auth.proto.Auth/SendDH", in, out, opts...)
+func (c *authClient) GetDH(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetDHResponse, error) {
+	out := new(GetDHResponse)
+	err := c.cc.Invoke(ctx, "/hvx.api.v1alpha1.auth.proto.Auth/GetDH", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *authClient) GetPrivate(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetPrivateResponse, error) {
-	out := new(GetPrivateResponse)
-	err := c.cc.Invoke(ctx, "/hvx.api.v1alpha1.auth.proto.Auth/GetPrivate", in, out, opts...)
+func (c *authClient) SendPrivateKey(ctx context.Context, in *SendPrivateKeyRequest, opts ...grpc.CallOption) (*SendPrivateKeyResponse, error) {
+	out := new(SendPrivateKeyResponse)
+	err := c.cc.Invoke(ctx, "/hvx.api.v1alpha1.auth.proto.Auth/SendPrivateKey", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authClient) WaitPrivateKey(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*WaitPrivateKeyResponse, error) {
+	out := new(WaitPrivateKeyResponse)
+	err := c.cc.Invoke(ctx, "/hvx.api.v1alpha1.auth.proto.Auth/WaitPrivateKey", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -118,9 +128,10 @@ type AuthServer interface {
 	GetPublicKey(context.Context, *GetPublicKeyRequest) (*GetPublicKeyResponse, error)
 	// D-H Diffie–Hellman key exchange.
 	// https://www.rfc-editor.org/rfc/rfc2631.html
-	DHRequest(context.Context, *DHRequestData) (*DHRequestResponse, error)
-	SendDH(context.Context, *SendDHRequest) (*SendDHResponse, error)
-	GetPrivate(context.Context, *emptypb.Empty) (*GetPrivateResponse, error)
+	GetPrivateKey(context.Context, *GetPrivateKeyRequest) (*GetPrivateKeyResponse, error)
+	GetDH(context.Context, *emptypb.Empty) (*GetDHResponse, error)
+	SendPrivateKey(context.Context, *SendPrivateKeyRequest) (*SendPrivateKeyResponse, error)
+	WaitPrivateKey(context.Context, *emptypb.Empty) (*WaitPrivateKeyResponse, error)
 }
 
 // UnimplementedAuthServer should be embedded to have forward compatible implementations.
@@ -136,14 +147,17 @@ func (UnimplementedAuthServer) SetPublicKey(context.Context, *SetPublicKeyReques
 func (UnimplementedAuthServer) GetPublicKey(context.Context, *GetPublicKeyRequest) (*GetPublicKeyResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPublicKey not implemented")
 }
-func (UnimplementedAuthServer) DHRequest(context.Context, *DHRequestData) (*DHRequestResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DHRequest not implemented")
+func (UnimplementedAuthServer) GetPrivateKey(context.Context, *GetPrivateKeyRequest) (*GetPrivateKeyResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPrivateKey not implemented")
 }
-func (UnimplementedAuthServer) SendDH(context.Context, *SendDHRequest) (*SendDHResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SendDH not implemented")
+func (UnimplementedAuthServer) GetDH(context.Context, *emptypb.Empty) (*GetDHResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetDH not implemented")
 }
-func (UnimplementedAuthServer) GetPrivate(context.Context, *emptypb.Empty) (*GetPrivateResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetPrivate not implemented")
+func (UnimplementedAuthServer) SendPrivateKey(context.Context, *SendPrivateKeyRequest) (*SendPrivateKeyResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SendPrivateKey not implemented")
+}
+func (UnimplementedAuthServer) WaitPrivateKey(context.Context, *emptypb.Empty) (*WaitPrivateKeyResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method WaitPrivateKey not implemented")
 }
 
 // UnsafeAuthServer may be embedded to opt out of forward compatibility for this service.
@@ -211,56 +225,74 @@ func _Auth_GetPublicKey_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Auth_DHRequest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DHRequestData)
+func _Auth_GetPrivateKey_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetPrivateKeyRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AuthServer).DHRequest(ctx, in)
+		return srv.(AuthServer).GetPrivateKey(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/hvx.api.v1alpha1.auth.proto.Auth/DHRequest",
+		FullMethod: "/hvx.api.v1alpha1.auth.proto.Auth/GetPrivateKey",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServer).DHRequest(ctx, req.(*DHRequestData))
+		return srv.(AuthServer).GetPrivateKey(ctx, req.(*GetPrivateKeyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Auth_SendDH_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SendDHRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AuthServer).SendDH(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/hvx.api.v1alpha1.auth.proto.Auth/SendDH",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServer).SendDH(ctx, req.(*SendDHRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Auth_GetPrivate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Auth_GetDH_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(emptypb.Empty)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AuthServer).GetPrivate(ctx, in)
+		return srv.(AuthServer).GetDH(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/hvx.api.v1alpha1.auth.proto.Auth/GetPrivate",
+		FullMethod: "/hvx.api.v1alpha1.auth.proto.Auth/GetDH",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServer).GetPrivate(ctx, req.(*emptypb.Empty))
+		return srv.(AuthServer).GetDH(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Auth_SendPrivateKey_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SendPrivateKeyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServer).SendPrivateKey(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/hvx.api.v1alpha1.auth.proto.Auth/SendPrivateKey",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServer).SendPrivateKey(ctx, req.(*SendPrivateKeyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Auth_WaitPrivateKey_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServer).WaitPrivateKey(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/hvx.api.v1alpha1.auth.proto.Auth/WaitPrivateKey",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServer).WaitPrivateKey(ctx, req.(*emptypb.Empty))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -285,16 +317,20 @@ var Auth_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Auth_GetPublicKey_Handler,
 		},
 		{
-			MethodName: "DHRequest",
-			Handler:    _Auth_DHRequest_Handler,
+			MethodName: "GetPrivateKey",
+			Handler:    _Auth_GetPrivateKey_Handler,
 		},
 		{
-			MethodName: "SendDH",
-			Handler:    _Auth_SendDH_Handler,
+			MethodName: "GetDH",
+			Handler:    _Auth_GetDH_Handler,
 		},
 		{
-			MethodName: "GetPrivate",
-			Handler:    _Auth_GetPrivate_Handler,
+			MethodName: "SendPrivateKey",
+			Handler:    _Auth_SendPrivateKey_Handler,
+		},
+		{
+			MethodName: "WaitPrivateKey",
+			Handler:    _Auth_WaitPrivateKey_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

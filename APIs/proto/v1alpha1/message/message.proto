@@ -32,6 +32,8 @@ service Messages {
       body: "*"
     };
   }
+
+  // TODO - EDIT PASSWORD...
 }
 
 message AccessRegisterRequest {
