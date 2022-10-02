@@ -24,36 +24,45 @@ service Activity {
   // which is why we put the key supporting activitypub feature on the server.
   // So in the tradeoff of privacy, we decided to design two key systems,
   // one for asymmetric encryption of accounts and one for activitypub key pairs.
-  rpc Activity (ActivityRequest) returns (ActivityResponse) {
-    option (google.api.http) = {
-      post: "/api/v1/activity",
-      body: "*"
-    };
-  }
+//  rpc Activity (ActivityRequest) returns (ActivityResponse) {
+//    option (google.api.http) = {
+//      post: "/api/v1/activity",
+//      body: "*"
+//    };
+//  }
+
+  rpc Activity (ActivityRequest) returns (ActivityResponse) {}
 }
 
 message ActivityRequest {
-  // An activity is delivered to its targets (which are actors) by first looking up the targets' inboxes and then
-  // posting the activity to those inboxes. Targets for delivery are determined by checking the ActivityStreams audience targeting;
-  // namely, the to, bto, cc, bcc, and audience fields of the activity.
-  repeated string TO = 1 [json_name = "to"];
-  repeated string CC = 2 [json_name = "cc"];
-  repeated string BTO = 3 [json_name = "bto"];
-  repeated string BCC = 4 [json_name = "bcc"];
-  repeated string Audience = 5 [json_name = "audience"];
-
-  // activity type.
-  string type = 6;
-
-  // body data that will have the final request for server-to-server interaction.
-  string body = 7;
-  repeated string Attachment = 8;
-  string AttachmentType = 9;
+  int64 actorId = 1;
+  int64 id = 2;
+  string table = 3;
 }
 
 message ActivityResponse {
   string code = 1;
   string status = 2;
-  repeated string inbox = 3;
 }
 
+
+//message ActivityRequest {
+//
+//  ActivityDelivery delivery = 1;
+//  repeated string sync = 6 [json_name = "sync"];
+//
+//  // activity type.
+//  string type = 7;
+//
+//  // body data that will have the final request for server-to-server interaction.
+//  string body = 8;
+//  repeated string Attachment = 9;
+//  string AttachmentType = 10;
+//}
+//
+//message ActivityResponse {
+//  string code = 1;
+//  string status = 2;
+//  repeated string inbox = 3;
+//}
+//

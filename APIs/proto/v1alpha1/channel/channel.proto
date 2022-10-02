@@ -30,6 +30,8 @@ service Channel {
   }
 
   rpc DeleteChannels(DeleteChannelsRequest) returns (DeleteChannelsResponse) {}
+
+  rpc GetPrivateKeyByActorId (GetPrivateKeyByActorIdRequest)  returns (GetPrivateKeyByActorIdResponse) {}
 }
 
 message CreateChannelRequest {
@@ -68,4 +70,12 @@ message DeleteChannelsRequest {
 message DeleteChannelsResponse {
   string code = 1;
   string status = 2;
+}
+
+message GetPrivateKeyByActorIdRequest {
+  int64 actorId = 1;
+}
+
+message GetPrivateKeyByActorIdResponse {
+  string privateKey =1;
 }

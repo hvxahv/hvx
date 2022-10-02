@@ -18,9 +18,8 @@ type Broadcasts struct {
 
 	// ActorId in the AdminId Actor data table, which identifies the creator of the Broadcast.
 	// Must be the administrator of the channel.
-	AdminId   uint   `gorm:"type:bigint;admin_id"`
-	ArticleId uint   `gorm:"type:bigint;article_id"`
-	CID       string `gorm:"type:text;cid"`
+	AdminId uint   `gorm:"type:bigint;admin_id"`
+	CID     string `gorm:"type:text;cid"`
 }
 
 type Broadcast interface {
@@ -29,8 +28,8 @@ type Broadcast interface {
 	Delete() error
 }
 
-func NewBroadcasts(channelId, adminId, articleId uint, cid string) *Broadcasts {
-	return &Broadcasts{ChannelId: channelId, AdminId: adminId, ArticleId: articleId, CID: cid}
+func NewBroadcasts(channelId, adminId uint, cid string) *Broadcasts {
+	return &Broadcasts{ChannelId: channelId, AdminId: adminId, CID: cid}
 }
 
 func (b *Broadcasts) Create() error {

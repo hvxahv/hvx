@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"github.com/google/uuid"
 	pb "github.com/hvxahv/hvx/APIs/v1alpha1/channel"
 	"github.com/hvxahv/hvx/microsvc"
 	"golang.org/x/net/context"
@@ -16,13 +15,10 @@ func (s *server) CreateBroadcast(ctx context.Context, in *pb.CreateBroadcastRequ
 		return nil, err
 	}
 
-	// TODO - SYNC TO IPFS AND RETURN CID.
-	// Return CID for simulated IPFS simulation
-	cid := uuid.New().String()
-
-	if err := NewBroadcasts(uint(in.GetChannelId()), parse.ActorId, uint(in.GetArticleId()), cid).Create(); err != nil {
+	if err := NewBroadcasts(uint(in.GetChannelId()), parse.ActorId, in.GetIpfsCID()).Create(); err != nil {
 		return nil, err
 	}
+
 	return &pb.CreateBroadcastResponse{
 		Code:   "200",
 		Status: "ok",

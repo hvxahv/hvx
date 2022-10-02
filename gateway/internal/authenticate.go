@@ -8,6 +8,7 @@
 package internal
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -38,18 +39,16 @@ func Auth(c *gin.Context) {
 		return
 	}
 
-	actorId, _ := strconv.Atoi(parse.ActorId)
-	exist, err := clientv1.New(c, microsvc.DeviceServiceName).IsExistDevice(int64(actorId))
-	if err != nil {
-		return
-	}
+	deviceId, _ := strconv.Atoi(parse.DeviceID)
+	exist, err := clientv1.New(c, microsvc.DeviceServiceName).IsExistDevice(int64(deviceId))
 	if err != nil {
 		c.JSON(501, errors.NewHandler("501", err.Error()))
 		c.Abort()
 		return
 	}
 
-	if !exist.IsExist {
+	fmt.Println(exist.IsExist)
+	if exist.IsExist {
 		c.JSON(401, errors.NewHandler("401", errors.New(errors.ErrTokenUnauthorized).Error()))
 		c.Abort()
 		return

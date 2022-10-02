@@ -27,6 +27,7 @@ type ChannelClient interface {
 	GetChannels(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetChannelsResponse, error)
 	DeleteChannel(ctx context.Context, in *DeleteChannelRequest, opts ...grpc.CallOption) (*DeleteChannelResponse, error)
 	DeleteChannels(ctx context.Context, in *DeleteChannelsRequest, opts ...grpc.CallOption) (*DeleteChannelsResponse, error)
+	GetPrivateKeyByActorId(ctx context.Context, in *GetPrivateKeyByActorIdRequest, opts ...grpc.CallOption) (*GetPrivateKeyByActorIdResponse, error)
 }
 
 type channelClient struct {
@@ -73,6 +74,15 @@ func (c *channelClient) DeleteChannels(ctx context.Context, in *DeleteChannelsRe
 	return out, nil
 }
 
+func (c *channelClient) GetPrivateKeyByActorId(ctx context.Context, in *GetPrivateKeyByActorIdRequest, opts ...grpc.CallOption) (*GetPrivateKeyByActorIdResponse, error) {
+	out := new(GetPrivateKeyByActorIdResponse)
+	err := c.cc.Invoke(ctx, "/hvx.api.v1alpha1.channel.proto.Channel/GetPrivateKeyByActorId", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ChannelServer is the server API for Channel service.
 // All implementations should embed UnimplementedChannelServer
 // for forward compatibility
@@ -81,6 +91,7 @@ type ChannelServer interface {
 	GetChannels(context.Context, *emptypb.Empty) (*GetChannelsResponse, error)
 	DeleteChannel(context.Context, *DeleteChannelRequest) (*DeleteChannelResponse, error)
 	DeleteChannels(context.Context, *DeleteChannelsRequest) (*DeleteChannelsResponse, error)
+	GetPrivateKeyByActorId(context.Context, *GetPrivateKeyByActorIdRequest) (*GetPrivateKeyByActorIdResponse, error)
 }
 
 // UnimplementedChannelServer should be embedded to have forward compatible implementations.
@@ -98,6 +109,9 @@ func (UnimplementedChannelServer) DeleteChannel(context.Context, *DeleteChannelR
 }
 func (UnimplementedChannelServer) DeleteChannels(context.Context, *DeleteChannelsRequest) (*DeleteChannelsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteChannels not implemented")
+}
+func (UnimplementedChannelServer) GetPrivateKeyByActorId(context.Context, *GetPrivateKeyByActorIdRequest) (*GetPrivateKeyByActorIdResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPrivateKeyByActorId not implemented")
 }
 
 // UnsafeChannelServer may be embedded to opt out of forward compatibility for this service.
@@ -183,6 +197,24 @@ func _Channel_DeleteChannels_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Channel_GetPrivateKeyByActorId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetPrivateKeyByActorIdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChannelServer).GetPrivateKeyByActorId(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/hvx.api.v1alpha1.channel.proto.Channel/GetPrivateKeyByActorId",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChannelServer).GetPrivateKeyByActorId(ctx, req.(*GetPrivateKeyByActorIdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Channel_ServiceDesc is the grpc.ServiceDesc for Channel service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -205,6 +237,10 @@ var Channel_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteChannels",
 			Handler:    _Channel_DeleteChannels_Handler,
+		},
+		{
+			MethodName: "GetPrivateKeyByActorId",
+			Handler:    _Channel_GetPrivateKeyByActorId_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

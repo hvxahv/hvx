@@ -54,17 +54,17 @@ type AHandler interface {
 	Delete(data []byte, to []string) (*pb.ActivityResponse, error)
 }
 
-func response(notok, ok []string) (*pb.ActivityResponse, error) {
-	if len(notok) != 0 {
-		return &pb.ActivityResponse{
-			Code:   "200",
-			Status: FailedToDelivery,
-			Inbox:  notok,
-		}, nil
-	}
-	return &pb.ActivityResponse{
-		Code:   "200",
-		Status: DeliverySuccessfully,
-		Inbox:  ok,
-	}, nil
-}
+//func response(notok, ok []string) (*pb.ActivityResponse, error) {
+//	if len(notok) != 0 {
+//		return &pb.ActivityResponse{
+//			Code:   "200",
+//			Status: FailedToDelivery,
+//			Inbox:  notok,
+//		}, nil
+//	}
+//	return &pb.ActivityResponse{
+//		Code:   "200",
+//		Status: DeliverySuccessfully,
+//		Inbox:  ok,
+//	}, nil
+//}

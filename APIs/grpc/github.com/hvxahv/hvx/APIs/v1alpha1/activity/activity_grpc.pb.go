@@ -22,15 +22,6 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ActivityClient interface {
-	// New Design...
-	// Activity create an activity that is sent to the activity pub instance server of the specified actor (server to server interactions),
-	// When sending messages to the Mastodon server, we found that Mastodon must verify the user's identity by signing,
-	// and if the actor's private key is stored locally,
-	// we need to sign locally and then submit the signature to the server before sending,
-	// but we found serious performance problems when doing rsa private key signing on the client side,
-	// which is why we put the key supporting activitypub feature on the server.
-	// So in the tradeoff of privacy, we decided to design two key systems,
-	// one for asymmetric encryption of accounts and one for activitypub key pairs.
 	Activity(ctx context.Context, in *ActivityRequest, opts ...grpc.CallOption) (*ActivityResponse, error)
 }
 
@@ -55,15 +46,6 @@ func (c *activityClient) Activity(ctx context.Context, in *ActivityRequest, opts
 // All implementations should embed UnimplementedActivityServer
 // for forward compatibility
 type ActivityServer interface {
-	// New Design...
-	// Activity create an activity that is sent to the activity pub instance server of the specified actor (server to server interactions),
-	// When sending messages to the Mastodon server, we found that Mastodon must verify the user's identity by signing,
-	// and if the actor's private key is stored locally,
-	// we need to sign locally and then submit the signature to the server before sending,
-	// but we found serious performance problems when doing rsa private key signing on the client side,
-	// which is why we put the key supporting activitypub feature on the server.
-	// So in the tradeoff of privacy, we decided to design two key systems,
-	// one for asymmetric encryption of accounts and one for activitypub key pairs.
 	Activity(context.Context, *ActivityRequest) (*ActivityResponse, error)
 }
 

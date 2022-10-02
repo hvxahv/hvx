@@ -3,6 +3,7 @@ package inbox
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/google/uuid"
 	"github.com/hvxahv/hvx/activitypub"
 	"github.com/hvxahv/hvx/clientv1"
 	"github.com/hvxahv/hvx/cmd/activity/internal/activity"
@@ -29,13 +30,11 @@ func NewHandler(actorId uint, body []byte) *Handler {
 func NewActivity(name string, body []byte) (*Handler, error) {
 	fmt.Println(string(body))
 
-	account, err := clientv1.New(context.Background(), microsvc.AccountServiceName).GetAccountByUsername(name)
+	actor, err := clientv1.New(context.Background(), microsvc.ActorServiceName).GetActorByUsername(name)
 	if err != nil {
-		errors.Throw("failed to connect to account server during inbox processing.", err)
-		return nil, errors.New(errors.ErrAccountGetByUsername)
+		return nil, err
 	}
-	actorId := account.ActorId
-	return NewHandler(uint(actorId), body), nil
+	return NewHandler(uint(actor.Id), body), nil
 }
 
 func (h *Handler) Handler() error {
@@ -51,8 +50,57 @@ func (h *Handler) Handler() error {
 		if err := json.Unmarshal(h.body, &f); err != nil {
 			return err
 		}
-		if err := NewInboxes(h.actorId, f.Id, f.Actor, f.Type, string(h.body)).Create(); err != nil {
+		// Requested object of attention
+		actor, err := clientv1.New(context.Background(), microsvc.ActorServiceName).GetActorByAddress(f.Object)
+		if err != nil {
 			return err
+		}
+
+		// Request Followers.
+		object, err := clientv1.New(context.Background(), microsvc.ActorServiceName).GetActorByAddress(f.Actor)
+		if err != nil {
+			return err
+		}
+
+		switch actor.ActorType {
+		case activitypub.PersonType:
+			if err := NewInboxes(h.actorId, f.Id, f.Actor, f.Type, string(h.body)).Create(); err != nil {
+				return err
+			}
+		//	If the actor requesting the follow is a service, the default response is to agree to the follow.
+		case activitypub.ChannelType:
+			// SEND ACCEPT AND ADD CHANNEL SUB.
+
+			marshal, err := json.Marshal(&activitypub.Accept{
+				Context: "https://www.w3.org/ns/activitystreams",
+				Id:      fmt.Sprintf("%s/%s", actor.Address, uuid.NewString()),
+				Type:    activitypub.AcceptType,
+				Actor:   actor.Address,
+				Object: struct {
+					Id     string `json:"id"`
+					Type   string `json:"type"`
+					Actor  string `json:"actor"`
+					Object string `json:"object"`
+				}{
+					Id:     f.Id,
+					Type:   f.Type,
+					Actor:  f.Actor,
+					Object: f.Object,
+				},
+			})
+			if err != nil {
+				fmt.Println(err)
+			}
+			c, err := clientv1.New(context.Background(), microsvc.ChannelServiceName).GetPrivateKeyByActorId(actor.Id)
+			if err != nil {
+				return err
+			}
+			// DELIVERY ...
+			do, err := activity.NewDelivery(marshal, actor.Address, c.PrivateKey).Do(object.Inbox)
+			if err != nil {
+				fmt.Println(err)
+			}
+			fmt.Println(do)
 		}
 
 	case activitypub.UndoType:
@@ -69,11 +117,10 @@ func (h *Handler) Handler() error {
 		}
 
 		switch undo.Object.Type {
-
 		case activitypub.FollowType:
-			if err := NewInboxes(h.actorId, undo.Id, undo.Actor, undo.Type, string(h.body)).Create(); err != nil {
-				return err
-			}
+			//if err := NewInboxes(h.actorId, undo.Id, undo.Actor, undo.Type, string(h.body)).Create(); err != nil {
+			//	return err
+			//}
 			if err := friendship.NewFollower(h.actorId, uint(objectId.GetId())).UNFollow(); err != nil {
 				return err
 			}

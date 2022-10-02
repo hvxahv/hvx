@@ -71,20 +71,24 @@ message ArticleInfo {
   string visibility = 12;
 }
 
-
 message CreateRequest {
-  int64 actorId = 1;
-  string title = 2;
-  string summary = 3;
-  string article = 4;
-  repeated string tags = 5;
-  string attachmentType = 6;
-  repeated string attachments = 7;
-  repeated string to = 8;
-  repeated string cc = 9;
-  bool state = 10;
-  bool nsfw = 11;
-  string visibility = 12;
+  string title = 1;
+  string summary = 2;
+  string article = 3;
+  repeated string tags = 4;
+  bool nsfw = 5;
+  bool state = 6;
+
+  repeated int64 to = 7;
+  repeated int64 cc = 8;
+  repeated int64 bto = 9;
+  repeated int64 audience = 10;
+
+  string attachmentType = 11;
+  repeated string attachments = 12;
+
+  int64 visibility = 13;
+  repeated int64 csync = 14;
 }
 
 message CreateResponse {

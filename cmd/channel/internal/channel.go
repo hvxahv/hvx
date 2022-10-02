@@ -44,6 +44,8 @@ type Channel interface {
 
 	// DeleteChannels is used to delete all channels.
 	DeleteChannels() error
+
+	GetPrivateKeyByActorId() (*Channels, error)
 }
 
 // NewChannels channels constructor. The channel can be created by this constructor.
@@ -149,4 +151,21 @@ func (c *Channels) DeleteChannels() error {
 		return err
 	}
 	return nil
+}
+
+func NewChannelActorId(id uint) *Channels {
+	return &Channels{ActorId: id}
+}
+func (c *Channels) GetPrivateKeyByActorId() (*Channels, error) {
+	db := cockroach.GetDB()
+
+	if err := db.Debug().
+		Table(ChannelsTable).
+		Where("actor_id = ?", c.ActorId).
+		First(&c).
+		Error; err != nil {
+		return nil, err
+	}
+
+	return c, nil
 }

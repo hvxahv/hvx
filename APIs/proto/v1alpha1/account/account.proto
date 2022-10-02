@@ -58,6 +58,7 @@ service Accounts {
   rpc Verify (VerifyRequest) returns (VerifyResponse) {}
 
   rpc GetPrivateKey (GetPrivateKeyRequest) returns (GetPrivateKeyResponse) {}
+
 }
 
 message IsExistRequest {

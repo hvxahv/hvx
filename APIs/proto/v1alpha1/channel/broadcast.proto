@@ -38,7 +38,7 @@ message BroadcastData {
 
 message CreateBroadcastRequest {
   int64 channelId = 1;
-  int64 articleId = 2;
+  string ipfsCID = 2;
 }
 
 message CreateBroadcastResponse {

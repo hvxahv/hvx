@@ -105,3 +105,13 @@ func (s *server) DeleteChannels(ctx context.Context, in *pb.DeleteChannelsReques
 	// TODO - Implement deleting all created channels.
 	return &pb.DeleteChannelsResponse{}, nil
 }
+
+func (s *server) GetPrivateKeyByActorId(ctx context.Context, in *pb.GetPrivateKeyByActorIdRequest) (*pb.GetPrivateKeyByActorIdResponse, error) {
+	c, err := NewChannelActorId(uint(in.GetActorId())).GetPrivateKeyByActorId()
+	if err != nil {
+		return nil, err
+	}
+	return &pb.GetPrivateKeyByActorIdResponse{
+		PrivateKey: c.PrivateKey,
+	}, nil
+}
