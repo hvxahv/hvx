@@ -1,10 +1,13 @@
 package clientv1
 
-import pb "github.com/hvxahv/hvx/APIs/v1alpha1/activity"
+import (
+	pb "github.com/hvxahv/hvx/APIs/v1alpha1/activity"
+	"github.com/hvxahv/hvx/APIs/v1alpha1/article"
+)
 
 type Activity interface {
 	Inbox(name string, body []byte) (*pb.InboxResponse, error)
-	Activity(actorId, id int64, table string) (*pb.ActivityResponse, error)
+	ArticleActivity(accountId, actorId, articleId int64, article *article.CreateRequest) (*pb.ActivityResponse, error)
 }
 
 func (svc *Svc) Inbox(name string, body []byte) (*pb.InboxResponse, error) {
@@ -24,17 +27,18 @@ func (svc *Svc) Inbox(name string, body []byte) (*pb.InboxResponse, error) {
 	return i, nil
 }
 
-func (svc *Svc) Activity(actorId, id int64, table string) (*pb.ActivityResponse, error) {
+func (svc *Svc) ArticleActivity(accountId, actorId, articleId int64, article *article.CreateRequest) (*pb.ActivityResponse, error) {
 	c, err := NewClient(svc.ctx, svc.address)
 	if err != nil {
 		return nil, err
 	}
 	defer c.Close()
 
-	a, err := pb.NewActivityClient(c.Conn).Activity(svc.ctx, &pb.ActivityRequest{
-		ActorId: actorId,
-		Id:      id,
-		Table:   table,
+	a, err := pb.NewActivityClient(c.Conn).ArticleCreateActivity(svc.ctx, &pb.ArticleCreateActivityRequest{
+		AccountId: accountId,
+		ActorId:   actorId,
+		ArticleId: articleId,
+		Article:   article,
 	})
 	if err != nil {
 		return nil, err

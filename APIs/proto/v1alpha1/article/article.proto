@@ -73,6 +73,16 @@ message ArticleInfo {
   string updateAt = 15;
 }
 
+message Attachments {
+  string type = 1;
+  string mediaType = 2;
+  string url = 3;
+  string name = 4;
+  string blurhash = 5;
+  int64 width = 6;
+  int64 height = 7;
+}
+
 message CreateRequest {
   string title = 1;
   string summary = 2;
@@ -83,13 +93,15 @@ message CreateRequest {
   repeated string cc = 8;
   repeated string bto = 9;
   repeated int64 audience = 10;
-  repeated string attachments = 11;
+  repeated Attachments attachment = 11;
   int64 visibility = 12;
 }
 
 message CreateResponse {
   string code = 1;
   string status = 2;
+  repeated string successes = 3;
+  repeated string failures = 4;
 }
 
 message GetRequest {

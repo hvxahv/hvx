@@ -32,7 +32,7 @@ type ActivityClient interface {
 	// So in the tradeoff of privacy, we decided to design two key systems,
 	// one for asymmetric encryption of accounts and one for activitypub key pairs.
 	Activity(ctx context.Context, in *ActivityRequest, opts ...grpc.CallOption) (*ActivityResponse, error)
-	ArticleActivity(ctx context.Context, in *ActivityRequest, opts ...grpc.CallOption) (*ActivityResponse, error)
+	ArticleCreateActivity(ctx context.Context, in *ArticleCreateActivityRequest, opts ...grpc.CallOption) (*ActivityResponse, error)
 }
 
 type activityClient struct {
@@ -52,9 +52,9 @@ func (c *activityClient) Activity(ctx context.Context, in *ActivityRequest, opts
 	return out, nil
 }
 
-func (c *activityClient) ArticleActivity(ctx context.Context, in *ActivityRequest, opts ...grpc.CallOption) (*ActivityResponse, error) {
+func (c *activityClient) ArticleCreateActivity(ctx context.Context, in *ArticleCreateActivityRequest, opts ...grpc.CallOption) (*ActivityResponse, error) {
 	out := new(ActivityResponse)
-	err := c.cc.Invoke(ctx, "/hvx.api.v1alpha1.activity.proto.Activity/ArticleActivity", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/hvx.api.v1alpha1.activity.proto.Activity/ArticleCreateActivity", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -75,7 +75,7 @@ type ActivityServer interface {
 	// So in the tradeoff of privacy, we decided to design two key systems,
 	// one for asymmetric encryption of accounts and one for activitypub key pairs.
 	Activity(context.Context, *ActivityRequest) (*ActivityResponse, error)
-	ArticleActivity(context.Context, *ActivityRequest) (*ActivityResponse, error)
+	ArticleCreateActivity(context.Context, *ArticleCreateActivityRequest) (*ActivityResponse, error)
 }
 
 // UnimplementedActivityServer should be embedded to have forward compatible implementations.
@@ -85,8 +85,8 @@ type UnimplementedActivityServer struct {
 func (UnimplementedActivityServer) Activity(context.Context, *ActivityRequest) (*ActivityResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Activity not implemented")
 }
-func (UnimplementedActivityServer) ArticleActivity(context.Context, *ActivityRequest) (*ActivityResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ArticleActivity not implemented")
+func (UnimplementedActivityServer) ArticleCreateActivity(context.Context, *ArticleCreateActivityRequest) (*ActivityResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ArticleCreateActivity not implemented")
 }
 
 // UnsafeActivityServer may be embedded to opt out of forward compatibility for this service.
@@ -118,20 +118,20 @@ func _Activity_Activity_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Activity_ArticleActivity_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ActivityRequest)
+func _Activity_ArticleCreateActivity_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ArticleCreateActivityRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ActivityServer).ArticleActivity(ctx, in)
+		return srv.(ActivityServer).ArticleCreateActivity(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/hvx.api.v1alpha1.activity.proto.Activity/ArticleActivity",
+		FullMethod: "/hvx.api.v1alpha1.activity.proto.Activity/ArticleCreateActivity",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ActivityServer).ArticleActivity(ctx, req.(*ActivityRequest))
+		return srv.(ActivityServer).ArticleCreateActivity(ctx, req.(*ArticleCreateActivityRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -148,8 +148,8 @@ var Activity_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Activity_Activity_Handler,
 		},
 		{
-			MethodName: "ArticleActivity",
-			Handler:    _Activity_ArticleActivity_Handler,
+			MethodName: "ArticleCreateActivity",
+			Handler:    _Activity_ArticleCreateActivity_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

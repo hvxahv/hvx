@@ -31,6 +31,7 @@ const (
 	TravelType          = "Travel"
 	UpdateType          = "Update"
 	ViewType            = "View"
+	NoteType            = "Note"
 )
 
 // Actor https://www.w3.org/TR/activitystreams-vocabulary/#actor-types.

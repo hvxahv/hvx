@@ -1,40 +1,53 @@
 package activity
 
-//func (h *Handler) Follow() (*pb.ActivityResponse, error) {
-//	var (
-//		notok []string
-//		ok    []string
-//		id    = fmt.Sprintf("%s/%s", h.aAddr, uuid.NewString())
-//	)
-//
-//	//  MARSHAL DATA.
-//	body := &activitypub.Follow{
-//		Context: "https://www.w3.org/ns/activitystreams",
-//		Id:      id,
-//		Type:    "Follow",
-//		Actor:   h.aAddr,
-//		Object:  h.inbox,
-//	}
-//	marshal, err := json.Marshal(body)
-//	if err != nil {
-//		return nil, err
-//	}
-//
-//	// DELIVERY ...
-//	do, err := NewDelivery(marshal, h.aAddr, h.privateKey).Do(fmt.Sprintf("%s/inbox", h.inbox))
-//	if err != nil {
-//		return nil, err
-//	}
-//	if do.StatusCode != 202 {
-//		notok = append(notok, h.inbox)
-//		return nil, nil
-//	}
-//	ok = append(ok, h.inbox)
-//
-//	// CREATE FOLLOW OUTBOX ...
-//	if err := outbox.NewOutboxes(h.actorId, id, h.inbox, activitypub.FollowType, string(marshal)).Create(); err != nil {
-//		return nil, err
-//	}
-//
-//	return response(notok, ok)
-//}
+import (
+	"encoding/json"
+	pb "github.com/hvxahv/hvx/APIs/v1alpha1/activity"
+	"github.com/hvxahv/hvx/activitypub"
+	"github.com/hvxahv/hvx/cmd/activity/internal/delivery"
+	"github.com/hvxahv/hvx/cmd/activity/internal/outbox"
+)
+
+func (h *Handler) Follow() (*pb.ActivityResponse, error) {
+	var (
+		failures  []string
+		successes []string
+	)
+
+	//  MARSHAL DATA.
+	body := &activitypub.Follow{
+		Context: "https://www.w3.org/ns/activitystreams",
+		Id:      h.ActivityId,
+		Type:    activitypub.FollowType,
+		Actor:   h.Actor.Address,
+		Object:  h.Object.Address,
+	}
+
+	marshal, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	// DELIVERY ...
+	do, err := delivery.New(h.Actor.PublicKeyId, h.Actor.PrivateKey, marshal).Do(h.Object.Inbox)
+	if err != nil {
+		return nil, err
+	}
+	if do.StatusCode != 202 {
+		failures = append(failures, h.Object.Address)
+		return nil, nil
+	}
+	successes = append(successes, h.Object.Address)
+
+	// CREATE FOLLOW OUTBOX ...
+	if err := outbox.NewOutboxes(uint(h.Actor.Id), h.ActivityId, h.Object.Address, activitypub.FollowType, string(marshal)).Create(); err != nil {
+		return nil, err
+	}
+
+	return &pb.ActivityResponse{
+		Code:      "200",
+		Status:    "ok",
+		Successes: successes,
+		Failures:  failures,
+	}, nil
+}

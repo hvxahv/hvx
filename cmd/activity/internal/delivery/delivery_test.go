@@ -1,4 +1,4 @@
-package activity
+package delivery
 
 import (
 	"encoding/json"
