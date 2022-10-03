@@ -8,7 +8,10 @@
 package internal
 
 import (
+	"fmt"
 	"github.com/hvxahv/hvx/cfg"
+	"github.com/hvxahv/hvx/cockroach"
+	"github.com/hvxahv/hvx/errors"
 	"testing"
 )
 
@@ -16,25 +19,46 @@ func init() {
 	cfg.Default()
 }
 
+func TestDB(t *testing.T) {
+	db := cockroach.GetDB()
+	if err := db.AutoMigrate(&Articles{}); err != nil {
+		t.Error(errors.NewDatabaseCreate(ArticleTable))
+	}
+}
+
+func TestArticles_Create(t *testing.T) {
+	a := &Articles{}
+
+	create, err := a.Create()
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	fmt.Println(create)
+}
+
 func TestArticles_Get(t *testing.T) {
-	g, err := NewArticlesId(787516945347018753).Get(785518573776797697)
+	get, err := NewArticlesId(801949911405297665).Get()
 	if err != nil {
 		t.Error(err)
 		return
 	}
-	t.Log("ok", g)
+	t.Log(get)
+}
 
-	g2, err := NewArticlesId(787516945347018753).Get(785747557033967617)
+func TestArticles_GetArticles(t *testing.T) {
+	articles, err := NewArticlesActorId(801935105807482881).GetArticles()
 	if err != nil {
 		t.Error(err)
 		return
 	}
-	t.Log("ok", g2)
+	t.Log(articles)
+}
 
-	g3, err := NewArticlesId(787516945347018753).Get(787507052643319809)
-	if err != nil {
-		t.Error(err)
-		return
-	}
-	t.Log("err", g3)
+func TestArticles_Edit(t *testing.T) {
+
+}
+
+func TestArticles_Delete(t *testing.T) {
+
 }

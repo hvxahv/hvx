@@ -22,7 +22,17 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ActivityClient interface {
+	// New Design...
+	// Activity create an activity that is sent to the activity pub instance server of the specified actor (server to server interactions),
+	// When sending messages to the Mastodon server, we found that Mastodon must verify the user's identity by signing,
+	// and if the actor's private key is stored locally,
+	// we need to sign locally and then submit the signature to the server before sending,
+	// but we found serious performance problems when doing rsa private key signing on the client side,
+	// which is why we put the key supporting activitypub feature on the server.
+	// So in the tradeoff of privacy, we decided to design two key systems,
+	// one for asymmetric encryption of accounts and one for activitypub key pairs.
 	Activity(ctx context.Context, in *ActivityRequest, opts ...grpc.CallOption) (*ActivityResponse, error)
+	ArticleActivity(ctx context.Context, in *ActivityRequest, opts ...grpc.CallOption) (*ActivityResponse, error)
 }
 
 type activityClient struct {
@@ -42,11 +52,30 @@ func (c *activityClient) Activity(ctx context.Context, in *ActivityRequest, opts
 	return out, nil
 }
 
+func (c *activityClient) ArticleActivity(ctx context.Context, in *ActivityRequest, opts ...grpc.CallOption) (*ActivityResponse, error) {
+	out := new(ActivityResponse)
+	err := c.cc.Invoke(ctx, "/hvx.api.v1alpha1.activity.proto.Activity/ArticleActivity", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ActivityServer is the server API for Activity service.
 // All implementations should embed UnimplementedActivityServer
 // for forward compatibility
 type ActivityServer interface {
+	// New Design...
+	// Activity create an activity that is sent to the activity pub instance server of the specified actor (server to server interactions),
+	// When sending messages to the Mastodon server, we found that Mastodon must verify the user's identity by signing,
+	// and if the actor's private key is stored locally,
+	// we need to sign locally and then submit the signature to the server before sending,
+	// but we found serious performance problems when doing rsa private key signing on the client side,
+	// which is why we put the key supporting activitypub feature on the server.
+	// So in the tradeoff of privacy, we decided to design two key systems,
+	// one for asymmetric encryption of accounts and one for activitypub key pairs.
 	Activity(context.Context, *ActivityRequest) (*ActivityResponse, error)
+	ArticleActivity(context.Context, *ActivityRequest) (*ActivityResponse, error)
 }
 
 // UnimplementedActivityServer should be embedded to have forward compatible implementations.
@@ -55,6 +84,9 @@ type UnimplementedActivityServer struct {
 
 func (UnimplementedActivityServer) Activity(context.Context, *ActivityRequest) (*ActivityResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Activity not implemented")
+}
+func (UnimplementedActivityServer) ArticleActivity(context.Context, *ActivityRequest) (*ActivityResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ArticleActivity not implemented")
 }
 
 // UnsafeActivityServer may be embedded to opt out of forward compatibility for this service.
@@ -86,6 +118,24 @@ func _Activity_Activity_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Activity_ArticleActivity_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ActivityRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ActivityServer).ArticleActivity(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/hvx.api.v1alpha1.activity.proto.Activity/ArticleActivity",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ActivityServer).ArticleActivity(ctx, req.(*ActivityRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Activity_ServiceDesc is the grpc.ServiceDesc for Activity service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -96,6 +146,10 @@ var Activity_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Activity",
 			Handler:    _Activity_Activity_Handler,
+		},
+		{
+			MethodName: "ArticleActivity",
+			Handler:    _Activity_ArticleActivity_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

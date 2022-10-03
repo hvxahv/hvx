@@ -24,14 +24,14 @@ service Activity {
   // which is why we put the key supporting activitypub feature on the server.
   // So in the tradeoff of privacy, we decided to design two key systems,
   // one for asymmetric encryption of accounts and one for activitypub key pairs.
-//  rpc Activity (ActivityRequest) returns (ActivityResponse) {
-//    option (google.api.http) = {
-//      post: "/api/v1/activity",
-//      body: "*"
-//    };
-//  }
+  rpc Activity (ActivityRequest) returns (ActivityResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/activity",
+      body: "*"
+    };
+  }
 
-  rpc Activity (ActivityRequest) returns (ActivityResponse) {}
+  rpc ArticleActivity (ActivityRequest) returns (ActivityResponse) {}
 }
 
 message ActivityRequest {

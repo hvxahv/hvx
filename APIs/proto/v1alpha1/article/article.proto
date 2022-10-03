@@ -42,7 +42,7 @@ service Article {
   // Delete a post or status by post or status ID.
   rpc Delete(DeleteRequest) returns (DeleteResponse) {
     option (google.api.http) = {
-      delete: "/api/v1/article",
+      delete: "/api/v1/article/{articleId}",
       body: "*"
     };
   }
@@ -57,18 +57,20 @@ service Article {
 }
 
 message ArticleInfo {
-  int64 id = 1;
-  string title = 2;
-  string summary = 3;
-  string article = 4;
-  repeated string tags = 5;
-  string attachmentType = 6;
-  repeated string attachments = 7;
-  repeated string to = 8;
-  repeated string cc = 9;
-  bool state = 10;
-  bool nsfw = 11;
-  string visibility = 12;
+  string title = 1;
+  string summary = 2;
+  string article = 3;
+  repeated string tags = 4;
+  bool nsfw = 5;
+  repeated string to = 7;
+  repeated string cc = 8;
+  repeated string bto = 9;
+  repeated int64 audience = 10;
+  repeated string attachments = 11;
+  int64 visibility = 12;
+  int64 id = 13;
+  string createAt = 14;
+  string updateAt = 15;
 }
 
 message CreateRequest {
@@ -77,18 +79,12 @@ message CreateRequest {
   string article = 3;
   repeated string tags = 4;
   bool nsfw = 5;
-  bool state = 6;
-
-  repeated int64 to = 7;
-  repeated int64 cc = 8;
-  repeated int64 bto = 9;
+  repeated string to = 7;
+  repeated string cc = 8;
+  repeated string bto = 9;
   repeated int64 audience = 10;
-
-  string attachmentType = 11;
-  repeated string attachments = 12;
-
-  int64 visibility = 13;
-  repeated int64 csync = 14;
+  repeated string attachments = 11;
+  int64 visibility = 12;
 }
 
 message CreateResponse {
@@ -112,19 +108,16 @@ message GetArticlesRequest {
 
 message GetArticlesResponse {
   string code = 1;
-  repeated ArticleInfo data = 2;
+  repeated ArticleInfo articles = 2;
 }
 
 message UpdateRequest {
-  string id = 1;
-  string title = 2;
-  string summary = 3;
-  string article = 4;
-  repeated string tags = 5;
-  string attachmentType = 6;
-  repeated string attachments = 7;
-  string nsfw = 8;
-  string visibility = 9;
+  string title = 1;
+  string summary = 2;
+  string article = 3;
+  repeated string tags = 4;
+  repeated string attachments = 5;
+  int64 id = 6;
 }
 
 message UpdateResponse {
@@ -133,7 +126,7 @@ message UpdateResponse {
 }
 
 message DeleteRequest {
-  int64 articleId = 1;
+  string articleId = 1 [(google.api.field_behavior) = REQUIRED];
 }
 
 message DeleteResponse {
