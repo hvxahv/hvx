@@ -4,16 +4,17 @@ import (
 	"bytes"
 	"crypto"
 	"crypto/rsa"
-	"github.com/go-fed/httpsig"
-	"github.com/hvxahv/hvx/errors"
-	"github.com/spf13/viper"
-	"golang.org/x/crypto/ssh"
 	"io"
 	"net/http"
 	"net/url"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/go-fed/httpsig"
+	"github.com/hvxahv/hvx/errors"
+	"github.com/spf13/viper"
+	"golang.org/x/crypto/ssh"
 )
 
 const (

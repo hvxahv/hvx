@@ -29,6 +29,9 @@ func (h *Handler) Create(address string, in *pb.ArticleCreateActivityRequest) (*
 	if len(in.Article.GetTo()) < 1 {
 		in.Article.To = append(in.Article.To, fmt.Sprintf("%s/followers", h.Actor.Address))
 	}
+	if len(in.Article.GetAudience()) > 0 {
+		in.Article.Cc = append(in.Article.To, fmt.Sprintf("%s/followers", h.Actor.Address))
+	}
 	var body = &activitypub.Create{
 		Context:   activitypub.NewContext(),
 		Id:        id,

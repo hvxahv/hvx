@@ -10,12 +10,16 @@ package internal
 
 import (
 	"fmt"
+	"strconv"
+
 	pb "github.com/hvxahv/hvx/APIs/v1alpha1/activity"
 	"github.com/hvxahv/hvx/activitypub"
+	"github.com/hvxahv/hvx/clientv1"
 	"github.com/hvxahv/hvx/cmd/activity/internal/activity"
 	"github.com/hvxahv/hvx/cmd/activity/internal/friendship"
 	"github.com/hvxahv/hvx/errors"
 	"github.com/hvxahv/hvx/microsvc"
+	"github.com/spf13/viper"
 	"golang.org/x/net/context"
 )
 
@@ -98,10 +102,14 @@ func (s *server) ArticleCreateActivity(ctx context.Context, in *pb.ArticleCreate
 		}
 	}
 	if len(in.Article.GetTo()) < 1 {
+		// Send to followers.
+		in.Article.To = append(in.Article.To, fmt.Sprintf("%s/followers", h.Actor.Address))
+
 		get, err := friendship.NewFollows(uint(in.GetActorId()), friendship.Follower).Get()
 		if err != nil {
 			return nil, err
 		}
+
 		for _, i := range get {
 			h.Object = *activity.NewObjectId(i)
 			create, err := h.Create(h.Object.Address, in)
@@ -120,6 +128,25 @@ func (s *server) ArticleCreateActivity(ctx context.Context, in *pb.ArticleCreate
 		// SYNC TO CHANNELS
 		// GET CHANNELS SUB
 		//
+		for _, i := range in.Article.GetAudience() {
+			in.Article.Cc = append(in.Article.Cc, fmt.Sprintf("https://%s/c/%s", viper.GetString("domain"), strconv.Itoa(int(i))))
+			subscribers, err := clientv1.New(ctx, microsvc.ChannelServiceName).GetSubscribers(i, in.GetActorId())
+			if err != nil {
+				return nil, err
+			}
+			for _, sub := range subscribers.Subscribers {
+				h.Object = *activity.NewObjectId(uint(sub.Id))
+				create, err := h.Create(h.Object.Address, in)
+				if err != nil {
+					return nil, err
+				}
+				if create.Status == "failures" {
+					failures = append(failures, create.Address)
+				} else {
+					successes = append(successes, create.Address)
+				}
+			}
+		}
 	}
 	fmt.Println(failures, successes)
 	return &pb.ActivityResponse{

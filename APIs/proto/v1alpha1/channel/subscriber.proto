@@ -29,6 +29,8 @@ service Subscriber {
     };
   }
 
+  rpc GetSubscribersActor(GetSubscribersActorRequest) returns (GetSubscribersActorResponse) { }
+
   rpc Subscription(SubscriptionRequest) returns (SubscriptionResponse) {
     option (google.api.http) = {
       post: "/api/v1/channel/subscription",
@@ -72,6 +74,18 @@ message GetSubscribersRequest {
 message GetSubscribersResponse {
   string code = 1;
   repeated actor.proto.ActorData subscriber = 2;
+}
+
+
+message GetSubscribersActorRequest {
+  int64 channelId = 1;
+  int64 adminId = 2;
+}
+
+message GetSubscribersActorResponse {
+  string code = 1;
+  string status = 2;
+  repeated actor.proto.ActorData subscribers = 3;
 }
 
 message SubscriptionRequest {

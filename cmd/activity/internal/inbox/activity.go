@@ -3,6 +3,7 @@ package inbox
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/google/uuid"
 	"github.com/hvxahv/hvx/activitypub"
 	"github.com/hvxahv/hvx/clientv1"

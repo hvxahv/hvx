@@ -80,6 +80,7 @@ func NewSubscriberChannelId(channelId uint) *Subscribes {
 		ChannelId: channelId,
 	}
 }
+
 func (sub *Subscribes) GetSubscribers(adminId uint) ([]*Subscribes, error) {
 	isAdmin := NewAdministratesPermission(sub.ChannelId, adminId).IsAdministrator()
 	if !isAdmin {
