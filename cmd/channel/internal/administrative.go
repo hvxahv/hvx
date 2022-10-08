@@ -10,8 +10,10 @@ type Administrates struct {
 	gorm.Model
 
 	ChannelId uint `gorm:"primaryKey;channel_id"`
-	AdminId   uint `gorm:"primaryKey;admin_id"`
-	IsOwner   bool `gorm:"type:boolean;is_owner"`
+
+	// AdminId admin actor id.
+	AdminId uint `gorm:"primaryKey;admin_id"`
+	IsOwner bool `gorm:"type:boolean;is_owner"`
 }
 
 // Note:

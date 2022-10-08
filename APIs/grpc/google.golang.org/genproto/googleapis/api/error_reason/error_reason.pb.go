@@ -54,13 +54,13 @@ const (
 	// Example of an ErrorInfo when the consumer "projects/123" contacting
 	// "pubsub.googleapis.com" service which is disabled:
 	//
-	//	{ "reason": "SERVICE_DISABLED",
-	//	  "domain": "googleapis.com",
-	//	  "metadata": {
-	//	    "consumer": "projects/123",
-	//	    "service": "pubsub.googleapis.com"
-	//	  }
-	//	}
+	//     { "reason": "SERVICE_DISABLED",
+	//       "domain": "googleapis.com",
+	//       "metadata": {
+	//         "consumer": "projects/123",
+	//         "service": "pubsub.googleapis.com"
+	//       }
+	//     }
 	//
 	// This response indicates the "pubsub.googleapis.com" has been disabled in
 	// "projects/123".
@@ -71,13 +71,13 @@ const (
 	// "pubsub.googleapis.com" service because the associated billing account is
 	// disabled:
 	//
-	//	{ "reason": "BILLING_DISABLED",
-	//	  "domain": "googleapis.com",
-	//	  "metadata": {
-	//	    "consumer": "projects/123",
-	//	    "service": "pubsub.googleapis.com"
-	//	  }
-	//	}
+	//     { "reason": "BILLING_DISABLED",
+	//       "domain": "googleapis.com",
+	//       "metadata": {
+	//         "consumer": "projects/123",
+	//         "service": "pubsub.googleapis.com"
+	//       }
+	//     }
 	//
 	// This response indicates the billing account associated has been disabled.
 	ErrorReason_BILLING_DISABLED ErrorReason = 2
@@ -88,12 +88,12 @@ const (
 	// Example of an ErrorInfo when the request is contacting
 	// "storage.googleapis.com" service with an invalid API key:
 	//
-	//	{ "reason": "API_KEY_INVALID",
-	//	  "domain": "googleapis.com",
-	//	  "metadata": {
-	//	    "service": "storage.googleapis.com",
-	//	  }
-	//	}
+	//     { "reason": "API_KEY_INVALID",
+	//       "domain": "googleapis.com",
+	//       "metadata": {
+	//         "service": "storage.googleapis.com",
+	//       }
+	//     }
 	ErrorReason_API_KEY_INVALID ErrorReason = 3
 	// The request is denied because it violates [API key API
 	// restrictions](https://cloud.google.com/docs/authentication/api-keys#adding_api_restrictions).
@@ -102,13 +102,13 @@ const (
 	// "storage.googleapis.com" service because this service is restricted in the
 	// API key:
 	//
-	//	{ "reason": "API_KEY_SERVICE_BLOCKED",
-	//	  "domain": "googleapis.com",
-	//	  "metadata": {
-	//	    "consumer": "projects/123",
-	//	    "service": "storage.googleapis.com"
-	//	  }
-	//	}
+	//     { "reason": "API_KEY_SERVICE_BLOCKED",
+	//       "domain": "googleapis.com",
+	//       "metadata": {
+	//         "consumer": "projects/123",
+	//         "service": "storage.googleapis.com"
+	//       }
+	//     }
 	ErrorReason_API_KEY_SERVICE_BLOCKED ErrorReason = 4
 	// The request is denied because it violates [API key HTTP
 	// restrictions](https://cloud.google.com/docs/authentication/api-keys#adding_http_restrictions).
@@ -117,13 +117,13 @@ const (
 	// "storage.googleapis.com" service because the http referrer of the request
 	// violates API key HTTP restrictions:
 	//
-	//	{ "reason": "API_KEY_HTTP_REFERRER_BLOCKED",
-	//	  "domain": "googleapis.com",
-	//	  "metadata": {
-	//	    "consumer": "projects/123",
-	//	    "service": "storage.googleapis.com",
-	//	  }
-	//	}
+	//     { "reason": "API_KEY_HTTP_REFERRER_BLOCKED",
+	//       "domain": "googleapis.com",
+	//       "metadata": {
+	//         "consumer": "projects/123",
+	//         "service": "storage.googleapis.com",
+	//       }
+	//     }
 	ErrorReason_API_KEY_HTTP_REFERRER_BLOCKED ErrorReason = 7
 	// The request is denied because it violates [API key IP address
 	// restrictions](https://cloud.google.com/docs/authentication/api-keys#adding_application_restrictions).
@@ -132,13 +132,13 @@ const (
 	// "storage.googleapis.com" service because the caller IP of the request
 	// violates API key IP address restrictions:
 	//
-	//	{ "reason": "API_KEY_IP_ADDRESS_BLOCKED",
-	//	  "domain": "googleapis.com",
-	//	  "metadata": {
-	//	    "consumer": "projects/123",
-	//	    "service": "storage.googleapis.com",
-	//	  }
-	//	}
+	//     { "reason": "API_KEY_IP_ADDRESS_BLOCKED",
+	//       "domain": "googleapis.com",
+	//       "metadata": {
+	//         "consumer": "projects/123",
+	//         "service": "storage.googleapis.com",
+	//       }
+	//     }
 	ErrorReason_API_KEY_IP_ADDRESS_BLOCKED ErrorReason = 8
 	// The request is denied because it violates [API key Android application
 	// restrictions](https://cloud.google.com/docs/authentication/api-keys#adding_application_restrictions).
@@ -147,13 +147,13 @@ const (
 	// "storage.googleapis.com" service because the request from the Android apps
 	// violates the API key Android application restrictions:
 	//
-	//	{ "reason": "API_KEY_ANDROID_APP_BLOCKED",
-	//	  "domain": "googleapis.com",
-	//	  "metadata": {
-	//	    "consumer": "projects/123",
-	//	    "service": "storage.googleapis.com"
-	//	  }
-	//	}
+	//     { "reason": "API_KEY_ANDROID_APP_BLOCKED",
+	//       "domain": "googleapis.com",
+	//       "metadata": {
+	//         "consumer": "projects/123",
+	//         "service": "storage.googleapis.com"
+	//       }
+	//     }
 	ErrorReason_API_KEY_ANDROID_APP_BLOCKED ErrorReason = 9
 	// The request is denied because it violates [API key iOS application
 	// restrictions](https://cloud.google.com/docs/authentication/api-keys#adding_application_restrictions).
@@ -162,13 +162,13 @@ const (
 	// "storage.googleapis.com" service because the request from the iOS apps
 	// violates the API key iOS application restrictions:
 	//
-	//	{ "reason": "API_KEY_IOS_APP_BLOCKED",
-	//	  "domain": "googleapis.com",
-	//	  "metadata": {
-	//	    "consumer": "projects/123",
-	//	    "service": "storage.googleapis.com"
-	//	  }
-	//	}
+	//     { "reason": "API_KEY_IOS_APP_BLOCKED",
+	//       "domain": "googleapis.com",
+	//       "metadata": {
+	//         "consumer": "projects/123",
+	//         "service": "storage.googleapis.com"
+	//       }
+	//     }
 	ErrorReason_API_KEY_IOS_APP_BLOCKED ErrorReason = 13
 	// The request is denied because there is not enough rate quota for the
 	// consumer.
@@ -179,30 +179,30 @@ const (
 	// "ReadsPerMinutePerProject" on the quota metric
 	// "pubsub.googleapis.com/read_requests":
 	//
-	//	{ "reason": "RATE_LIMIT_EXCEEDED",
-	//	  "domain": "googleapis.com",
-	//	  "metadata": {
-	//	    "consumer": "projects/123",
-	//	    "service": "pubsub.googleapis.com",
-	//	    "quota_metric": "pubsub.googleapis.com/read_requests",
-	//	    "quota_limit": "ReadsPerMinutePerProject"
-	//	  }
-	//	}
+	//     { "reason": "RATE_LIMIT_EXCEEDED",
+	//       "domain": "googleapis.com",
+	//       "metadata": {
+	//         "consumer": "projects/123",
+	//         "service": "pubsub.googleapis.com",
+	//         "quota_metric": "pubsub.googleapis.com/read_requests",
+	//         "quota_limit": "ReadsPerMinutePerProject"
+	//       }
+	//     }
 	//
 	// Example of an ErrorInfo when the consumer "projects/123" checks quota on
 	// the service "dataflow.googleapis.com" and hits the organization quota
 	// limit "DefaultRequestsPerMinutePerOrganization" on the metric
 	// "dataflow.googleapis.com/default_requests".
 	//
-	//	{ "reason": "RATE_LIMIT_EXCEEDED",
-	//	  "domain": "googleapis.com",
-	//	  "metadata": {
-	//	    "consumer": "projects/123",
-	//	    "service": "dataflow.googleapis.com",
-	//	    "quota_metric": "dataflow.googleapis.com/default_requests",
-	//	    "quota_limit": "DefaultRequestsPerMinutePerOrganization"
-	//	  }
-	//	}
+	//     { "reason": "RATE_LIMIT_EXCEEDED",
+	//       "domain": "googleapis.com",
+	//       "metadata": {
+	//         "consumer": "projects/123",
+	//         "service": "dataflow.googleapis.com",
+	//         "quota_metric": "dataflow.googleapis.com/default_requests",
+	//         "quota_limit": "DefaultRequestsPerMinutePerOrganization"
+	//       }
+	//     }
 	ErrorReason_RATE_LIMIT_EXCEEDED ErrorReason = 5
 	// The request is denied because there is not enough resource quota for the
 	// consumer.
@@ -212,30 +212,30 @@ const (
 	// has reached the maximum value set for the quota limit "VMsPerProject"
 	// on the quota metric "compute.googleapis.com/vms":
 	//
-	//	{ "reason": "RESOURCE_QUOTA_EXCEEDED",
-	//	  "domain": "googleapis.com",
-	//	  "metadata": {
-	//	    "consumer": "projects/123",
-	//	    "service": "compute.googleapis.com",
-	//	    "quota_metric": "compute.googleapis.com/vms",
-	//	    "quota_limit": "VMsPerProject"
-	//	  }
-	//	}
+	//     { "reason": "RESOURCE_QUOTA_EXCEEDED",
+	//       "domain": "googleapis.com",
+	//       "metadata": {
+	//         "consumer": "projects/123",
+	//         "service": "compute.googleapis.com",
+	//         "quota_metric": "compute.googleapis.com/vms",
+	//         "quota_limit": "VMsPerProject"
+	//       }
+	//     }
 	//
 	// Example of an ErrorInfo when the consumer "projects/123" checks resource
 	// quota on the service "dataflow.googleapis.com" and hits the organization
 	// quota limit "jobs-per-organization" on the metric
 	// "dataflow.googleapis.com/job_count".
 	//
-	//	{ "reason": "RESOURCE_QUOTA_EXCEEDED",
-	//	  "domain": "googleapis.com",
-	//	  "metadata": {
-	//	    "consumer": "projects/123",
-	//	    "service": "dataflow.googleapis.com",
-	//	    "quota_metric": "dataflow.googleapis.com/job_count",
-	//	    "quota_limit": "jobs-per-organization"
-	//	  }
-	//	}
+	//     { "reason": "RESOURCE_QUOTA_EXCEEDED",
+	//       "domain": "googleapis.com",
+	//       "metadata": {
+	//         "consumer": "projects/123",
+	//         "service": "dataflow.googleapis.com",
+	//         "quota_metric": "dataflow.googleapis.com/job_count",
+	//         "quota_limit": "jobs-per-organization"
+	//       }
+	//     }
 	ErrorReason_RESOURCE_QUOTA_EXCEEDED ErrorReason = 6
 	// The request whose associated billing account address is in a tax restricted
 	// location, violates the local tax restrictions when creating resources in
@@ -245,14 +245,14 @@ const (
 	// container "projects/123" under a tax restricted region
 	// "locations/asia-northeast3":
 	//
-	//	{ "reason": "LOCATION_TAX_POLICY_VIOLATED",
-	//	  "domain": "googleapis.com",
-	//	  "metadata": {
-	//	    "consumer": "projects/123",
-	//	    "service": "storage.googleapis.com",
-	//	    "location": "locations/asia-northeast3"
-	//	  }
-	//	}
+	//     { "reason": "LOCATION_TAX_POLICY_VIOLATED",
+	//       "domain": "googleapis.com",
+	//       "metadata": {
+	//         "consumer": "projects/123",
+	//         "service": "storage.googleapis.com",
+	//         "location": "locations/asia-northeast3"
+	//       }
+	//     }
 	//
 	// This response indicates creating the Cloud Storage Bucket in
 	// "locations/asia-northeast3" violates the location tax restriction.
@@ -265,13 +265,13 @@ const (
 	// Example of an ErrorInfo when the caller is calling Cloud Storage service
 	// with insufficient permissions on the user project:
 	//
-	//	{ "reason": "USER_PROJECT_DENIED",
-	//	  "domain": "googleapis.com",
-	//	  "metadata": {
-	//	    "consumer": "projects/123",
-	//	    "service": "storage.googleapis.com"
-	//	  }
-	//	}
+	//     { "reason": "USER_PROJECT_DENIED",
+	//       "domain": "googleapis.com",
+	//       "metadata": {
+	//         "consumer": "projects/123",
+	//         "service": "storage.googleapis.com"
+	//       }
+	//     }
 	ErrorReason_USER_PROJECT_DENIED ErrorReason = 11
 	// The request is denied because the consumer "projects/123" is suspended due
 	// to Terms of Service(Tos) violations. Check [Project suspension
@@ -281,13 +281,13 @@ const (
 	// Example of an ErrorInfo when calling Cloud Storage service with the
 	// suspended consumer "projects/123":
 	//
-	//	{ "reason": "CONSUMER_SUSPENDED",
-	//	  "domain": "googleapis.com",
-	//	  "metadata": {
-	//	    "consumer": "projects/123",
-	//	    "service": "storage.googleapis.com"
-	//	  }
-	//	}
+	//     { "reason": "CONSUMER_SUSPENDED",
+	//       "domain": "googleapis.com",
+	//       "metadata": {
+	//         "consumer": "projects/123",
+	//         "service": "storage.googleapis.com"
+	//       }
+	//     }
 	ErrorReason_CONSUMER_SUSPENDED ErrorReason = 12
 	// The request is denied because the associated consumer is invalid. It may be
 	// in a bad format, cannot be found, or have been deleted.
@@ -295,13 +295,13 @@ const (
 	// Example of an ErrorInfo when calling Cloud Storage service with the
 	// invalid consumer "projects/123":
 	//
-	//	{ "reason": "CONSUMER_INVALID",
-	//	  "domain": "googleapis.com",
-	//	  "metadata": {
-	//	    "consumer": "projects/123",
-	//	    "service": "storage.googleapis.com"
-	//	  }
-	//	}
+	//     { "reason": "CONSUMER_INVALID",
+	//       "domain": "googleapis.com",
+	//       "metadata": {
+	//         "consumer": "projects/123",
+	//         "service": "storage.googleapis.com"
+	//       }
+	//     }
 	ErrorReason_CONSUMER_INVALID ErrorReason = 14
 	// The request is denied because it violates [VPC Service
 	// Controls](https://cloud.google.com/vpc-service-controls/docs/overview).
@@ -314,27 +314,27 @@ const (
 	// Cloud Storage service because the request is prohibited by the VPC Service
 	// Controls.
 	//
-	//	{ "reason": "SECURITY_POLICY_VIOLATED",
-	//	  "domain": "googleapis.com",
-	//	  "metadata": {
-	//	    "uid": "123456789abcde",
-	//	    "consumer": "projects/123",
-	//	    "service": "storage.googleapis.com"
-	//	  }
-	//	}
+	//     { "reason": "SECURITY_POLICY_VIOLATED",
+	//       "domain": "googleapis.com",
+	//       "metadata": {
+	//         "uid": "123456789abcde",
+	//         "consumer": "projects/123",
+	//         "service": "storage.googleapis.com"
+	//       }
+	//     }
 	ErrorReason_SECURITY_POLICY_VIOLATED ErrorReason = 15
 	// The request is denied because the provided access token has expired.
 	//
 	// Example of an ErrorInfo when the request is calling Cloud Storage service
 	// with an expired access token:
 	//
-	//	{ "reason": "ACCESS_TOKEN_EXPIRED",
-	//	  "domain": "googleapis.com",
-	//	  "metadata": {
-	//	    "service": "storage.googleapis.com",
-	//	    "method": "google.storage.v1.Storage.GetObject"
-	//	  }
-	//	}
+	//     { "reason": "ACCESS_TOKEN_EXPIRED",
+	//       "domain": "googleapis.com",
+	//       "metadata": {
+	//         "service": "storage.googleapis.com",
+	//         "method": "google.storage.v1.Storage.GetObject"
+	//       }
+	//     }
 	ErrorReason_ACCESS_TOKEN_EXPIRED ErrorReason = 16
 	// The request is denied because the provided access token doesn't have at
 	// least one of the acceptable scopes required for the API. Please check
@@ -346,13 +346,13 @@ const (
 	// Example of an ErrorInfo when the request is calling Cloud Storage service
 	// with an access token that is missing required scopes:
 	//
-	//	{ "reason": "ACCESS_TOKEN_SCOPE_INSUFFICIENT",
-	//	  "domain": "googleapis.com",
-	//	  "metadata": {
-	//	    "service": "storage.googleapis.com",
-	//	    "method": "google.storage.v1.Storage.GetObject"
-	//	  }
-	//	}
+	//     { "reason": "ACCESS_TOKEN_SCOPE_INSUFFICIENT",
+	//       "domain": "googleapis.com",
+	//       "metadata": {
+	//         "service": "storage.googleapis.com",
+	//         "method": "google.storage.v1.Storage.GetObject"
+	//       }
+	//     }
 	ErrorReason_ACCESS_TOKEN_SCOPE_INSUFFICIENT ErrorReason = 17
 	// The request is denied because the account associated with the provided
 	// access token is in an invalid state, such as disabled or deleted.
@@ -366,14 +366,14 @@ const (
 	// an access token that is associated with a disabled or deleted [service
 	// account](http://cloud/iam/docs/service-accounts):
 	//
-	//	{ "reason": "ACCOUNT_STATE_INVALID",
-	//	  "domain": "googleapis.com",
-	//	  "metadata": {
-	//	    "service": "storage.googleapis.com",
-	//	    "method": "google.storage.v1.Storage.GetObject",
-	//	    "email": "user@123.iam.gserviceaccount.com"
-	//	  }
-	//	}
+	//     { "reason": "ACCOUNT_STATE_INVALID",
+	//       "domain": "googleapis.com",
+	//       "metadata": {
+	//         "service": "storage.googleapis.com",
+	//         "method": "google.storage.v1.Storage.GetObject",
+	//         "email": "user@123.iam.gserviceaccount.com"
+	//       }
+	//     }
 	ErrorReason_ACCOUNT_STATE_INVALID ErrorReason = 18
 	// The request is denied because the type of the provided access token is not
 	// supported by the API being called.
@@ -381,13 +381,13 @@ const (
 	// Example of an ErrorInfo when the request is to the Cloud Storage API with
 	// an unsupported token type.
 	//
-	//	{ "reason": "ACCESS_TOKEN_TYPE_UNSUPPORTED",
-	//	  "domain": "googleapis.com",
-	//	  "metadata": {
-	//	    "service": "storage.googleapis.com",
-	//	    "method": "google.storage.v1.Storage.GetObject"
-	//	  }
-	//	}
+	//     { "reason": "ACCESS_TOKEN_TYPE_UNSUPPORTED",
+	//       "domain": "googleapis.com",
+	//       "metadata": {
+	//         "service": "storage.googleapis.com",
+	//         "method": "google.storage.v1.Storage.GetObject"
+	//       }
+	//     }
 	ErrorReason_ACCESS_TOKEN_TYPE_UNSUPPORTED ErrorReason = 19
 )
 

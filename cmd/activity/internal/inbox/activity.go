@@ -3,10 +3,12 @@ package inbox
 import (
 	"encoding/json"
 	"fmt"
+
 	"github.com/google/uuid"
 	"github.com/hvxahv/hvx/activitypub"
 	"github.com/hvxahv/hvx/clientv1"
 	"github.com/hvxahv/hvx/cmd/activity/internal/activity"
+	"github.com/hvxahv/hvx/cmd/activity/internal/delivery"
 	"github.com/hvxahv/hvx/cmd/activity/internal/friendship"
 	"github.com/hvxahv/hvx/errors"
 	"github.com/hvxahv/hvx/microsvc"
@@ -96,7 +98,7 @@ func (h *Handler) Handler() error {
 				return err
 			}
 			// DELIVERY ...
-			do, err := activity.NewDelivery(marshal, actor.Address, c.PrivateKey).Do(object.Inbox)
+			do, err := delivery.New(fmt.Sprintf("%s#main-key", actor.Address), c.PrivateKey, marshal).Do(object.Inbox)
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -118,9 +120,6 @@ func (h *Handler) Handler() error {
 
 		switch undo.Object.Type {
 		case activitypub.FollowType:
-			//if err := NewInboxes(h.actorId, undo.Id, undo.Actor, undo.Type, string(h.body)).Create(); err != nil {
-			//	return err
-			//}
 			if err := friendship.NewFollower(h.actorId, uint(objectId.GetId())).UNFollow(); err != nil {
 				return err
 			}

@@ -39,19 +39,19 @@ const (
 //
 // Example:
 //
-//	name: calendar.googleapis.com
-//	authentication:
-//	  providers:
-//	  - id: google_calendar_auth
-//	    jwks_uri: https://www.googleapis.com/oauth2/v1/certs
-//	    issuer: https://securetoken.google.com
-//	  rules:
-//	  - selector: "*"
-//	    requirements:
-//	      provider_id: google_calendar_auth
-//	  - selector: google.calendar.Delegate
-//	    oauth:
-//	      canonical_scopes: https://www.googleapis.com/auth/calendar.read
+//     name: calendar.googleapis.com
+//     authentication:
+//       providers:
+//       - id: google_calendar_auth
+//         jwks_uri: https://www.googleapis.com/oauth2/v1/certs
+//         issuer: https://securetoken.google.com
+//       rules:
+//       - selector: "*"
+//         requirements:
+//           provider_id: google_calendar_auth
+//       - selector: google.calendar.Delegate
+//         oauth:
+//           canonical_scopes: https://www.googleapis.com/auth/calendar.read
 type Authentication struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -205,7 +205,6 @@ type JwtLocation struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to In:
-	//
 	//	*JwtLocation_Header
 	//	*JwtLocation_Query
 	In isJwtLocation_In `protobuf_oneof:"in"`
@@ -322,12 +321,12 @@ type AuthProvider struct {
 	// [OpenID
 	// Discovery](https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderMetadata).
 	// Optional if the key set document:
-	//   - can be retrieved from
-	//     [OpenID
-	//     Discovery](https://openid.net/specs/openid-connect-discovery-1_0.html)
-	//     of the issuer.
-	//   - can be inferred from the email domain of the issuer (e.g. a Google
-	//     service account).
+	//  - can be retrieved from
+	//    [OpenID
+	//    Discovery](https://openid.net/specs/openid-connect-discovery-1_0.html)
+	//    of the issuer.
+	//  - can be inferred from the email domain of the issuer (e.g. a Google
+	//  service account).
 	//
 	// Example: https://www.googleapis.com/oauth2/v1/certs
 	JwksUri string `protobuf:"bytes,3,opt,name=jwks_uri,json=jwksUri,proto3" json:"jwks_uri,omitempty"`
@@ -337,19 +336,17 @@ type AuthProvider struct {
 	// be accepted. When this setting is absent, JWTs with audiences:
 	//   - "https://[service.name]/[google.protobuf.Api.name]"
 	//   - "https://[service.name]/"
-	//
 	// will be accepted.
 	// For example, if no audiences are in the setting, LibraryService API will
 	// accept JWTs with the following audiences:
-	//
-	//	-
-	//	https://library-example.googleapis.com/google.example.library.v1.LibraryService
-	//	- https://library-example.googleapis.com/
+	//   -
+	//   https://library-example.googleapis.com/google.example.library.v1.LibraryService
+	//   - https://library-example.googleapis.com/
 	//
 	// Example:
 	//
-	//	audiences: bookstore_android.apps.googleusercontent.com,
-	//	           bookstore_web.apps.googleusercontent.com
+	//     audiences: bookstore_android.apps.googleusercontent.com,
+	//                bookstore_web.apps.googleusercontent.com
 	Audiences string `protobuf:"bytes,4,opt,name=audiences,proto3" json:"audiences,omitempty"`
 	// Redirect URL if JWT token is required but not present or is expired.
 	// Implement authorizationUrl of securityDefinitions in OpenAPI spec.
@@ -361,17 +358,16 @@ type AuthProvider struct {
 	// all headers first, then URL query parameters.
 	//
 	// If not specified,  default to use following 3 locations:
-	//  1. Authorization: Bearer
-	//  2. x-goog-iap-jwt-assertion
-	//  3. access_token query parameter
+	//    1) Authorization: Bearer
+	//    2) x-goog-iap-jwt-assertion
+	//    3) access_token query parameter
 	//
 	// Default locations can be specified as followings:
-	//
-	//	jwt_locations:
-	//	- header: Authorization
-	//	  value_prefix: "Bearer "
-	//	- header: x-goog-iap-jwt-assertion
-	//	- query: access_token
+	//    jwt_locations:
+	//    - header: Authorization
+	//      value_prefix: "Bearer "
+	//    - header: x-goog-iap-jwt-assertion
+	//    - query: access_token
 	JwtLocations []*JwtLocation `protobuf:"bytes,6,rep,name=jwt_locations,json=jwtLocations,proto3" json:"jwt_locations,omitempty"`
 }
 
@@ -477,8 +473,8 @@ type OAuthRequirements struct {
 	//
 	// Example:
 	//
-	//	canonical_scopes: https://www.googleapis.com/auth/calendar,
-	//	                  https://www.googleapis.com/auth/calendar.read
+	//      canonical_scopes: https://www.googleapis.com/auth/calendar,
+	//                        https://www.googleapis.com/auth/calendar.read
 	CanonicalScopes string `protobuf:"bytes,1,opt,name=canonical_scopes,json=canonicalScopes,proto3" json:"canonical_scopes,omitempty"`
 }
 
@@ -533,7 +529,7 @@ type AuthRequirement struct {
 	//
 	// Example:
 	//
-	//	provider_id: bookstore_auth
+	//     provider_id: bookstore_auth
 	ProviderId string `protobuf:"bytes,1,opt,name=provider_id,json=providerId,proto3" json:"provider_id,omitempty"`
 	// NOTE: This will be deprecated soon, once AuthProvider.audiences is
 	// implemented and accepted in all the runtime components.
@@ -549,8 +545,8 @@ type AuthRequirement struct {
 	//
 	// Example:
 	//
-	//	audiences: bookstore_android.apps.googleusercontent.com,
-	//	           bookstore_web.apps.googleusercontent.com
+	//     audiences: bookstore_android.apps.googleusercontent.com,
+	//                bookstore_web.apps.googleusercontent.com
 	Audiences string `protobuf:"bytes,2,opt,name=audiences,proto3" json:"audiences,omitempty"`
 }
 

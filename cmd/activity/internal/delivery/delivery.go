@@ -1,20 +1,20 @@
-package activity
+package delivery
 
 import (
 	"bytes"
 	"crypto"
 	"crypto/rsa"
-	"fmt"
-	"github.com/go-fed/httpsig"
-	"github.com/hvxahv/hvx/errors"
-	"github.com/spf13/viper"
-	"golang.org/x/crypto/ssh"
 	"io"
 	"net/http"
 	"net/url"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/go-fed/httpsig"
+	"github.com/hvxahv/hvx/errors"
+	"github.com/spf13/viper"
+	"golang.org/x/crypto/ssh"
 )
 
 const (
@@ -25,13 +25,13 @@ const (
 // Delivery ...
 // https://www.w3.org/TR/activitypub/#delivery
 type Delivery struct {
-	actor      string
-	body       []byte
-	privateKey string
+	PublicKeyId string
+	PrivateKey  string
+	Body        []byte
 }
 
-func NewDelivery(body []byte, actor, privateKey string) *Delivery {
-	return &Delivery{actor: actor, body: body, privateKey: privateKey}
+func New(publicKeyId string, privateKey string, body []byte) *Delivery {
+	return &Delivery{PublicKeyId: publicKeyId, PrivateKey: privateKey, Body: body}
 }
 
 func (i *Delivery) Do(inbox string) (*http.Response, error) {
@@ -47,16 +47,16 @@ func (i *Delivery) Do(inbox string) (*http.Response, error) {
 
 	hostname, err := parseInboxHostname(inbox)
 	if err != nil {
-		fmt.Println(err)
+		return nil, err
 	}
 
 	client := http.Client{}
 
 	singer, _, _ := httpsig.NewSigner([]httpsig.Algorithm{httpsig.RSA_SHA256}, "SHA-256", []string{"(request-target)", "date", "host", "digest"}, httpsig.Signature, 120)
 
-	req, err := http.NewRequest("POST", inbox, bytes.NewReader(i.body))
+	req, err := http.NewRequest("POST", inbox, bytes.NewReader(i.Body))
 	if err != nil {
-		fmt.Println(err)
+		return nil, err
 	}
 	req.Header.Add("Content-Type", "application/activity+json")
 	req.Header.Add("Content-Type", "application/ld+json")
@@ -66,16 +66,17 @@ func (i *Delivery) Do(inbox string) (*http.Response, error) {
 	req.Header.Add("Host", hostname)
 	req.Header.Add("Accept", "application/activity+json; charset=utf-8")
 
-	if err := singer.SignRequest(GetPrivateKey(i.privateKey), fmt.Sprintf("%s#main-key", i.actor), req, i.body); err != nil {
-		fmt.Println(err)
+	if err := singer.SignRequest(GetPrivateKey(i.PrivateKey), i.PublicKeyId, req, i.Body); err != nil {
+		return nil, err
 	}
-	if err := Verify(req, i.privateKey); err != nil {
-		fmt.Println(err)
+	if err := Verify(req, i.PrivateKey); err != nil {
+		return nil, err
 	}
 	res, err := client.Do(req)
 	if err != nil {
 		return nil, err
 	}
+
 	defer res.Body.Close()
 	stdout := os.Stdout
 	_, err = io.Copy(stdout, res.Body)

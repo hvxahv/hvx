@@ -20,7 +20,7 @@ require (
 	github.com/nats-io/nats.go v1.16.0
 	github.com/spf13/cobra v1.5.0
 	github.com/spf13/viper v1.12.0
-	golang.org/x/crypto v0.0.0-20220817201139-bc19a97f63c8
+	golang.org/x/crypto v0.0.0-20221005025214-4161e89ecf1b
 	golang.org/x/net v0.0.0-20220812174116-3211cb980234
 	google.golang.org/genproto v0.0.0-20220812140447-cec7f5303424
 	google.golang.org/grpc v1.48.0

@@ -6,6 +6,7 @@ import (
 	"github.com/hvxahv/hvx/APIs/v1alpha1/actor"
 	pb "github.com/hvxahv/hvx/APIs/v1alpha1/article"
 	"github.com/hvxahv/hvx/clientv1"
+	"github.com/hvxahv/hvx/errors"
 	"github.com/hvxahv/hvx/microsvc"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"strconv"
@@ -23,7 +24,7 @@ func (s *server) Create(ctx context.Context, in *pb.CreateRequest) (*pb.CreateRe
 		}
 		return false
 	}
-
+	var att []string
 	a := &Articles{
 		ActorId:     parse.ActorId,
 		Title:       in.GetTitle(),
@@ -32,7 +33,7 @@ func (s *server) Create(ctx context.Context, in *pb.CreateRequest) (*pb.CreateRe
 		Tags:        in.GetTags(),
 		Statuses:    status(),
 		NSFW:        in.GetNsfw(),
-		Attachments: in.GetAttachments(),
+		Attachments: att,
 		TO:          in.GetTo(),
 		CC:          in.GetCc(),
 		BTO:         in.Bto,
@@ -44,10 +45,24 @@ func (s *server) Create(ctx context.Context, in *pb.CreateRequest) (*pb.CreateRe
 		return nil, err
 	}
 
+	activity, err := clientv1.New(ctx, microsvc.ActivityServiceName).ArticleActivity(
+		int64(parse.AccountId),
+		int64(parse.ActorId),
+		int64(create.ID),
+		in,
+	)
+	if err != nil {
+		return nil, err
+	}
 	fmt.Println(create)
+	if activity.Code != "200" {
+		return nil, errors.New(activity.Status)
+	}
 	return &pb.CreateResponse{
-		Code:   "200",
-		Status: "ok",
+		Code:      "200",
+		Status:    "ok",
+		Successes: activity.Successes,
+		Failures:  activity.Failures,
 	}, nil
 }
 

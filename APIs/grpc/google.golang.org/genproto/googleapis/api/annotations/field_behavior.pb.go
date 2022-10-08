@@ -148,13 +148,13 @@ var (
 	//
 	// Examples:
 	//
-	//	string name = 1 [(google.api.field_behavior) = REQUIRED];
-	//	State state = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
-	//	google.protobuf.Duration ttl = 1
-	//	  [(google.api.field_behavior) = INPUT_ONLY];
-	//	google.protobuf.Timestamp expire_time = 1
-	//	  [(google.api.field_behavior) = OUTPUT_ONLY,
-	//	   (google.api.field_behavior) = IMMUTABLE];
+	//   string name = 1 [(google.api.field_behavior) = REQUIRED];
+	//   State state = 1 [(google.api.field_behavior) = OUTPUT_ONLY];
+	//   google.protobuf.Duration ttl = 1
+	//     [(google.api.field_behavior) = INPUT_ONLY];
+	//   google.protobuf.Timestamp expire_time = 1
+	//     [(google.api.field_behavior) = OUTPUT_ONLY,
+	//      (google.api.field_behavior) = IMMUTABLE];
 	//
 	// repeated google.api.FieldBehavior field_behavior = 1052;
 	E_FieldBehavior = &file_google_api_field_behavior_proto_extTypes[0]

@@ -54,11 +54,3 @@ func TestArticles_GetArticles(t *testing.T) {
 	}
 	t.Log(articles)
 }
-
-func TestArticles_Edit(t *testing.T) {
-
-}
-
-func TestArticles_Delete(t *testing.T) {
-
-}

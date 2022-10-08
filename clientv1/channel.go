@@ -5,23 +5,27 @@ import (
 )
 
 type Channel interface {
-	GetSubscribers(channelId string) (*pb.GetSubscribersResponse, error)
 	GetPrivateKeyByActorId(actorId int64) (*pb.GetPrivateKeyByActorIdResponse, error)
 }
 
-func (svc *Svc) GetSubscribers(channelId string) (*pb.GetSubscribersResponse, error) {
+type Subscribe interface {
+	GetSubscribers(channelId, adminId int64) (*pb.GetSubscribersActorResponse, error)
+}
+
+func (svc *Svc) GetSubscribers(channelId, adminId int64) (*pb.GetSubscribersActorResponse, error) {
 	c, err := NewClient(svc.ctx, svc.address)
 	if err != nil {
 		return nil, err
 	}
 	defer c.Close()
-	subs, err := pb.NewSubscriberClient(c.Conn).GetSubscribers(svc.ctx, &pb.GetSubscribersRequest{
+	subscribers, err := pb.NewSubscriberClient(c.Conn).GetSubscribers(svc.ctx, &pb.GetSubscribersActorRequest{
 		ChannelId: channelId,
+		AdminId:   adminId,
 	})
 	if err != nil {
 		return nil, err
 	}
-	return subs, nil
+	return subscribers, nil
 }
 
 func (svc *Svc) GetPrivateKeyByActorId(actorId int64) (*pb.GetPrivateKeyByActorIdResponse, error) {
