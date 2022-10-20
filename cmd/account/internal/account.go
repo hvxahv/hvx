@@ -2,6 +2,7 @@ package internal
 
 import (
 	"fmt"
+
 	"github.com/hvxahv/hvx/activitypub"
 	"github.com/hvxahv/hvx/clientv1"
 	"github.com/hvxahv/hvx/cockroach"
@@ -26,7 +27,8 @@ type Accounts struct {
 	Mail string `gorm:"index;type:text;mail;unique" validate:"required,email"`
 
 	// Password
-	// The length of the password must be greater than 8 characters and less than 24 characters, and must not contain spaces.
+	// The length of the password must be greater than 8 characters and
+	// less than 24 characters, and must not contain spaces.
 	Password string `gorm:"type:text;password" validate:"required,min=8,max=24"`
 
 	// When creating a user, an actor needs to be created to record the basic information
@@ -63,7 +65,8 @@ type Account interface {
 	// EditEmail Editorial email.
 	EditEmail(mail string) error
 
-	// Verify password is correct.
+	// Verify that the account password is correct, used to verify when logging in or changing the password, 
+	// pass the password sent and then compare the password queried in the database.
 	Verify(password string) (*Accounts, error)
 
 	// GetPrivateKey When performing activitypub activities,

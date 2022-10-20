@@ -7,7 +7,7 @@ import "google/api/annotations.proto";
 import "google/api/field_behavior.proto";
 import "google/protobuf/empty.proto";
 
-
+// Inbox service for user activities.
 service Inbox {
   rpc Inbox (InboxRequest) returns (InboxResponse) {}
 
@@ -57,7 +57,6 @@ message InboxResponse {
   string code = 1;
   string status = 2;
 }
-
 
 message GetInboxRequest {
   string inboxId = 1 [(google.api.field_behavior) = REQUIRED];

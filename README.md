@@ -2,7 +2,7 @@
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/hvxahv/hvx)](https://goreportcard.com/report/github.com/hvxahv/hvxahv) [![Go](https://github.com/hvxahv/hvxahv/actions/workflows/lint.yml/badge.svg)](https://github.com/hvxahv/hvxahv/actions/workflows/lint.yml)
 
-Disism - HALFMEMORIES
+hvxahv 💜 disism.com - HALFMEMORIES
 
 Currently, the first version is being implemented intensively, all we are doing is trying to get the program working first and then optimize it for performance, so please note that the code is very confusing at the moment.
 
@@ -59,7 +59,6 @@ FOR CLIENT DEVELOPERS:
 
 - Web Client:
     - https://github.com/hvxahv/sarkv
-    - https://github.com/hvxahv/hvxahv-web
 - Android:
     - https://github.com/hvxahv/hvx-android
 - Lib
