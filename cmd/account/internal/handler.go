@@ -11,7 +11,6 @@ package internal
 import (
 	"github.com/hvxahv/hvx/clientv1"
 	"github.com/hvxahv/hvx/errors"
-	"strconv"
 
 	pb "github.com/hvxahv/hvx/APIs/v1alpha1/account"
 	"github.com/hvxahv/hvx/microsvc"
@@ -32,7 +31,7 @@ func (s *server) Create(ctx context.Context, in *pb.CreateRequest) (*pb.CreateRe
 }
 
 func (s *server) GetByUsername(ctx context.Context, in *pb.GetByUsernameRequest) (*pb.GetByUsernameResponse, error) {
-	account, err := NewUsername(in.Username).GetAccountByUsername()
+	account, err := NewUsername(in.GetUsername()).GetAccountByUsername()
 	if err != nil {
 		return nil, err
 	}
@@ -42,7 +41,7 @@ func (s *server) GetByUsername(ctx context.Context, in *pb.GetByUsernameRequest)
 		Mail:      account.Mail,
 		Password:  account.Password,
 		ActorId:   int64(account.ActorID),
-		IsPrivate: strconv.FormatBool(account.IsPrivate),
+		IsPrivate: account.IsPrivate,
 	}, nil
 }
 
@@ -64,7 +63,7 @@ func (s *server) EditUsername(ctx context.Context, in *pb.EditUsernameRequest) (
 		return nil, err
 	}
 
-	if err := NewAccountsID(parse.AccountId).EditUsername(in.Username); err != nil {
+	if err := NewAccountsID(parse.AccountId).EditUsername(in.GetUsername()); err != nil {
 		return nil, err
 	}
 	return &pb.EditUsernameResponse{Code: "200", Status: "ok"}, nil
@@ -76,7 +75,7 @@ func (s *server) EditEmail(ctx context.Context, in *pb.EditEmailRequest) (*pb.Ed
 		return nil, err
 	}
 
-	if err := NewAccountsID(parse.AccountId).EditEmail(in.Mail); err != nil {
+	if err := NewAccountsID(parse.AccountId).EditEmail(in.GetMail()); err != nil {
 		return nil, err
 	}
 	return &pb.EditEmailResponse{Code: "200", Status: "ok"}, nil
@@ -88,7 +87,7 @@ func (s *server) EditPassword(ctx context.Context, in *pb.EditPasswordRequest) (
 		return nil, err
 	}
 
-	if err := NewEditPassword(in.Username, in.Password).EditPassword(in.NewPassword); err != nil {
+	if err := NewEditPassword(in.GetUsername(), in.GetPassword()).EditPassword(in.GetNewPassword()); err != nil {
 		return nil, err
 	}
 
@@ -103,7 +102,7 @@ func (s *server) EditPassword(ctx context.Context, in *pb.EditPasswordRequest) (
 }
 
 func (s *server) Verify(ctx context.Context, in *pb.VerifyRequest) (*pb.VerifyResponse, error) {
-	verify, err := NewVerify(in.Username).Verify(in.Password)
+	verify, err := NewVerify(in.GetUsername()).Verify(in.GetPassword())
 	if err != nil {
 		return &pb.VerifyResponse{
 			Code:   "401",

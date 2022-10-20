@@ -8,6 +8,7 @@ import "google/api/field_behavior.proto";
 import "google/protobuf/empty.proto";
 import "proto/v1alpha1/actor/actor.proto";
 
+// Friendship The service provides APIs for social network user relations such as followers and followee.
 service Friendship {
   rpc GetFollower (google.protobuf.Empty) returns (FriendshipResponse) {
     option (google.api.http) = {
