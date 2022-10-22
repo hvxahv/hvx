@@ -12,7 +12,7 @@ func TestSubscribes_IsSubscriber(t *testing.T) {
 }
 
 func TestSubscribes_AddSubscriber(t *testing.T) {
-	if err := NewSubscribe(786088233592553473, 785747724097224705).AddSubscriber(785518573776797697); err != nil {
+	if err := NewSubscribe(807240711882047489, 801979262380376065).AddSubscriber(801935106069495809); err != nil {
 		t.Error(err)
 		return
 	}

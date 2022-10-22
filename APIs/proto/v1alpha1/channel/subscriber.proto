@@ -23,13 +23,12 @@ service Subscriber {
     };
   }
 
+  // Get a list of subscribers to CHANNEL for use by administrators and internal gRPCs only.
   rpc GetSubscribers(GetSubscribersRequest) returns (GetSubscribersResponse) {
     option (google.api.http) = {
       get: "/api/v1/channel/{channelId}/subscribers",
     };
   }
-
-  rpc GetSubscribersActor(GetSubscribersActorRequest) returns (GetSubscribersActorResponse) { }
 
   rpc Subscription(SubscriptionRequest) returns (SubscriptionResponse) {
     option (google.api.http) = {
@@ -69,23 +68,13 @@ message RemoveSubscriberResponse {
 
 message GetSubscribersRequest {
   string channelId = 1 [(google.api.field_behavior) = REQUIRED];
+  int64 adminId = 2;
 }
 
 message GetSubscribersResponse {
   string code = 1;
-  repeated actor.proto.ActorData subscriber = 2;
-}
-
-
-message GetSubscribersActorRequest {
-  int64 channelId = 1;
-  int64 adminId = 2;
-}
-
-message GetSubscribersActorResponse {
-  string code = 1;
   string status = 2;
-  repeated actor.proto.ActorData subscribers = 3;
+  repeated actor.proto.ActorData subscriber = 3;
 }
 
 message SubscriptionRequest {

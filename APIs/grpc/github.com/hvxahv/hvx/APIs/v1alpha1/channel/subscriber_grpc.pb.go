@@ -25,7 +25,6 @@ type SubscriberClient interface {
 	AddSubscriber(ctx context.Context, in *AddSubscriberRequest, opts ...grpc.CallOption) (*AddSubscriberResponse, error)
 	RemoveSubscriber(ctx context.Context, in *RemoveSubscriberRequest, opts ...grpc.CallOption) (*RemoveSubscriberResponse, error)
 	GetSubscribers(ctx context.Context, in *GetSubscribersRequest, opts ...grpc.CallOption) (*GetSubscribersResponse, error)
-	GetSubscribersActor(ctx context.Context, in *GetSubscribersActorRequest, opts ...grpc.CallOption) (*GetSubscribersActorResponse, error)
 	Subscription(ctx context.Context, in *SubscriptionRequest, opts ...grpc.CallOption) (*SubscriptionResponse, error)
 	Unsubscribe(ctx context.Context, in *UnsubscribeRequest, opts ...grpc.CallOption) (*UnsubscribeResponse, error)
 }
@@ -65,15 +64,6 @@ func (c *subscriberClient) GetSubscribers(ctx context.Context, in *GetSubscriber
 	return out, nil
 }
 
-func (c *subscriberClient) GetSubscribersActor(ctx context.Context, in *GetSubscribersActorRequest, opts ...grpc.CallOption) (*GetSubscribersActorResponse, error) {
-	out := new(GetSubscribersActorResponse)
-	err := c.cc.Invoke(ctx, "/hvx.api.v1alpha1.channel.proto.Subscriber/GetSubscribersActor", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *subscriberClient) Subscription(ctx context.Context, in *SubscriptionRequest, opts ...grpc.CallOption) (*SubscriptionResponse, error) {
 	out := new(SubscriptionResponse)
 	err := c.cc.Invoke(ctx, "/hvx.api.v1alpha1.channel.proto.Subscriber/Subscription", in, out, opts...)
@@ -99,7 +89,6 @@ type SubscriberServer interface {
 	AddSubscriber(context.Context, *AddSubscriberRequest) (*AddSubscriberResponse, error)
 	RemoveSubscriber(context.Context, *RemoveSubscriberRequest) (*RemoveSubscriberResponse, error)
 	GetSubscribers(context.Context, *GetSubscribersRequest) (*GetSubscribersResponse, error)
-	GetSubscribersActor(context.Context, *GetSubscribersActorRequest) (*GetSubscribersActorResponse, error)
 	Subscription(context.Context, *SubscriptionRequest) (*SubscriptionResponse, error)
 	Unsubscribe(context.Context, *UnsubscribeRequest) (*UnsubscribeResponse, error)
 }
@@ -116,9 +105,6 @@ func (UnimplementedSubscriberServer) RemoveSubscriber(context.Context, *RemoveSu
 }
 func (UnimplementedSubscriberServer) GetSubscribers(context.Context, *GetSubscribersRequest) (*GetSubscribersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSubscribers not implemented")
-}
-func (UnimplementedSubscriberServer) GetSubscribersActor(context.Context, *GetSubscribersActorRequest) (*GetSubscribersActorResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetSubscribersActor not implemented")
 }
 func (UnimplementedSubscriberServer) Subscription(context.Context, *SubscriptionRequest) (*SubscriptionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Subscription not implemented")
@@ -192,24 +178,6 @@ func _Subscriber_GetSubscribers_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Subscriber_GetSubscribersActor_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetSubscribersActorRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(SubscriberServer).GetSubscribersActor(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/hvx.api.v1alpha1.channel.proto.Subscriber/GetSubscribersActor",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SubscriberServer).GetSubscribersActor(ctx, req.(*GetSubscribersActorRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _Subscriber_Subscription_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SubscriptionRequest)
 	if err := dec(in); err != nil {
@@ -264,10 +232,6 @@ var Subscriber_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetSubscribers",
 			Handler:    _Subscriber_GetSubscribers_Handler,
-		},
-		{
-			MethodName: "GetSubscribersActor",
-			Handler:    _Subscriber_GetSubscribersActor_Handler,
 		},
 		{
 			MethodName: "Subscription",

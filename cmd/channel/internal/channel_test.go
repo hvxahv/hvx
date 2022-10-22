@@ -11,8 +11,8 @@ func init() {
 
 func TestChannel_CreateChannel(t *testing.T) {
 	const (
-		actorId   = 786085616327884801
-		creatorId = 785518573776797697
+		actorId   = 801935105807482881
+		creatorId = 801935106069495809
 	)
 	if err := NewChannels(actorId, creatorId, "PUBLIC_KEY").CreateChannel(); err != nil {
 		t.Error(err)
