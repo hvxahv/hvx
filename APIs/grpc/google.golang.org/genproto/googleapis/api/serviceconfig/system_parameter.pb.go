@@ -54,24 +54,23 @@ type SystemParameters struct {
 	//
 	// Example: define api key for all methods
 	//
-	//     system_parameters
-	//       rules:
-	//         - selector: "*"
-	//           parameters:
-	//             - name: api_key
-	//               url_query_parameter: api_key
-	//
+	//	system_parameters
+	//	  rules:
+	//	    - selector: "*"
+	//	      parameters:
+	//	        - name: api_key
+	//	          url_query_parameter: api_key
 	//
 	// Example: define 2 api key names for a specific method.
 	//
-	//     system_parameters
-	//       rules:
-	//         - selector: "/ListShelves"
-	//           parameters:
-	//             - name: api_key
-	//               http_header: Api-Key1
-	//             - name: api_key
-	//               http_header: Api-Key2
+	//	system_parameters
+	//	  rules:
+	//	    - selector: "/ListShelves"
+	//	      parameters:
+	//	        - name: api_key
+	//	          http_header: Api-Key1
+	//	        - name: api_key
+	//	          http_header: Api-Key2
 	//
 	// **NOTE:** All service configuration rules follow "last one wins" order.
 	Rules []*SystemParameterRule `protobuf:"bytes,1,rep,name=rules,proto3" json:"rules,omitempty"`

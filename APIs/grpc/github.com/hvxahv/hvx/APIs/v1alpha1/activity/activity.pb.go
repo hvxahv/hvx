@@ -29,10 +29,8 @@ type ActivityRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// For social layer activities, the create type does not use this API
-	// An activity is delivered to its targets (which are actors) by first looking up the targets' inboxes and then
-	// posting the activity to those inboxes. Targets for delivery are determined by checking the ActivityStreams audience targeting;
-	// namely, the to, bto, cc, bcc, and audience fields of the activity.
+	// This interface is designed for simple Activitypub request interfaces, for complex activities a more complex interface should be implemented.
+	// For example, the type of article creation activity does not use this API and should use ArticleCreateActivity.
 	TO string `protobuf:"bytes,1,opt,name=TO,json=to,proto3" json:"TO,omitempty"`
 	// activity type.
 	Type string `protobuf:"bytes,2,opt,name=type,proto3" json:"type,omitempty"`

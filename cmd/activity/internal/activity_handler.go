@@ -134,8 +134,8 @@ func (s *server) ArticleCreateActivity(ctx context.Context, in *pb.ArticleCreate
 			if err != nil {
 				return nil, err
 			}
-			for _, sub := range subscribers.Subscribers {
-				h.Object = *activity.NewObjectId(uint(sub.Id))
+			for _, sub := range subscribers.Subscriber {
+				h.Object = *activity.NewObjectId(uint(sub.GetId()))
 				create, err := h.Create(h.Object.Address, in)
 				if err != nil {
 					return nil, err

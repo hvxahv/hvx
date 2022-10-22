@@ -28,6 +28,41 @@ type Userdata struct {
 	Mail      string
 }
 
+func (x *Userdata) GetAccountId() uint {
+	if x != nil {
+		return x.AccountId
+	}
+	return 0
+}
+
+func (x *Userdata) GetActorId() uint {
+	if x != nil {
+		return x.ActorId
+	}
+	return 0
+}
+
+func (x *Userdata) GetDeviceId() uint {
+	if x != nil {
+		return x.DeviceID
+	}
+	return 0
+}
+
+func (x *Userdata) GetUsername() string {
+	if x != nil {
+		return x.Username
+	}
+	return ""
+}
+
+func (x *Userdata) GetMail() string {
+	if x != nil {
+		return x.Mail
+	}
+	return ""
+}
+
 func GetUserdataByAuthorizationToken(ctx context.Context) (*Userdata, error) {
 	md, _ := metadata.FromIncomingContext(ctx)
 	bearer := md.Get("authorization")
