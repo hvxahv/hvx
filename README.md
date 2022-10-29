@@ -8,7 +8,7 @@ Currently, the first version is being implemented intensively, all we are doing 
 
 If you have any questions, please submit them to ISSUES.
 
-Or go to the project's community discussion: Discussions - [hvxahv/community](github.com)
+Or go to the project's community discussion: Discussions - [hvxahv/community](https://github.com/hvxahv/community/discussions)
 
 ## The next plan.
 - Perfect Forward Secrecy In the process of enabling encryption in saved, a right way should be found to secure encrypted data, and Perfect Forward Secrecy is one of the next directions to be investigated.
@@ -21,12 +21,12 @@ Or go to the project's community discussion: Discussions - [hvxahv/community](gi
 ## Features
 ## A fully decentralized social network implementation to build open source, free, decentralized open networks.
 
-Based on the decentralized ActivityPub decentralized social network protocol, ipfs distributed persistent storage protocol and matrix.org real-time communication protocol social platform, an open source decentralized social network with data truly in your own hands.
+Based on the decentralized ActivityPub decentralized social network protocol, ipfs distributed persistent storage protocol and matrix.org real-time communication protocol social platform, an open source decentralized social network with the data is truly under your own control.
 
-1. like email format (`name@domain`) address as simple as finding and adding your social network friends , built on the ActivityPub protocol .
-2. cross-server content distribution channel (channel), based on ipfs distributed persistent storage protocol .
-3. end-to-end encrypted instant messaging directly with your friends, adding [matrix.org](http://matrix.org) protocol server. 4.
-4. Encrypted cloud storage with unlimited space based on ipfs features.
+1. Like email format (`name@domain`) address as simple as finding and adding your social network friends , built on the ActivityPub protocol .
+2. Cross-server content distribution channel (channel), based on ipfs distributed persistent storage protocol .
+3. End-to-end encrypted instant messaging directly with your friends, adding [matrix.org](http://matrix.org) protocol server.
+4. Distributed storage technology based on ipfs that lets you keep your data forever.
 
 It is a comprehensive, content publishing, social, instant messaging platform. Anyone can build their own instance and design their own interface.
 
@@ -39,7 +39,7 @@ Preview version: [dev.halfmemories.com](https://dev.halfmemories.com) is current
 
 ## FAQ
 
-[HVXAHV community discussions FAQ.](https://github.com/hvxahv/community/discussions/2)
+[HVXAHV community discussions FAQ.](https://hvxahv.disism.com/faq)
 
 ## Security Policy Report:
 

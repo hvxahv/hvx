@@ -1,8 +1,9 @@
 package internal
 
 import (
-	"github.com/hvxahv/hvx/cfg"
 	"testing"
+
+	"github.com/hvxahv/hvx/cfg"
 )
 
 func init() {
@@ -10,12 +11,7 @@ func init() {
 }
 
 func TestActors_IsExist(t *testing.T) {
-	//a := NewActorsIsExist("example.com", "alice")
-	//if a.IsExist() {
-	//	t.Log("Actor exists")
-	//} else {
-	//	t.Log("Actor does not exist")
-	//}
+
 }
 
 func TestActors_Create(t *testing.T) {
