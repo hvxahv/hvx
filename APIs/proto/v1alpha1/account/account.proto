@@ -6,6 +6,7 @@ option go_package = "github.com/hvxahv/hvx/APIs/v1alpha1/account";
 import "google/api/annotations.proto";
 import "google/api/field_behavior.proto";
 import "google/protobuf/empty.proto";
+import "proto/v1alpha1/actor/actor.proto";
 
 // Accounts hvx account system services.
 service Accounts {
@@ -65,6 +66,12 @@ service Accounts {
   // key pair is only applied to the ActivityPub .
   rpc GetPrivateKey (GetPrivateKeyRequest) returns (GetPrivateKeyResponse) {}
 
+
+  rpc IAm (google.protobuf.Empty) returns (IAmResponse) {
+    option (google.api.http) = {
+      get: "/api/v1/account/iam"
+    };
+  }
 }
 
 // IsExistRequest Provide the user name and check if the user name exists.
@@ -189,4 +196,9 @@ message GetPrivateKeyResponse {
   string code = 1;
   string status = 2;
   string privateKey = 3;
+}
+
+message IAmResponse {
+  GetByUsernameResponse account = 1;
+  actor.proto.ActorData actor = 2;
 }

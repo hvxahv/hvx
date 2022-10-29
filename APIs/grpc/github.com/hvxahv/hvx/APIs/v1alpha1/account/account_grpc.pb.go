@@ -11,6 +11,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -45,6 +46,7 @@ type AccountsClient interface {
 	// the client and presented to the client when the account is created, the
 	// key pair is only applied to the ActivityPub .
 	GetPrivateKey(ctx context.Context, in *GetPrivateKeyRequest, opts ...grpc.CallOption) (*GetPrivateKeyResponse, error)
+	IAm(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*IAmResponse, error)
 }
 
 type accountsClient struct {
@@ -136,6 +138,15 @@ func (c *accountsClient) GetPrivateKey(ctx context.Context, in *GetPrivateKeyReq
 	return out, nil
 }
 
+func (c *accountsClient) IAm(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*IAmResponse, error) {
+	out := new(IAmResponse)
+	err := c.cc.Invoke(ctx, "/hvx.api.v1alpha1.account.proto.Accounts/IAm", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AccountsServer is the server API for Accounts service.
 // All implementations should embed UnimplementedAccountsServer
 // for forward compatibility
@@ -163,6 +174,7 @@ type AccountsServer interface {
 	// the client and presented to the client when the account is created, the
 	// key pair is only applied to the ActivityPub .
 	GetPrivateKey(context.Context, *GetPrivateKeyRequest) (*GetPrivateKeyResponse, error)
+	IAm(context.Context, *emptypb.Empty) (*IAmResponse, error)
 }
 
 // UnimplementedAccountsServer should be embedded to have forward compatible implementations.
@@ -195,6 +207,9 @@ func (UnimplementedAccountsServer) Verify(context.Context, *VerifyRequest) (*Ver
 }
 func (UnimplementedAccountsServer) GetPrivateKey(context.Context, *GetPrivateKeyRequest) (*GetPrivateKeyResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPrivateKey not implemented")
+}
+func (UnimplementedAccountsServer) IAm(context.Context, *emptypb.Empty) (*IAmResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method IAm not implemented")
 }
 
 // UnsafeAccountsServer may be embedded to opt out of forward compatibility for this service.
@@ -370,6 +385,24 @@ func _Accounts_GetPrivateKey_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Accounts_IAm_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AccountsServer).IAm(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/hvx.api.v1alpha1.account.proto.Accounts/IAm",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AccountsServer).IAm(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Accounts_ServiceDesc is the grpc.ServiceDesc for Accounts service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -412,6 +445,10 @@ var Accounts_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetPrivateKey",
 			Handler:    _Accounts_GetPrivateKey_Handler,
+		},
+		{
+			MethodName: "IAm",
+			Handler:    _Accounts_IAm_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

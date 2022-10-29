@@ -270,15 +270,22 @@ func (a *Actors) GetActorByAddress() (*Actors, error) {
 func NewAccountUsername(preferredUsername string) *Actors {
 	return &Actors{
 		PreferredUsername: preferredUsername,
+		Domain:            viper.GetString("domain"),
+	}
+}
+
+func NewPreferredUsernameAndDomain(preferredUsername, domain string) *Actors {
+	return &Actors{
+		PreferredUsername: preferredUsername,
+		Domain:            domain,
 	}
 }
 
 func (a *Actors) GetActorByUsername() (*Actors, error) {
-	domain := viper.GetString("domain")
 	db := cockroach.GetDB()
 	var actor Actors
 	if err := db.Debug().Table(ActorsTable).
-		Where("preferred_username = ? AND domain = ?", a.PreferredUsername, domain).First(&actor).Error; err != nil {
+		Where("preferred_username = ? AND domain = ?", a.PreferredUsername, a.Domain).First(&actor).Error; err != nil {
 		return nil, err
 	}
 	return &actor, nil

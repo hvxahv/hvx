@@ -24,6 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 type SubscriberClient interface {
 	AddSubscriber(ctx context.Context, in *AddSubscriberRequest, opts ...grpc.CallOption) (*AddSubscriberResponse, error)
 	RemoveSubscriber(ctx context.Context, in *RemoveSubscriberRequest, opts ...grpc.CallOption) (*RemoveSubscriberResponse, error)
+	// Get a list of subscribers to CHANNEL for use by administrators and internal gRPCs only.
 	GetSubscribers(ctx context.Context, in *GetSubscribersRequest, opts ...grpc.CallOption) (*GetSubscribersResponse, error)
 	Subscription(ctx context.Context, in *SubscriptionRequest, opts ...grpc.CallOption) (*SubscriptionResponse, error)
 	Unsubscribe(ctx context.Context, in *UnsubscribeRequest, opts ...grpc.CallOption) (*UnsubscribeResponse, error)
@@ -88,6 +89,7 @@ func (c *subscriberClient) Unsubscribe(ctx context.Context, in *UnsubscribeReque
 type SubscriberServer interface {
 	AddSubscriber(context.Context, *AddSubscriberRequest) (*AddSubscriberResponse, error)
 	RemoveSubscriber(context.Context, *RemoveSubscriberRequest) (*RemoveSubscriberResponse, error)
+	// Get a list of subscribers to CHANNEL for use by administrators and internal gRPCs only.
 	GetSubscribers(context.Context, *GetSubscribersRequest) (*GetSubscribersResponse, error)
 	Subscription(context.Context, *SubscriptionRequest) (*SubscriptionResponse, error)
 	Unsubscribe(context.Context, *UnsubscribeRequest) (*UnsubscribeResponse, error)

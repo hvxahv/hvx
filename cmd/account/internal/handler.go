@@ -11,6 +11,7 @@ package internal
 import (
 	"github.com/hvxahv/hvx/clientv1"
 	"github.com/hvxahv/hvx/errors"
+	"google.golang.org/protobuf/types/known/emptypb"
 
 	pb "github.com/hvxahv/hvx/APIs/v1alpha1/account"
 	"github.com/hvxahv/hvx/microsvc"
@@ -127,5 +128,32 @@ func (s *server) GetPrivateKey(ctx context.Context, in *pb.GetPrivateKeyRequest)
 	return &pb.GetPrivateKeyResponse{
 		Code:       "200",
 		PrivateKey: x,
+	}, nil
+}
+
+func (s *server) IAm(ctx context.Context, in *emptypb.Empty) (*pb.IAmResponse, error) {
+	parse, err := microsvc.GetUserdataByAuthorizationToken(ctx)
+	if err != nil {
+		return nil, err
+	}
+	account, err := NewUsername(parse.Username).GetAccountByUsername()
+	if err != nil {
+		return nil, err
+	}
+
+	a, err := clientv1.New(ctx, microsvc.ActorServiceName).GetActor(int64(account.ActorID))
+	if err != nil {
+		return nil, err
+	}
+	return &pb.IAmResponse{
+		Account: &pb.GetByUsernameResponse{
+			AccountId: int64(account.ID),
+			Username:  account.Username,
+			Mail:      account.Mail,
+			Password:  account.Password,
+			ActorId:   int64(account.ActorID),
+			IsPrivate: account.IsPrivate,
+		},
+		Actor: a.Actor,
 	}, nil
 }

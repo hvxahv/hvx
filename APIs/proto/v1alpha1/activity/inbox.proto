@@ -64,12 +64,14 @@ message GetInboxRequest {
 
 message GetInboxResponse {
   string code = 1;
-  Inboxes inbox = 2;
+  string status = 2;
+  Inboxes inbox = 3;
 }
 
 message GetInboxesResponse {
   string code = 1;
-  repeated Inboxes inboxes = 2;
+  string status = 2;
+  repeated Inboxes inboxes = 3;
 }
 
 message DeleteInboxRequest {

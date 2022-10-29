@@ -24,6 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 type ActorClient interface {
 	// IsExist returns true if the actor with the given name(PreferredUsername) exists.
 	IsExist(ctx context.Context, in *IsExistRequest, opts ...grpc.CallOption) (*IsExistResponse, error)
+	IsRemoteExist(ctx context.Context, in *IsRemoteExistRequest, opts ...grpc.CallOption) (*IsExistResponse, error)
 	// Create creates a new actor.
 	Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error)
 	// Get returns the actor with the given name(PreferredUsername).
@@ -50,6 +51,15 @@ func NewActorClient(cc grpc.ClientConnInterface) ActorClient {
 func (c *actorClient) IsExist(ctx context.Context, in *IsExistRequest, opts ...grpc.CallOption) (*IsExistResponse, error) {
 	out := new(IsExistResponse)
 	err := c.cc.Invoke(ctx, "/hvx.api.v1alpha1.actor.proto.Actor/IsExist", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *actorClient) IsRemoteExist(ctx context.Context, in *IsRemoteExistRequest, opts ...grpc.CallOption) (*IsExistResponse, error) {
+	out := new(IsExistResponse)
+	err := c.cc.Invoke(ctx, "/hvx.api.v1alpha1.actor.proto.Actor/IsRemoteExist", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -125,6 +135,7 @@ func (c *actorClient) GetActorByAddress(ctx context.Context, in *GetActorByAddre
 type ActorServer interface {
 	// IsExist returns true if the actor with the given name(PreferredUsername) exists.
 	IsExist(context.Context, *IsExistRequest) (*IsExistResponse, error)
+	IsRemoteExist(context.Context, *IsRemoteExistRequest) (*IsExistResponse, error)
 	// Create creates a new actor.
 	Create(context.Context, *CreateRequest) (*CreateResponse, error)
 	// Get returns the actor with the given name(PreferredUsername).
@@ -146,6 +157,9 @@ type UnimplementedActorServer struct {
 
 func (UnimplementedActorServer) IsExist(context.Context, *IsExistRequest) (*IsExistResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method IsExist not implemented")
+}
+func (UnimplementedActorServer) IsRemoteExist(context.Context, *IsRemoteExistRequest) (*IsExistResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method IsRemoteExist not implemented")
 }
 func (UnimplementedActorServer) Create(context.Context, *CreateRequest) (*CreateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
@@ -194,6 +208,24 @@ func _Actor_IsExist_Handler(srv interface{}, ctx context.Context, dec func(inter
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ActorServer).IsExist(ctx, req.(*IsExistRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Actor_IsRemoteExist_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(IsRemoteExistRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ActorServer).IsRemoteExist(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/hvx.api.v1alpha1.actor.proto.Actor/IsRemoteExist",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ActorServer).IsRemoteExist(ctx, req.(*IsRemoteExistRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -334,6 +366,10 @@ var Actor_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "IsExist",
 			Handler:    _Actor_IsExist_Handler,
+		},
+		{
+			MethodName: "IsRemoteExist",
+			Handler:    _Actor_IsRemoteExist_Handler,
 		},
 		{
 			MethodName: "Create",
