@@ -6,6 +6,7 @@ import (
 
 type Actor interface {
 	IsExistActor(preferredUsername string) (*pb.IsExistResponse, error)
+	IsRemoteExist(preferredUsername, domain string) (*pb.IsExistResponse, error)
 	GetActor(actorId int64) (*pb.GetResponse, error)
 	GetActorByUsername(username string) (*pb.ActorData, error)
 	GetActorByAddress(inbox string) (*pb.ActorData, error)
@@ -22,6 +23,23 @@ func (svc *Svc) IsExistActor(preferredUsername string) (*pb.IsExistResponse, err
 
 	i, err := pb.NewActorClient(c.Conn).IsExist(svc.ctx, &pb.IsExistRequest{
 		PreferredUsername: preferredUsername,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return i, nil
+}
+
+func (svc *Svc) IsRemoteExist(preferredUsername, domain string) (*pb.IsExistResponse, error) {
+	c, err := NewClient(svc.ctx, svc.address)
+	if err != nil {
+		return nil, err
+	}
+	defer c.Close()
+
+	i, err := pb.NewActorClient(c.Conn).IsRemoteExist(svc.ctx, &pb.IsRemoteExistRequest{
+		PreferredUsername: preferredUsername,
+		Domain:            domain,
 	})
 	if err != nil {
 		return nil, err

@@ -10,12 +10,12 @@ func init() {
 }
 
 func TestActors_IsExist(t *testing.T) {
-	a := NewActorsIsExist("example.com", "alice")
-	if a.IsExist() {
-		t.Log("Actor exists")
-	} else {
-		t.Log("Actor does not exist")
-	}
+	//a := NewActorsIsExist("example.com", "alice")
+	//if a.IsExist() {
+	//	t.Log("Actor exists")
+	//} else {
+	//	t.Log("Actor does not exist")
+	//}
 }
 
 func TestActors_Create(t *testing.T) {

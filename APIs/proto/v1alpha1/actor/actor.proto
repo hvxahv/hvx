@@ -11,6 +11,7 @@ import "google/protobuf/empty.proto";
 service Actor {
   // IsExist returns true if the actor with the given name(PreferredUsername) exists.
   rpc IsExist (IsExistRequest) returns (IsExistResponse) {}
+  rpc IsRemoteExist (IsRemoteExistRequest) returns (IsExistResponse) {}
 
   // Create creates a new actor.
   rpc Create(CreateRequest) returns (CreateResponse) {}
@@ -43,7 +44,12 @@ service Actor {
 }
 
 message IsExistRequest {
-  string PreferredUsername = 1;
+  string preferredUsername = 1;
+}
+
+message IsRemoteExistRequest {
+  string preferredUsername = 1;
+  string domain = 2;
 }
 
 message IsExistResponse {

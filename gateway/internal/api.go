@@ -36,6 +36,7 @@ func APIServer() *gin.Engine {
 
 	v1.Use(Auth)
 	// ACCOUNT SERVICES
+	v1.GET("/account/*x", v1alpha1.AccountHandler)
 	v1.PATCH("/account/*x", v1alpha1.AccountHandler)
 
 	// ACTOR SERVICES

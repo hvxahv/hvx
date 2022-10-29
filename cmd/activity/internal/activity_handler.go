@@ -24,7 +24,6 @@ import (
 )
 
 func (s *server) Activity(ctx context.Context, in *pb.ActivityRequest) (*pb.ActivityResponse, error) {
-	fmt.Println(in)
 	parse, err := microsvc.GetUserdataByAuthorizationToken(ctx)
 	if err != nil {
 		return nil, err
@@ -38,10 +37,9 @@ func (s *server) Activity(ctx context.Context, in *pb.ActivityRequest) (*pb.Acti
 		return nil, errors.Newf(h.Err.Error(), err)
 	}
 
-	fmt.Println(in.Body)
-
 	switch in.GetType() {
 	case activitypub.FollowType:
+		fmt.Println("FOLLOW")
 		follow, err := h.Follow()
 		if err != nil {
 			return nil, err

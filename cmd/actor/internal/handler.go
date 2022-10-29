@@ -12,6 +12,8 @@ import (
 	"encoding/json"
 	pb "github.com/hvxahv/hvx/APIs/v1alpha1/actor"
 	"github.com/hvxahv/hvx/activitypub"
+	"github.com/hvxahv/hvx/clientv1"
+	"github.com/hvxahv/hvx/mailer"
 	"github.com/hvxahv/hvx/microsvc"
 	"github.com/spf13/viper"
 	"golang.org/x/net/context"
@@ -33,6 +35,20 @@ func (s *server) IsExist(ctx context.Context, in *pb.IsExistRequest) (*pb.IsExis
 	return &pb.IsExistResponse{
 		IsExist:   ok,
 		ActorType: b.ActorType,
+	}, nil
+}
+
+func (s *server) IsRemoteExist(ctx context.Context, in *pb.IsRemoteExistRequest) (*pb.IsExistResponse, error) {
+	b, exist := NewActorsIsExist(in.Domain, in.PreferredUsername).IsExist()
+	if exist {
+		return &pb.IsExistResponse{
+			IsExist:   true,
+			ActorType: b.ActorType,
+		}, nil
+	}
+	return &pb.IsExistResponse{
+		IsExist:   false,
+		ActorType: "",
 	}, nil
 }
 
@@ -104,6 +120,37 @@ func (s *server) Search(ctx context.Context, in *pb.SearchRequest) (*pb.SearchRe
 
 	addr, err := mail.ParseAddress(in.GetPreferredUsername())
 	if err == nil {
+		format, err := mailer.ParseEmailAddress(in.GetPreferredUsername())
+		if err != nil {
+			return nil, err
+		}
+
+		exist, err := clientv1.New(ctx, microsvc.ActorServiceName).IsRemoteExist(format.Username, format.Domain)
+		if err != nil {
+			return nil, err
+		}
+
+		if exist.IsExist {
+			v, err := NewPreferredUsernameAndDomain(format.Username, format.Domain).GetActorByUsername()
+			if err != nil {
+				return nil, err
+			}
+			var ad pb.ActorData
+			ad.Id = int64(v.ID)
+			ad.PreferredUsername = v.PreferredUsername
+			ad.Domain = v.Domain
+			ad.Avatar = v.Avatar
+			ad.Name = v.Name
+			ad.Summary = v.Summary
+			ad.Inbox = v.Inbox
+			ad.Address = v.Address
+			ad.PublicKey = v.PublicKey
+			ad.ActorType = v.ActorType
+			ad.IsRemote = strconv.FormatBool(v.IsRemote)
+			a = append(a, &ad)
+
+			return &pb.SearchResponse{Code: "200", Actors: a}, nil
+		}
 		handler, err := activitypub.GetWebFingerHandler(addr.Address)
 		if err != nil {
 			return nil, err
@@ -112,6 +159,7 @@ func (s *server) Search(ctx context.Context, in *pb.SearchRequest) (*pb.SearchRe
 		if err != nil {
 			return nil, err
 		}
+
 		var act activitypub.Actor
 		if err := json.Unmarshal(g.Body(), &act); err != nil {
 			return nil, err
@@ -140,6 +188,7 @@ func (s *server) Search(ctx context.Context, in *pb.SearchRequest) (*pb.SearchRe
 		})
 	}
 
+	// Direct user search
 	actors, err := NewPreferredUsername(in.GetPreferredUsername()).GetActorsByPreferredUsername()
 	if err != nil {
 		return nil, err
