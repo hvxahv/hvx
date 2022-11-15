@@ -22,13 +22,21 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AdministrativeClient interface {
-	// IsAdministrator It is the admin that returns true not false.
+	// IsAdministrator Used to check the channel administrator's privileges,
+	// returning whether the user's ID is an administrator.
 	IsAdministrator(ctx context.Context, in *IsAdministratorRequest, opts ...grpc.CallOption) (*IsAdministratorResponse, error)
-	// IsOwner Is the channel owner.
+	// IsOwner Check if it is the owner of the channel.
 	IsOwner(ctx context.Context, in *IsOwnerRequest, opts ...grpc.CallOption) (*IsOwnerResponse, error)
+	// AddAdministrator A user will be added as an administrator by the channel administrator.
 	AddAdministrator(ctx context.Context, in *AddAdministratorRequest, opts ...grpc.CallOption) (*AddAdministratorResponse, error)
+	// Removing an administrator will remove the administrative privileges of a channel administrator.
+	// This is done by the owner of the channel.
 	RemoveAdministrator(ctx context.Context, in *RemoveAdministratorRequest, opts ...grpc.CallOption) (*RemoveAdministratorResponse, error)
+	// GetAdministrators Gets the list of administrators for the channel.
 	GetAdministrators(ctx context.Context, in *GetAdministratorsRequest, opts ...grpc.CallOption) (*GetAdministratorsResponse, error)
+	// ExitAdministrator The administrator who exits the channel will have the administrator
+	// itself to access the API and choose to revoke the administrator privileges for their channel.
+	// Do not become the administrator of the channel.
 	ExitAdministrator(ctx context.Context, in *ExitAdministratorRequest, opts ...grpc.CallOption) (*ExitAdministratorResponse, error)
 }
 
@@ -98,13 +106,21 @@ func (c *administrativeClient) ExitAdministrator(ctx context.Context, in *ExitAd
 // All implementations should embed UnimplementedAdministrativeServer
 // for forward compatibility
 type AdministrativeServer interface {
-	// IsAdministrator It is the admin that returns true not false.
+	// IsAdministrator Used to check the channel administrator's privileges,
+	// returning whether the user's ID is an administrator.
 	IsAdministrator(context.Context, *IsAdministratorRequest) (*IsAdministratorResponse, error)
-	// IsOwner Is the channel owner.
+	// IsOwner Check if it is the owner of the channel.
 	IsOwner(context.Context, *IsOwnerRequest) (*IsOwnerResponse, error)
+	// AddAdministrator A user will be added as an administrator by the channel administrator.
 	AddAdministrator(context.Context, *AddAdministratorRequest) (*AddAdministratorResponse, error)
+	// Removing an administrator will remove the administrative privileges of a channel administrator.
+	// This is done by the owner of the channel.
 	RemoveAdministrator(context.Context, *RemoveAdministratorRequest) (*RemoveAdministratorResponse, error)
+	// GetAdministrators Gets the list of administrators for the channel.
 	GetAdministrators(context.Context, *GetAdministratorsRequest) (*GetAdministratorsResponse, error)
+	// ExitAdministrator The administrator who exits the channel will have the administrator
+	// itself to access the API and choose to revoke the administrator privileges for their channel.
+	// Do not become the administrator of the channel.
 	ExitAdministrator(context.Context, *ExitAdministratorRequest) (*ExitAdministratorResponse, error)
 }
 

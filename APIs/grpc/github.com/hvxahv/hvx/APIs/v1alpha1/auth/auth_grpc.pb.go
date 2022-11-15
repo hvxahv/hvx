@@ -32,12 +32,16 @@ type AuthClient interface {
 	// SetPublicKey unlike activitypub, his private key is inaccessible to the server.
 	// The public key is used for hvxahv privacy-related asymmetric encryption key.
 	SetPublicKey(ctx context.Context, in *SetPublicKeyRequest, opts ...grpc.CallOption) (*SetPublicKeyResponse, error)
+	// GetPublicKey Use the account id to get the account public key.
+	// Not activitypub public key.
 	GetPublicKey(ctx context.Context, in *GetPublicKeyRequest, opts ...grpc.CallOption) (*GetPublicKeyResponse, error)
-	// D-H Diffie–Hellman key exchange.
-	// https://www.rfc-editor.org/rfc/rfc2631.html
+	// GetPrivateKey First, initiate a request to obtain the private key from the logged-in client.
 	GetPrivateKey(ctx context.Context, in *GetPrivateKeyRequest, opts ...grpc.CallOption) (*GetPrivateKeyResponse, error)
+	// GetDH Get the dh parameter.
 	GetDH(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetDHResponse, error)
+	// SendPrivateKey Send the encrypted private key.
 	SendPrivateKey(ctx context.Context, in *SendPrivateKeyRequest, opts ...grpc.CallOption) (*SendPrivateKeyResponse, error)
+	// WaitPrivateKey Wait for the other client to send the encrypted private key.
 	WaitPrivateKey(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*WaitPrivateKeyResponse, error)
 }
 
@@ -125,12 +129,16 @@ type AuthServer interface {
 	// SetPublicKey unlike activitypub, his private key is inaccessible to the server.
 	// The public key is used for hvxahv privacy-related asymmetric encryption key.
 	SetPublicKey(context.Context, *SetPublicKeyRequest) (*SetPublicKeyResponse, error)
+	// GetPublicKey Use the account id to get the account public key.
+	// Not activitypub public key.
 	GetPublicKey(context.Context, *GetPublicKeyRequest) (*GetPublicKeyResponse, error)
-	// D-H Diffie–Hellman key exchange.
-	// https://www.rfc-editor.org/rfc/rfc2631.html
+	// GetPrivateKey First, initiate a request to obtain the private key from the logged-in client.
 	GetPrivateKey(context.Context, *GetPrivateKeyRequest) (*GetPrivateKeyResponse, error)
+	// GetDH Get the dh parameter.
 	GetDH(context.Context, *emptypb.Empty) (*GetDHResponse, error)
+	// SendPrivateKey Send the encrypted private key.
 	SendPrivateKey(context.Context, *SendPrivateKeyRequest) (*SendPrivateKeyResponse, error)
+	// WaitPrivateKey Wait for the other client to send the encrypted private key.
 	WaitPrivateKey(context.Context, *emptypb.Empty) (*WaitPrivateKeyResponse, error)
 }
 

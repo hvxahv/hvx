@@ -77,26 +77,26 @@ var (
 	//
 	// For example, the proto RPC and annotation:
 	//
-	//	rpc CreateSubscription(CreateSubscriptionRequest)
-	//	    returns (Subscription) {
-	//	  option (google.api.method_signature) = "name,topic";
-	//	}
+	//   rpc CreateSubscription(CreateSubscriptionRequest)
+	//       returns (Subscription) {
+	//     option (google.api.method_signature) = "name,topic";
+	//   }
 	//
 	// Would add the following Java overload (in addition to the method accepting
 	// the request object):
 	//
-	//	public final Subscription createSubscription(String name, String topic)
+	//   public final Subscription createSubscription(String name, String topic)
 	//
 	// The following backwards-compatibility guidelines apply:
 	//
-	//   - Adding this annotation to an unannotated method is backwards
+	//   * Adding this annotation to an unannotated method is backwards
 	//     compatible.
-	//   - Adding this annotation to a method which already has existing
+	//   * Adding this annotation to a method which already has existing
 	//     method signature annotations is backwards compatible if and only if
 	//     the new method signature annotation is last in the sequence.
-	//   - Modifying or removing an existing method signature annotation is
+	//   * Modifying or removing an existing method signature annotation is
 	//     a breaking change.
-	//   - Re-ordering existing method signature annotations is a breaking
+	//   * Re-ordering existing method signature annotations is a breaking
 	//     change.
 	//
 	// repeated string method_signature = 1051;
@@ -110,10 +110,10 @@ var (
 	//
 	// Example:
 	//
-	//	service Foo {
-	//	  option (google.api.default_host) = "foo.googleapi.com";
-	//	  ...
-	//	}
+	//   service Foo {
+	//     option (google.api.default_host) = "foo.googleapi.com";
+	//     ...
+	//   }
 	//
 	// optional string default_host = 1049;
 	E_DefaultHost = &file_google_api_client_proto_extTypes[1]
@@ -121,22 +121,22 @@ var (
 	//
 	// Example:
 	//
-	//	service Foo {
-	//	  option (google.api.oauth_scopes) = \
-	//	    "https://www.googleapis.com/auth/cloud-platform";
-	//	  ...
-	//	}
+	//   service Foo {
+	//     option (google.api.oauth_scopes) = \
+	//       "https://www.googleapis.com/auth/cloud-platform";
+	//     ...
+	//   }
 	//
 	// If there is more than one scope, use a comma-separated string:
 	//
 	// Example:
 	//
-	//	service Foo {
-	//	  option (google.api.oauth_scopes) = \
-	//	    "https://www.googleapis.com/auth/cloud-platform,"
-	//	    "https://www.googleapis.com/auth/monitoring";
-	//	  ...
-	//	}
+	//   service Foo {
+	//     option (google.api.oauth_scopes) = \
+	//       "https://www.googleapis.com/auth/cloud-platform,"
+	//       "https://www.googleapis.com/auth/monitoring";
+	//     ...
+	//   }
 	//
 	// optional string oauth_scopes = 1050;
 	E_OauthScopes = &file_google_api_client_proto_extTypes[2]

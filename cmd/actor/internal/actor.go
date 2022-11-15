@@ -4,12 +4,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net/url"
+
 	"github.com/go-resty/resty/v2"
 	"github.com/hvxahv/hvx/activitypub"
 	"github.com/hvxahv/hvx/cockroach"
 	"github.com/spf13/viper"
 	"gorm.io/gorm"
-	"net/url"
 )
 
 // Actors are used to support the ActivityPub protocol,

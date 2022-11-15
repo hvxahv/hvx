@@ -35,6 +35,9 @@ type PublicClient interface {
 	// Get the actors in the activityPub protocol.
 	// https://www.w3.org/TR/activitypub/#actor-objects
 	GetActor(ctx context.Context, in *GetActorRequest, opts ...grpc.CallOption) (*GetActorResponse, error)
+	// GetChannel Get public information about the channel,
+	// which is essentially an Actor with a differentiated type at different URLs (/c/ and /u/).
+	// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-service
 	GetChannel(ctx context.Context, in *GetChannelRequest, opts ...grpc.CallOption) (*GetActorResponse, error)
 }
 
@@ -107,6 +110,9 @@ type PublicServer interface {
 	// Get the actors in the activityPub protocol.
 	// https://www.w3.org/TR/activitypub/#actor-objects
 	GetActor(context.Context, *GetActorRequest) (*GetActorResponse, error)
+	// GetChannel Get public information about the channel,
+	// which is essentially an Actor with a differentiated type at different URLs (/c/ and /u/).
+	// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-service
 	GetChannel(context.Context, *GetChannelRequest) (*GetActorResponse, error)
 }
 

@@ -274,8 +274,11 @@ type CreateRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Title      string         `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
-	Summary    string         `protobuf:"bytes,2,opt,name=summary,proto3" json:"summary,omitempty"`
+	// title is Article title, if the post is a status (status & Activitypub Note) then this field should be empty.
+	Title string `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
+	// summary If you are creating an article, you can use this field to add a summary of the article.
+	Summary string `protobuf:"bytes,2,opt,name=summary,proto3" json:"summary,omitempty"`
+	// article Both article and status should use this field to store the body.
 	Article    string         `protobuf:"bytes,3,opt,name=article,proto3" json:"article,omitempty"`
 	Tags       []string       `protobuf:"bytes,4,rep,name=tags,proto3" json:"tags,omitempty"`
 	Nsfw       bool           `protobuf:"varint,5,opt,name=nsfw,proto3" json:"nsfw,omitempty"`

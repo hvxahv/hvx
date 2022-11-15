@@ -9,10 +9,11 @@ package activitypub
 
 import (
 	"fmt"
-	"github.com/go-resty/resty/v2"
-	"github.com/hvxahv/hvx/errors"
 	"strings"
 	"time"
+
+	"github.com/go-resty/resty/v2"
+	"github.com/hvxahv/hvx/errors"
 
 	"github.com/spf13/viper"
 )
@@ -164,6 +165,9 @@ type Actor struct {
 		Url       string `json:"url"`
 	} `json:"icon"`
 }
+
+// JSON LD
+// https://www.w3.org/TR/2014/REC-json-ld-20140116/
 
 func NewActorContext() []interface{} {
 	arr := make([]interface{}, 0)

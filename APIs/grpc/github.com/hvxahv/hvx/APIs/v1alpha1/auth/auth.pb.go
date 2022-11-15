@@ -82,9 +82,11 @@ type AuthorizationResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Code               string `protobuf:"bytes,1,opt,name=code,proto3" json:"code,omitempty"`
-	Status             string `protobuf:"bytes,2,opt,name=status,proto3" json:"status,omitempty"`
-	AccountId          int64  `protobuf:"varint,3,opt,name=accountId,proto3" json:"accountId,omitempty"`
+	Code      string `protobuf:"bytes,1,opt,name=code,proto3" json:"code,omitempty"`
+	Status    string `protobuf:"bytes,2,opt,name=status,proto3" json:"status,omitempty"`
+	AccountId int64  `protobuf:"varint,3,opt,name=accountId,proto3" json:"accountId,omitempty"`
+	// authorizationToken The TOKEN will be returned to the client after successful login,
+	// and the client will carry the TOKEN when accessing .
 	AuthorizationToken string `protobuf:"bytes,4,opt,name=authorizationToken,proto3" json:"authorizationToken,omitempty"`
 	ActorId            int64  `protobuf:"varint,5,opt,name=actorId,proto3" json:"actorId,omitempty"`
 	Mail               string `protobuf:"bytes,6,opt,name=mail,proto3" json:"mail,omitempty"`
@@ -376,6 +378,7 @@ func (x *GetPublicKeyResponse) GetPublicKey() string {
 	return ""
 }
 
+// DH
 type GetPrivateKeyRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

@@ -16,6 +16,8 @@ limitations under the License.
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/hvxahv/hvx/cmd/account/internal"
 	"github.com/spf13/cobra"
 )
@@ -27,6 +29,7 @@ var runCmd = &cobra.Command{
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 		if err := internal.Run(); err != nil {
+			fmt.Println(err)
 			return
 		}
 	},

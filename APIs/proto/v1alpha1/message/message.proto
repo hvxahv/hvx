@@ -8,7 +8,15 @@ import "google/api/field_behavior.proto";
 import "google/protobuf/empty.proto";
 
 service Messages {
-  // AccessRegister Register a matrix account with a username and password.
+
+  // AccessRegister registers and opens a matrix account using the username
+  // and password of the account system. Registration will be performed to 
+  // the self-hosted matrix.org home server using matrix.org's API. After 
+  // registration is complete, the registered data is returned to the client
+  // and the account system's Actor data is updated. The client should follow
+  // the implementation specifications provided in the matrix.org documentation
+  // to implement https://matrix.org/docs/develop.
+  // matrix.org sdk https://matrix.org/sdks/
   rpc AccessRegister (AccessRegisterRequest) returns (AccessRegisterResponse) {
     option (google.api.http) = {
       post: "/api/v1/message/access/register",
@@ -34,6 +42,8 @@ service Messages {
   }
 
   // TODO - EDIT PASSWORD...
+  // When the account system changes the password,
+  // the password of the matrix should be changed at the same time.
 }
 
 message AccessRegisterRequest {
@@ -43,8 +53,11 @@ message AccessRegisterRequest {
 
 message AccessRegisterResponse {
   string code = 1;
-  string accessToken = 2;
-  string userId = 3;
+  string status = 2;
+  string accessToken = 3;
+  string userId = 4;
+  string baseUrl = 5;
+  string deviceId = 6;
 }
 
 message AccessLoginRequest {

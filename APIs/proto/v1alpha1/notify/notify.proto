@@ -7,6 +7,15 @@ import "google/api/annotations.proto";
 import "google/api/field_behavior.proto";
 import "google/protobuf/empty.proto";
 
+// Notify The client will get the notifications pushed by the server by subscribing.
+// ******
+// Web Push：[draft-ietf-webpush-protocol-12](https://datatracker.ietf.org/doc/html/draft-ietf-webpush-protocol-12)
+// [Push API - Web APIs | MDN (mozilla.org)](https://developer.mozilla.org/en-US/docs/Web/API/Push_API)
+// ******
+// FCM：[Firebase Cloud Messaging  |  Firebase Documentation (google.com)](https://firebase.google.com/docs/cloud-messaging)
+// ******
+// APNs: [Apple Developer Documentation](https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/sending_notification_requests_to_apns/)
+
 service Notify {
   rpc Subscribe(SubscribeRequest) returns (SubscribeResponse) {
     option (google.api.http) = {
@@ -16,10 +25,13 @@ service Notify {
   }
 }
 
+// SubscribeRequest 
+// *Note* The APIs are not stable yet, and might change or be improved in the future.
 message SubscribeRequest {
 
 }
 
 message SubscribeResponse {
-
+  string code = 1;
+  string status = 2;
 }

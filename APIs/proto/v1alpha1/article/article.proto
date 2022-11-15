@@ -84,8 +84,14 @@ message Attachments {
 }
 
 message CreateRequest {
+
+  // title is Article title, if the post is a status (status & Activitypub Note) then this field should be empty.
   string title = 1;
+  
+  // summary If you are creating an article, you can use this field to add a summary of the article.
   string summary = 2;
+
+  // article Both article and status should use this field to store the body.
   string article = 3;
   repeated string tags = 4;
   bool nsfw = 5;

@@ -55,19 +55,19 @@ const (
 	//
 	// Given the following operation config:
 	//
-	//	Method path:        /api/company/{cid}/user/{uid}
-	//	Backend address:    https://example.cloudfunctions.net/getUser
+	//     Method path:        /api/company/{cid}/user/{uid}
+	//     Backend address:    https://example.cloudfunctions.net/getUser
 	//
 	// Requests to the following request paths will call the backend at the
 	// translated path:
 	//
-	//	Request path: /api/company/widgetworks/user/johndoe
-	//	Translated:
-	//	https://example.cloudfunctions.net/getUser?cid=widgetworks&uid=johndoe
+	//     Request path: /api/company/widgetworks/user/johndoe
+	//     Translated:
+	//     https://example.cloudfunctions.net/getUser?cid=widgetworks&uid=johndoe
 	//
-	//	Request path: /api/company/widgetworks/user/johndoe?timezone=EST
-	//	Translated:
-	//	https://example.cloudfunctions.net/getUser?timezone=EST&cid=widgetworks&uid=johndoe
+	//     Request path: /api/company/widgetworks/user/johndoe?timezone=EST
+	//     Translated:
+	//     https://example.cloudfunctions.net/getUser?timezone=EST&cid=widgetworks&uid=johndoe
 	BackendRule_CONSTANT_ADDRESS BackendRule_PathTranslation = 1
 	// The request path will be appended to the backend address.
 	//
@@ -75,19 +75,19 @@ const (
 	//
 	// Given the following operation config:
 	//
-	//	Method path:        /api/company/{cid}/user/{uid}
-	//	Backend address:    https://example.appspot.com
+	//     Method path:        /api/company/{cid}/user/{uid}
+	//     Backend address:    https://example.appspot.com
 	//
 	// Requests to the following request paths will call the backend at the
 	// translated path:
 	//
-	//	Request path: /api/company/widgetworks/user/johndoe
-	//	Translated:
-	//	https://example.appspot.com/api/company/widgetworks/user/johndoe
+	//     Request path: /api/company/widgetworks/user/johndoe
+	//     Translated:
+	//     https://example.appspot.com/api/company/widgetworks/user/johndoe
 	//
-	//	Request path: /api/company/widgetworks/user/johndoe?timezone=EST
-	//	Translated:
-	//	https://example.appspot.com/api/company/widgetworks/user/johndoe?timezone=EST
+	//     Request path: /api/company/widgetworks/user/johndoe?timezone=EST
+	//     Translated:
+	//     https://example.appspot.com/api/company/widgetworks/user/johndoe?timezone=EST
 	BackendRule_APPEND_PATH_TO_ADDRESS BackendRule_PathTranslation = 2
 )
 
@@ -198,11 +198,11 @@ type BackendRule struct {
 	// The scheme is used to determine the backend protocol and security.
 	// The following schemes are accepted:
 	//
-	//	SCHEME        PROTOCOL    SECURITY
-	//	http://       HTTP        None
-	//	https://      HTTP        TLS
-	//	grpc://       gRPC        None
-	//	grpcs://      gRPC        TLS
+	//    SCHEME        PROTOCOL    SECURITY
+	//    http://       HTTP        None
+	//    https://      HTTP        TLS
+	//    grpc://       gRPC        None
+	//    grpcs://      gRPC        TLS
 	//
 	// It is recommended to explicitly include a scheme. Leaving out the scheme
 	// may cause constrasting behaviors across platforms.
@@ -240,7 +240,6 @@ type BackendRule struct {
 	// JWT ID token.
 	//
 	// Types that are assignable to Authentication:
-	//
 	//	*BackendRule_JwtAudience
 	//	*BackendRule_DisableAuth
 	Authentication isBackendRule_Authentication `protobuf_oneof:"authentication"`
@@ -250,11 +249,11 @@ type BackendRule struct {
 	// The default value is inferred from the scheme in the
 	// [address][google.api.BackendRule.address] field:
 	//
-	//	SCHEME        PROTOCOL
-	//	http://       http/1.1
-	//	https://      http/1.1
-	//	grpc://       h2
-	//	grpcs://      h2
+	//    SCHEME        PROTOCOL
+	//    http://       http/1.1
+	//    https://      http/1.1
+	//    grpc://       h2
+	//    grpcs://      h2
 	//
 	// For secure HTTP backends (https://) that support HTTP/2, set this field
 	// to "h2" for improved performance.

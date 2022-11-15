@@ -1,10 +1,11 @@
 package internal
 
 import (
+	"strconv"
+
 	pb "github.com/hvxahv/hvx/APIs/v1alpha1/channel"
 	"github.com/hvxahv/hvx/microsvc"
 	"golang.org/x/net/context"
-	"strconv"
 )
 
 // Broadcast ...
@@ -15,7 +16,7 @@ func (s *server) CreateBroadcast(ctx context.Context, in *pb.CreateBroadcastRequ
 		return nil, err
 	}
 
-	if err := NewBroadcasts(uint(in.GetChannelId()), parse.ActorId, in.GetIpfsCID()).Create(); err != nil {
+	if err := NewBroadcasts(uint(in.GetChannelId()), parse.ActorId, in.GetCid()).Create(); err != nil {
 		return nil, err
 	}
 

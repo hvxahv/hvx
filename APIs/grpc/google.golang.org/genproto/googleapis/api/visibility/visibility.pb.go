@@ -48,12 +48,12 @@ const (
 //
 // Example:
 //
-//	visibility:
-//	  rules:
-//	  - selector: google.calendar.Calendar.EnhancedSearch
-//	    restriction: PREVIEW
-//	  - selector: google.calendar.Calendar.Delegate
-//	    restriction: INTERNAL
+//     visibility:
+//       rules:
+//       - selector: google.calendar.Calendar.EnhancedSearch
+//         restriction: PREVIEW
+//       - selector: google.calendar.Calendar.Delegate
+//         restriction: INTERNAL
 //
 // Here, all methods are publicly visible except for the restricted methods
 // EnhancedSearch and Delegate.
@@ -126,10 +126,10 @@ type VisibilityRule struct {
 	//
 	// Example:
 	//
-	//	visibility:
-	//	  rules:
-	//	  - selector: google.calendar.Calendar.EnhancedSearch
-	//	    restriction: INTERNAL, PREVIEW
+	//     visibility:
+	//       rules:
+	//       - selector: google.calendar.Calendar.EnhancedSearch
+	//         restriction: INTERNAL, PREVIEW
 	//
 	// Removing INTERNAL from this restriction will break clients that rely on
 	// this method and only had access to it through INTERNAL.

@@ -9,6 +9,8 @@ import "google/protobuf/empty.proto";
 import "proto/v1alpha1/actor/actor.proto";
 
 service Subscriber {
+
+  // AddSubscriber Add a subscriber, operated by channel owner or administrator only.
   rpc AddSubscriber(AddSubscriberRequest) returns (AddSubscriberResponse) {
     option (google.api.http) = {
       post: "/api/v1/channel/subscriber",
@@ -16,6 +18,7 @@ service Subscriber {
     };
   }
 
+  // RemoveSubscriber Remove a subscriber, operated by channel owner or administrator only.
   rpc RemoveSubscriber(RemoveSubscriberRequest) returns (RemoveSubscriberResponse) {
     option (google.api.http) = {
       delete: "/api/v1/channel/subscriber",
@@ -23,13 +26,15 @@ service Subscriber {
     };
   }
 
-  // Get a list of subscribers to CHANNEL for use by administrators and internal gRPCs only.
+  // GetSubscribers Get a list of subscribers to channel,
+  // operated by channel owner and administrator only.
   rpc GetSubscribers(GetSubscribersRequest) returns (GetSubscribersResponse) {
     option (google.api.http) = {
       get: "/api/v1/channel/{channelId}/subscribers",
     };
   }
 
+  // Subscription is the API through which the user initiates a subscription to the channel.
   rpc Subscription(SubscriptionRequest) returns (SubscriptionResponse) {
     option (google.api.http) = {
       post: "/api/v1/channel/subscription",
@@ -37,6 +42,7 @@ service Subscriber {
     };
   }
 
+  // Unsubscribe The API for user-initiated unsubscriptions.
   rpc Unsubscribe(UnsubscribeRequest) returns (UnsubscribeResponse) {
     option (google.api.http) = {
       post: "/api/v1/channel/unsubscribe",
@@ -74,6 +80,8 @@ message GetSubscribersRequest {
 message GetSubscribersResponse {
   string code = 1;
   string status = 2;
+
+  // The subscriber is an actor type of activitypub, so it will return actor data of type REPEATED.
   repeated actor.proto.ActorData subscriber = 3;
 }
 

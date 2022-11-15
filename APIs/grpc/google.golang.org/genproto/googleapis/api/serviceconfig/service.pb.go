@@ -50,20 +50,20 @@ const (
 //
 // Example:
 //
-//	type: google.api.Service
-//	name: calendar.googleapis.com
-//	title: Google Calendar API
-//	apis:
-//	- name: google.calendar.v3.Calendar
-//	authentication:
-//	  providers:
-//	  - id: google_calendar_auth
-//	    jwks_uri: https://www.googleapis.com/oauth2/v1/certs
-//	    issuer: https://securetoken.google.com
-//	  rules:
-//	  - selector: "*"
-//	    requirements:
-//	      provider_id: google_calendar_auth
+//     type: google.api.Service
+//     name: calendar.googleapis.com
+//     title: Google Calendar API
+//     apis:
+//     - name: google.calendar.v3.Calendar
+//     authentication:
+//       providers:
+//       - id: google_calendar_auth
+//         jwks_uri: https://www.googleapis.com/oauth2/v1/certs
+//         issuer: https://securetoken.google.com
+//       rules:
+//       - selector: "*"
+//         requirements:
+//           provider_id: google_calendar_auth
 type Service struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -95,16 +95,16 @@ type Service struct {
 	// shall be included, such as types used by the `google.protobuf.Any` type,
 	// should be listed here by name. Example:
 	//
-	//	types:
-	//	- name: google.protobuf.Int32
+	//     types:
+	//     - name: google.protobuf.Int32
 	Types []*typepb.Type `protobuf:"bytes,4,rep,name=types,proto3" json:"types,omitempty"`
 	// A list of all enum types included in this API service.  Enums
 	// referenced directly or indirectly by the `apis` are automatically
 	// included.  Enums which are not referenced but shall be included
 	// should be listed here by name. Example:
 	//
-	//	enums:
-	//	- name: google.someapi.v1.SomeEnum
+	//     enums:
+	//     - name: google.someapi.v1.SomeEnum
 	Enums []*typepb.Enum `protobuf:"bytes,5,rep,name=enums,proto3" json:"enums,omitempty"`
 	// Additional API documentation.
 	Documentation *Documentation `protobuf:"bytes,6,opt,name=documentation,proto3" json:"documentation,omitempty"`

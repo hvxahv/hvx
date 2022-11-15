@@ -23,8 +23,14 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type FriendshipClient interface {
+	// GetFollower Use this API to get a list of followers and return information about them when the user queries them.
+	// This API is also mainly used in Activitypub to get followers' addresses and push them when users post content.
 	GetFollower(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*FriendshipResponse, error)
+	// GetFollowing This API returns the Actor data that is being watched.
 	GetFollowing(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*FriendshipResponse, error)
+	// GetFriend If users are following each other, they are friends by default,
+	// and the list of mutual followers is obtained through this API,
+	// for example, when doing instant messaging, the list is both address book.
 	GetFriend(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*FriendshipResponse, error)
 }
 
@@ -67,8 +73,14 @@ func (c *friendshipClient) GetFriend(ctx context.Context, in *emptypb.Empty, opt
 // All implementations should embed UnimplementedFriendshipServer
 // for forward compatibility
 type FriendshipServer interface {
+	// GetFollower Use this API to get a list of followers and return information about them when the user queries them.
+	// This API is also mainly used in Activitypub to get followers' addresses and push them when users post content.
 	GetFollower(context.Context, *emptypb.Empty) (*FriendshipResponse, error)
+	// GetFollowing This API returns the Actor data that is being watched.
 	GetFollowing(context.Context, *emptypb.Empty) (*FriendshipResponse, error)
+	// GetFriend If users are following each other, they are friends by default,
+	// and the list of mutual followers is obtained through this API,
+	// for example, when doing instant messaging, the list is both address book.
 	GetFriend(context.Context, *emptypb.Empty) (*FriendshipResponse, error)
 }
 

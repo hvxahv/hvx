@@ -10,18 +10,25 @@ import "proto/v1alpha1/actor/actor.proto";
 
 // Friendship The service provides APIs for social network user relations such as followers and followee.
 service Friendship {
+  
+  // GetFollower Use this API to get a list of followers and return information about them when the user queries them.
+  // This API is also mainly used in Activitypub to get followers' addresses and push them when users post content.
   rpc GetFollower (google.protobuf.Empty) returns (FriendshipResponse) {
     option (google.api.http) = {
       get: "/api/v1/activity/friendship/follower"
     };
   }
 
+  // GetFollowing This API returns the Actor data that is being watched.
   rpc GetFollowing (google.protobuf.Empty) returns (FriendshipResponse) {
     option (google.api.http) = {
       get: "/api/v1/activity/friendship/following"
     };
   }
 
+  // GetFriend If users are following each other, they are friends by default, 
+  // and the list of mutual followers is obtained through this API, 
+  // for example, when doing instant messaging, the list is both address book.
   rpc GetFriend (google.protobuf.Empty) returns (FriendshipResponse) {
     option (google.api.http) = {
       get: "/api/v1/activity/friendship/friend",
