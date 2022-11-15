@@ -8,6 +8,15 @@ import "google/api/annotations.proto";
 import "google/api/field_behavior.proto";
 
 service Public {
+  // TODO 
+  // https://halfmemories.com/.well-known/host-meta
+  // 
+  // returns xml
+  // <?xml version="1.0" encoding="UTF-8"?>
+  // <XRD xmlns="http://docs.oasis-open.org/ns/xri/xrd-1.0">
+  //    <Link rel="lrdd" template="https://mastodon.disism.com/.well-known/webfinger?resource={uri}"/>
+  // </XRD>
+
   // Get the instance details of the current instance.
   rpc GetInstance(google.protobuf.Empty) returns (GetInstanceResponse) {
     option (google.api.http) = {
@@ -41,6 +50,9 @@ service Public {
     };
   }
 
+  // GetChannel Get public information about the channel,
+  // which is essentially an Actor with a differentiated type at different URLs (/c/ and /u/).
+  // https://www.w3.org/TR/activitystreams-vocabulary/#dfn-service
   rpc GetChannel(GetChannelRequest) returns (GetActorResponse) {
     option (google.api.http) = {
       get: "/c/{channel}"

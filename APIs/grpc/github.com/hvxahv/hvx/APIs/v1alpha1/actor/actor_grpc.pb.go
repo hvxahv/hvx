@@ -24,19 +24,27 @@ const _ = grpc.SupportPackageIsVersion7
 type ActorClient interface {
 	// IsExist returns true if the actor with the given name(PreferredUsername) exists.
 	IsExist(ctx context.Context, in *IsExistRequest, opts ...grpc.CallOption) (*IsExistResponse, error)
+	// IsRemoteExist When using the search service, if the user submits an absolute address, e.g. <hvturingga@disism.com>.
+	// then this API should be used to query if it exists in the Actor table.
 	IsRemoteExist(ctx context.Context, in *IsRemoteExistRequest, opts ...grpc.CallOption) (*IsExistResponse, error)
-	// Create creates a new actor.
+	// Create Creates an Actor that the API calls when creating an account for use with Activitypub's Actor information.
 	Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error)
-	// Get returns the actor with the given name(PreferredUsername).
+	// Get information about an Actor by its ActorId.
 	Get(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error)
-	// Search returns the set of actors by the username.
+	// Search for Actors in the instance via this API and return the set of all Actors
+	// with that preferredUsername if only the preferredUsername is entered.
+	// If you provide an absolute account address,
+	// such as <hvturingga@disism.com> then only one unique Actor is returned.
 	Search(ctx context.Context, in *SearchRequest, opts ...grpc.CallOption) (*SearchResponse, error)
-	// EditActor Edits the actor profile.
+	// EditActor Edit Actor's profile, username, avatar, biography, etc.
 	Edit(ctx context.Context, in *EditRequest, opts ...grpc.CallOption) (*EditResponse, error)
-	// Delete Delete the actor.
+	// Delete Actor, you need to use this API to delete the user's Actor data
+	// when the user logs out of his or her account.
 	Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error)
-	// GetActorByUsername returns the actor by account username.
+	// GetActorByUsername Query the user's Actor data by account name.
 	GetActorByUsername(ctx context.Context, in *GetActorByUsernameRequest, opts ...grpc.CallOption) (*ActorData, error)
+	// GetActorByAddress Get the user's Actor data by Actor address.
+	// For example: <https://halfmemories.com/u/hvturingga>.
 	GetActorByAddress(ctx context.Context, in *GetActorByAddressRequest, opts ...grpc.CallOption) (*ActorData, error)
 }
 
@@ -135,19 +143,27 @@ func (c *actorClient) GetActorByAddress(ctx context.Context, in *GetActorByAddre
 type ActorServer interface {
 	// IsExist returns true if the actor with the given name(PreferredUsername) exists.
 	IsExist(context.Context, *IsExistRequest) (*IsExistResponse, error)
+	// IsRemoteExist When using the search service, if the user submits an absolute address, e.g. <hvturingga@disism.com>.
+	// then this API should be used to query if it exists in the Actor table.
 	IsRemoteExist(context.Context, *IsRemoteExistRequest) (*IsExistResponse, error)
-	// Create creates a new actor.
+	// Create Creates an Actor that the API calls when creating an account for use with Activitypub's Actor information.
 	Create(context.Context, *CreateRequest) (*CreateResponse, error)
-	// Get returns the actor with the given name(PreferredUsername).
+	// Get information about an Actor by its ActorId.
 	Get(context.Context, *GetRequest) (*GetResponse, error)
-	// Search returns the set of actors by the username.
+	// Search for Actors in the instance via this API and return the set of all Actors
+	// with that preferredUsername if only the preferredUsername is entered.
+	// If you provide an absolute account address,
+	// such as <hvturingga@disism.com> then only one unique Actor is returned.
 	Search(context.Context, *SearchRequest) (*SearchResponse, error)
-	// EditActor Edits the actor profile.
+	// EditActor Edit Actor's profile, username, avatar, biography, etc.
 	Edit(context.Context, *EditRequest) (*EditResponse, error)
-	// Delete Delete the actor.
+	// Delete Actor, you need to use this API to delete the user's Actor data
+	// when the user logs out of his or her account.
 	Delete(context.Context, *DeleteRequest) (*DeleteResponse, error)
-	// GetActorByUsername returns the actor by account username.
+	// GetActorByUsername Query the user's Actor data by account name.
 	GetActorByUsername(context.Context, *GetActorByUsernameRequest) (*ActorData, error)
+	// GetActorByAddress Get the user's Actor data by Actor address.
+	// For example: <https://halfmemories.com/u/hvturingga>.
 	GetActorByAddress(context.Context, *GetActorByAddressRequest) (*ActorData, error)
 }
 

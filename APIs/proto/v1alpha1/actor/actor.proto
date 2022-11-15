@@ -9,24 +9,31 @@ import "google/protobuf/empty.proto";
 
 // Actor Service used for ActivityPub Actor data provision.
 service Actor {
+
   // IsExist returns true if the actor with the given name(PreferredUsername) exists.
   rpc IsExist (IsExistRequest) returns (IsExistResponse) {}
+
+  // IsRemoteExist When using the search service, if the user submits an absolute address, e.g. <hvturingga@disism.com>.
+  // then this API should be used to query if it exists in the Actor table.
   rpc IsRemoteExist (IsRemoteExistRequest) returns (IsExistResponse) {}
 
-  // Create creates a new actor.
+  // Create Creates an Actor that the API calls when creating an account for use with Activitypub's Actor information.
   rpc Create(CreateRequest) returns (CreateResponse) {}
 
-  // Get returns the actor with the given name(PreferredUsername).
+  // Get information about an Actor by its ActorId.
   rpc Get(GetRequest) returns (GetResponse) {}
 
-  // Search returns the set of actors by the username.
+  // Search for Actors in the instance via this API and return the set of all Actors
+  // with that preferredUsername if only the preferredUsername is entered.
+  // If you provide an absolute account address,
+  // such as <hvturingga@disism.com> then only one unique Actor is returned.
   rpc Search (SearchRequest) returns (SearchResponse) {
     option (google.api.http) = {
       get: "/api/v1/search/{preferredUsername}"
     };
   }
 
-  // EditActor Edits the actor profile.
+  // EditActor Edit Actor's profile, username, avatar, biography, etc.
   rpc Edit (EditRequest) returns (EditResponse) {
     option (google.api.http) = {
       put: "/api/v1/actor",
@@ -34,12 +41,15 @@ service Actor {
     };
   }
 
-  // Delete Delete the actor.
+  // Delete Actor, you need to use this API to delete the user's Actor data
+  // when the user logs out of his or her account.
   rpc Delete (DeleteRequest) returns (DeleteResponse) {}
 
-  // GetActorByUsername returns the actor by account username.
+  // GetActorByUsername Query the user's Actor data by account name.
   rpc GetActorByUsername (GetActorByUsernameRequest) returns (ActorData) {}
 
+  // GetActorByAddress Get the user's Actor data by Actor address.
+  // For example: <https://halfmemories.com/u/hvturingga>.
   rpc GetActorByAddress (GetActorByAddressRequest) returns (ActorData) {}
 }
 
@@ -77,18 +87,47 @@ message GetResponse {
   ActorData actor = 1;
 }
 
-// ActorData is the actor data. It contains the actor's public key, preferred username, and actor type.
+// ActorData is the actor data.
+// It contains the actor's public key, preferred username, and actor type.
 message ActorData {
+
+  // id is the primary key of the Actor.
   int64 id = 1;
-  string preferred_username = 2;
+
+  // preferred_username and the account name are the same.
+  string preferredUsername = 2;
+
+  // domain The domain name of the instance where the actor is located.
+  // For example, https://halfmemories.com.
   string domain = 3;
+
+  // avatar The link to the address of the avatar in the actor's profile.
   string avatar = 4;
+
+  // The name and username differ from the preferred username in that the name is used as a field to display only the user's name,
+  // and the user can fill in their own line name or nickname.
   string name = 5;
+
+  // bio 
   string summary = 6;
+
+  // inbox is actor's inbox address.
   string inbox = 7;
+
+  // address is the link address of the user, 
+  // through which the user's profile page can be obtained.
   string address = 8;
-  string public_key = 9;
-  string actor_type = 10;
+  
+  // publicKey used for Activitypub to sign messages.
+  // https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-message-signatures-13
+  string publicKey = 9;
+
+  // actorType Set the type of the Actor.
+  // https://www.w3.org/TR/activitystreams-vocabulary/#actor-types.
+  string actorType = 10;
+
+  // isRemote Flags whether the account is a remote account, 
+  // which is neither the account of the local instance nor the Actor data obtained from the remote instance.
   string isRemote = 11;
 }
 

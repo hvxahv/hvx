@@ -8,6 +8,7 @@ import "google/api/annotations.proto";
 import "google/api/field_behavior.proto";
 
 service Devices {
+
   // IsExist Gets whether the device is authenticated by the device id.
   // This method returns a boolean value. Returns true if it does not exist
   // Otherwise returns false.
@@ -38,7 +39,6 @@ service Devices {
 
   // DeleteDeviceByWithAccountID Delete all login devices by account id.
   rpc DeleteDevices (DeleteDevicesRequest) returns (DeleteDevicesResponse) {}
-
 }
 
 message Device {

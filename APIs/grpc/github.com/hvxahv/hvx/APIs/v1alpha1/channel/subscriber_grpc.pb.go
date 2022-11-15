@@ -22,11 +22,16 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type SubscriberClient interface {
+	// AddSubscriber Add a subscriber, operated by channel owner or administrator only.
 	AddSubscriber(ctx context.Context, in *AddSubscriberRequest, opts ...grpc.CallOption) (*AddSubscriberResponse, error)
+	// RemoveSubscriber Remove a subscriber, operated by channel owner or administrator only.
 	RemoveSubscriber(ctx context.Context, in *RemoveSubscriberRequest, opts ...grpc.CallOption) (*RemoveSubscriberResponse, error)
-	// Get a list of subscribers to CHANNEL for use by administrators and internal gRPCs only.
+	// GetSubscribers Get a list of subscribers to channel,
+	// operated by channel owner and administrator only.
 	GetSubscribers(ctx context.Context, in *GetSubscribersRequest, opts ...grpc.CallOption) (*GetSubscribersResponse, error)
+	// Subscription is the API through which the user initiates a subscription to the channel.
 	Subscription(ctx context.Context, in *SubscriptionRequest, opts ...grpc.CallOption) (*SubscriptionResponse, error)
+	// Unsubscribe The API for user-initiated unsubscriptions.
 	Unsubscribe(ctx context.Context, in *UnsubscribeRequest, opts ...grpc.CallOption) (*UnsubscribeResponse, error)
 }
 
@@ -87,11 +92,16 @@ func (c *subscriberClient) Unsubscribe(ctx context.Context, in *UnsubscribeReque
 // All implementations should embed UnimplementedSubscriberServer
 // for forward compatibility
 type SubscriberServer interface {
+	// AddSubscriber Add a subscriber, operated by channel owner or administrator only.
 	AddSubscriber(context.Context, *AddSubscriberRequest) (*AddSubscriberResponse, error)
+	// RemoveSubscriber Remove a subscriber, operated by channel owner or administrator only.
 	RemoveSubscriber(context.Context, *RemoveSubscriberRequest) (*RemoveSubscriberResponse, error)
-	// Get a list of subscribers to CHANNEL for use by administrators and internal gRPCs only.
+	// GetSubscribers Get a list of subscribers to channel,
+	// operated by channel owner and administrator only.
 	GetSubscribers(context.Context, *GetSubscribersRequest) (*GetSubscribersResponse, error)
+	// Subscription is the API through which the user initiates a subscription to the channel.
 	Subscription(context.Context, *SubscriptionRequest) (*SubscriptionResponse, error)
+	// Unsubscribe The API for user-initiated unsubscriptions.
 	Unsubscribe(context.Context, *UnsubscribeRequest) (*UnsubscribeResponse, error)
 }
 

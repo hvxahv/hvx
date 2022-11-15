@@ -9,11 +9,15 @@ import "google/protobuf/empty.proto";
 import "proto/v1alpha1/actor/actor.proto";
 
 service Administrative {
-  // IsAdministrator It is the admin that returns true not false.
+
+  // IsAdministrator Used to check the channel administrator's privileges,
+  // returning whether the user's ID is an administrator.
   rpc IsAdministrator(IsAdministratorRequest) returns (IsAdministratorResponse) {}
-  // IsOwner Is the channel owner.
+
+  // IsOwner Check if it is the owner of the channel.
   rpc IsOwner(IsOwnerRequest) returns (IsOwnerResponse) {}
 
+  // AddAdministrator A user will be added as an administrator by the channel administrator.
   rpc AddAdministrator(AddAdministratorRequest) returns (AddAdministratorResponse) {
     option (google.api.http) = {
       post: "/api/v1/channel/admin",
@@ -21,6 +25,8 @@ service Administrative {
     };
   }
 
+  // Removing an administrator will remove the administrative privileges of a channel administrator. 
+  // This is done by the owner of the channel.
   rpc RemoveAdministrator(RemoveAdministratorRequest) returns (RemoveAdministratorResponse) {
     option (google.api.http) = {
       delete: "/api/v1/channel/admin",
@@ -28,12 +34,16 @@ service Administrative {
     };
   }
 
+  // GetAdministrators Gets the list of administrators for the channel.
   rpc GetAdministrators(GetAdministratorsRequest) returns (GetAdministratorsResponse) {
     option (google.api.http) = {
       get: "/api/v1/channel/admin/{channelId}",
     };
   }
 
+  // ExitAdministrator The administrator who exits the channel will have the administrator 
+  // itself to access the API and choose to revoke the administrator privileges for their channel.
+  // Do not become the administrator of the channel.
   rpc ExitAdministrator(ExitAdministratorRequest) returns (ExitAdministratorResponse) {
     option (google.api.http) = {
       post: "/api/v1/channel/admin/exit",
@@ -85,6 +95,9 @@ message GetAdministratorsRequest {
 
 message AdminsData {
   bool isOwner = 1;
+
+  // manaadminger is actually also an activitypub actor, 
+  // and this field will return all the data for the actor.
   actor.proto.ActorData admin = 2;
 }
 

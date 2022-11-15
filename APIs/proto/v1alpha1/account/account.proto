@@ -14,17 +14,22 @@ service Accounts {
   // If the account exists, it returns true. Otherwise, it returns false.
   rpc IsExist (IsExistRequest) returns (IsExistResponse) {}
 
-  // Create a new account.
+  // Create Anyone wishing to use hvx must first create an account using this API.
+  // When registering, please take care to provide the user's public key, which is usually generated on the client side.
   rpc Create (CreateRequest) returns (CreateResponse) {}
 
-  // Get the account by username. 
+  // GetByUsername to get all information about the account by username.
+  // This API should only be called internally by the rpc, so the HTTP method of this API should be removed.
+  // Even so, the method should not return private data about the account, such as password HASH, etc.
   rpc GetByUsername (GetByUsernameRequest) returns (GetByUsernameResponse) {
     option (google.api.http) = {
       get: "/api/v1/account/{username}"
     };
   }
 
-  // Delete the account. 
+  // Delete all user information from the account system,
+  // providing a TOKEN and password for verification of identity. and after confirmation of deletion, no account data will be retained,
+  // including login information, all posted data, stored content and the matrix account used for instant messaging.
   rpc Delete (DeleteRequest) returns (DeleteResponse) {
     option (google.api.http) = {
       delete: "/api/v1/account",
@@ -41,7 +46,7 @@ service Accounts {
     };
   }
 
-  // EditPassword Update the account password.
+  // EditPassword Updating the password for the account requires logging out of all devices that have been logged in.
   rpc EditPassword (EditPasswordRequest) returns (EditPasswordResponse) {
     option (google.api.http) = {
       patch: "/api/v1/account/password",
@@ -58,6 +63,7 @@ service Accounts {
   }
 
   // Verify The API to verify that the account is correct.
+  // Use this API for account verification, typically used when a user logs in.
   rpc Verify (VerifyRequest) returns (VerifyResponse) {}
 
   // GetPrivateKey Obtain the ActivityPub private key for use by ActivityPub.
@@ -67,6 +73,7 @@ service Accounts {
   rpc GetPrivateKey (GetPrivateKeyRequest) returns (GetPrivateKeyResponse) {}
 
 
+  // IAm The API for obtaining account information returns the user's personal data.
   rpc IAm (google.protobuf.Empty) returns (IAmResponse) {
     option (google.api.http) = {
       get: "/api/v1/account/iam"

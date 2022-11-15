@@ -23,10 +23,21 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ChannelClient interface {
+	// CreateChannel Creating a channel is essentially creating an Actor of type services.
+	// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-service
 	CreateChannel(ctx context.Context, in *CreateChannelRequest, opts ...grpc.CallOption) (*CreateChannelResponse, error)
+	// GetChannels Gets all channels created by the account.
+	// The interface will be accessed via the HTTP protocol and the user data will be retrieved via the TOKEN context.
 	GetChannels(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetChannelsResponse, error)
+	// DeleteChannel The API to delete this channel removes the ID of the receiving channel and the ID of the owner.
 	DeleteChannel(ctx context.Context, in *DeleteChannelRequest, opts ...grpc.CallOption) (*DeleteChannelResponse, error)
+	// DeleteChannels Delete all channels,
+	// for example, if you need to delete all data of the account when you logout,
+	// you need to use this API to delete all channels created by the account.
 	DeleteChannels(ctx context.Context, in *DeleteChannelsRequest, opts ...grpc.CallOption) (*DeleteChannelsResponse, error)
+	// GetPrivateKeyByActorId When doing activitypub interaction,
+	// for example, publishing a broadcast then you need to send the message to all channel subscribers,
+	// and then you need to sign it, you can get the signed private key through this API.
 	GetPrivateKeyByActorId(ctx context.Context, in *GetPrivateKeyByActorIdRequest, opts ...grpc.CallOption) (*GetPrivateKeyByActorIdResponse, error)
 }
 
@@ -87,10 +98,21 @@ func (c *channelClient) GetPrivateKeyByActorId(ctx context.Context, in *GetPriva
 // All implementations should embed UnimplementedChannelServer
 // for forward compatibility
 type ChannelServer interface {
+	// CreateChannel Creating a channel is essentially creating an Actor of type services.
+	// https://www.w3.org/TR/activitystreams-vocabulary/#dfn-service
 	CreateChannel(context.Context, *CreateChannelRequest) (*CreateChannelResponse, error)
+	// GetChannels Gets all channels created by the account.
+	// The interface will be accessed via the HTTP protocol and the user data will be retrieved via the TOKEN context.
 	GetChannels(context.Context, *emptypb.Empty) (*GetChannelsResponse, error)
+	// DeleteChannel The API to delete this channel removes the ID of the receiving channel and the ID of the owner.
 	DeleteChannel(context.Context, *DeleteChannelRequest) (*DeleteChannelResponse, error)
+	// DeleteChannels Delete all channels,
+	// for example, if you need to delete all data of the account when you logout,
+	// you need to use this API to delete all channels created by the account.
 	DeleteChannels(context.Context, *DeleteChannelsRequest) (*DeleteChannelsResponse, error)
+	// GetPrivateKeyByActorId When doing activitypub interaction,
+	// for example, publishing a broadcast then you need to send the message to all channel subscribers,
+	// and then you need to sign it, you can get the signed private key through this API.
 	GetPrivateKeyByActorId(context.Context, *GetPrivateKeyByActorIdRequest) (*GetPrivateKeyByActorIdResponse, error)
 }
 

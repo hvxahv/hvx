@@ -7,6 +7,10 @@ import "google/api/annotations.proto";
 import "google/api/field_behavior.proto";
 import "google/protobuf/empty.proto";
 
+// Broadcast Unlike activitypub article /status, Broadcast will store data based on ipfs, 
+// although it also uses activitypub note type data, but
+// When publishing a broadcast, it will sync the published content from the activity server 
+// to the ipfs and then publish the returned CID to the channel subscribers.
 service Broadcast {
   rpc CreateBroadcast (CreateBroadcastRequest) returns (CreateBroadcastResponse) {
     option (google.api.http) = {
@@ -38,7 +42,8 @@ message BroadcastData {
 
 message CreateBroadcastRequest {
   int64 channelId = 1;
-  string ipfsCID = 2;
+  string type = 2;
+  string cid = 3;
 }
 
 message CreateBroadcastResponse {

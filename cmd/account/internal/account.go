@@ -65,13 +65,15 @@ type Account interface {
 	// EditEmail Editorial email.
 	EditEmail(mail string) error
 
-	// Verify that the account password is correct, used to verify when logging in or changing the password, 
+	// Verify that the account password is correct, used to verify when logging in or changing the password,
 	// pass the password sent and then compare the password queried in the database.
 	Verify(password string) (*Accounts, error)
 
 	// GetPrivateKey When performing activitypub activities,
 	// you need to obtain the private key for signing and other operations.
 	GetPrivateKey() (string, error)
+
+	GetAccountByUsername() (*Accounts, error)
 }
 
 // NewUsername  constructor account's username.

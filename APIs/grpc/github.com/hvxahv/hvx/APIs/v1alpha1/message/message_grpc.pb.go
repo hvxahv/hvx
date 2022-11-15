@@ -23,6 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type MessagesClient interface {
 	// AccessRegister Register a matrix account with a username and password.
+	// will be registered using the matrix.org API.
 	AccessRegister(ctx context.Context, in *AccessRegisterRequest, opts ...grpc.CallOption) (*AccessRegisterResponse, error)
 	// AccessLogin Sometimes you need to log in again when the token
 	// is wrong or when you reauthorize.
@@ -71,6 +72,7 @@ func (c *messagesClient) AccessDelete(ctx context.Context, in *AccessDeleteReque
 // for forward compatibility
 type MessagesServer interface {
 	// AccessRegister Register a matrix account with a username and password.
+	// will be registered using the matrix.org API.
 	AccessRegister(context.Context, *AccessRegisterRequest) (*AccessRegisterResponse, error)
 	// AccessLogin Sometimes you need to log in again when the token
 	// is wrong or when you reauthorize.

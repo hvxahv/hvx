@@ -303,8 +303,9 @@ type GetSubscribersResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Code       string             `protobuf:"bytes,1,opt,name=code,proto3" json:"code,omitempty"`
-	Status     string             `protobuf:"bytes,2,opt,name=status,proto3" json:"status,omitempty"`
+	Code   string `protobuf:"bytes,1,opt,name=code,proto3" json:"code,omitempty"`
+	Status string `protobuf:"bytes,2,opt,name=status,proto3" json:"status,omitempty"`
+	// The subscriber is an actor type of activitypub, so it will return actor data of type REPEATED.
 	Subscriber []*actor.ActorData `protobuf:"bytes,3,rep,name=subscriber,proto3" json:"subscriber,omitempty"`
 }
 

@@ -499,8 +499,10 @@ type AdminsData struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	IsOwner bool             `protobuf:"varint,1,opt,name=isOwner,proto3" json:"isOwner,omitempty"`
-	Admin   *actor.ActorData `protobuf:"bytes,2,opt,name=admin,proto3" json:"admin,omitempty"`
+	IsOwner bool `protobuf:"varint,1,opt,name=isOwner,proto3" json:"isOwner,omitempty"`
+	// manaadminger is actually also an activitypub actor,
+	// and this field will return all the data for the actor.
+	Admin *actor.ActorData `protobuf:"bytes,2,opt,name=admin,proto3" json:"admin,omitempty"`
 }
 
 func (x *AdminsData) Reset() {

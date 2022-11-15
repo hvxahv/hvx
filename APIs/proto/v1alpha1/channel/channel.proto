@@ -8,7 +8,12 @@ import "google/api/field_behavior.proto";
 import "google/protobuf/empty.proto";
 import "proto/v1alpha1/actor/actor.proto";
 
+// Channel is a content publishing channel based on the Activitypub service that allows other Actors to subscribe.
+// Push content to subscribers when the administrator publishes it.
 service Channel {
+
+  // CreateChannel Creating a channel is essentially creating an Actor of type services.
+  // https://www.w3.org/TR/activitystreams-vocabulary/#dfn-service
   rpc CreateChannel(CreateChannelRequest) returns (CreateChannelResponse) {
     option (google.api.http) = {
       post: "/api/v1/channel",
@@ -16,12 +21,15 @@ service Channel {
     };
   }
 
+  // GetChannels Gets all channels created by the account.
+  // The interface will be accessed via the HTTP protocol and the user data will be retrieved via the TOKEN context.
   rpc GetChannels(google.protobuf.Empty) returns (GetChannelsResponse) {
     option (google.api.http) = {
       get: "/api/v1/channel/channels",
     };
   }
 
+  // DeleteChannel The API to delete this channel removes the ID of the receiving channel and the ID of the owner.
   rpc DeleteChannel(DeleteChannelRequest) returns (DeleteChannelResponse) {
     option (google.api.http) = {
       delete: "/api/v1/channel",
@@ -29,12 +37,21 @@ service Channel {
     };
   }
 
+  // DeleteChannels Delete all channels, 
+  // for example, if you need to delete all data of the account when you logout, 
+  // you need to use this API to delete all channels created by the account.
   rpc DeleteChannels(DeleteChannelsRequest) returns (DeleteChannelsResponse) {}
 
+  // GetPrivateKeyByActorId When doing activitypub interaction, 
+  // for example, publishing a broadcast then you need to send the message to all channel subscribers, 
+  // and then you need to sign it, you can get the signed private key through this API.
   rpc GetPrivateKeyByActorId (GetPrivateKeyByActorIdRequest)  returns (GetPrivateKeyByActorIdResponse) {}
 }
 
 message CreateChannelRequest {
+
+  // preferredUsername Because a channel is essentially an actor of an activitypub, 
+  // this field is used to identify the name of the channel.
   string preferredUsername = 1;
 }
 
@@ -45,12 +62,17 @@ message CreateChannelResponse {
 
 message ChannelData {
   int64 channelId = 1;
+
+  // channel will return the channel's data, the same as the actor.
   actor.proto.ActorData channel = 2;
 }
 
 message GetChannelsResponse {
   string code = 1;
-  repeated ChannelData channels = 2;
+  string status = 2;
+
+  // is a repeated type of data, loaded with ChannelData.
+  repeated ChannelData channels = 3;
 }
 
 
