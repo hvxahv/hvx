@@ -1,11 +1,11 @@
 ---
 author: "hvturingga"
-name: "github.com/hvxahv/hvxahv"
+name: "github.com/hvxahv/hvx"
 version: "0.1.0	"
 github: "https://github.com/hvxahv"
 
 # Set instance domain.
-domain: "dev.halfmemories.com"
+domain: "h.disism.com"
 
 authentication:
   admin:
@@ -24,7 +24,7 @@ matrix:
   address: "https://matrix.disism.com"
 
 cockroach:
-  host: "hvxahv.disism.internal"
+  host: "127.0.0.1"
   port: "26257"
   user: "root"
   password: "root"
@@ -33,12 +33,12 @@ cockroach:
   timezone: "Asia/Shanghai"
 
 redis:
-  addr: "hvxahv.disism.internal:6379"
+  addr: "127.0.0.1:6379"
   password: "hvxahv123"
 
 fs:
   minio:
-    endpoint: "hvxahv.disism.internal:9000"
+    endpoint: "127.0.0.1:9000"
     accessKeyID: "hvxahv"
     secretAccessKey: "hvxahv123"
     useSSL: false
@@ -49,7 +49,7 @@ nats:
 
 discovery:
   consul:
-    address: "hvxahv.disism.internal:8500"
+    address: "127.0.0.1:8500"
   etcd:
     address: ""
 
@@ -61,7 +61,7 @@ bot:
 microsvcs:
   gateway:
     version: "0.1.0"
-    hostname: "hvxahv.disism.internal"
+    hostname: "127.0.0.1"
     useSSL: false
     ports:
       http: "8080"
@@ -69,7 +69,7 @@ microsvcs:
 
   account:
     version: "0.1.0"
-    hostname: "hvxahv.disism.internal"
+    hostname: "127.0.0.1"
     useSSL: false
     ports:
       http: "7010"
@@ -77,7 +77,7 @@ microsvcs:
 
   actor:
     version: "0.1.0"
-    hostname: "hvxahv.disism.internal"
+    hostname: "127.0.0.1"
     useSSL: false
     ports:
       http: "7020"
@@ -85,7 +85,7 @@ microsvcs:
 
   auth:
     version: "0.1.0"
-    hostname: "hvxahv.disism.internal"
+    hostname: "127.0.0.1"
     useSSL: false
     ports:
       http: "7030"
@@ -93,7 +93,7 @@ microsvcs:
 
   public:
     version: "0.1.0"
-    hostname: "hvxahv.disism.internal"
+    hostname: "127.0.0.1"
     useSSL: false
     ports:
       http: "7040"
@@ -101,7 +101,7 @@ microsvcs:
 
   device:
     version: "0.1.0"
-    hostname: "hvxahv.disism.internal"
+    hostname: "127.0.0.1"
     useSSL: false
     ports:
       http: "7050"
@@ -109,7 +109,7 @@ microsvcs:
 
   channel:
     version: "0.1.0"
-    hostname: "hvxahv.disism.internal"
+    hostname: "127.0.0.1"
     useSSL: false
     ports:
       http: "7060"
@@ -117,7 +117,7 @@ microsvcs:
 
   article:
     version: "0.1.0"
-    hostname: "hvxahv.disism.internal"
+    hostname: "127.0.0.1"
     useSSL: false
     ports:
       http: "7070"
@@ -125,7 +125,7 @@ microsvcs:
 
   saved:
     version: "0.1.0"
-    hostname: "hvxahv.disism.internal"
+    hostname: "127.0.0.1"
     useSSL: false
     ports:
       http: "7080"
@@ -133,7 +133,7 @@ microsvcs:
 
   activity:
     version: "0.1.0"
-    hostname: "hvxahv.disism.internal"
+    hostname: "127.0.0.1"
     useSSL: false
     ports:
       http: "7090"
@@ -141,7 +141,7 @@ microsvcs:
 
   fs:
     version: "0.1.0"
-    hostname: "hvxahv.disism.internal"
+    hostname: "127.0.0.1"
     useSSL: false
     ports:
       http: "7100"
@@ -149,7 +149,7 @@ microsvcs:
 
   message:
     version: "0.1.0"
-    hostname: "hvxahv.disism.internal"
+    hostname: "127.0.0.1"
     useSSL: false
     ports:
       http: "7110"

@@ -5,8 +5,8 @@ import (
 )
 
 const (
-	consulAddr   = "hvxahv.disism.internal:8500"
-	localhost    = "hvxahv.disism.internal"
+	consulAddr   = "127.0.0.1:8500"
+	localhost    = "127.0.0.1"
 	registerPort = "8080"
 )
 

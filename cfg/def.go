@@ -11,7 +11,7 @@ import (
 
 const (
 	defaultConfigName     = ".hvx"
-	defaultConsulEndpoint = "hvxahv.disism.internal:8500"
+	defaultConsulEndpoint = "127.0.0.1:8500"
 )
 
 func HomeConf() error {

@@ -4,35 +4,35 @@ services:
   gateway:
     container_name: gateway
     restart: always
-    image: hvx:latest
+    image: hvturingga/hvxahv:latest
     network_mode: host
     command: /bin/sh -c "./binary/gateway run"
 
   account:
     container_name: account
     restart: always
-    image: hvx:latest
+    image: hvturingga/hvxahv:latest
     network_mode: host
     command: /bin/sh -c "./binary/account run"
 
   activity:
     container_name: activity
     restart: always
-    image: hvx:latest
+    image: hvturingga/hvxahv:latest
     network_mode: host
     command: /bin/sh -c "./binary/activity run"
 
   actor:
     container_name: actor
     restart: always
-    image: hvx:latest
+    image: hvturingga/hvxahv:latest
     network_mode: host
     command: /bin/sh -c "./binary/actor run"
 
   article:
     container_name: article
     restart: always
-    image: hvx:latest
+    image: hvturingga/hvxahv:latest
     network_mode: host
     command: /bin/sh -c "./binary/article run"
 
@@ -40,48 +40,48 @@ services:
   auth:
     container_name: auth
     restart: always
-    image: hvx:latest
+    image: hvturingga/hvxahv:latest
     network_mode: host
     command: /bin/sh -c "./binary/auth run"
 
   channel:
     container_name: channel
     restart: always
-    image: hvx:latest
+    image: hvturingga/hvxahv:latest
     network_mode: host
     command: /bin/sh -c "./binary/channel run"
 
   device:
     container_name: device
     restart: always
-    image: hvx:latest
+    image: hvturingga/hvxahv:latest
     network_mode: host
     command: /bin/sh -c "./binary/device run"
 
   fs:
     container_name: fs
     restart: always
-    image: hvx:latest
+    image: hvturingga/hvxahv:latest
     network_mode: host
     command: /bin/sh -c "./binary/fs run"
 
   message:
     container_name: message
     restart: always
-    image: hvx:latest
+    image: hvturingga/hvxahv:latest
     network_mode: host
     command: /bin/sh -c "./binary/message run"
 
   public:
     container_name: public
     restart: always
-    image: hvx:latest
+    image: hvturingga/hvxahv:latest
     network_mode: host
     command: /bin/sh -c "./binary/public run"
 
   saved:
     container_name: saved
     restart: always
-    image: hvx:latest
+    image: hvturingga/hvxahv:latest
     network_mode: host
     command: /bin/sh -c "./binary/saved run"
